@@ -1,0 +1,143 @@
+{% extends 'layout.html' %}
+
+{% block page_content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p class="mt-1 text-sm text-gray-500">Overview of your aquaculture operations</p>
+    </div>
+    
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {% include 'components/stat_card.html' with title="Total Farms" value=stats.total_farms icon="home" color="blue" %}
+        {% include 'components/stat_card.html' with title="Active Ponds" value=stats.active_ponds|default:"0"|add:"/"|add:stats.total_ponds|default:"0" icon="water" color="cyan" subtitle="Active / Total" %}
+        {% include 'components/stat_card.html' with title="Total Fish Stock" value=stats.total_fish icon="fish" color="green" %}
+        {% include 'components/stat_card.html' with title="Total Biomass" value=stats.total_biomass|floatformat:1|default:"0"|add:" kg" icon="scale" color="purple" %}
+    </div>
+    
+    <!-- 30-Day Statistics -->
+    <div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Last 30 Days</h2>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {% include 'components/stat_card.html' with title="Feed Used" value=stats.feed_used_30d|floatformat:1|default:"0"|add:" kg" icon="feed" color="yellow" subtitle=stats.feeding_count|default:"0"|add:" feedings" %}
+            {% include 'components/stat_card.html' with title="Mortality" value=stats.mortality_30d|default:"0" icon="death" color="red" subtitle=stats.mortality_events|default:"0"|add:" events" %}
+            {% include 'components/stat_card.html' with title="Harvested" value=stats.harvest_30d|floatformat:1|default:"0"|add:" kg" icon="harvest" color="green" subtitle=stats.harvest_count|default:"0"|add:" harvests" %}
+            {% include 'components/stat_card.html' with title="Revenue" value="₱"|add:stats.revenue_30d|floatformat:0|default:"0" icon="money" color="blue" subtitle=stats.order_count|default:"0"|add:" orders" %}
+        </div>
+    </div>
+    
+    <!-- Charts and Quick Actions Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Species Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Fish Species Distribution</h3>
+            <div class="h-64">
+                <canvas id="speciesChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="{% url 'ponds:list' %}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Manage Ponds</span>
+                </a>
+                
+                <a href="{% url 'fish:list' %}" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Stock Fish</span>
+                </a>
+                
+                <a href="{% url 'feed:list' %}" class="flex items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Log Feeding</span>
+                </a>
+                
+                <a href="{% url 'harvest:list' %}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Record Harvest</span>
+                </a>
+                
+                <a href="{% url 'sales:list' %}" class="flex items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">Create Order</span>
+                </a>
+                
+                <a href="{% url 'analytics:dashboard' %}" class="flex items-center p-4 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
+                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">View Reports</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Species Distribution Pie Chart
+    const speciesData = {{ species_data|safe|default:'[]' }};
+    
+    if (speciesData.length > 0) {
+        const ctx = document.getElementById('speciesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: speciesData.map(s => s.name),
+                datasets: [{
+                    data: speciesData.map(s => s.count),
+                    backgroundColor: [
+                        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+                        '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        document.getElementById('speciesChart').parentElement.innerHTML = 
+            '<div class="flex items-center justify-center h-64 text-gray-500">No species data available</div>';
+    }
+</script>
+{% endblock %}
