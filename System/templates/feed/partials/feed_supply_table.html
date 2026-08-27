@@ -1,0 +1,46 @@
+<div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+    <table class="w-full text-left text-sm text-stone-100">
+        <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+            <tr>
+                <th class="px-6 py-4">Pond</th>
+                <th class="px-6 py-4">Fed Today</th>
+                <th class="px-6 py-4 text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+            {% for row in feed_pond_rows %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-bold text-stone-100">{{ row.pond.name }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">
+                    <label class="inline-flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            class="h-4 w-4 rounded accent-[#cca43b]"
+                            {% if row.fed_today %}checked{% endif %}
+                            disabled
+                        />
+                        <span>{% if row.fed_today %}Fed{% else %}Not Yet{% endif %}</span>
+                    </label>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    {% if row.has_active_batch %}
+                        <button
+                            type="button"
+                            onclick="openFeedingModal('{{ row.default_batch_id }}', '{{ row.default_feed_type_id }}')"
+                            class="btn-gold px-3 py-1.5 text-xs font-bold"
+                        >
+                            Feed Now
+                        </button>
+                    {% else %}
+                        <span class="text-xs text-[#a0ac96]">No active batch</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="px-6 py-12 text-center text-[#a0ac96]">No ponds available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

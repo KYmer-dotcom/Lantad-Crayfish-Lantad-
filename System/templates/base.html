@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>{% block title %}Silay Superworm & Crayfish{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/@heroicons/vue@2.0.18/dist/cjs/outline/index.js" defer></script>
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+        .htmx-request.htmx-indicator { display: inline-block; }
+        body { font-family: 'Sora', 'Segoe UI', sans-serif; }
+        .app-shell {
+            background: radial-gradient(900px 520px at 12% -10%, rgba(56, 189, 248, 0.25), transparent 60%),
+                linear-gradient(140deg, #05151d 0%, #061b26 45%, #071522 100%);
+        }
+        .glass-panel {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.75));
+            backdrop-filter: blur(12px);
+        }
+        .bg-blue-50 { background-color: var(--theme-color-50) !important; }
+        .bg-blue-100 { background-color: var(--theme-color-100) !important; }
+        .bg-blue-200 { background-color: var(--theme-color-200) !important; }
+        .bg-blue-500 { background-color: var(--theme-color-500) !important; }
+        .bg-blue-600 { background-color: var(--theme-color-600) !important; }
+        .bg-blue-700 { background-color: var(--theme-color-700) !important; }
+        .hover\:bg-blue-700:hover { background-color: var(--theme-color-700) !important; }
+        .text-blue-600 { color: var(--theme-color-600) !important; }
+        .text-blue-700 { color: var(--theme-color-700) !important; }
+        .text-blue-800 { color: var(--theme-color-800) !important; }
+        .text-blue-900 { color: var(--theme-color-900) !important; }
+        .border-blue-400 { border-color: var(--theme-color-400) !important; }
+        .border-blue-500 { border-color: var(--theme-color-500) !important; }
+        .border-blue-200 { border-color: var(--theme-color-200) !important; }
+        .ring-blue-500 { --tw-ring-color: var(--theme-color-500) !important; }
+        .focus\:ring-blue-500:focus { --tw-ring-color: var(--theme-color-500) !important; }
+        .from-blue-600 { --tw-gradient-from: var(--theme-color-600) !important; }
+        .via-blue-500 { --tw-gradient-stops: var(--tw-gradient-from), var(--theme-color-500), var(--tw-gradient-to, rgb(0 0 0 / 0)) !important; }
+        .to-blue-500 { --tw-gradient-to: var(--theme-color-500) !important; }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full" style="background-color: {{ theme.color_400|default:'#60a5fa' }}; --theme-color-50: {{ theme.color_50|default:'#eff6ff' }}; --theme-color-100: {{ theme.color_100|default:'#dbeafe' }}; --theme-color-200: {{ theme.color_200|default:'#bfdbfe' }}; --theme-color-400: {{ theme.color_400|default:'#60a5fa' }}; --theme-color-500: {{ theme.color_500|default:'#3b82f6' }}; --theme-color-600: {{ theme.color_600|default:'#2563eb' }}; --theme-color-700: {{ theme.color_700|default:'#1d4ed8' }}; --theme-color-800: {{ theme.color_800|default:'#1e40af' }}; --theme-color-900: {{ theme.color_900|default:'#1e3a8a' }};">
+    <div class="min-h-full">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+    
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    
+    <script>
+        // Toast notification helper
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            
+            // Premium glassmorphic styles matching Silay Aquaculture theme
+            let borderClass = 'border-emerald-500/30';
+            let bgClass = 'bg-[#021f15]/95';
+            let textClass = 'text-emerald-400';
+            let icon = '🎉';
+            
+            if (type === 'error') {
+                borderClass = 'border-rose-500/30';
+                bgClass = 'bg-rose-950/95';
+                textClass = 'text-rose-400';
+                icon = '❌';
+            } else if (type === 'info') {
+                borderClass = 'border-[#cca43b]/30';
+                bgClass = 'bg-[#021f15]/95';
+                textClass = 'text-[#cca43b]';
+                icon = 'ℹ️';
+            }
+            
+            toast.className = `flex items-center gap-3 border ${borderClass} ${bgClass} ${textClass} px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md transform transition-all duration-500 ease-out translate-y-10 opacity-0 min-w-[280px] font-bold text-xs tracking-wider uppercase z-[9999]`;
+            toast.innerHTML = `
+                <span class="flex-1">${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            // Animation in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 50);
+            
+            // Animation out and remove
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+        
+        // HTMX events
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'modal-container') {
+                document.getElementById('modal-container').classList.remove('hidden');
+            }
+        });
+        
+        function closeModal() {
+            document.getElementById('modal-container').innerHTML = '';
+        }
+        
+        // Close modal on escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

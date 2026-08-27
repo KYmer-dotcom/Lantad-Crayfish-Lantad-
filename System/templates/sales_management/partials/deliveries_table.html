@@ -1,0 +1,41 @@
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-white/10">
+        <thead class="bg-white/[0.03]">
+            <tr>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order #</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Scheduled Date</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Quantity (kg)</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Location</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Payment</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5 bg-transparent">
+            {% for delivery in deliveries %}
+            <tr class="hover:bg-white/[0.03] transition-colors duration-200">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-100">{{ delivery.order.order_number }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-300">{{ delivery.scheduled_date }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ delivery.quantity_kg }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-300">
+                    {% if delivery.delivery_location == 'PICKUP' %}
+                        <span class="font-black text-[#cca43b] uppercase tracking-wider text-xs bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded-md">Pickup</span>
+                    {% else %}
+                        {{ delivery.delivery_location }}
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <button type="button" onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}'); event.stopPropagation();" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                        {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                        {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                        {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                        {{ delivery.order.get_payment_status_display }}
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-sm text-stone-500">No scheduled deliveries</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

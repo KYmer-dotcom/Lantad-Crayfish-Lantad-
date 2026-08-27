@@ -1,0 +1,74 @@
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-white/10 border-0 enhanced-table">
+        {% if records %}
+        <thead class="bg-black/40">
+            <tr>
+                {% if type == 'superworm' %}
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Category</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Product Name</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Estimated Harvest Date</th>
+                {% else %}
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Batch Code</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Harvest Date</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Quantity</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Total Weight</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Grade A</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Grade B</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Grade C</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-[#a0ac96] uppercase tracking-wider">Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        {% endif %}
+        <tbody class="divide-y divide-white/10">
+            {% for record in records %}
+            <tr class="hover:bg-white/5 transition-colors">
+                {% if type == 'superworm' %}
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-100">
+                    {{ record.stock_batch.pond.name }}
+                    {% if record.stock_batch.pond.shelf_position %}
+                        <span class="text-xs font-normal text-[#a0ac96] ml-1">({{ record.stock_batch.pond.shelf_position }})</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ record.stock_batch.pond.product_name|default:"-" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">
+                    {% if record.stock_batch.pond.est_sw_harvest_date %}
+                        {{ record.stock_batch.pond.est_sw_harvest_date }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                {% else %}
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-100">{{ record.stock_batch.batch_code }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ record.harvest_date }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ record.quantity_harvested }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ record.total_weight_kg }} kg</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 py-1 inline-flex text-xs font-bold rounded border bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+                        {{ record.grade_a_quantity }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 py-1 inline-flex text-xs font-bold rounded border bg-amber-500/10 text-amber-500 border-amber-500/20">
+                        {{ record.grade_b_quantity }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 py-1 inline-flex text-xs font-bold rounded border bg-rose-500/10 text-rose-500 border-rose-500/20">
+                        {{ record.grade_c_quantity }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a href="#" class="text-[#cca43b] hover:text-[#cca43b]/80 transition-colors">Edit</a>
+                    <a href="#" class="ml-4 text-rose-500 hover:text-rose-400 transition-colors">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{% if type == 'superworm' %}3{% else %}8{% endif %}" class="px-6 py-8 text-center text-sm text-[#a0ac96]">No harvest records found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

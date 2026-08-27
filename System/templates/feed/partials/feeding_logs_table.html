@@ -1,0 +1,33 @@
+<div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+    <table class="w-full text-left text-sm text-stone-100">
+        <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+            <tr>
+                <th class="px-6 py-4">Batch Code</th>
+                <th class="px-6 py-4">Feed Type</th>
+                <th class="px-6 py-4">Quantity (kg)</th>
+                <th class="px-6 py-4">Feeding Time</th>
+                <th class="px-6 py-4">Fed By</th>
+                <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+            {% for log in feeding_logs %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-bold text-stone-100">{{ log.stock_batch.batch_code }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ log.feed_type.name }}</td>
+                <td class="px-6 py-4 text-[#cca43b] font-bold">{{ log.quantity_kg }} kg</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ log.feeding_time|date:"M d, Y H:i" }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ log.fed_by.get_full_name }}</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="text-xs font-bold text-[#cca43b] hover:underline">Edit</a>
+                    <a href="#" class="ml-3 text-xs font-bold text-rose-400 hover:underline">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-[#a0ac96]">No feeding logs found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

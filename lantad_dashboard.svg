@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#01140e" />
+
+  <!-- Sidebar Background -->
+  <rect width="260" height="900" fill="#021f15" />
+  <line x1="260" y1="0" x2="260" y2="900" stroke="#cca43b" stroke-width="1" opacity="0.1" />
+  
+  <!-- Sidebar Brand Header -->
+  <g transform="translate(20, 20)">
+    <!-- Logo placeholder -->
+    <rect width="36" height="36" rx="8" fill="#1e3b2b" stroke="#cca43b" stroke-width="1" />
+    <!-- Shrimp / Lobster representation -->
+    <path d="M12,18 C14,14 22,14 24,18 C22,22 14,22 12,18 Z" fill="#cca43b" opacity="0.8" />
+    <text x="48" y="16" font-family="Sora, sans-serif" font-size="11" font-weight="700" fill="#ffffff" letter-spacing="0.5">SILAY SUPERWORM</text>
+    <text x="48" y="28" font-family="Sora, sans-serif" font-size="11" font-weight="700" fill="#ffffff" letter-spacing="0.5">&amp; CRAYFISH</text>
+    <text x="48" y="40" font-family="Sora, sans-serif" font-size="8" font-weight="700" fill="#0ea5e9" opacity="0.8">AQUACULTURE</text>
+  </g>
+
+  <!-- Sidebar Sections -->
+  <!-- MAIN Section -->
+  <g transform="translate(20, 95)">
+    <text x="0" y="0" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" opacity="0.4" letter-spacing="1">MAIN</text>
+    <!-- Dashboard Link (Active) -->
+    <g transform="translate(0, 10)">
+      <rect x="-8" y="0" width="236" height="36" rx="8" fill="#cca43b" opacity="0.1" />
+      <line x1="-8" y1="0" x2="-8" y2="36" stroke="#cca43b" stroke-width="3" />
+      <!-- Dashboard Grid Icon -->
+      <rect x="8" y="10" width="6" height="6" rx="1.5" fill="#cca43b" />
+      <rect x="16" y="10" width="6" height="6" rx="1.5" fill="#cca43b" />
+      <rect x="8" y="18" width="6" height="6" rx="1.5" fill="#cca43b" />
+      <rect x="16" y="18" width="6" height="6" rx="1.5" fill="#cca43b" />
+      <text x="32" y="22" font-family="Sora, sans-serif" font-size="12" font-weight="600" fill="#cca43b">Dashboard</text>
+    </g>
+  </g>
+
+  <!-- MODULES Section -->
+  <g transform="translate(20, 180)">
+    <text x="0" y="0" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" opacity="0.4" letter-spacing="1">MODULES</text>
+    
+    <!-- Stock Monitoring -->
+    <g transform="translate(0, 12)">
+      <!-- Icon representation -->
+      <circle cx="12" cy="14" r="6" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Stock Monitoring</text>
+    </g>
+
+    <!-- Operations -->
+    <g transform="translate(0, 48)">
+      <rect x="6" y="8" width="12" height="12" rx="2" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Operations</text>
+      <!-- Dropdown arrow -->
+      <path d="M220,13 L224,17 L228,13" fill="none" stroke="#a0ac96" stroke-width="1.5" opacity="0.7" />
+    </g>
+
+    <!-- Inventory Management -->
+    <g transform="translate(0, 84)">
+      <path d="M6,8 L18,8 L18,20 L6,20 Z" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Inventory Management</text>
+    </g>
+
+    <!-- Harvest Management -->
+    <g transform="translate(0, 120)">
+      <path d="M12,6 L12,20 M6,12 L18,12" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Harvest Management</text>
+    </g>
+  </g>
+
+  <!-- REPORTS Section -->
+  <g transform="translate(20, 360)">
+    <text x="0" y="0" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" opacity="0.4" letter-spacing="1">REPORTS</text>
+
+    <!-- Sales Management -->
+    <g transform="translate(0, 12)">
+      <circle cx="12" cy="14" r="5" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Sales Management</text>
+    </g>
+
+    <!-- Reports & Analytics -->
+    <g transform="translate(0, 48)">
+      <path d="M6,20 L6,14 M12,20 L12,10 M18,20 L18,6" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Reports &amp; Analytics</text>
+    </g>
+
+    <!-- Notifications -->
+    <g transform="translate(0, 84)">
+      <path d="M12,6 C9,6 8,8 8,11 L8,15 L6,17 L18,17 L16,15 L16,11 C16,8 15,6 12,6 Z" stroke="#a0ac96" stroke-width="1.5" fill="none" opacity="0.7" />
+      <text x="32" y="18" font-family="Sora, sans-serif" font-size="12" font-weight="500" fill="#a0ac96">Notifications</text>
+    </g>
+  </g>
+
+  <!-- Top Header bar -->
+  <g transform="translate(290, 20)">
+    <!-- Overview icon (4 grid dots) -->
+    <rect width="32" height="32" rx="8" fill="#1e293b" opacity="0.2" />
+    <circle cx="12" cy="12" r="2.5" fill="#cca43b" />
+    <circle cx="20" cy="12" r="2.5" fill="#cca43b" />
+    <circle cx="12" cy="20" r="2.5" fill="#cca43b" />
+    <circle cx="20" cy="20" r="2.5" fill="#cca43b" />
+    <text x="44" y="21" font-family="Sora, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">Overview</text>
+
+    <!-- User dropdown Admin -->
+    <g transform="translate(760, 0)">
+      <rect width="130" height="34" rx="17" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <circle cx="17" cy="17" r="11" fill="#cca43b" opacity="0.2" />
+      <text x="13" y="21" font-family="Sora, sans-serif" font-size="11" font-weight="700" fill="#cca43b">A</text>
+      <text x="36" y="21" font-family="Sora, sans-serif" font-size="11" font-weight="700" fill="#f8fafc">admin</text>
+      <path d="M92,15 L96,19 L100,15" fill="none" stroke="#a0ac96" stroke-width="1.5" />
+    </g>
+  </g>
+
+  <!-- Title section -->
+  <g transform="translate(290, 80)">
+    <text x="0" y="20" font-family="Sora, sans-serif" font-size="10" font-weight="700" fill="#cca43b" letter-spacing="1">SILAY SUPERWORM &amp; CRAYFISH</text>
+    <text x="0" y="48" font-family="Sora, sans-serif" font-size="28" font-weight="800" fill="#ffffff">Dashboard</text>
+  </g>
+
+  <!-- KPI Grid: 3 columns, 2 rows -->
+  <g transform="translate(290, 150)">
+    <!-- Row 1 Card 1: ACTIVE STOCKS -->
+    <g transform="translate(0, 0)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">ACTIVE STOCKS</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="32" font-weight="800" fill="#ffffff">5</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#22c55e">● Across 7 active ponds/tanks</text>
+      <!-- Icon box -->
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <path d="M240,24 C240,24 245,20 250,24" stroke="#cca43b" stroke-width="1.5" fill="none" />
+    </g>
+
+    <!-- Row 1 Card 2: DAILY SALES -->
+    <g transform="translate(300, 0)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">DAILY SALES</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="28" font-weight="800" fill="#cca43b">₱0.00</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#a0ac96">● Based on today's orders</text>
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <text x="241" y="36" font-family="Sora, sans-serif" font-size="14" font-weight="700" fill="#cca43b">₱</text>
+    </g>
+
+    <!-- Row 1 Card 3: REVENUE (30D) -->
+    <g transform="translate(600, 0)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">REVENUE (30D)</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="28" font-weight="800" fill="#ffffff">₱3570.00</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#22c55e">● 10 completed orders</text>
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <path d="M238,38 L238,28 M245,38 L245,24 M252,38 L252,20" stroke="#cca43b" stroke-width="1.5" />
+    </g>
+
+    <!-- Row 2 Card 1: PENDING ORDERS -->
+    <g transform="translate(0, 130)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">PENDING ORDERS</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="32" font-weight="800" fill="#ffffff">0</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#cca43b">● Action required in queue</text>
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <circle cx="245" cy="31" r="3" fill="#cca43b" />
+    </g>
+
+    <!-- Row 2 Card 2: UPCOMING HARVESTS -->
+    <g transform="translate(300, 130)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">UPCOMING HARVESTS</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="32" font-weight="800" fill="#ffffff">7</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#a0ac96">● Next 30 days projection</text>
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <rect x="238" y="24" width="14" height="14" rx="2" stroke="#cca43b" stroke-width="1.5" fill="none" />
+    </g>
+
+    <!-- Row 2 Card 3: TOTAL PRODUCTS -->
+    <g transform="translate(600, 130)">
+      <rect width="280" height="110" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+      <text x="20" y="30" font-family="Sora, sans-serif" font-size="9" font-weight="700" fill="#a0ac96" letter-spacing="0.5">TOTAL PRODUCTS</text>
+      <text x="20" y="70" font-family="Sora, sans-serif" font-size="32" font-weight="800" fill="#ffffff">5</text>
+      <text x="20" y="90" font-family="Sora, sans-serif" font-size="10" font-weight="500" fill="#22c55e">● Active catalog items</text>
+      <rect x="230" y="16" width="30" height="30" rx="8" fill="#cca43b" opacity="0.1" />
+      <path d="M245,22 L253,26 L245,30 L237,26 Z" stroke="#cca43b" stroke-width="1" fill="none" />
+      <path d="M237,26 L237,34 L245,38 L245,30" stroke="#cca43b" stroke-width="1" fill="none" />
+      <path d="M253,26 L253,34 L245,38" stroke="#cca43b" stroke-width="1" fill="none" />
+    </g>
+  </g>
+
+  <!-- Sales History Graph Panel -->
+  <g transform="translate(290, 410)">
+    <rect width="880" height="450" rx="16" fill="#021f15" stroke="#cca43b" stroke-width="0.5" opacity="0.8" />
+    <text x="24" y="36" font-family="Sora, sans-serif" font-size="16" font-weight="700" fill="#ffffff">Sales History</text>
+    <text x="24" y="54" font-family="Sora, sans-serif" font-size="11" fill="#a0ac96">Gross sales revenue tracking</text>
+    
+    <!-- Timeframe indicator -->
+    <rect x="760" y="20" width="96" height="26" rx="13" fill="#cca43b" opacity="0.1" />
+    <text x="774" y="36" font-family="Sora, sans-serif" font-size="10" font-weight="700" fill="#cca43b">LAST 10 DAYS</text>
+
+    <!-- Graph Plot grid -->
+    <g transform="translate(24, 80)" opacity="0.7">
+      <line x1="40" y1="300" x2="820" y2="300" stroke="#1e293b" stroke-width="1" />
+      <line x1="40" y1="250" x2="820" y2="250" stroke="#1e293b" stroke-width="1" />
+      <line x1="40" y1="200" x2="820" y2="200" stroke="#1e293b" stroke-width="1" />
+      <line x1="40" y1="150" x2="820" y2="150" stroke="#1e293b" stroke-width="1" />
+      <line x1="40" y1="100" x2="820" y2="100" stroke="#1e293b" stroke-width="1" />
+      <line x1="40" y1="50" x2="820" y2="50" stroke="#1e293b" stroke-width="1" />
+      
+      <!-- Axis Labels -->
+      <text x="10" y="304" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">330</text>
+      <text x="10" y="254" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">338</text>
+      <text x="10" y="204" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">346</text>
+      <text x="10" y="154" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">354</text>
+      <text x="10" y="104" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">362</text>
+      <text x="10" y="54" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">370</text>
+
+      <!-- Plot line (example representation matching mockup) -->
+      <path d="M 40,280 L 120,290 L 200,270 L 280,240 L 360,250 L 440,210 L 520,180 L 600,160 L 680,120 L 760,80 L 820,90" fill="none" stroke="#cca43b" stroke-width="3" />
+      <circle cx="760" cy="80" r="5" fill="#cca43b" />
+      
+      <!-- X Axis Label -->
+      <text x="40" y="324" font-family="Sora, sans-serif" font-size="9" fill="#a0ac96">May 23</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,85 @@
+<table class="w-full text-left text-sm text-stone-100">
+    <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+        <tr>
+            <th class="px-6 py-4">Name / ID</th>
+            <th class="px-6 py-4 text-center">Status</th>
+            <th class="px-6 py-4">Type of Feed</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-white/10">
+        {% for pond in table_ponds %}
+        {% if pond.status != 'empty' and pond.status != 'maintenance' %}
+        <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
+            <td class="px-6 py-4">
+                <div class="font-bold">{{ pond.name }}</div>
+                <div class="text-xs text-[#a0ac96] mt-1">{% if pond.shelf_position %}Position{% else %}Quantity: {{ pond.capacity }}{% endif %}</div>
+            </td>
+            <td class="px-6 py-4 text-center">
+                {% if pond.today_log %}
+                <div class="flex flex-col items-center gap-1 justify-center recorded-badge">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-black text-emerald-400 border border-emerald-500/20">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Recorded
+                    </span>
+                    <span class="text-[9px] text-[#a0ac96]">{% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}</span>
+                </div>
+                {% else %}
+                <input type="checkbox" checked onchange="toggleFedStatus('{{ pond.id }}', this.checked)" class="op-fed-checkbox h-5 w-5 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                {% endif %}
+            </td>
+            <td class="px-6 py-4">
+                {% if pond.today_log %}
+                <div class="text-sm font-bold text-stone-300">
+                    {% if pond.today_log.feed_type %}
+                        {% if pond.today_log.feed_type.icon == 'wheat' %}🌾{% elif pond.today_log.feed_type.icon == 'bug' %}🐛{% elif pond.today_log.feed_type.icon == 'corn' %}🌽{% elif pond.today_log.feed_type.icon == 'leaf' %}🥬{% elif pond.today_log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ pond.today_log.feed_type.name }}
+                    {% else %}
+                        No Feed (Skip)
+                    {% endif %}
+                </div>
+                {% else %}
+                <select class="op-feed-select w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                    <option value="">Select feed...</option>
+                    {% for feed in feed_types %}
+                    <option value="{{ feed.id }}">
+                        {% if feed.icon == 'wheat' %}🌾{% elif feed.icon == 'bug' %}🐛{% elif feed.icon == 'corn' %}🌽{% elif feed.icon == 'leaf' %}🥬{% elif feed.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ feed.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </td>
+        </tr>
+        {% if pond.product_set.all %}
+        <tr class="bg-black/20">
+            <td colspan="3" class="px-6 py-3">
+                <div class="rounded-xl border border-white/5 bg-black/40 p-3">
+                    <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Current Products</p>
+                    <table class="w-full text-xs text-[#a0ac96]">
+                        <tbody class="divide-y divide-white/5">
+                            {% for product in pond.product_set.all %}
+                            <tr>
+                                <td class="py-2 w-1/2">
+                                    <div class="flex items-center gap-2">
+                                        <span>{% if product.icon == 'shrimp' %}🦐{% elif product.icon == 'lab' %}🧪{% elif product.icon == 'leaf' %}🌿{% elif product.icon == 'box' %}📦{% elif product.icon == 'water' %}💧{% else %}🐟{% endif %}</span>
+                                        <span class="text-stone-300">{{ product.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-2 text-center w-1/4">{{ product.get_category_display }}</td>
+                                <td class="py-2 text-right w-1/4 font-medium text-stone-300">{{ product.quantity_kg }} kg</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+        {% endif %}
+        {% empty %}
+        <tr>
+            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No operations data found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

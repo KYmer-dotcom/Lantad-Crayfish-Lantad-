@@ -1,0 +1,31 @@
+<div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+    <table class="w-full text-left text-sm text-stone-100 enhanced-table">
+        <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+            <tr>
+                <th class="px-6 py-4">Feed Type</th>
+                <th class="px-6 py-4">Qty (kg)</th>
+                <th class="px-6 py-4">Purchase Date</th>
+                <th class="px-6 py-4">Supplier</th>
+                <th class="px-6 py-4">Batch #</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+            {% for item in inventory %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-bold text-stone-100">{{ item.feed_type.name }}</td>
+                <td class="px-6 py-4 text-[#cca43b] font-bold">{{ item.quantity_kg|floatformat:2 }} kg</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ item.purchase_date|date:"M d, Y" }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ item.supplier|default:"-" }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ item.batch_number|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-[#a0ac96]">
+                    <h3 class="mt-2 text-sm font-semibold text-stone-100">No inventory records</h3>
+                    <p class="mt-1 text-xs text-[#a0ac96]">Add inventory to track available feed stock.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

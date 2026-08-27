@@ -1,0 +1,674 @@
+{% extends "layout.html" %}
+
+{% block title %}Ponds Management{% endblock %}
+
+{% block page_content %}
+<div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Operations</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Farm Operations</h1>
+        </div>
+        <div class="flex items-center gap-3"></div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Ponds</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ outdoor_ponds_count }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span>Active outdoor ponds</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4c-5.5 0-10 3.5-10 8s4.5 8 10 8 10-3.5 10-8-4.5-8-10-8z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11c.8.6 1.5 1 2.5 1s1.7-.4 2.5-1 1.7-.4 2.5 1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 15c.6.5 1.2 1 2 1s1.4-.5 2-1" />
+                </svg>
+            </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Cabin</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ cabin_ponds_count }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Superworm cabin boxes</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12c-1.5 0-2.5 1.5-4 1.5s-2.5-1.5-4-1.5-2.5 1.5-4 1.5-2.5-1.5-4-1.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 8l1-1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8l-1-1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 13.5v2M15 13.5v2M14 13.5v2" />
+                </svg>
+            </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Azula</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ azula_ponds_count }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <span>Azula indoor tanks</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l5.5-5.5a8 8 0 1 0 0 11.3L12 14z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14L7 9m5 5H5m7 0l-5 5m5-5v7m0-7l5 5" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    {% if request.GET.type != 'cabin' and request.GET.type != 'azula' %}
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm">
+        <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-stone-100">Main Pond</h2>
+            {% if main_pond_recorded_today %}
+            <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-bold tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
+            {% else %}
+            <button type="button" onclick="openOperationsSidebar('Main Pond')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Operation</button>
+            {% endif %}
+        </div>
+        <div class="p-6">
+            {% include 'operations/partials/pond_grid.html' with section_ponds=main_ponds section_category="Main Pond" %}
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm mt-6">
+        <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-stone-100">Breeding Pond</h2>
+            {% if breeding_pond_recorded_today %}
+            <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-bold tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
+            {% else %}
+            <button type="button" onclick="openOperationsSidebar('Breeding Pond')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Operation</button>
+            {% endif %}
+        </div>
+        <div class="p-6">
+            {% include 'operations/partials/pond_grid.html' with section_ponds=breeding_ponds section_category="Breeding Pond" %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not request.GET.type or request.GET.type == 'cabin' %}
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm mt-6">
+        <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-stone-100">Superworm Cabin</h2>
+            {% if superworm_cabin_recorded_today %}
+            <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-bold tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
+            {% else %}
+            <button type="button" onclick="openOperationsSidebar('Superworm Cabin')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Operation</button>
+            {% endif %}
+        </div>
+        <div class="p-6">
+            {% include 'operations/partials/superworm_grid.html' %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if request.GET.type == 'azula' %}
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm mt-6">
+        <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-stone-100">Azula</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid gap-4 min-h-[600px] text-stone-100 font-bold" style="grid-template-columns: 2fr 2fr 1fr 2fr 3fr; grid-template-rows: repeat(10, 1fr);">
+                <!-- Box 1 -->
+                {% with pond=azula_ponds.1 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 1 / 4;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '1')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 1 / 4;">
+                    <span class="text-4xl text-[#a0ac96]/30">1</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 7 -->
+                {% with pond=azula_ponds.7 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 1 / 3;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '7')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 1 / 3;">
+                    <span class="text-4xl text-[#a0ac96]/30">7</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 10 -->
+                {% with pond=azula_ponds.10 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 5 / 6; grid-row: 1 / 11;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '10')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 5 / 6; grid-row: 1 / 11;">
+                    <span class="text-4xl text-[#a0ac96]/30">10</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 8 -->
+                {% with pond=azula_ponds.8 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 3 / 5;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '8')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 3 / 5;">
+                    <span class="text-4xl text-[#a0ac96]/30">8</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 3 -->
+                {% with pond=azula_ponds.3 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 2; grid-row: 4 / 9;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '3')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 2; grid-row: 4 / 9;">
+                    <span class="text-4xl text-[#a0ac96]/30">3</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 2 -->
+                {% with pond=azula_ponds.2 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 2 / 3; grid-row: 4 / 9;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '2')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 2 / 3; grid-row: 4 / 9;">
+                    <span class="text-4xl text-[#a0ac96]/30">2</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 9 -->
+                {% with pond=azula_ponds.9 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 5 / 7;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '9')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 5 / 7;">
+                    <span class="text-4xl text-[#a0ac96]/30">9</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 6 -->
+                {% with pond=azula_ponds.6 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 7 / 9;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '6')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 7 / 9;">
+                    <span class="text-4xl text-[#a0ac96]/30">6</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 5 -->
+                {% with pond=azula_ponds.5 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 9 / 11;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '5')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 9 / 11;">
+                    <span class="text-4xl text-[#a0ac96]/30">5</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+                <!-- Box 4 -->
+                {% with pond=azula_ponds.4 %}
+                {% if pond %}
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 3 / 5; grid-row: 9 / 11;">
+                    <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
+                    <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
+                    {% if pond.status == 'empty' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-rose-500/80 mt-1">Unused</span>
+                    {% elif pond.status == 'maintenance' %}
+                    <span class="text-[10px] tracking-wider uppercase font-bold text-amber-500/80 mt-1">Maintenance</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <button type="button" onclick="openAddPondModal('Azula', '4')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 3 / 5; grid-row: 9 / 11;">
+                    <span class="text-4xl text-[#a0ac96]/30">4</span>
+                </button>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+</div>
+
+
+
+
+
+<!-- Operations Sidebar -->
+<div id="operations-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+        <div>
+            <h2 id="operations-sidebar-title" class="text-xl font-bold text-stone-100">Operations Data</h2>
+            <p class="text-sm text-[#a0ac96] mt-1">Detailed view of operational metrics</p>
+        </div>
+        <button type="button" onclick="closeOperationsSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6">
+        <!-- Main Pond Table -->
+        <div class="op-table-wrapper hidden" data-category="Main Pond">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Main Pond</h3>
+                <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                    Record
+                </button>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/operations_table.html" with table_ponds=main_ponds %}
+            </div>
+        </div>
+        
+        <!-- Breeding Pond Table -->
+        <div class="op-table-wrapper hidden" data-category="Breeding Pond">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Breeding Pond</h3>
+                <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                    Record
+                </button>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/operations_table.html" with table_ponds=breeding_ponds %}
+            </div>
+        </div>
+        
+        <!-- Superworm Cabin Tables -->
+        <div class="op-table-wrapper hidden" data-category="Superworm Cabin">
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Left Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block1_ponds %}
+                </div>
+            </div>
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Right Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block2_ponds %}
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Back Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block3_ponds %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Pond Modal -->
+<div id="add-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-2xl rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <h3 id="add-pond-title" class="text-lg font-semibold text-stone-100">Add Record</h3>
+            <button type="button" onclick="closeAddPondModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
+        </div>
+        <form id="add-pond-form" method="post" action="{% url 'operations:pond_create' %}" class="mt-4 space-y-4">
+            {% csrf_token %}
+            {% include 'operations/partials/pond_form.html' with form=pond_form %}
+            <div class="mt-6 flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+                <button type="button" onclick="closeAddPondModal()" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
+                <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#b08d33] transition-colors">Save Record</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Pond Modal -->
+<div id="delete-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-stone-100">Remove Record</h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
+        </div>
+        <p class="mt-4 text-sm text-[#a0ac96]">Are you sure you want to delete <span id="delete-pond-name" class="font-bold text-stone-100"></span>?</p>
+        <form id="delete-pond-form" method="post" action="" class="mt-6 flex items-center justify-end gap-3">
+            {% csrf_token %}
+            <button type="button" onclick="closeDeleteModal()" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
+            <button type="submit" class="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 shadow-lg shadow-rose-500/20 transition-colors">Remove</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(pondId, pondName) {
+        const nameEl = document.getElementById('delete-pond-name');
+        if (nameEl) {
+            nameEl.textContent = pondName || '';
+        }
+        const form = document.getElementById('delete-pond-form');
+        if (form) {
+            const baseUrl = "{% url 'operations:pond_remove' 0 %}";
+            form.action = baseUrl.replace('/0/', `/${pondId}/`);
+        }
+        showModal('delete-pond-modal');
+    }
+    function closeDeleteModal() {
+        hideModal('delete-pond-modal');
+    }
+    function openAddPondModal(category, shelfPosition = '') {
+        const title = document.getElementById('add-pond-title');
+        if (title && category) {
+            title.textContent = `Add ${category}`;
+        }
+        showModal('add-pond-modal');
+        const form = document.getElementById('add-pond-form');
+        if (!form) return;
+        const categorySelect = form.querySelector('select[name="category"]');
+        if (categorySelect && category) {
+            categorySelect.value = category;
+            categorySelect.dispatchEvent(new Event('change'));
+        }
+        const shelfInput = form.querySelector('input[name="shelf_position"]');
+        if (shelfInput) {
+            shelfInput.value = shelfPosition || '';
+        }
+    }
+    function closeAddPondModal() {
+        hideModal('add-pond-modal');
+    }
+
+    function showModal(id) {
+        let el = document.getElementById(id);
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+    }
+
+    function hideModal(id) {
+        let el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+        
+        let forms = el.getElementsByTagName('form');
+        for (let i = 0; i < forms.length; i++) {
+            forms[i].reset();
+            let select = forms[i].querySelector('select[name="category"]');
+            if (select) select.dispatchEvent(new Event('change'));
+        }
+    }
+
+
+    // Close modal when clicking outside
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    });
+
+    // Operations Sidebar Toggle
+    function openOperationsSidebar(category) {
+        let title = "Operations Data";
+        if (category) {
+            title = category + " Operations";
+            // Show only relevant category table wrapper
+            document.querySelectorAll('.op-table-wrapper').forEach(wrapper => {
+                if (wrapper.dataset.category === category) {
+                    wrapper.classList.remove('hidden');
+                } else {
+                    wrapper.classList.add('hidden');
+                }
+            });
+        } else {
+            // Show all
+            document.querySelectorAll('.op-table-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('hidden');
+            });
+        }
+        
+        let el = document.getElementById('operations-sidebar');
+        el.classList.remove('translate-x-full');
+    }
+
+    function closeOperationsSidebar() {
+        let el = document.getElementById('operations-sidebar');
+        el.classList.add('translate-x-full');
+    }
+
+    function toggleFedStatus(pondId, isChecked) {
+        const card = document.getElementById('pond-card-' + pondId);
+        const badge = document.getElementById('fed-badge-' + pondId);
+        
+        if (!card || !badge) return;
+
+        if (isChecked) {
+            // Highlight yellow
+            card.classList.add('border-yellow-500/50', 'bg-yellow-900/20');
+            card.classList.remove('border-[#cca43b]/20', 'bg-[#021f15]/80');
+            badge.classList.remove('hidden');
+        } else {
+            // Remove highlight
+            card.classList.remove('border-yellow-500/50', 'bg-yellow-900/20');
+            card.classList.add('border-[#cca43b]/20', 'bg-[#021f15]/80');
+            badge.classList.add('hidden');
+        }
+    }
+
+    function submitPondOperations(button) {
+        const headerDiv = button.parentElement;
+        const tableWrapper = headerDiv.nextElementSibling;
+        if (!tableWrapper) return;
+        
+        const rows = tableWrapper.querySelectorAll('.operation-row');
+        const logs = [];
+        
+        rows.forEach(row => {
+            const pondId = row.getAttribute('data-pond-id');
+            const fedCheckbox = row.querySelector('.op-fed-checkbox');
+            const feedSelect = row.querySelector('.op-feed-select');
+            
+            if (pondId && fedCheckbox) {
+                logs.push({
+                    pond_id: parseInt(pondId),
+                    fed: fedCheckbox.checked,
+                    feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null
+                });
+            }
+        });
+        
+        if (logs.length === 0) {
+            showToast('No operational rows to submit.', 'error');
+            return;
+        }
+        
+        // Disable button to prevent double submit
+        const originalText = button.textContent;
+        button.textContent = 'Recording...';
+        button.disabled = true;
+        
+        fetch("{% url 'operations:record_operations' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ logs: logs })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to record operations.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Operations recorded successfully!', 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error recording operations: ' + error.message, 'error');
+        })
+        .finally(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function checkRecordedTables() {
+        document.querySelectorAll('table').forEach(table => {
+            const rows = table.querySelectorAll('.operation-row');
+            if (rows.length === 0) return;
+            
+            const recordedCount = table.querySelectorAll('.recorded-badge').length;
+            if (rows.length === recordedCount) {
+                // Find the Record button above this table
+                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-2xl.border.border-white\\/10');
+                if (parent) {
+                    const sibling = parent.previousElementSibling;
+                    if (sibling) {
+                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"]');
+                        if (recordBtn) {
+                            recordBtn.disabled = true;
+                            recordBtn.textContent = 'Recorded Today';
+                            recordBtn.classList.remove('text-[#cca43b]', 'border-[#cca43b]/30', 'bg-[#cca43b]/10', 'hover:bg-[#cca43b]/20', 'hover:scale-105');
+                            recordBtn.classList.add('text-stone-500', 'border-white/5', 'bg-white/5', 'cursor-not-allowed');
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', checkRecordedTables);
+    window.addEventListener('load', function() {
+        checkRecordedTables();
+        if(sessionStorage.getItem('operationsScrollPosition') !== null) {
+            setTimeout(() => {
+                window.scrollTo(0, parseInt(sessionStorage.getItem('operationsScrollPosition')));
+                sessionStorage.removeItem('operationsScrollPosition');
+            }, 50); // small delay to ensure DOM layout is complete
+        }
+    });
+
+    // Save scroll position continuously for this page
+    window.addEventListener('scroll', function() {
+        sessionStorage.setItem('operationsScrollPosition', window.scrollY);
+    }, {passive: true});
+
+    // Clear it if they click a link that IS NOT an edit link (so they start at top next time they visit)
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && !link.href.includes('/edit')) {
+            sessionStorage.removeItem('operationsScrollPosition');
+        }
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% load static %}
+
+<!-- Sidebar -->
+<div class="hidden md:flex md:w-72 md:flex-col bg-[#04120a] border-r border-[#cca43b]/10 sticky top-0 h-screen">
+    <div class="flex flex-col flex-grow pb-6 pt-6 overflow-y-auto">
+        <!-- Brand/Logo Area -->
+        <div class="flex items-center gap-3 mb-8 px-5">
+            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="h-11 w-11 rounded-xl bg-white/90 p-1 object-contain">
+            <div>
+                <p class="text-sm font-bold tracking-tight leading-tight text-white">SILAY SUPERWORM<br>& CRAYFISH</p>
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 mt-0.5">Aquaculture</p>
+            </div>
+        </div>
+
+        <nav class="flex flex-col gap-2">
+            {% with request.resolver_match.view_name as current_url %}
+            
+            {% if user.is_rider %}
+            <!-- RIDER DRIVER APP NAVIGATION -->
+            <div class="pb-2">
+                <p class="px-5 text-[11px] font-bold uppercase tracking-widest text-[#cca43b] mb-2 mt-2">Driver Portal</p>
+                <a href="{% url 'sales:rider_portal' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if current_url == 'sales:rider_portal' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
+                    My Deliveries
+                </a>
+                <a href="{% url 'notifications' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if current_url == 'notifications' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
+                    </svg>
+                    Notifications
+                </a>
+            </div>
+            {% else %}
+            <!-- MAIN SECTION -->
+            <div class="pb-2">
+                <p class="px-5 text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2 mt-2">Main</p>
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if current_url == 'dashboard' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    Dashboard
+                </a>
+            </div>
+
+            <!-- MODULES SECTION -->
+            <div class="pb-2">
+                <p class="px-5 text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2 mt-2">Modules</p>
+                <a href="{% url 'stock:list' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if 'products' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Stock Monitoring
+                </a>
+                <div class="relative">
+                    <button onclick="toggleOperationsMenu()" class="w-full flex items-center justify-between px-5 py-3.5 font-medium text-sm transition-all {% if 'ponds' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                        <div class="flex items-center gap-3">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Operations
+                        </div>
+                        <svg id="op-chevron" class="h-4 w-4 transition-transform duration-200 {% if 'ponds' in current_url %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="op-dropdown" class="{% if 'ponds' not in current_url %}hidden{% endif %} bg-black/20">
+                        <a href="{% url 'operations:list' %}?type=pond" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'ponds' in current_url and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Pond</a>
+                        <a href="{% url 'operations:list' %}?type=cabin" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'ponds' in current_url and request.GET.type == 'cabin' %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Cabin</a>
+                        <a href="{% url 'operations:list' %}?type=azula" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'ponds' in current_url and request.GET.type == 'azula' %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Azula</a>
+                    </div>
+                </div>
+                <a href="{% url 'inventory' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if current_url == 'inventory' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Inventory Management
+                </a>
+                <a href="{% url 'harvest:list' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if 'harvest' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Harvest Management
+                </a>
+                <a href="{% url 'sales:orders_admin' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if 'orders_admin' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Orders
+                </a>
+                <div class="relative">
+                    <button onclick="toggleDeliveryMenu()" class="w-full flex items-center justify-between px-5 py-3.5 font-medium text-sm transition-all {% if 'deliver' in current_url or 'rider' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                        <div class="flex items-center gap-3">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                            </svg>
+                            Delivery
+                        </div>
+                        <svg id="deliv-chevron" class="h-4 w-4 transition-transform duration-200 {% if 'deliver' in current_url or 'rider' in current_url %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="deliv-dropdown" class="{% if 'deliver' not in current_url and 'rider' not in current_url %}hidden{% endif %} bg-black/20">
+                        <a href="{% url 'sales:delivery_list' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'deliver' in current_url and 'rider' not in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Deliveries</a>
+                        <a href="{% url 'sales:rider_list' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'rider' in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Riders</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTS SECTION -->
+            <div class="pb-2">
+                <p class="px-5 text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2 mt-2">Reports</p>
+                {% if user.is_owner %}
+                <a href="{% url 'sales:list' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if 'sales' in current_url and 'deliver' not in current_url and 'rider' not in current_url and 'orders_admin' not in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Sales Management
+                </a>
+                {% endif %}
+                <a href="{% url 'analytics:dashboard' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if request.path|slice:":10" == '/analytics' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Reports & Analytics
+                </a>
+                <a href="{% url 'notifications' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if current_url == 'notifications' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
+                    </svg>
+                    Notifications
+                </a>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </nav>
+
+        <div class="mt-auto pt-6 flex flex-col gap-3 px-5">
+        </div>
+    </div>
+</div>

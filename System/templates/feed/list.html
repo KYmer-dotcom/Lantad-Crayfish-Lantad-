@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+{% block title %}Feed & Supply Tracking{% endblock %}
+{% block page_content %}
+<div class="space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Inventory Management</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Feed & Supply Tracking</h1>
+            <p class="mt-1 text-sm text-[#a0ac96]">Monitor feed types, stock movement, and feeding logs.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="openModal('stock-modal')" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5 transition-colors">Stock In</button>
+            <button onclick="openModal('feeding-modal')" class="btn-gold px-4 py-2 text-sm font-bold">Add Feeding Log</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-semibold text-stone-100">Feed Types</h2>
+                <button onclick="openModal('type-modal')" class="rounded-2xl border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-semibold text-[#a0ac96] hover:bg-white/5 transition-colors">Add Type</button>
+            </div>
+            <div id="feed-types-container">{% include 'feed/partials/feed_types_table.html' %}</div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-semibold text-stone-100">Feed Inventory Stock Movements</h2>
+                <button onclick="openModal('stock-modal')" class="btn-gold px-3 py-1.5 text-xs font-bold">Add Stock</button>
+            </div>
+            <div id="feed-stock-container">{% include 'feed/partials/feed_stock_table.html' %}</div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-semibold text-stone-100">Feeding Logs</h2>
+                <button onclick="openModal('feeding-modal')" class="rounded-2xl border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-semibold text-[#a0ac96] hover:bg-white/5 transition-colors">Add Log</button>
+            </div>
+            <div id="feeding-logs-container">{% include 'feed/partials/feeding_update.html' %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock In Modal -->
+<div id="stock-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+            <h3 class="text-lg font-semibold text-stone-100">Add Feed Stock</h3>
+            <button type="button" onclick="closeModal('stock-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>
+        </div>
+        <form method="post" action="{% url 'feed:feed_stock_add' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Feed Type *</label>
+                {{ feed_stock_form.feed_type }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Quantity (kg) *</label>
+                {{ feed_stock_form.quantity_kg }}
+            </div>
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+                <button type="button" onclick="closeModal('stock-modal')" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" class="btn-gold px-4 py-2 text-sm font-bold">Add Stock</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Feeding Log Modal -->
+<div id="feeding-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+            <h3 class="text-lg font-semibold text-stone-100">Record Feeding Log</h3>
+            <button type="button" onclick="closeModal('feeding-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>
+        </div>
+        <form method="post" action="{% url 'feed:feeding_log_create' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Stock Batch *</label>
+                {{ feeding_log_form.stock_batch }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Feed Type *</label>
+                {{ feeding_log_form.feed_type }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Quantity (kg) *</label>
+                {{ feeding_log_form.quantity_kg }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Notes</label>
+                {{ feeding_log_form.notes }}
+            </div>
+            {{ feeding_log_form.feeding_time }}
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+                <button type="button" onclick="closeModal('feeding-modal')" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" class="btn-gold px-4 py-2 text-sm font-bold">Record Feeding</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Feed Type Modal -->
+<div id="type-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+            <h3 class="text-lg font-semibold text-stone-100">Add Feed Type</h3>
+            <button type="button" onclick="closeModal('type-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>
+        </div>
+        <form method="post" action="{% url 'feed:feed_type_add' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Feed Name *</label>
+                {{ feed_type_form.name }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Brand</label>
+                {{ feed_type_form.brand }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Category *</label>
+                {{ feed_type_form.category }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Price per kg (₱) *</label>
+                {{ feed_type_form.price_per_kg }}
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Description</label>
+                {{ feed_type_form.description }}
+            </div>
+            {{ feed_type_form.accent_color }}
+            {{ feed_type_form.icon }}
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10 mt-6">
+                <button type="button" onclick="closeModal('type-modal')" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" class="btn-gold px-4 py-2 text-sm font-bold">Create Feed Type</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(id) {
+    const m = document.getElementById(id);
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+}
+function closeModal(id) {
+    const m = document.getElementById(id);
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+}
+function openFeedingModal(batchId, feedTypeId) {
+    openModal('feeding-modal');
+    if (batchId) {
+        const batchSelect = document.querySelector('#feeding-modal select[name="stock_batch"]');
+        if (batchSelect) batchSelect.value = batchId;
+    }
+    if (feedTypeId) {
+        const feedSelect = document.querySelector('#feeding-modal select[name="feed_type"]');
+        if (feedSelect) feedSelect.value = feedTypeId;
+    }
+}
+</script>
+{% endblock %}

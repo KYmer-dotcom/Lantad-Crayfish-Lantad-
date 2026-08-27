@@ -1,0 +1,136 @@
+<div class="space-y-4">
+    <div id="field-category">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Category *</label>
+        {{ form.category }}
+    </div>
+    <div id="field-name">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Name *</label>
+        {{ form.name }}
+    </div>
+    <div id="field-product">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product *</label>
+        {{ form.product_name }}
+    </div>
+    
+    <!-- Breeding Type Field -->
+    <div id="field-type" class="hidden">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Type *</label>
+        {{ form.breeding_type }}
+    </div>
+
+    <!-- Female Field -->
+    <div id="field-gender" class="hidden grid grid-cols-1 gap-4">
+        <div>
+            <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Female Quantity *</label>
+            {{ form.female_quantity }}
+        </div>
+    </div>
+
+    <!-- Standard Quantity Field -->
+    <div id="field-quantity">
+        <label id="label-quantity" class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity *</label>
+        {{ form.capacity }}
+    </div>
+
+    <!-- Date Transferred Field -->
+    <div id="field-date">
+        <label id="label-date" class="block text-xs font-semibold text-[#a0ac96] mb-1">Date Transferred</label>
+        {{ form.transfer_date }}
+    </div>
+
+    <!-- Status Field -->
+    {% if form.instance.pk %}
+    <div id="field-status">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Status</label>
+        {{ form.status }}
+    </div>
+    {% endif %}
+
+    <!-- Hidden Shelf Position -->
+    {{ form.shelf_position }}
+</div>
+
+<script>
+function togglePondFormFields() {
+    // Attempt to find dropdowns within the current form
+    // Since this partial is used in modals and pages, we should look within its closest form
+    let forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        let categorySelect = form.querySelector('select[name="category"]');
+        let typeSelect = form.querySelector('select[name="breeding_type"]');
+        
+        if (!categorySelect) return;
+        
+        let updateFields = () => {
+            let category = categorySelect.value;
+            let type = typeSelect ? typeSelect.value : '';
+            
+            let fieldType = form.querySelector('#field-type');
+            let fieldGender = form.querySelector('#field-gender');
+            let fieldQuantity = form.querySelector('#field-quantity');
+            let fieldProduct = form.querySelector('#field-product');
+            
+            if (!fieldType) return; // safeguard
+            
+            // Default visibility
+            fieldType.classList.add('hidden');
+            fieldGender.classList.add('hidden');
+            fieldQuantity.classList.remove('hidden');
+            fieldProduct.classList.remove('hidden');
+            
+            if (category === 'Breeding Pond') {
+                fieldType.classList.remove('hidden');
+                if (type === 'Reproduction') {
+                    fieldQuantity.classList.add('hidden');
+                    fieldGender.classList.remove('hidden');
+                } else if (type === 'Crilings') {
+                    fieldQuantity.classList.remove('hidden');
+                    fieldGender.classList.add('hidden');
+                } else {
+                    fieldQuantity.classList.add('hidden');
+                }
+            } else if (category === 'Superworm Cabin') {
+                fieldType.classList.add('hidden');
+                fieldQuantity.classList.remove('hidden');
+                fieldGender.classList.add('hidden');
+            }
+            
+            let capacityInput = form.querySelector('input[name="capacity"]');
+            
+            let labelQuantity = form.querySelector('#label-quantity');
+            if (labelQuantity) {
+                if (category === 'Superworm Cabin') {
+                    labelQuantity.textContent = 'Darkling Beetles *';
+                    if (capacityInput) capacityInput.placeholder = 'Darkling Beetles';
+                } else if (category === 'Azula') {
+                    labelQuantity.textContent = 'Quantity (kg) *';
+                    if (capacityInput) capacityInput.placeholder = 'Quantity (kg)';
+                } else {
+                    labelQuantity.textContent = 'Quantity *';
+                    if (capacityInput) capacityInput.placeholder = 'Quantity';
+                }
+            }
+            
+            let labelDate = form.querySelector('#label-date');
+            if (labelDate) {
+                if (category === 'Superworm Cabin') {
+                    labelDate.textContent = 'Production Date';
+                } else {
+                    labelDate.textContent = 'Date Transferred';
+                }
+            }
+        };
+
+        categorySelect.addEventListener('change', updateFields);
+        if (typeSelect) typeSelect.addEventListener('change', updateFields);
+        
+        // Initial setup
+        updateFields();
+    });
+}
+
+// Run initially
+document.addEventListener("DOMContentLoaded", togglePondFormFields);
+// Also run when called by HTMX or modals
+togglePondFormFields();
+</script>

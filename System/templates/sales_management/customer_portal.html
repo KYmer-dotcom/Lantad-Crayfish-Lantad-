@@ -1,0 +1,2621 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen w-full relative font-sans text-stone-100 overflow-hidden flex flex-col">
+    <!-- Blurred Image Background -->
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+            class="absolute inset-[-10%] bg-[url('{% static 'images/customer-bg.jpg' %}')] bg-cover bg-center blur-md scale-105">
+        </div>
+        <!-- Semi-transparent diagonal split over the image -->
+        <div class="absolute inset-0"
+            style="background: linear-gradient(105deg, rgba(1,20,14,0.92) 40%, rgba(2,31,21,0.85) 40.1%);"></div>
+    </div>
+
+    <!-- Optional: Subtle noise overlay -->
+    <div class="absolute inset-0 z-0 opacity-[0.05] mix-blend-overlay pointer-events-none"
+        style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');">
+    </div>
+
+    <!-- Background illustration (right side) -->
+    <svg class="absolute top-24 right-[10%] z-0 opacity-10 text-[#cca43b] w-96 h-96 -rotate-12 pointer-events-none"
+        fill="currentColor" viewBox="0 0 100 100">
+        <!-- Abstract shape resembling the leaf sketch in reference -->
+        <path
+            d="M50 5 C40 10 30 20 25 35 C20 50 25 70 35 85 C45 100 55 100 65 85 C75 70 80 50 75 35 C70 20 60 10 50 5 Z M45 40 Q50 35 55 40 Q50 45 45 40 M35 60 Q50 55 65 60 Q50 80 35 60"
+            stroke="currentColor" stroke-width="1" fill="none" />
+    </svg>
+
+    <!-- Header (exactly like reference) -->
+    <header
+        class="w-full flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-8 py-4 md:py-6 relative z-30 gap-4">
+        <!-- Logo -->
+        <div class="w-auto md:w-[30%] flex-shrink-0 flex items-center gap-3">
+            <div
+                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e] shadow-lg">
+                <img src="{% static 'images/brand-logo.jpg' %}" alt="Logo"
+                    class="w-full h-full object-cover rounded-full mix-blend-multiply">
+            </div>
+            <div>
+                <p class="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#cca43b] font-bold leading-none">
+                    Silay</p>
+                <h1
+                    class="text-white font-black text-xs sm:text-sm uppercase leading-none tracking-wider whitespace-nowrap">
+                    SUPERWORM & CRAYFISH</h1>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav
+            class="w-full md:w-auto md:flex-1 flex justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide order-last md:order-none py-1 md:py-0">
+            <a href="{% url 'sales:customer_portal' %}"
+                class="{% if active_page == 'market' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase">Market</a>
+            <a href="{% url 'sales:customer_cart_page' %}"
+                class="{% if active_page == 'cart' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase flex items-center gap-2">
+                <span>Cart</span>
+                {% if cart_orders_count %}
+                <span class="bg-[#cca43b] text-[#01140e] text-[10px] font-black rounded-full px-1.5 py-0.5">{{ cart_orders_count }}</span>
+                {% endif %}
+            </a>
+            <form method="post" action="{% url 'logout' %}" class="inline">
+                {% csrf_token %}
+                <button type="submit"
+                    class="text-rose-400/80 hover:text-rose-400 transition-colors uppercase font-semibold text-xs sm:text-sm pb-1 tracking-wide bg-transparent border-0 cursor-pointer focus:outline-none">Logout</button>
+            </form>
+        </nav>
+
+        <!-- Right side tools -->
+        <div class="w-auto md:w-[30%] flex-shrink-0 flex justify-end items-center gap-3 sm:gap-4">
+            <button
+                class="w-10 h-10 rounded-xl bg-[#cca43b] text-[#01140e] flex items-center justify-center hover:bg-white transition-colors">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+            </button>
+            <a href="{% url 'sales:customer_orders_page' %}"
+                class="h-10 rounded-xl bg-[#01140e]/50 border border-[#cca43b]/30 flex items-center text-white overflow-hidden hover:bg-[#cca43b]/10 transition-colors">
+                <div class="w-10 h-full bg-[#cca43b] text-[#01140e] flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+                <span class="px-4 font-bold text-sm tracking-wider uppercase hidden sm:inline">My Orders</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-8 relative z-20 flex flex-col">
+        {% if active_page == 'market' %}
+        {% if products %}
+        {% with featured_product=products|first other_products=products %}
+        <div class="flex-1 grid grid-cols-12 items-center h-full min-h-0 lg:min-h-[700px]">
+
+            <!-- LEFT SIDE: Info -->
+            <div class="col-span-12 lg:col-span-4 space-y-5 self-center py-6 lg:py-12">
+                <div
+                    class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
+                    <span>Home</span> > <span>Market</span> > <span id="featured-species"
+                        class="text-[#cca43b] truncate">Table</span>
+                </div>
+
+                <div>
+                    <h2 id="featured-name-container"
+                        class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] drop-shadow-lg flex items-center gap-4 flex-wrap"
+                        style="font-family: 'Georgia', serif;">
+                        <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
+                    </h2>
+                </div>
+
+                <p id="featured-notes"
+                    class="text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
+                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
+                </p>
+
+                <div class="pt-4 space-y-5">
+                    <!-- Delivery Method Selection -->
+                    <div class="space-y-2 {% if orders %}hidden{% endif %}">
+                        <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
+                        <div class="flex gap-3">
+                            <button type="button" id="btn-pickup" onclick="setDeliveryMethod('pickup')"
+                                class="bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all">Pickup</button>
+                            <button type="button" id="btn-delivery" onclick="setDeliveryMethod('delivery')"
+                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">Delivery</button>
+                        </div>
+                    </div>
+                    {% with first_order=orders|first %}
+                    <input type="hidden" name="delivery_method" id="delivery-method-input"
+                        value="{% if first_order %}{% if first_order.delivery_address|upper == 'PICKUP' %}pickup{% else %}delivery{% endif %}{% else %}pickup{% endif %}">
+                    {% endwith %}
+
+                    <!-- Pricing Unit Selector: Per Piece vs By KG -->
+                    <div class="space-y-2 pt-2">
+                        <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
+                        <div class="flex gap-2">
+                            <button type="button" id="btn-unit-pc" onclick="setPricingUnit('pc')"
+                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all">Per Piece (pc)</button>
+                            <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
+                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By KG (kg)</button>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="flex items-baseline gap-2 py-2">
+                        <p class="text-white font-bold text-sm tracking-wide">Price:</p>
+                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <span id="featured-unit-label" class="text-sm font-bold text-[#a0ac96]">/ pc</span>
+                    </div>
+
+                    <!-- Quantity & Order Row -->
+                    <div class="flex items-center gap-4 pt-1 max-w-[380px]">
+                        <div class="flex items-center gap-3">
+                            <p id="featured-quantity-label" class="text-white font-bold text-sm tracking-wide">Quantity (pcs):</p>
+                            <div
+                                class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px] shadow-inner">
+                                <button type="button" onclick="adjustFeaturedQuantity(-1)"
+                                    class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">-</button>
+                                <input type="number" id="featured-quantity-input" value="1" oninput="updateTotalPrice()"
+                                    onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
+                                    min="1"
+                                    class="w-10 h-full text-center text-black font-black outline-none border-none p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                <button type="button" onclick="adjustFeaturedQuantity(1)"
+                                    class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Total Price -->
+                    <div class="flex items-center gap-2 py-1">
+                        <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
+                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                    </div>
+
+                    <!-- Order Button -->
+                    <div class="pt-2 max-w-[340px]">
+                        <button id="featured-order-btn"
+                            onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
+                            class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.4)] group"
+                            {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
+                            <span id="featured-order-text"
+                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                            <div
+                                class="w-10 h-10 bg-white group-hover:bg-[#01140e] group-hover:text-white rounded-lg flex items-center justify-center text-[#cca43b] transition-colors">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER: Huge Bowl -->
+            <div
+                class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[350px] lg:min-h-[500px] pointer-events-none">
+                <!-- Absolute wrapper to center perfectly to page on desktop, relative on mobile -->
+                <div
+                    class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto my-8 lg:my-0">
+                    <!-- Brush stroke background effect behind bowl -->
+                    <div
+                        class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
+                        <svg viewBox="0 0 200 200" class="w-[120%] h-[120%] text-[#cca43b]" fill="currentColor">
+                            <path
+                                d="M45.7,-76.4C58.3,-69.3,67,-53.4,75.1,-37.6C83.2,-21.8,90.6,-6.1,89.1,9.1C87.6,24.3,77.1,38.9,65.3,51.3C53.5,63.7,40.4,73.8,25.4,79.5C10.4,85.2,-6.5,86.4,-22.1,82.3C-37.7,78.2,-52.1,68.8,-63.3,56C-74.5,43.2,-82.6,27.1,-86.1,10.2C-89.6,-6.8,-88.5,-24.5,-80.1,-39.1C-71.7,-53.6,-56,-65,-41,-72.7C-26,-80.3,-13,-84.1,2.5,-88.1C18,-92.1,33.1,-83.4,45.7,-76.4Z"
+                                transform="translate(100 100) scale(0.9)" />
+                        </svg>
+                    </div>
+
+                    <div
+                        class="relative w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[8px] lg:border-[16px] border-[#01140e] shadow-[0_40px_80px_rgba(0,0,0,0.9)] overflow-hidden z-20 group">
+                        <img id="featured-image"
+                            src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                            class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
+                            alt="Featured Dish">
+                        <div
+                            class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Circle arrow navigation overlapping bottom of bowl -->
+                    <button onclick="nextProduct()"
+                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center shadow-2xl z-30 transition-colors border-4 border-[#01140e] text-[#01140e]">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+
+                    <!-- Dots -->
+                    <div id="carousel-dots" class="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                        <!-- Dots populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE: Add-ons -->
+            <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-6 lg:pt-10 pb-6 lg:max-h-[700px]">
+                <h3 class="text-xl font-bold text-[#cca43b] tracking-wide mb-6 shrink-0">Available Products</h3>
+
+                <div
+                    class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
+                    {% for prod in other_products %}
+                    <button
+                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shadow-lg shrink-0">
+                        <div
+                            class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0 shadow-inner">
+                            {% if prod.icon == 'shrimp' %}🦐
+                            {% elif prod.icon == 'lab' %}🧪
+                            {% elif prod.icon == 'leaf' %}🌿
+                            {% elif prod.icon == 'box' %}📦
+                            {% elif prod.icon == 'water' %}💧
+                            {% else %}🐟{% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p
+                                class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
+                                {{ prod.name }}</p>
+                            <p class="text-xs text-[#a0ac96] mt-0.5">
+                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
+                                {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/kg{% endif %}
+                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %}
+                            </p>
+                        </div>
+                        <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                    {% empty %}
+                    <div class="p-4 rounded-xl border border-dashed border-white/10 text-center">
+                        <p class="text-xs text-[#a0ac96] italic">No add-ons available today.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="pt-6 shrink-0">
+                    <p class="text-[10px] text-[#a0ac96]/50 leading-relaxed font-medium">
+                        * Free delivery for orders within a 5km radius. All products are harvested fresh from our
+                        controlled aquaculture ponds in Silay City, ensuring top quality and hygiene.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% else %}
+        <!-- Empty Market State -->
+        <div class="flex-1 flex flex-col items-center justify-center text-center">
+            <div class="text-8xl mb-6 opacity-50">🛒</div>
+            <h3 class="text-4xl font-black text-white uppercase tracking-wider">Market is Closed</h3>
+            <p class="text-[#a0ac96] mt-4 max-w-md mx-auto">There are no products available for sale at the moment.
+                Please check back later.</p>
+        </div>
+        {% endif %}
+
+        {% elif active_page == 'cart' %}
+        <div class="flex-1 max-w-6xl mx-auto w-full py-8 px-4 sm:px-6">
+            <!-- Stepper Progress Bar -->
+            <div class="mb-12 max-w-2xl mx-auto">
+                <div id="stepper-container" class="flex items-center justify-between relative h-10">
+                    <!-- Progress Line -->
+                    <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-white/10 z-0"></div>
+                    <div id="stepper-line"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-[#cca43b] transition-all duration-500 z-0"
+                        style="width: 0%;"></div>
+
+                    <!-- Step 1: Cart -->
+                    <div id="step-cart-circle"
+                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(204,164,59,0.4)]">
+                        1</div>
+
+                    <!-- Step 2: Address -->
+                    <div id="step-address-circle"
+                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40">
+                        2</div>
+
+                    <!-- Step 3: Payment -->
+                    <div id="step-payment-circle"
+                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40">
+                        3</div>
+                </div>
+
+                <div class="flex justify-between mt-2 px-1">
+                    <span id="step-cart-label"
+                        class="text-xs font-black uppercase tracking-wider text-[#cca43b] w-12 text-center -ml-1">Cart</span>
+                    <span id="step-address-label"
+                        class="text-xs font-bold uppercase tracking-wider text-white/40 w-16 text-center">Address</span>
+                    <span id="step-payment-label"
+                        class="text-xs font-bold uppercase tracking-wider text-white/40 w-16 text-center -mr-3">Payment</span>
+                </div>
+            </div>
+
+            <!-- Cart Grid Layout -->
+            <div class="grid grid-cols-12 gap-8 items-start">
+
+                <!-- LEFT PANEL: Items List / Step Containers -->
+                <div class="col-span-12 lg:col-span-8 space-y-6">
+
+                    <!-- STEP 1: Cart Items List -->
+                    <div id="checkout-step-1-content" class="space-y-6">
+                        <!-- Select All Header -->
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                            <div class="flex items-center gap-3">
+                                <label class="relative flex items-center cursor-pointer">
+                                    <input type="checkbox" id="select-all-checkbox" checked
+                                        onchange="toggleSelectAll(this)" class="sr-only peer">
+                                    <div
+                                        class="w-6 h-6 border-2 border-white/20 rounded-md bg-transparent peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-sm after:hidden peer-checked:after:block">
+                                    </div>
+                                </label>
+                                <span id="items-selected-count" class="text-sm font-bold text-white/80">0/0 items
+                                    selected</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs font-bold text-[#a0ac96]">
+                                <button onclick="removeAllSelected()"
+                                    class="hover:text-rose-400 transition-colors uppercase tracking-wider">Remove
+                                    Selected</button>
+                            </div>
+                        </div>
+
+                        <!-- Items Cards List -->
+                        <div class="space-y-4">
+                            {% for order in orders %}
+                            <div id="order-card-{{ order.id }}" data-delivery-address="{{ order.delivery_address }}"
+                                class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-5 flex items-center gap-4 relative group hover:border-[#cca43b]/40 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+
+                                <!-- Custom Checkbox -->
+                                {% if order.status == 'pending' %}
+                                <label class="relative flex items-center cursor-pointer pl-2">
+                                    <input type="checkbox" value="{{ order.id }}" checked onchange="recalculateCart()"
+                                        class="sr-only peer order-checkbox">
+                                    <div
+                                        class="w-6 h-6 border-2 border-white/20 rounded-md bg-transparent peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-sm after:hidden peer-checked:after:block">
+                                    </div>
+                                </label>
+                                {% else %}
+                                <div class="pl-2">
+                                    <div
+                                        class="w-6 h-6 rounded-md bg-[#cca43b]/10 border border-[#cca43b]/30 flex items-center justify-center text-xs text-[#cca43b]">
+                                        🔒</div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Product Thumbnail Image -->
+                                <div
+                                    class="w-20 h-20 rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 flex items-center justify-center relative">
+                                    <img src="{% if 'Superworm' in order.product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in order.product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                                        alt="{{ order.product.name }}" class="w-full h-full object-cover">
+                                </div>
+
+                                <!-- Card Body -->
+                                <div class="flex-1 min-w-0 pr-6">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div>
+                                            <p class="font-bold text-xl text-white truncate">{{ order.product.name }}
+                                            </p>
+                                            <div class="flex items-center gap-3 mt-1.5 flex-wrap">
+                                                <span
+                                                    class="text-[9px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-md">{{ order.get_status_display }}</span>
+                                                {% if order.delivery_address|upper == "PICKUP" %}
+                                                <span
+                                                    class="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">🏪
+                                                    Pickup</span>
+                                                {% else %}
+                                                <span
+                                                    class="text-[9px] font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-md">🚚
+                                                    Delivery</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <!-- Static Quantity -->
+                                            <div class="text-right shrink-0">
+                                                <p
+                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40">
+                                                    Qty</p>
+                                                <p class="font-black text-lg text-white mt-0.5">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</p>
+                                            </div>
+
+                                            <!-- Total Item Price -->
+                                            <div class="text-right shrink-0">
+                                                <p
+                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40">
+                                                    Subtotal</p>
+                                                <p class="font-black text-xl text-white mt-0.5">₱<span
+                                                        id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Remove / Delete Card button -->
+                                {% if order.status == 'pending' %}
+                                <button type="button" onclick="confirmDeleteCard('{{ order.id }}')"
+                                    class="absolute top-4 right-4 text-white/30 hover:text-rose-500 transition-colors focus:outline-none">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="rounded-3xl border border-dashed border-white/10 bg-black/20 py-20 text-center">
+                                <div class="text-7xl mb-6 opacity-40">🛒</div>
+                                <h4 class="text-2xl font-black text-white uppercase tracking-wider">Your cart is empty
+                                </h4>
+                                <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Explore our fresh products page to add
+                                    items to your cart!</p>
+                                <a href="{% url 'sales:customer_portal' %}"
+                                    class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)]">Browse
+                                    Products</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Delivery Address / Pickup Location -->
+                    <div id="checkout-step-2-content" class="hidden space-y-6">
+                        <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-8 space-y-6">
+
+                            <!-- Delivery Details Panel (for delivery) -->
+                            <div id="section-delivery-details" class="space-y-6">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Delivery Address</h3>
+                                    <p class="text-xs text-[#a0ac96] mt-2">Please enter your complete delivery address below.</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Row 1: Province & Municipality / City -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Province</label>
+                                            <div class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner text-sm flex items-center justify-between">
+                                                <span class="text-white font-bold">Negros Occidental</span>
+                                                <span class="text-[9px] font-black text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded-md uppercase tracking-wider">Coverage Area</span>
+                                            </div>
+                                            <input type="hidden" id="checkout-province-select" value="Negros Occidental">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Municipality / City</label>
+                                            <div class="relative">
+                                                <select id="checkout-city-select" onchange="updateBarangays()"
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    <option value="Silay City" class="bg-[#01140e] text-white py-2" selected>Silay City</option>
+                                                    <option value="Talisay City" class="bg-[#01140e] text-white py-2">Talisay City</option>
+                                                    <option value="Bacolod City" class="bg-[#01140e] text-white py-2">Bacolod City</option>
+                                                </select>
+                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 2: Barangay & Street / Road / Purok -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Barangay</label>
+                                            <div class="relative">
+                                                <select id="checkout-barangay-select" onchange="updateStreets()"
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    <option value="" class="bg-[#01140e] text-white">Select Barangay</option>
+                                                </select>
+                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Street / Purok / Road</label>
+                                            <div class="relative">
+                                                <select id="checkout-street-select" onchange="onStreetSelectChange()"
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    <option value="" class="bg-[#01140e] text-white">Select Street / Purok</option>
+                                                </select>
+                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                </div>
+                                            </div>
+                                            <input type="text" id="checkout-custom-street-input" oninput="combineAddressFields(true)"
+                                                class="w-full h-[46px] mt-2 rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500 hidden"
+                                                placeholder="Type specific street name...">
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 3: Home / House No. / Building / Landmark -->
+                                    <div class="space-y-2">
+                                        <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Home / House No. / Building / Floor / Landmark</label>
+                                        <input type="text" id="checkout-house-input" oninput="combineAddressFields(false)"
+                                            class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500"
+                                            placeholder="e.g. House #45, Block 3 Lot 8, Blue Gate near Chapel">
+                                    </div>
+
+                                    <textarea id="checkout-delivery-address" class="hidden">{{ customer.address }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Pickup Details Panel (for pickup) -->
+                            <div id="section-pickup-details" class="space-y-6 hidden">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Pickup Location</h3>
+                                    <p class="text-xs text-[#a0ac96] mt-2">Please pick up your order at our main establishment below.</p>
+                                </div>
+                                <div class="p-5 rounded-2xl border border-[#cca43b]/20 bg-[#cca43b]/5 space-y-2">
+                                    <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Establishment Address</p>
+                                    <p class="font-bold text-white text-sm leading-relaxed">Silay City, Negros Occidental, Philippines (Silay Superworm & Crayfish Farm)</p>
+                                </div>
+                            </div>
+
+                            <!-- Map container (shared) -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]" id="map-label-text">📍 Pin Your Delivery Location (Drag or Click to Adjust)</label>
+                                    <button type="button" onclick="locateCurrentPosition()"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] text-[10px] font-black uppercase tracking-wider transition-all border border-[#cca43b]/30 shadow-sm cursor-pointer">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Use Current GPS
+                                    </button>
+                                </div>
+                                <div id="checkout-delivery-map" class="w-full h-[320px] rounded-2xl border border-white/10 z-0"></div>
+                                <div class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
+                                    <span>Tip: Click anywhere on the map or drag the pin to set your exact location.</span>
+                                    <span id="pin-coords-display" class="text-white/60 font-mono"></span>
+                                </div>
+                                <input type="hidden" id="checkout-latitude" name="latitude" value="">
+                                <input type="hidden" id="checkout-longitude" name="longitude" value="">
+                            </div>
+
+                            <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                                <button type="button" onclick="goToStep(1)"
+                                    class="text-xs font-bold text-[#cca43b] hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2">
+                                    ← Back to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Payment Choice -->
+                    <div id="checkout-step-3-content" class="hidden space-y-6">
+                        <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-8 space-y-6">
+                            <div>
+                                <h3 class="text-2xl font-black text-white uppercase tracking-wider">Choose Payment Method</h3>
+                                <p class="text-xs text-[#a0ac96] mt-2">Select your preferred transaction option for security and convenience.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <!-- Cash on Delivery -->
+                                <label id="pay-card-cod" onclick="selectPaymentMethod('cod')"
+                                    class="relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#cca43b] bg-[#cca43b]/10 cursor-pointer transition-all group hover:bg-[#cca43b]/15">
+                                    <input type="radio" name="payment_method" id="pay-radio-cod" value="cod" checked class="sr-only">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg shadow-sm">
+                                                    💵
+                                                </div>
+                                                <div>
+                                                    <span id="pay-title-cod" class="text-base font-black text-white uppercase tracking-wider block">Cash on Delivery</span>
+                                                    <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-widest">Handover Payment</span>
+                                                </div>
+                                            </div>
+                                            <span id="pay-dot-cod" class="w-6 h-6 rounded-full border-2 border-[#cca43b] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#cca43b] after:rounded-full"></span>
+                                        </div>
+                                        <p id="pay-desc-cod" class="text-xs text-[#a0ac96] leading-relaxed mt-2">
+                                            Pay in cash upon physical doorstep delivery or farm pickup.
+                                        </p>
+                                    </div>
+                                    <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                                        <span>Fee: Free</span>
+                                        <span class="text-emerald-400">Physical Cash</span>
+                                    </div>
+                                </label>
+
+                                <!-- GCash Online Checkout (Automated) -->
+                                <label id="pay-card-gcash" onclick="selectPaymentMethod('gcash')"
+                                    class="relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-white/5 cursor-pointer transition-all group hover:border-[#007DFE]/50 hover:bg-[#007DFE]/5">
+                                    <input type="radio" name="payment_method" id="pay-radio-gcash" value="gcash" class="sr-only">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-xl bg-[#007DFE] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#007DFE]/30">
+                                                    G
+                                                </div>
+                                                <div>
+                                                    <span class="text-base font-black text-white uppercase tracking-wider block">GCash Online</span>
+                                                    <span class="text-[10px] font-black text-[#007DFE] uppercase tracking-widest">Automated • 1-Tap</span>
+                                                </div>
+                                            </div>
+                                            <span id="pay-dot-gcash" class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center"></span>
+                                        </div>
+                                        <p class="text-xs text-[#a0ac96] leading-relaxed mt-2">
+                                            Instant direct authorization via official GCash OTP / MPIN.
+                                        </p>
+                                    </div>
+                                    <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                                        <span>Auto-Confirmation</span>
+                                        <span class="text-[#007DFE]">Official Portal</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- GCash Transfer Automated Info Panel -->
+                            <div id="gcash-payment-panel" class="hidden rounded-2xl border border-[#007DFE]/30 bg-gradient-to-r from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
+                                <div class="flex items-center gap-2 text-xs font-black text-white uppercase tracking-wider">
+                                    <span class="text-[#007DFE] text-sm">⚡</span>
+                                    <span>How Automated GCash Works</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                        <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 1</span>
+                                        <p class="text-xs font-bold text-white">Tap Pay button</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Opens GCash portal</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                        <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 2</span>
+                                        <p class="text-xs font-bold text-white">Enter MPIN / OTP</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Authorize exact total</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">Step 3</span>
+                                        <p class="text-xs font-bold text-white">Order Confirmed</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Auto-marked as Paid</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                                <button type="button" id="payment-back-btn" onclick="goToStep(2)"
+                                    class="text-xs font-bold text-[#cca43b] hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2 cursor-pointer">
+                                    ← Back to Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: Summary & Checkout Details -->
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+
+                    <!-- Price Details Summary -->
+                    <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-6 space-y-6">
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#cca43b]">Price Details</p>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between text-white/60">
+                                <span id="summary-items-count">0 items</span>
+                                <span class="font-bold text-white">₱<span id="summary-subtotal">0</span></span>
+                            </div>
+                            <div class="flex items-center justify-between text-emerald-400">
+                                <span>Delivery Charges</span>
+                                <span class="font-bold" id="summary-delivery">Free Delivery</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-6 flex items-center justify-between">
+                            <span class="text-white font-bold text-base uppercase tracking-wider">Total Amount</span>
+                            <span class="font-black text-2xl text-[#cca43b]">₱<span
+                                    id="summary-grand-total">0</span></span>
+                        </div>
+
+                        <!-- Place Order Submit CTA -->
+                        <div class="pt-2">
+                            <button type="button" id="place-order-cta-btn" onclick="handlePlaceOrderCTA()"
+                                class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/30 disabled:text-white/30 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.4)] group">
+                                <span class="pl-6 font-black text-sm uppercase tracking-[0.15em]"
+                                    id="cta-btn-text">Proceed to Address</span>
+                                <div
+                                    class="w-10 h-10 bg-white group-hover:bg-[#01140e] group-hover:text-white rounded-lg flex items-center justify-center text-[#cca43b] transition-colors">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inline Javascript for Cart Computations & Dynamic AJAX Actions -->
+        <script>
+            function toggleSelectAll(master) {
+                const checkboxes = document.querySelectorAll('.order-checkbox');
+                checkboxes.forEach(chk => chk.checked = master.checked);
+                recalculateCart();
+            }
+
+            function recalculateCart() {
+                const cards = document.querySelectorAll('.order-item-card');
+                let selectedCount = 0;
+                let subtotal = 0;
+                let allPickup = true;
+                let hasSelected = false;
+
+                cards.forEach(card => {
+                    const chk = card.querySelector('.order-checkbox');
+                    if (chk && chk.checked) {
+                        selectedCount++;
+                        hasSelected = true;
+                        const subtotalVal = parseFloat(card.querySelector('[id^="item-subtotal-"]').textContent);
+                        subtotal += subtotalVal;
+
+                        // Check if order is pickup
+                        const isPickup = (card.getAttribute('data-delivery-address') || '').toUpperCase() === 'PICKUP';
+                        if (!isPickup) {
+                            allPickup = false;
+                        }
+                    }
+                });
+
+                // Update select all checkbox status
+                const master = document.getElementById('select-all-checkbox');
+                if (master) {
+                    const checkboxes = document.querySelectorAll('.order-checkbox');
+                    master.checked = checkboxes.length > 0 && selectedCount === checkboxes.length;
+                }
+
+                // Update items selected count text
+                const totalCheckboxes = document.querySelectorAll('.order-checkbox').length;
+                document.getElementById('items-selected-count').textContent = `${selectedCount}/${totalCheckboxes} items selected`;
+
+                // Update price details
+                document.getElementById('summary-items-count').textContent = `${selectedCount} item${selectedCount !== 1 ? 's' : ''}`;
+                document.getElementById('summary-subtotal').textContent = subtotal.toLocaleString();
+
+                // Compute delivery charges based on city
+                let deliveryFee = 0;
+                const citySelect = document.getElementById('checkout-city-select');
+                const selectedCity = citySelect ? citySelect.value : 'Silay City';
+
+                if (selectedCount > 0) {
+                    if (hasSelected && allPickup) {
+                        document.getElementById('summary-delivery').textContent = 'Free (Pickup)';
+                        document.getElementById('summary-delivery').className = 'font-bold text-emerald-400';
+                    } else {
+                        if (selectedCity === 'Silay City') {
+                            deliveryFee = 0;
+                            document.getElementById('summary-delivery').textContent = 'Free Delivery';
+                            document.getElementById('summary-delivery').className = 'font-bold text-emerald-400';
+                        } else if (selectedCity === 'Talisay City') {
+                            deliveryFee = 50;
+                            document.getElementById('summary-delivery').textContent = '₱50';
+                            document.getElementById('summary-delivery').className = 'font-bold text-white';
+                        } else if (selectedCity === 'Bacolod City') {
+                            deliveryFee = 100;
+                            document.getElementById('summary-delivery').textContent = '₱100';
+                            document.getElementById('summary-delivery').className = 'font-bold text-white';
+                        } else {
+                            deliveryFee = 150;
+                            document.getElementById('summary-delivery').textContent = '₱150';
+                            document.getElementById('summary-delivery').className = 'font-bold text-white';
+                        }
+                    }
+                } else {
+                    document.getElementById('summary-delivery').textContent = '₱0';
+                    document.getElementById('summary-delivery').className = 'font-bold text-white/40';
+                }
+
+                const grandTotal = Math.max(0, subtotal + deliveryFee);
+                document.getElementById('summary-grand-total').textContent = grandTotal.toLocaleString();
+
+                // Update payment terms based on pickup vs delivery
+                const payTitleCod = document.getElementById('pay-title-cod');
+                const payDescCod = document.getElementById('pay-desc-cod');
+
+                if (hasSelected && allPickup) {
+                    if (payTitleCod) payTitleCod.textContent = 'Cash';
+                    if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at our pickup station.';
+                } else {
+                    if (payTitleCod) payTitleCod.textContent = 'Cash on Delivery';
+                    if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at your address.';
+                }
+
+                // Enable/disable checkout button
+                const btn = document.getElementById('place-order-cta-btn');
+                if (btn) {
+                    if (selectedCount > 0) {
+                        btn.removeAttribute('disabled');
+                    } else {
+                        btn.setAttribute('disabled', 'true');
+                    }
+                }
+            }
+
+            function changeCardQuantity(orderId, delta) {
+                const input = document.getElementById(`qty-input-${orderId}`);
+                if (!input) return;
+                let val = parseInt(input.value) || 1;
+                val = Math.max(1, val + delta);
+                input.value = val;
+                updateCardQuantity(orderId, val);
+            }
+
+            function updateCardQuantity(orderId, quantity) {
+                const qty = parseInt(quantity) || 1;
+                const card = document.getElementById(`order-card-${orderId}`);
+                if (!card) return;
+
+                const unitPrice = parseFloat(card.querySelector('.item-unit-price').textContent) || 0;
+                const subtotalText = card.querySelector(`[id^="item-subtotal-${orderId}"]`);
+
+                // Update local UI subtotal instantly
+                const newSubtotal = qty * unitPrice;
+                subtotalText.textContent = newSubtotal.toFixed(0);
+
+                recalculateCart();
+
+                // Debounced backend save endpoint fetch request
+                fetch(`/sales/market/orders/${orderId}/update-quantity/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ quantity: qty })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            console.error("Failed to update database quantity: ", data.error);
+                        }
+                    })
+                    .catch(err => console.error("Network error updating quantity:", err));
+            }
+
+            function showCustomConfirm(message, onConfirm) {
+                const modal = document.getElementById('custom-confirm-modal');
+                const box = document.getElementById('confirm-modal-box');
+                const yesBtn = document.getElementById('confirm-yes-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    box.classList.remove('scale-95', 'opacity-0');
+                    box.classList.add('scale-100', 'opacity-100');
+                }, 50);
+
+                yesBtn.onclick = function () {
+                    closeConfirm();
+                    onConfirm();
+                };
+
+                cancelBtn.onclick = closeConfirm;
+
+                function closeConfirm() {
+                    box.classList.remove('scale-100', 'opacity-100');
+                    box.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                    }, 300);
+                }
+            }
+
+            function confirmDeleteCard(orderId) {
+                const card = document.getElementById(`order-card-${orderId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    card.style.transition = 'all 0.3s ease';
+                    setTimeout(() => {
+                        card.remove();
+                        recalculateCart();
+                    }, 300);
+                }
+                fetch(`/sales/market/orders/${orderId}/delete/`);
+            }
+
+            function removeAllSelected() {
+                const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+                if (checkboxes.length === 0) return;
+
+                checkboxes.forEach(chk => {
+                    const orderId = chk.value;
+                    const card = document.getElementById(`order-card-${orderId}`);
+                    if (card) {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        card.style.transition = 'all 0.3s ease';
+                        setTimeout(() => {
+                            card.remove();
+                            recalculateCart();
+                        }, 300);
+                    }
+                    fetch(`/sales/market/orders/${orderId}/delete/`);
+                });
+            }
+
+            let currentStep = 1;
+            var checkoutMap = null;
+            var checkoutMarker = null;
+            var checkoutTileLayer = null;
+
+            function checkAllPickup() {
+                const cards = document.querySelectorAll('.order-item-card');
+                let allPickup = true;
+                let hasSelected = false;
+                cards.forEach(card => {
+                    const chk = card.querySelector('.order-checkbox');
+                    if (chk && chk.checked) {
+                        hasSelected = true;
+                        const isPickup = (card.getAttribute('data-delivery-address') || '').toUpperCase() === 'PICKUP';
+                        if (!isPickup) {
+                            allPickup = false;
+                        }
+                    }
+                });
+                return hasSelected && allPickup;
+            }
+
+            function goToStep(step) {
+                const allPickup = checkAllPickup();
+
+                // Hide all steps
+                document.getElementById('checkout-step-1-content').classList.add('hidden');
+                document.getElementById('checkout-step-2-content').classList.add('hidden');
+                document.getElementById('checkout-step-3-content').classList.add('hidden');
+
+                // Show target step
+                document.getElementById(`checkout-step-${step}-content`).classList.remove('hidden');
+                currentStep = step;
+
+                // Update Stepper visuals
+                updateStepperVisuals(step, allPickup);
+
+                // Update CTA button label
+                const btnText = document.getElementById('cta-btn-text');
+                if (step === 1) {
+                    btnText.textContent = 'Proceed to Address';
+                } else if (step === 2) {
+                    btnText.textContent = 'Proceed to Payment';
+
+                    const deliverySection = document.getElementById('section-delivery-details');
+                    const pickupSection = document.getElementById('section-pickup-details');
+                    const mapLabelText = document.getElementById('map-label-text');
+                    const addressInput = document.getElementById('checkout-delivery-address');
+
+                    if (allPickup) {
+                        if (deliverySection) deliverySection.classList.add('hidden');
+                        if (pickupSection) pickupSection.classList.remove('hidden');
+                        if (mapLabelText) mapLabelText.textContent = 'Establishment Map';
+                        if (addressInput) addressInput.value = 'PICKUP';
+                    } else {
+                        if (deliverySection) deliverySection.classList.remove('hidden');
+                        if (pickupSection) pickupSection.classList.add('hidden');
+                        if (mapLabelText) mapLabelText.textContent = 'Pin Your Delivery Location';
+                        if (addressInput && addressInput.value === 'PICKUP') {
+                            addressInput.value = '{{ customer.address|escapejs }}';
+                        }
+                        if (typeof initAddressDropdownsFromSaved === 'function') {
+                            initAddressDropdownsFromSaved();
+                        }
+                    }
+                    setTimeout(initCheckoutMap, 100);
+                } else if (step === 3) {
+                    const codRadio = document.getElementById('pay-radio-cod');
+                    const isGcash = !(codRadio && codRadio.checked);
+                    btnText.textContent = isGcash ? 'Pay with GCash' : 'Place Cash Order';
+                    const backBtn = document.getElementById('payment-back-btn');
+                    if (backBtn) {
+                        backBtn.setAttribute('onclick', 'goToStep(2)');
+                        backBtn.innerHTML = '← Back to Address';
+                    }
+                }
+            }
+
+            function updateStepperVisuals(step, allPickup) {
+                const stepCartNum = document.getElementById('step-cart-circle');
+                const stepCartLabel = document.getElementById('step-cart-label');
+
+                const stepAddressNum = document.getElementById('step-address-circle');
+                const stepAddressLabel = document.getElementById('step-address-label');
+
+                const paymentNum = document.getElementById('step-payment-circle');
+                const paymentLabel = document.getElementById('step-payment-label');
+
+                const stepperLine = document.getElementById('stepper-line');
+
+                // Active vs Inactive classes
+                const activeCircleClass = 'relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(204,164,59,0.4)]';
+                const inactiveCircleClass = 'relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 shadow-none';
+
+                const activeLabelClass = 'text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2';
+                const inactiveLabelClass = 'text-xs font-bold uppercase tracking-wider text-white/40 mt-2';
+
+                // Default all to inactive
+                if (stepCartNum) stepCartNum.className = inactiveCircleClass;
+                if (stepCartLabel) stepCartLabel.className = inactiveLabelClass;
+                if (stepAddressNum) stepAddressNum.className = inactiveCircleClass;
+                if (stepAddressLabel) stepAddressLabel.className = inactiveLabelClass;
+                if (paymentNum) paymentNum.className = inactiveCircleClass;
+                if (paymentLabel) paymentLabel.className = inactiveLabelClass;
+
+                // Update Step 2 text label dynamically based on pickup vs delivery
+                if (stepAddressLabel) {
+                    stepAddressLabel.textContent = allPickup ? 'Pickup' : 'Address';
+                }
+
+                // 3-step flow: Cart (1), Address (2), Payment (3)
+                if (step === 1) {
+                    if (stepCartNum) stepCartNum.className = activeCircleClass;
+                    if (stepCartLabel) stepCartLabel.className = activeLabelClass;
+                    if (stepperLine) stepperLine.style.width = '0%';
+                } else if (step === 2) {
+                    if (stepCartNum) stepCartNum.className = activeCircleClass;
+                    if (stepCartLabel) stepCartLabel.className = activeLabelClass;
+                    if (stepAddressNum) stepAddressNum.className = activeCircleClass;
+                    if (stepAddressLabel) stepAddressLabel.className = activeLabelClass;
+                    if (stepperLine) stepperLine.style.width = '50%';
+                } else if (step === 3) {
+                    if (stepCartNum) stepCartNum.className = activeCircleClass;
+                    if (stepCartLabel) stepCartLabel.className = activeLabelClass;
+                    if (stepAddressNum) stepAddressNum.className = activeCircleClass;
+                    if (stepAddressLabel) stepAddressLabel.className = activeLabelClass;
+                    if (paymentNum) paymentNum.className = activeCircleClass;
+                    if (paymentLabel) paymentLabel.className = activeLabelClass;
+                    if (stepperLine) stepperLine.style.width = '100%';
+                }
+            }
+
+            function initCheckoutMap() {
+                const mapEl = document.getElementById('checkout-delivery-map');
+                if (!mapEl || typeof L === 'undefined') return;
+
+                const allPickup = checkAllPickup();
+
+                // Establishment location coords (Silay City center)
+                const establishmentLat = 10.815194;
+                const establishmentLng = 122.961972;
+
+                const defaultLat = allPickup ? establishmentLat : (parseFloat('{{ customer.map_latitude|default:"10.8000" }}') || 10.8000);
+                const defaultLng = allPickup ? establishmentLng : (parseFloat('{{ customer.map_longitude|default:"122.9700" }}') || 122.9700);
+
+                // Custom green marker icon
+                const greenIcon = L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                });
+
+                const pickupPopupHtml = `
+                    <div class="text-center font-sans" style="max-width: 200px;">
+                        <b style="font-size: 13px; color: #cca43b;">Silay Superworm & Crayfish</b>
+                        <img src="/static/images/pickup-shop.jpg" alt="Pickup Location" class="w-full h-auto rounded-lg my-2 border border-[#cca43b]/20 shadow-sm" style="max-height: 100px; object-fit: cover;">
+                        <p style="margin: 0; color: #a0ac96; font-size: 11px; font-weight: 500;">Pick up your orders here.</p>
+                    </div>
+                `;
+
+                const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+                const satelliteAttrib = 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+
+                const roadmapUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                const roadmapAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+                const targetUrl = allPickup ? satelliteUrl : roadmapUrl;
+                const targetAttrib = allPickup ? satelliteAttrib : roadmapAttrib;
+
+                if (checkoutMap) {
+                    checkoutMap.setView([defaultLat, defaultLng], 14);
+                    checkoutMarker.setLatLng([defaultLat, defaultLng]);
+
+                    if (checkoutTileLayer) {
+                        checkoutMap.removeLayer(checkoutTileLayer);
+                    }
+                    checkoutTileLayer = L.tileLayer(targetUrl, {
+                        maxZoom: 19,
+                        attribution: targetAttrib
+                    }).addTo(checkoutMap);
+
+                    if (allPickup) {
+                        checkoutMarker.setIcon(greenIcon);
+                        checkoutMarker.dragging.disable();
+                        checkoutMap.off('click');
+                        checkoutMarker.bindPopup(pickupPopupHtml, { className: 'custom-leaflet-popup' }).openPopup();
+                    } else {
+                        checkoutMarker.setIcon(new L.Icon.Default());
+                        checkoutMarker.dragging.enable();
+                        checkoutMarker.unbindPopup();
+                        const updatePinDisplay = (lat, lng) => {
+                            const disp = document.getElementById('pin-coords-display');
+                            if (disp) disp.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+                        };
+                        updatePinDisplay(defaultLat, defaultLng);
+
+                        checkoutMarker.on('dragend', function () {
+                            const pos = checkoutMarker.getLatLng();
+                            document.getElementById('checkout-latitude').value = pos.lat.toFixed(6);
+                            document.getElementById('checkout-longitude').value = pos.lng.toFixed(6);
+                            updatePinDisplay(pos.lat, pos.lng);
+                        });
+
+                        checkoutMap.on('click', function (e) {
+                            const lat = e.latlng.lat;
+                            const lng = e.latlng.lng;
+                            checkoutMarker.setLatLng([lat, lng]);
+                            document.getElementById('checkout-latitude').value = lat.toFixed(6);
+                            document.getElementById('checkout-longitude').value = lng.toFixed(6);
+                            updatePinDisplay(lat, lng);
+                        });
+                    }
+                    checkoutMap.invalidateSize();
+                    return;
+                }
+
+                checkoutMap = L.map('checkout-delivery-map', {
+                    attributionControl: false
+                }).setView([defaultLat, defaultLng], 14);
+
+                checkoutTileLayer = L.tileLayer(targetUrl, {
+                    maxZoom: 19,
+                    attribution: targetAttrib
+                }).addTo(checkoutMap);
+
+                // Add marker
+                checkoutMarker = L.marker([defaultLat, defaultLng], {
+                    draggable: !allPickup,
+                    icon: allPickup ? greenIcon : new L.Icon.Default()
+                }).addTo(checkoutMap);
+
+                document.getElementById('checkout-latitude').value = defaultLat.toFixed(6);
+                document.getElementById('checkout-longitude').value = defaultLng.toFixed(6);
+
+                const updatePinDisplay = (lat, lng) => {
+                    const disp = document.getElementById('pin-coords-display');
+                    if (disp) disp.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+                };
+                updatePinDisplay(defaultLat, defaultLng);
+
+                if (allPickup) {
+                    checkoutMarker.bindPopup(pickupPopupHtml, { className: 'custom-leaflet-popup' }).openPopup();
+                } else {
+                    checkoutMarker.on('dragend', function () {
+                        const pos = checkoutMarker.getLatLng();
+                        document.getElementById('checkout-latitude').value = pos.lat.toFixed(6);
+                        document.getElementById('checkout-longitude').value = pos.lng.toFixed(6);
+                        updatePinDisplay(pos.lat, pos.lng);
+                    });
+
+                    checkoutMap.on('click', function (e) {
+                        const lat = e.latlng.lat;
+                        const lng = e.latlng.lng;
+                        checkoutMarker.setLatLng([lat, lng]);
+                        document.getElementById('checkout-latitude').value = lat.toFixed(6);
+                        document.getElementById('checkout-longitude').value = lng.toFixed(6);
+                        updatePinDisplay(lat, lng);
+                    });
+                }
+            }
+
+            function handlePlaceOrderCTA() {
+                if (currentStep === 1) {
+                    goToStep(2);
+                } else if (currentStep === 2) {
+                    const addressEl = document.getElementById('checkout-delivery-address');
+                    const address = addressEl ? addressEl.value.trim() : '';
+                    if (!address) {
+                        alert("Please enter your complete delivery address.");
+                        return;
+                    }
+                    goToStep(3);
+                } else if (currentStep === 3) {
+                    const addressEl = document.getElementById('checkout-delivery-address');
+                    const address = addressEl ? addressEl.value.trim() : '';
+
+                    if (address) {
+                        // Persist text address to account
+                        fetch('{% url "sales:customer_location_update" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: `address=${encodeURIComponent(address)}`
+                        })
+                            .then(() => handleStep3PaymentTrigger())
+                            .catch(() => handleStep3PaymentTrigger());
+                    } else {
+                        handleStep3PaymentTrigger();
+                    }
+                }
+            }
+
+            function handleStep3PaymentTrigger() {
+                const codRadio = document.getElementById('pay-radio-cod');
+                const isCod = (codRadio && codRadio.checked);
+
+                if (isCod) {
+                    handleFinalCheckout('cod');
+                } else {
+                    openGcashPortalModal();
+                }
+            }
+
+            function openGcashPortalModal() {
+                const modal = document.getElementById('gcash-checkout-portal-modal');
+                if (!modal) return;
+
+                const grandTotalEl = document.getElementById('summary-grand-total');
+                const amountText = grandTotalEl ? grandTotalEl.textContent : '0';
+                
+                document.querySelectorAll('.gcash-display-amount').forEach(el => {
+                    el.textContent = '₱' + amountText;
+                });
+
+                // Reset to Step 1
+                switchGcashStep(1);
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeGcashPortalModal() {
+                const modal = document.getElementById('gcash-checkout-portal-modal');
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            function switchGcashStep(step) {
+                document.getElementById('gcash-step-1').classList.add('hidden');
+                document.getElementById('gcash-step-2').classList.add('hidden');
+                document.getElementById('gcash-step-3').classList.add('hidden');
+                document.getElementById('gcash-step-4').classList.add('hidden');
+
+                const target = document.getElementById('gcash-step-' + step);
+                if (target) target.classList.remove('hidden');
+            }
+
+            function submitGcashStep1() {
+                const phoneInput = document.getElementById('gcash-phone-input');
+                if (!phoneInput || !phoneInput.value.trim()) {
+                    alert('Please enter your GCash mobile number.');
+                    return;
+                }
+                document.getElementById('gcash-otp-sent-phone').textContent = phoneInput.value.trim();
+                switchGcashStep(2);
+            }
+
+            function autofillGcashOtp() {
+                const otpInputs = document.querySelectorAll('.gcash-otp-digit');
+                const demoDigits = ['8', '9', '2', '4', '1', '9'];
+                otpInputs.forEach((input, index) => {
+                    input.value = demoDigits[index] || '';
+                });
+            }
+
+            function submitGcashStep2() {
+                switchGcashStep(3);
+            }
+
+            function submitGcashStep3() {
+                switchGcashStep(4);
+                // Generate authentic Reference number
+                const randomRef = 'GCASH-' + Math.floor(100000000 + Math.random() * 900000000);
+                document.getElementById('gcash-success-ref').textContent = randomRef;
+
+                // Process backend payment with generated reference
+                setTimeout(() => {
+                    handleFinalCheckout('gcash', randomRef);
+                }, 1500);
+            }
+
+            function handleFinalCheckout(paymentMethod = 'cod', paymentReference = '') {
+                const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+                const orderIds = Array.from(checkboxes).map(chk => parseInt(chk.value));
+
+                const ctaBtn = document.getElementById('place-order-cta-btn');
+                const btnText = document.getElementById('cta-btn-text');
+                if (ctaBtn) ctaBtn.disabled = true;
+                if (btnText) {
+                    btnText.textContent = (paymentMethod === 'gcash') ? 'Verifying GCash Payment...' : 'Placing Cash Order...';
+                }
+
+                const payload = {
+                    order_ids: orderIds,
+                    payment_method: paymentMethod,
+                    payment_reference: paymentReference
+                };
+
+                fetch('{% url "sales:customer_checkout_submit" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.redirect_url) {
+                            const stepperLine = document.getElementById('stepper-line');
+                            if (stepperLine) {
+                                stepperLine.style.width = '100%';
+                            }
+
+                            if (data.is_gateway) {
+                                window.location.href = data.redirect_url;
+                            } else {
+                                const toast = document.createElement('div');
+                                toast.className = 'fixed bottom-8 right-8 z-[500] bg-[#cca43b] text-[#01140e] rounded-2xl px-6 py-4 font-black shadow-2xl flex items-center gap-3 border border-white/20 transition-all duration-500 ease-out translate-y-10 opacity-0';
+                                toast.innerHTML = `<span>🎉</span> <span>Order & Payment confirmed! Redirecting to orders...</span>`;
+                                document.body.appendChild(toast);
+
+                                setTimeout(() => {
+                                    toast.classList.remove('translate-y-10', 'opacity-0');
+                                    toast.classList.add('translate-y-0', 'opacity-100');
+                                }, 50);
+
+                                setTimeout(() => {
+                                    window.location.href = data.redirect_url;
+                                }, 1000);
+                            }
+                        } else {
+                            if (ctaBtn) ctaBtn.disabled = false;
+                            if (btnText) btnText.textContent = 'Place Order';
+                            closeGcashPortalModal();
+                            alert(data.error || "Failed to process checkout. Please try again.");
+                        }
+                    })
+                    .catch(err => {
+                        if (ctaBtn) ctaBtn.disabled = false;
+                        if (btnText) btnText.textContent = 'Place Order';
+                        closeGcashPortalModal();
+                        alert("Error processing checkout. Please try again.");
+                    });
+            }
+
+            function selectPaymentMethod(method) {
+                const codCard = document.getElementById('pay-card-cod');
+                const gcashCard = document.getElementById('pay-card-gcash');
+                const codRadio = document.getElementById('pay-radio-cod');
+                const gcashRadio = document.getElementById('pay-radio-gcash');
+                const codDot = document.getElementById('pay-dot-cod');
+                const gcashDot = document.getElementById('pay-dot-gcash');
+                const gcashPanel = document.getElementById('gcash-payment-panel');
+                const ctaBtnText = document.getElementById('cta-btn-text');
+
+                if (!codCard || !gcashCard || !codRadio || !gcashRadio || !codDot || !gcashDot) return;
+
+                if (method === 'cod') {
+                    codRadio.checked = true;
+
+                    codCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#cca43b] bg-[#cca43b]/10 cursor-pointer transition-all group hover:bg-[#cca43b]/15";
+                    codDot.className = "w-6 h-6 rounded-full border-2 border-[#cca43b] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#cca43b] after:rounded-full";
+
+                    gcashCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-white/5 cursor-pointer transition-all group hover:border-[#007DFE]/50 hover:bg-[#007DFE]/5";
+                    gcashDot.className = "w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center";
+
+                    if (gcashPanel) gcashPanel.classList.add('hidden');
+                    if (ctaBtnText && currentStep === 3) ctaBtnText.textContent = 'Place Cash Order';
+                } else {
+                    gcashRadio.checked = true;
+
+                    gcashCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#007DFE] bg-[#007DFE]/10 cursor-pointer transition-all group hover:bg-[#007DFE]/15 shadow-lg shadow-[#007DFE]/10";
+                    gcashDot.className = "w-6 h-6 rounded-full border-2 border-[#007DFE] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#007DFE] after:rounded-full";
+
+                    codCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-white/5 cursor-pointer transition-all group hover:border-[#cca43b]/50 hover:bg-[#cca43b]/5";
+                    codDot.className = "w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center";
+
+                    if (gcashPanel) gcashPanel.classList.remove('hidden');
+                    if (ctaBtnText && currentStep === 3) ctaBtnText.textContent = 'Pay with GCash';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                recalculateCart();
+                // Update initial step CTA text based on current cart
+                setTimeout(() => {
+                    const btnText = document.getElementById('cta-btn-text');
+                    if (btnText) {
+                        btnText.textContent = checkAllPickup() ? 'Proceed to Payment' : 'Proceed to Address';
+                    }
+                }, 100);
+            });
+        </script>
+
+        {% elif active_page == 'orders' %}
+        <div class="flex-1 max-w-4xl mx-auto w-full py-12">
+            <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-10 shadow-2xl">
+                <div class="mb-8 border-b border-white/10 pb-6">
+                    <h3 class="text-3xl font-black text-white uppercase tracking-wider">My Orders</h3>
+                    <p class="text-sm text-[#a0ac96] mt-2">Track and monitor your confirmed transactions.</p>
+                </div>
+
+                <!-- Customer Details Panel -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+                    <div class="{% if customer.map_latitude and customer.map_longitude %}col-span-12 md:col-span-8{% else %}col-span-12{% endif %} p-6 rounded-2xl border border-[#cca43b]/20 bg-[#cca43b]/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                            <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Customer Name</p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Phone Number</p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.phone }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Delivery Address</p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address provided" }}</p>
+                        </div>
+                    </div>
+                    {% if customer.map_latitude and customer.map_longitude %}
+                    <div class="col-span-12 md:col-span-4 rounded-2xl border border-white/10 overflow-hidden h-[120px] md:h-auto relative min-h-[140px] z-0">
+                        <div id="receipt-map" class="w-full h-full"></div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-4">
+                    {% for order in orders %}
+                    <div class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all shadow-inner">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if order.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                                    {{ order.get_payment_status_display }}
+                                </span>
+                            </div>
+                            <p class="font-bold text-xl text-white">{{ order.product.name|default:"Product" }}</p>
+                            <p class="text-xs text-[#a0ac96]">Ordered on {{ order.created_at|date:"M d, Y • h:i A" }}</p>
+                        </div>
+                        <div class="flex sm:flex-col items-end justify-between sm:justify-center gap-3">
+                            <div class="text-right">
+                                <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</p>
+                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
+                            </div>
+                            <button type="button" 
+                                onclick="openCustomerReceiptModal({
+                                    orderNumber: '{{ order.order_number }}',
+                                    date: '{{ order.created_at|date:"M d, Y • h:i A" }}',
+                                    customerName: '{{ customer.name|escapejs }}',
+                                    customerPhone: '{{ customer.phone|escapejs }}',
+                                    deliveryAddress: '{{ order.delivery_address|default:customer.address|escapejs }}',
+                                    productName: '{{ order.product.name|default:"Aquaculture Product"|escapejs }}',
+                                    quantity: '{{ order.quantity_kg|floatformat:0 }}',
+                                    unit: '{% if "[KG]" in order.notes %}kg{% else %}pcs{% endif %}',
+                                    pricePerUnit: '{{ order.price_per_kg|floatformat:2 }}',
+                                    totalAmount: '{{ order.total_amount|floatformat:2 }}',
+                                    status: '{{ order.get_status_display }}',
+                                    paymentStatus: '{{ order.get_payment_status_display }}',
+                                    notes: '{{ order.notes|escapejs }}'
+                                })"
+                                class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10 shadow-sm">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Print Receipt
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 py-24 text-center">
+                        <div class="text-6xl mb-6 opacity-50">📦</div>
+                        <p class="text-white font-bold text-2xl uppercase tracking-wider">Your cart is empty</p>
+                        <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Looks like you haven't added anything yet.</p>
+                        <a href="{% url 'sales:customer_portal' %}"
+                            class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-colors shadow-lg">
+                            Browse Market
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if orders %}
+                <div class="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                        <p class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Total Items</p>
+                        <p class="text-4xl font-black text-white mt-1">{{ orders|length }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Official Printable Order Receipt Modal -->
+        <div id="customer-order-receipt-modal" class="fixed inset-0 z-[400] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
+            <div class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all space-y-6">
+                <!-- Printable Invoice Area -->
+                <div id="printable-receipt-area" class="space-y-6 bg-[#021f15] p-6 sm:p-8 rounded-2xl border border-white/10">
+                    <!-- Receipt Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">🦞</span>
+                                <h2 class="text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM & CRAYFISH</h2>
+                            </div>
+                            <p class="text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice & Delivery Receipt</p>
+                            <p class="text-[11px] text-stone-400">Silay City, Negros Occidental, Philippines</p>
+                        </div>
+                        <div class="sm:text-right space-y-1">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-3 py-1 rounded-full border border-[#cca43b]/30 inline-block">Official Receipt</span>
+                            <p class="text-base font-mono font-bold text-white mt-1" id="rec-order-number">#SO-0000</p>
+                            <p class="text-xs text-[#a0ac96]" id="rec-order-date">Date</p>
+                        </div>
+                    </div>
+
+                    <!-- Customer & Delivery Info -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
+                        <div class="space-y-1">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Customer Details</span>
+                            <p class="font-bold text-white text-sm" id="rec-cust-name">-</p>
+                            <p class="text-[#a0ac96]" id="rec-cust-phone">-</p>
+                        </div>
+                        <div class="space-y-1 sm:text-right">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Destination / Delivery Address</span>
+                            <p class="font-medium text-white" id="rec-cust-address">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Itemized Table -->
+                    <div class="overflow-x-auto rounded-xl border border-white/10">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-white/5 border-b border-white/10 text-[#cca43b] uppercase font-black tracking-wider text-[10px]">
+                                <tr>
+                                    <th class="px-4 py-3">Description</th>
+                                    <th class="px-4 py-3 text-center">Unit Type</th>
+                                    <th class="px-4 py-3 text-center">Qty</th>
+                                    <th class="px-4 py-3 text-right">Price</th>
+                                    <th class="px-4 py-3 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-white font-medium">
+                                <tr>
+                                    <td class="px-4 py-3 font-bold" id="rec-prod-name">-</td>
+                                    <td class="px-4 py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
+                                    <td class="px-4 py-3 text-center font-bold" id="rec-quantity">-</td>
+                                    <td class="px-4 py-3 text-right text-stone-300" id="rec-unit-price">₱0.00</td>
+                                    <td class="px-4 py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary & Payment Info -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end pt-2">
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Order Status:</span>
+                                <span class="font-black text-white uppercase text-[10px] px-2 py-0.5 rounded bg-white/10" id="rec-status">-</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Payment:</span>
+                                <span class="font-black text-emerald-400 uppercase text-[10px] px-2 py-0.5 rounded bg-emerald-500/20" id="rec-pay-status">-</span>
+                            </div>
+                            <p class="text-[11px] text-stone-400 italic" id="rec-notes"></p>
+                        </div>
+                        <div class="space-y-1.5 text-xs sm:text-right bg-black/40 p-4 rounded-xl border border-white/5">
+                            <div class="flex justify-between sm:justify-end gap-6 text-[#a0ac96]">
+                                <span>Delivery Fee:</span>
+                                <span class="text-emerald-400 font-bold">FREE</span>
+                            </div>
+                            <div class="flex justify-between sm:justify-end gap-6 text-sm font-black border-t border-white/10 pt-2">
+                                <span class="text-white uppercase">Total Paid / Due:</span>
+                                <span class="text-xl font-black text-[#cca43b]" id="rec-grand-total">₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-dashed border-white/10 pt-4 text-center text-[10px] text-[#a0ac96]">
+                        Thank you for your business! For questions or assistance, contact Silay Superworm & Crayfish Farm.
+                    </div>
+                </div>
+
+                <!-- Modal Action Buttons (Hidden when printing) -->
+                <div class="flex items-center justify-between gap-4 border-t border-white/10 pt-4 no-print">
+                    <button type="button" onclick="closeCustomerReceiptModal()"
+                        class="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-bold text-stone-300 hover:text-white transition-colors cursor-pointer">
+                        Close
+                    </button>
+                    <button type="button" onclick="window.print()"
+                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] shadow-lg shadow-[#cca43b]/20 hover:opacity-95 transition-all cursor-pointer">
+                        <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print / Save PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #customer-order-receipt-modal,
+            #customer-order-receipt-modal * {
+                visibility: visible !important;
+            }
+            #customer-order-receipt-modal {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 999999 !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+            }
+            #printable-receipt-area {
+                width: 100% !important;
+                max-width: 800px !important;
+                background: white !important;
+                color: #111827 !important;
+                border: 2px solid #e5e7eb !important;
+                box-shadow: none !important;
+                padding: 30px !important;
+            }
+            #printable-receipt-area * {
+                color: #111827 !important;
+                border-color: #e5e7eb !important;
+            }
+            #printable-receipt-area .bg-black\/40,
+            #printable-receipt-area .bg-\[\#021f15\],
+            #printable-receipt-area .bg-white\/5 {
+                background: #f9fafb !important;
+            }
+            #printable-receipt-area .text-\[\#cca43b\],
+            #printable-receipt-area .text-emerald-400 {
+                color: #000000 !important;
+                font-weight: 900 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        </style>
+
+        <script>
+        function openCustomerReceiptModal(data) {
+            const modal = document.getElementById('customer-order-receipt-modal');
+            if (!modal) return;
+
+            document.getElementById('rec-order-number').textContent = '#' + (data.orderNumber || '0000');
+            document.getElementById('rec-order-date').textContent = data.date || '';
+            document.getElementById('rec-cust-name').textContent = data.customerName || 'Customer';
+            document.getElementById('rec-cust-phone').textContent = data.customerPhone || 'N/A';
+            document.getElementById('rec-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
+            document.getElementById('rec-prod-name').textContent = data.productName || 'Product';
+            document.getElementById('rec-unit-type').textContent = (data.unit || 'pcs').toUpperCase();
+            document.getElementById('rec-quantity').textContent = data.quantity || '1';
+            document.getElementById('rec-unit-price').textContent = '₱' + (data.pricePerUnit || '0.00');
+            document.getElementById('rec-subtotal').textContent = '₱' + (data.totalAmount || '0.00');
+            document.getElementById('rec-status').textContent = data.status || 'CONFIRMED';
+            document.getElementById('rec-pay-status').textContent = data.paymentStatus || 'UNPAID';
+            document.getElementById('rec-notes').textContent = data.notes || '';
+            document.getElementById('rec-grand-total').textContent = '₱' + (data.totalAmount || '0.00');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCustomerReceiptModal() {
+            const modal = document.getElementById('customer-order-receipt-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        </script>
+        {% endif %}
+    </main>
+</div>
+
+<!-- Premium Dark-Gold Custom Notification Overlays -->
+<div id="custom-confirm-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-[#01140e]/95 backdrop-blur-md"></div>
+    <div class="relative bg-[#021f15] border border-[#cca43b]/40 rounded-[2rem] p-8 max-w-md w-full shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-center transform transition-all duration-300 scale-95 opacity-0"
+        id="confirm-modal-box">
+        <div
+            class="w-16 h-16 bg-[#cca43b]/10 border border-[#cca43b]/30 text-[#cca43b] rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+            ⚠️
+        </div>
+        <h4 class="text-2xl font-black text-white uppercase tracking-wider mb-2">Remove Items?</h4>
+        <p class="text-[#a0ac96] text-sm leading-relaxed mb-8">Are you sure you want to remove the selected items from
+            your cart?</p>
+        <div class="flex gap-4">
+            <button id="confirm-cancel-btn"
+                class="flex-1 py-3.5 rounded-xl border border-white/10 text-white font-bold uppercase tracking-wider text-xs hover:bg-white/5 transition-colors">Cancel</button>
+            <button id="confirm-yes-btn"
+                class="flex-1 py-3.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-wider text-xs transition-colors shadow-lg shadow-rose-500/20">Remove</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Direct Add to Cart Hidden Form (Eliminates redundant modal) -->
+<form id="direct-add-to-cart-form" method="post" action="{% url 'sales:customer_order_create' %}" class="hidden">
+    {% csrf_token %}
+    <input type="hidden" name="product" id="direct-product-id" value="">
+    <input type="hidden" name="quantity_kg" id="direct-quantity" value="">
+    <input type="hidden" name="pricing_unit" id="direct-pricing-unit" value="pc">
+    <input type="hidden" name="delivery_address" id="direct-delivery-address" value="">
+    <input type="hidden" name="notes" id="direct-notes" value="">
+</form>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+    /* Custom Leaflet Popup Styles matching Dark-Gold Theme */
+    .custom-leaflet-popup .leaflet-popup-content-wrapper {
+        background: #021f15 !important;
+        color: #f5f5f4 !important;
+        border: 1px solid rgba(204, 164, 59, 0.4) !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .custom-leaflet-popup .leaflet-popup-tip {
+        background: #021f15 !important;
+        border-left: 1px solid rgba(204, 164, 59, 0.4) !important;
+        border-bottom: 1px solid rgba(204, 164, 59, 0.4) !important;
+    }
+
+    .custom-leaflet-popup .leaflet-popup-close-button {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .custom-leaflet-popup .leaflet-popup-close-button:hover {
+        color: #cca43b !important;
+    }
+
+    /* Custom Scrollbar for Add-ons list */
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: rgba(204, 164, 59, 0.3);
+        border-radius: 20px;
+    }
+
+    .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(204, 164, 59, 0.6);
+    }
+</style>
+<script>
+    function scrollToSection(sectionId) {
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    const placeholderImages = [
+        "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1544025162-831599813b1f?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1559847844-5315695dadae?q=80&w=800&auto=format&fit=crop"
+    ];
+
+    const availableProducts = [
+        {% for prod in products %}
+    {
+        id: "{{ prod.id }}",
+        name: "{{ prod.name|escapejs }}",
+        species: "{{ prod.species.name|default:'Premium'|escapejs }}",
+        notes: "{{ prod.notes|escapejs }}",
+        pricePc: "{{ prod.unit_price|floatformat:0 }}",
+        priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
+        piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
+        quantity: "{{ prod.quantity_kg|default:0 }}",
+        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+    } {% if not forloop.last %}, {% endif %}
+    {% endfor %}
+    ];
+    let currentProductIndex = 0;
+    let currentPricingUnit = 'pc';
+
+    function updateDots() {
+        const dotsContainer = document.getElementById('carousel-dots');
+        if (!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        availableProducts.forEach((_, idx) => {
+            if (idx === currentProductIndex) {
+                dotsContainer.innerHTML += '<div class="w-2.5 h-2.5 rounded-full bg-[#cca43b] ring-4 ring-[#cca43b]/20 transition-all"></div>';
+            } else {
+                dotsContainer.innerHTML += '<div class="w-2 h-2 rounded-full bg-white/20 transition-all"></div>';
+            }
+        });
+    }
+
+    function nextProduct() {
+        currentProductIndex = (currentProductIndex + 1) % availableProducts.length;
+        const p = availableProducts[currentProductIndex];
+        selectProduct(p.id, p.name, p.species, p.notes, p.pricePc, p.priceKg, p.quantity, p.imageUrl, true);
+    }
+
+    function setPricingUnit(unit) {
+        currentPricingUnit = unit;
+        const pcBtn = document.getElementById('btn-unit-pc');
+        const kgBtn = document.getElementById('btn-unit-kg');
+        const unitLabel = document.getElementById('featured-unit-label');
+        const qtyLabel = document.getElementById('featured-quantity-label');
+        
+        if (unit === 'kg') {
+            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            if (pcBtn) pcBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
+            if (unitLabel) unitLabel.textContent = '/ kg';
+            if (qtyLabel) qtyLabel.textContent = 'Quantity (kg):';
+        } else {
+            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            if (kgBtn) kgBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
+            if (unitLabel) unitLabel.textContent = '/ pc';
+            if (qtyLabel) qtyLabel.textContent = 'Quantity (pcs):';
+        }
+        
+        const currentProd = availableProducts[currentProductIndex];
+        if (currentProd) {
+            let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
+            document.getElementById('featured-price').textContent = '₱' + Math.round(price);
+        }
+        updateTotalPrice();
+    }
+
+    function selectProduct(id, name, species, notes, pricePc, priceKg, quantity, imageUrl, skipIndexUpdate = false) {
+        if (!skipIndexUpdate) {
+            currentProductIndex = availableProducts.findIndex(p => p.id === id);
+            if (currentProductIndex === -1) currentProductIndex = 0;
+        }
+        updateDots();
+
+        document.getElementById('featured-species').textContent = 'Table';
+        document.getElementById('featured-name').textContent = (name || 'SILAY').toUpperCase();
+        document.getElementById('featured-notes').textContent = notes || 'One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality.';
+        
+        const p = availableProducts[currentProductIndex];
+        let price = currentPricingUnit === 'kg' ? (parseFloat(p?.priceKg || priceKg) || parseFloat(p?.pricePc || pricePc) || 0) : (parseFloat(p?.pricePc || pricePc) || parseFloat(p?.priceKg || priceKg) || 0);
+        document.getElementById('featured-price').textContent = '₱' + Math.round(price);
+
+        const btn = document.getElementById('featured-order-btn');
+        const btnText = document.getElementById('featured-order-text');
+        btn.setAttribute('onclick', `openCustomerOrderWithProduct('${id}')`);
+
+        if (parseFloat(quantity) > 0) {
+            btn.removeAttribute('disabled');
+            btnText.textContent = 'Add to Cart';
+        } else {
+            btn.setAttribute('disabled', 'true');
+            btnText.textContent = 'Out of Stock';
+        }
+
+        // Reset quantity input to 1 and update total price
+        const qtyInput = document.getElementById('featured-quantity-input');
+        if (qtyInput) {
+            qtyInput.value = 1;
+        }
+        updateTotalPrice();
+
+        // Change image smoothly
+        const img = document.getElementById('featured-image');
+        img.style.opacity = '0';
+        setTimeout(() => {
+            img.src = imageUrl || placeholderImages[0];
+            img.style.opacity = '0.9';
+        }, 300);
+    }
+
+    const bacolodBrgys = [];
+    for (let i = 1; i <= 40; i++) {
+        bacolodBrgys.push("Barangay " + i);
+    }
+    bacolodBrgys.push("Alangilan", "Alijis", "Banago", "Bata", "Cabug", "Estefania", "Felisa", "Granada", "Handumanan", "Mandalagan", "Mansilingan", "Montevista", "Pahanocoy", "Punta Taytay", "Singcang-Airport", "Sum-ag", "Taculing", "Tangub", "Villamonte", "Vista Alegre");
+
+    const citiesAndMunicipalities = {
+        "Silay City": {
+            coords: { lat: 10.7999, lng: 122.9777 },
+            barangays: ["Bagtic", "Balaring", "Barangay I (Poblacion)", "Barangay II (Poblacion)", "Barangay III (Poblacion)", "Barangay IV (Poblacion)", "Barangay V (Poblacion)", "Barangay VI (Poblacion)", "Eustaquio Lopez", "Guimbala-on", "Guinhalaran", "Kapitan Ramon", "Lantad", "Mambulac", "Patag", "Rizal"]
+        },
+        "Talisay City": {
+            coords: { lat: 10.7410, lng: 122.9660 },
+            barangays: ["Bubog", "Cabatangan", "Concepcion", "Dos Hermanas", "Efigenio Lizares", "Katilingban", "Matab-ang", "San Fernando", "Zone 1 (Poblacion)", "Zone 2 (Poblacion)", "Zone 3 (Poblacion)", "Zone 4 (Poblacion)", "Zone 4-A (Poblacion)", "Zone 5 (Poblacion)", "Zone 6 (Poblacion)", "Zone 7 (Poblacion)", "Zone 8 (Poblacion)", "Zone 9 (Poblacion)", "Zone 10 (Poblacion)", "Zone 11 (Poblacion)", "Zone 12 (Poblacion)", "Zone 12-A (Poblacion)", "Zone 14 (Poblacion)", "Zone 14-A (Poblacion)", "Zone 14-B (Poblacion)", "Zone 15 (Poblacion)", "Zone 16 (Poblacion)"]
+        },
+        "Bacolod City": {
+            coords: { lat: 10.6765, lng: 122.9509 },
+            barangays: bacolodBrgys
+        }
+    };
+
+    const specificBrgyCoords = {
+        "Silay City": {
+            "Bagtic": { lat: 10.7719, lng: 123.0189 },
+            "Balaring": { lat: 10.8250, lng: 122.9600 },
+            "Barangay I (Poblacion)": { lat: 10.7999, lng: 122.9777 },
+            "Barangay II (Poblacion)": { lat: 10.8010, lng: 122.9785 },
+            "Barangay III (Poblacion)": { lat: 10.8020, lng: 122.9760 },
+            "Barangay IV (Poblacion)": { lat: 10.7980, lng: 122.9750 },
+            "Barangay V (Poblacion)": { lat: 10.7960, lng: 122.9790 },
+            "Barangay VI (Poblacion)": { lat: 10.8030, lng: 122.9810 },
+            "Eustaquio Lopez": { lat: 10.8350, lng: 123.0300 },
+            "Guimbala-on": { lat: 10.7600, lng: 123.0700 },
+            "Guinhalaran": { lat: 10.7811, lng: 122.9650 },
+            "Kapitan Ramon": { lat: 10.7780, lng: 122.9950 },
+            "Lantad": { lat: 10.7978, lng: 122.9961 },
+            "Mambulac": { lat: 10.7981, lng: 122.9575 },
+            "Patag": { lat: 10.6900, lng: 123.1800 },
+            "Rizal": { lat: 10.8120, lng: 122.9900 }
+        },
+        "Talisay City": {
+            "Bubog": { lat: 10.7300, lng: 122.9800 },
+            "Cabatangan": { lat: 10.7100, lng: 123.0500 },
+            "Concepcion": { lat: 10.7550, lng: 123.0350 },
+            "Dos Hermanas": { lat: 10.7450, lng: 123.0100 },
+            "Efigenio Lizares": { lat: 10.7350, lng: 122.9700 },
+            "Katilingban": { lat: 10.7400, lng: 122.9700 },
+            "Matab-ang": { lat: 10.7250, lng: 122.9550 },
+            "San Fernando": { lat: 10.7480, lng: 122.9850 },
+            "Zone 1 (Poblacion)": { lat: 10.7410, lng: 122.9660 }
+        },
+        "Bacolod City": {
+            "Alangilan": { lat: 10.6800, lng: 123.0500 },
+            "Alijis": { lat: 10.6400, lng: 122.9600 },
+            "Banago": { lat: 10.6920, lng: 122.9420 },
+            "Bata": { lat: 10.7050, lng: 122.9680 },
+            "Cabug": { lat: 10.5850, lng: 122.9350 },
+            "Estefania": { lat: 10.6750, lng: 122.9850 },
+            "Felisa": { lat: 10.6200, lng: 122.9800 },
+            "Granada": { lat: 10.6700, lng: 123.0200 },
+            "Handumanan": { lat: 10.6100, lng: 122.9700 },
+            "Mandalagan": { lat: 10.6950, lng: 122.9620 },
+            "Mansilingan": { lat: 10.6300, lng: 123.0000 },
+            "Montevista": { lat: 10.6650, lng: 122.9700 },
+            "Pahanocoy": { lat: 10.6050, lng: 122.9300 },
+            "Punta Taytay": { lat: 10.5800, lng: 122.9150 },
+            "Singcang-Airport": { lat: 10.6450, lng: 122.9350 },
+            "Sum-ag": { lat: 10.5950, lng: 122.9250 },
+            "Taculing": { lat: 10.6550, lng: 122.9580 },
+            "Tangub": { lat: 10.6250, lng: 122.9300 },
+            "Villamonte": { lat: 10.6720, lng: 122.9650 },
+            "Vista Alegre": { lat: 10.6500, lng: 123.0100 }
+        }
+    };
+
+    const streetsByBarangay = {
+        "Silay City": {
+            "Bagtic": ["Bagtic Proper", "Crossing Bagtic", "Prk. San Jose", "Prk. Pag-asa", "Prk. Masagana", "Hda. Bagtic Road", "Other / Specific Street"],
+            "Balaring": ["Balaring Coastal Road", "Mangrove Eco-Park Road", "Prk. Fishermen", "Prk. Baybay", "Prk. Seaside", "Other / Specific Street"],
+            "Barangay I (Poblacion)": ["Rizal Street", "Cinco de Noviembre Street", "Gomez Street", "Burgos Street", "Dr. Trino Montinola St.", "Other / Specific Street"],
+            "Barangay II (Poblacion)": ["Cinco de Noviembre Street", "Gomez Street", "Eusebio Street", "Zamora Street", "Locsin Street", "Other / Specific Street"],
+            "Barangay III (Poblacion)": ["Rizal Street", "Plaridel Street", "Gomez Street", "Burgos Street", "Other / Specific Street"],
+            "Barangay IV (Poblacion)": ["Mckinley Street", "Gomez Street", "Bonifacio Street", "Gamboa Street", "Other / Specific Street"],
+            "Barangay V (Poblacion)": ["Loney Street", "G. Gaston Street", "Cinco de Noviembre Street", "Other / Specific Street"],
+            "Barangay VI (Poblacion)": ["Rizal Street", "Zamora Street", "Plaridel Street", "Other / Specific Street"],
+            "Eustaquio Lopez": ["E. Lopez National Highway", "Hda. Adela Road", "Hda. San Jose Road", "Prk. Centro", "Prk. Mahidaiton", "Other / Specific Street"],
+            "Guimbala-on": ["Guimbala-on Main Road", "Hda. Patag Road", "Prk. Proper", "Prk. San Isidro", "Prk. Crossing", "Other / Specific Street"],
+            "Guinhalaran": ["National Highway", "Carmela de Silay Subdivision", "Prk. Guinhalaran Beach", "Prk. Sto. Niño", "Prk. San Roque", "Other / Specific Street"],
+            "Kapitan Ramon": ["Kapitan Ramon Road", "Prk. Ramon Proper", "Hda. Begonia Road", "Hda. Carmen", "Other / Specific Street"],
+            "Lantad": ["Prk. Malinong", "Prk. Mahigugmaon", "Prk. Paghida-et", "Lantad Main Road", "Prk. Riverside", "Prk. Bougainvillea", "Prk. Santan", "Prk. Ilang-Ilang", "Other / Specific Street"],
+            "Mambulac": ["McKinley Street", "Rizal Street", "Mambulac Proper", "Gomez Street", "Zulueta Street", "Burgos Street", "Prk. Seaside", "Other / Specific Street"],
+            "Patag": ["Patag Mountain Resort Road", "Japanese Shrine Road", "Prk. Hospital", "Prk. Pines", "Other / Specific Street"],
+            "Rizal": ["Rizal Extension", "Villa Hergon Subdivision", "Prk. Rizal Centro", "Prk. Paghida-et", "Other / Specific Street"]
+        },
+        "Talisay City": {
+            "Bubog": ["Airport Access Road", "Bubog Proper", "First Farmers Road", "Carmela Valley", "Other / Specific Street"],
+            "Cabatangan": ["Cabatangan Main Road", "Prk. Cabatangan", "Other / Specific Street"],
+            "Concepcion": ["Concepcion Road", "Hda. Concepcion", "Prk. San Roque", "Other / Specific Street"],
+            "Dos Hermanas": ["Dos Hermanas Main Road", "Hda. San Jose", "Prk. Crossing", "Other / Specific Street"],
+            "Efigenio Lizares": ["Lizares Avenue", "Prk. Lizares", "Other / Specific Street"],
+            "Katilingban": ["Katilingban Street", "Prk. Katilingban", "Other / Specific Street"],
+            "Matab-ang": ["Matab-ang Highway", "Carmen Subdivision", "Prk. Matab-ang Proper", "Other / Specific Street"],
+            "San Fernando": ["San Fernando Road", "Prk. San Fernando", "Other / Specific Street"],
+            "Zone 1 (Poblacion)": ["Mabini Street", "Bonifacio Street", "Rizal Street", "Burgos Street", "De Leon Street", "Lizares Street", "Other / Specific Street"]
+        },
+        "Bacolod City": {
+            "Mandalagan": ["Lacson Street", "Carmelite Road", "Santa Clara Estate", "Eroreco", "Prk. Mandalagan", "Other / Specific Street"],
+            "Bata": ["Bata Highway", "Bata Subdivision", "Prk. Marapara", "Bangga Cory", "Other / Specific Street"],
+            "Alijis": ["Alijis Road", "Providencia Subdivision", "Taculing-Alijis Road", "Prk. Alijis", "Other / Specific Street"],
+            "Singcang-Airport": ["Araneta Street", "Magsaysay Avenue", "Goldenfield", "Prk. Airport", "Other / Specific Street"],
+            "Tangub": ["Araneta Street", "South Capitol Road", "Tangub Crossing", "Prk. Tangub", "Other / Specific Street"],
+            "Villamonte": ["C.L. Montelibano Ave", "Burgos Street Ext.", "Villa Angela", "Helvetia Heights", "Other / Specific Street"],
+            "Estefania": ["Fortune Towne", "Burgos Extension", "Villa Estefania", "Country Homes", "Other / Specific Street"],
+            "Taculing": ["Rosario Street", "Gonzaga Street", "Taculing Road", "Forest Hills", "Other / Specific Street"],
+            "Sum-ag": ["Araneta Street Highway", "Sum-ag River Road", "Prk. Seaside", "Other / Specific Street"],
+            "Mansilingan": ["Murcia-Bacolod Road", "Hermelinda Homes", "Olympia Subdivision", "Other / Specific Street"],
+            "Banago": ["North Coastal Road", "Banago Port Road", "Prk. Mahimulaton", "Other / Specific Street"]
+        }
+    };
+
+    function updateBarangays(selectedBrgyToSet = null, selectedStreetToSet = null) {
+        const citySelect = document.getElementById('checkout-city-select');
+        const brgySelect = document.getElementById('checkout-barangay-select');
+        if (!citySelect || !brgySelect) return;
+
+        const selectedCity = citySelect.value || "Silay City";
+        const cityData = citiesAndMunicipalities[selectedCity] || citiesAndMunicipalities["Silay City"];
+        const brgys = cityData ? cityData.barangays : [];
+
+        brgySelect.innerHTML = '';
+        brgys.forEach(brgy => {
+            const opt = document.createElement('option');
+            opt.value = brgy;
+            opt.textContent = brgy;
+            opt.className = 'bg-[#01140e] text-white py-2 font-bold';
+            brgySelect.appendChild(opt);
+        });
+
+        if (selectedBrgyToSet) {
+            for (let option of brgySelect.options) {
+                if (option.value.toLowerCase() === selectedBrgyToSet.toLowerCase()) {
+                    brgySelect.value = option.value;
+                    break;
+                }
+            }
+        }
+
+        updateStreets(selectedStreetToSet);
+    }
+
+    function updateStreets(selectedStreetToSet = null) {
+        const citySelect = document.getElementById('checkout-city-select');
+        const brgySelect = document.getElementById('checkout-barangay-select');
+        const streetSelect = document.getElementById('checkout-street-select');
+        if (!citySelect || !brgySelect || !streetSelect) return;
+
+        const city = citySelect.value || "Silay City";
+        const brgy = brgySelect.value || "";
+
+        let streetList = [];
+        if (streetsByBarangay[city] && streetsByBarangay[city][brgy]) {
+            streetList = streetsByBarangay[city][brgy];
+        } else {
+            streetList = ["Main Street", "Prk. Centro", "Prk. Riverside", "Hacienda Road", "Other / Specific Street"];
+        }
+
+        streetSelect.innerHTML = '';
+        streetList.forEach(st => {
+            const opt = document.createElement('option');
+            opt.value = st;
+            opt.textContent = st;
+            opt.className = 'bg-[#01140e] text-white py-2 font-bold';
+            streetSelect.appendChild(opt);
+        });
+
+        if (selectedStreetToSet) {
+            let found = false;
+            for (let option of streetSelect.options) {
+                if (option.value.toLowerCase() === selectedStreetToSet.toLowerCase()) {
+                    streetSelect.value = option.value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found && selectedStreetToSet) {
+                streetSelect.value = "Other / Specific Street";
+                const customInput = document.getElementById('checkout-custom-street-input');
+                if (customInput) customInput.value = selectedStreetToSet;
+            }
+        }
+
+        onStreetSelectChange();
+    }
+
+    function onStreetSelectChange() {
+        const streetSelect = document.getElementById('checkout-street-select');
+        const customInput = document.getElementById('checkout-custom-street-input');
+        if (streetSelect && customInput) {
+            if (streetSelect.value === 'Other / Specific Street') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+            }
+        }
+        combineAddressFields(true);
+        if (typeof recalculateCart === 'function') {
+            recalculateCart();
+        }
+    }
+
+    let geocodeTimeout = null;
+    function combineAddressFields(shouldGeocode = false) {
+        const provSelect = document.getElementById('checkout-province-select');
+        const citySelect = document.getElementById('checkout-city-select');
+        const brgySelect = document.getElementById('checkout-barangay-select');
+        const streetSelect = document.getElementById('checkout-street-select');
+        const customStreetInput = document.getElementById('checkout-custom-street-input');
+        const houseInput = document.getElementById('checkout-house-input');
+        const addressTextArea = document.getElementById('checkout-delivery-address');
+
+        if (!citySelect || !brgySelect || !streetSelect || !addressTextArea) return;
+
+        const province = provSelect ? provSelect.value : 'Negros Occidental';
+        const city = citySelect.value;
+        const brgy = brgySelect.value;
+        const streetVal = streetSelect.value;
+        const street = (streetVal === 'Other / Specific Street' && customStreetInput) ? customStreetInput.value.trim() : (streetVal || '').trim();
+        const house = houseInput ? houseInput.value.trim() : '';
+
+        const addressParts = [];
+        if (house) addressParts.push(house);
+        if (street && street !== 'Other / Specific Street') addressParts.push(street);
+        if (brgy) addressParts.push(brgy);
+        if (city) addressParts.push(city);
+        if (province) addressParts.push(province);
+
+        const fullAddress = addressParts.join(', ');
+        addressTextArea.value = fullAddress;
+
+        if (shouldGeocode && typeof L !== 'undefined' && checkoutMap && checkoutMarker) {
+            clearTimeout(geocodeTimeout);
+            geocodeTimeout = setTimeout(() => {
+                const cityData = citiesAndMunicipalities[city] || citiesAndMunicipalities["Silay City"];
+                let fallback = (cityData && cityData.coords) ? cityData.coords : { lat: 10.7999, lng: 122.9777 };
+
+                // If specific barangay coordinates exist, use exact barangay pin!
+                if (specificBrgyCoords[city] && specificBrgyCoords[city][brgy]) {
+                    fallback = specificBrgyCoords[city][brgy];
+                }
+
+                // Immediately move map view & marker to the chosen barangay / municipality coordinates
+                checkoutMap.setView([fallback.lat, fallback.lng], 16);
+                checkoutMarker.setLatLng([fallback.lat, fallback.lng]);
+                document.getElementById('checkout-latitude').value = fallback.lat.toFixed(6);
+                document.getElementById('checkout-longitude').value = fallback.lng.toFixed(6);
+
+                const disp = document.getElementById('pin-coords-display');
+                if (disp) disp.textContent = `${fallback.lat.toFixed(5)}, ${fallback.lng.toFixed(5)} (${brgy || city})`;
+
+                // Online precision street geocoding query
+                const streetQuery = (street && street !== 'Other / Specific Street') ? street : '';
+                if (streetQuery) {
+                    const query = `${streetQuery}, ${brgy ? brgy + ', ' : ''}${city}, ${province}, Philippines`;
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.length > 0) {
+                                const lat = parseFloat(data[0].lat);
+                                const lon = parseFloat(data[0].lon);
+                                checkoutMap.flyTo([lat, lon], 17, { animate: true, duration: 0.8 });
+                                checkoutMarker.setLatLng([lat, lon]);
+                                document.getElementById('checkout-latitude').value = lat.toFixed(6);
+                                document.getElementById('checkout-longitude').value = lon.toFixed(6);
+                                if (disp) disp.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)} (${streetQuery})`;
+                            }
+                        })
+                        .catch(() => {});
+                }
+            }, 250);
+        }
+    }
+
+    function locateCurrentPosition() {
+        const pinDisplay = document.getElementById('pin-coords-display');
+        if (pinDisplay) pinDisplay.textContent = 'Locating GPS...';
+
+        const applyLocation = (lat, lng, sourceLabel = 'GPS') => {
+            if (checkoutMap && checkoutMarker) {
+                checkoutMap.flyTo([lat, lng], 17, { animate: true, duration: 1 });
+                checkoutMarker.setLatLng([lat, lng]);
+            }
+            const latInput = document.getElementById('checkout-latitude');
+            const lngInput = document.getElementById('checkout-longitude');
+            if (latInput) latInput.value = Number(lat).toFixed(6);
+            if (lngInput) lngInput.value = Number(lng).toFixed(6);
+            if (pinDisplay) pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} (${sourceLabel})`;
+
+            // Reverse geocode to assist street & house
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const road = data.address.road || data.address.neighbourhood || data.address.suburb || '';
+                        const houseNo = data.address.house_number || '';
+                        if (road) {
+                            const streetSelect = document.getElementById('checkout-street-select');
+                            if (streetSelect) {
+                                let matched = false;
+                                for (let opt of streetSelect.options) {
+                                    if (opt.value.toLowerCase() === road.toLowerCase()) {
+                                        streetSelect.value = opt.value;
+                                        matched = true;
+                                        break;
+                                    }
+                                }
+                                if (!matched) {
+                                    streetSelect.value = 'Other / Specific Street';
+                                    const customStreet = document.getElementById('checkout-custom-street-input');
+                                    if (customStreet) {
+                                        customStreet.value = road;
+                                        customStreet.classList.remove('hidden');
+                                    }
+                                }
+                            }
+                        }
+                        if (houseNo) {
+                            const houseInput = document.getElementById('checkout-house-input');
+                            if (houseInput && !houseInput.value) {
+                                houseInput.value = 'House #' + houseNo;
+                            }
+                        }
+                        combineAddressFields(false);
+                    }
+                })
+                .catch(() => {});
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    applyLocation(pos.coords.latitude, pos.coords.longitude, `GPS ±${Math.round(pos.coords.accuracy)}m`);
+                },
+                (err) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            applyLocation(pos.coords.latitude, pos.coords.longitude, 'GPS Low-Acc');
+                        },
+                        () => {
+                            fetch('https://ipapi.co/json/')
+                                .then(r => r.json())
+                                .then(ipData => {
+                                    if (ipData && ipData.latitude && ipData.longitude) {
+                                        applyLocation(ipData.latitude, ipData.longitude, 'IP Location');
+                                    } else {
+                                        combineAddressFields(true);
+                                    }
+                                })
+                                .catch(() => {
+                                    combineAddressFields(true);
+                                });
+                        },
+                        { enableHighAccuracy: false, timeout: 6000, maximumAge: 30000 }
+                    );
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        } else {
+            combineAddressFields(true);
+        }
+    }
+
+    function initAddressDropdownsFromSaved() {
+        const addressTextArea = document.getElementById('checkout-delivery-address');
+        if (!addressTextArea) return;
+
+        const address = addressTextArea.value.trim();
+        if (!address || address.toUpperCase() === 'PICKUP') {
+            updateBarangays();
+            return;
+        }
+
+        let parsedCity = 'Silay City';
+        let parsedBrgy = '';
+        let parsedStreet = '';
+        let parsedHouse = '';
+
+        const parts = address.split(',').map(p => p.trim());
+
+        for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            for (let city of Object.keys(citiesAndMunicipalities)) {
+                if (part.toLowerCase().includes(city.toLowerCase().replace(' city', ''))) {
+                    parsedCity = city;
+                    if (i > 0) parsedBrgy = parts[i - 1];
+                    if (i > 1) parsedStreet = parts[i - 2];
+                    if (i > 2) parsedHouse = parts.slice(0, i - 2).join(', ');
+                    break;
+                }
+            }
+        }
+
+        const citySelect = document.getElementById('checkout-city-select');
+        if (citySelect) citySelect.value = parsedCity;
+
+        updateBarangays(parsedBrgy, parsedStreet);
+
+        const houseInput = document.getElementById('checkout-house-input');
+        if (houseInput && parsedHouse) {
+            houseInput.value = parsedHouse;
+        }
+
+        combineAddressFields(false);
+    }
+
+    // Initialize dots on load
+    document.addEventListener("DOMContentLoaded", () => {
+        initAddressDropdownsFromSaved();
+        const initialFeaturedId = '{{ featured_product.id }}';
+        currentProductIndex = availableProducts.findIndex(p => p.id === initialFeaturedId);
+        if (currentProductIndex === -1) currentProductIndex = 0;
+        updateDots();
+
+        // Restore saved delivery method or use existing cart order method
+        {% if not orders %}
+        const savedMethod = localStorage.getItem('saved_delivery_method');
+        if (savedMethod) {
+            setDeliveryMethod(savedMethod);
+        }
+        {% else %}
+        const firstOrderMethod = "{% with first_order=orders|first %}{% if first_order %}{% if first_order.delivery_address|upper == 'PICKUP' %}pickup{% else %}delivery{% endif %}{% else %}pickup{% endif %}{% endwith %}";
+        setDeliveryMethod(firstOrderMethod);
+        {% endif %}
+    });
+
+    function setDeliveryMethod(method) {
+        const pickupBtn = document.getElementById('btn-pickup');
+        const deliveryBtn = document.getElementById('btn-delivery');
+        const input = document.getElementById('delivery-method-input');
+        if (!pickupBtn || !deliveryBtn || !input) return;
+
+        localStorage.setItem('saved_delivery_method', method);
+
+        const payTitleCod = document.getElementById('pay-title-cod');
+        const payDescCod = document.getElementById('pay-desc-cod');
+
+        if (method === 'pickup') {
+            pickupBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            deliveryBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
+            input.value = 'pickup';
+
+            if (payTitleCod) payTitleCod.textContent = 'Cash';
+            if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at our pickup station.';
+        } else {
+            deliveryBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            pickupBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
+            input.value = 'delivery';
+
+            if (payTitleCod) payTitleCod.textContent = 'Cash on Delivery';
+            if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at your address.';
+        }
+    }
+
+    function updateTotalPrice() {
+        const input = document.getElementById('featured-quantity-input');
+        const priceEl = document.getElementById('featured-total-price');
+        const qtyLabel = document.getElementById('featured-quantity-label');
+        if (!input || !priceEl) return;
+
+        // Strip out non-digit characters (for pasted content or fallback browser inputs)
+        input.value = input.value.replace(/[^0-9]/g, '');
+
+        let qty = parseInt(input.value) || 0;
+        if (qty < 0) qty = 0;
+
+        const currentProd = availableProducts[currentProductIndex];
+        if (currentProd) {
+            const price = currentPricingUnit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
+            const total = qty * price;
+            priceEl.textContent = '₱' + total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+            if (qtyLabel) {
+                if (currentPricingUnit === 'kg') {
+                    const ppk = parseFloat(currentProd.piecesPerKg) || 1;
+                    const estPcs = Math.round(qty * ppk);
+                    qtyLabel.innerHTML = `Quantity (kg) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
+                } else {
+                    qtyLabel.textContent = 'Quantity (pcs):';
+                }
+            }
+        }
+    }
+
+    function adjustFeaturedQuantity(amount) {
+        const input = document.getElementById('featured-quantity-input');
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        val += amount;
+        if (val < 1) val = 1;
+
+        // Cap quantity to product stock limit if available
+        const currentProd = availableProducts[currentProductIndex];
+        if (currentProd && currentProd.quantity !== undefined) {
+            const maxQty = parseFloat(currentProd.quantity);
+            if (val > maxQty) {
+                val = Math.floor(maxQty) || 1;
+            }
+        }
+        input.value = val;
+        updateTotalPrice();
+    }
+
+    function openCustomerOrderWithProduct(productId) {
+        {% if guest_mode or not request.user.is_authenticated or not request.user.is_customer %}
+        window.location.href = "{% url 'customer_login' %}";
+        return;
+        {% endif %}
+
+        const qty = document.getElementById('featured-quantity-input').value;
+        const method = document.getElementById('delivery-method-input').value;
+
+        document.getElementById('direct-product-id').value = productId;
+        document.getElementById('direct-quantity').value = qty;
+        document.getElementById('direct-pricing-unit').value = currentPricingUnit;
+
+        const notes = "Delivery Method: " + method.toUpperCase();
+        document.getElementById('direct-notes').value = notes;
+
+        if (method === 'pickup') {
+            document.getElementById('direct-delivery-address').value = "PICKUP";
+        } else {
+            document.getElementById('direct-delivery-address').value = "{{ customer.address|escapejs }}";
+        }
+
+        document.getElementById('direct-add-to-cart-form').submit();
+    }
+
+    (function initCustomerAccountMap() {
+        const mapEl = document.getElementById('customer-account-map');
+        const latInput = document.getElementById('id_map_latitude');
+        const lngInput = document.getElementById('id_map_longitude');
+        if (!mapEl || !latInput || !lngInput || typeof L === 'undefined') return;
+
+        const defaultLat = 10.6765;
+        const defaultLng = 122.9560;
+        const existingLat = parseFloat(latInput.value);
+        const existingLng = parseFloat(lngInput.value);
+        const hasExisting = Number.isFinite(existingLat) && Number.isFinite(existingLng);
+        const centerLat = hasExisting ? existingLat : defaultLat;
+        const centerLng = hasExisting ? existingLng : defaultLng;
+
+        const map = L.map('customer-account-map').setView([centerLat, centerLng], hasExisting ? 15 : 10);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
+
+        let marker = null;
+        function setPoint(lat, lng) {
+            latInput.value = Number(lat).toFixed(6);
+            lngInput.value = Number(lng).toFixed(6);
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng]).addTo(map);
+            }
+        }
+
+        if (hasExisting) {
+            setPoint(existingLat, existingLng);
+        }
+
+        map.on('click', function (e) {
+            setPoint(e.latlng.lat, e.latlng.lng);
+        });
+    })();
+</script>
+
+<!-- Authentic Interactive GCash Checkout Portal Modal -->
+<div id="gcash-checkout-portal-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
+    <div class="relative w-full max-w-md rounded-[2.5rem] border border-[#007DFE]/40 bg-[#021f15] p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all space-y-6">
+        <!-- GCash Gateway Header -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-[#007DFE] flex items-center justify-center font-black text-white text-lg shadow-lg shadow-[#007DFE]/40">
+                    G
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-white uppercase tracking-wider">GCash Checkout</h3>
+                    <p class="text-[11px] text-[#007DFE] font-bold">Official Online Payment Portal</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeGcashPortalModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold p-1 transition-colors cursor-pointer">&times;</button>
+        </div>
+
+        <!-- Merchant & Amount Ribbon -->
+        <div class="rounded-2xl border border-[#007DFE]/30 bg-gradient-to-r from-[#005bb7]/20 to-black/40 p-4 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+                <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Merchant:</span>
+                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+                <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Recipient No:</span>
+                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567' }}</span>
+            </div>
+            <div class="border-t border-white/10 pt-2 flex items-center justify-between">
+                <span class="text-xs uppercase tracking-wider font-black text-white">Amount to Pay:</span>
+                <span class="gcash-display-amount text-2xl font-black text-[#cca43b]">₱0.00</span>
+            </div>
+        </div>
+
+        <!-- STEP 1: GCash Mobile Number Login -->
+        <div id="gcash-step-1" class="space-y-5">
+            <div class="space-y-1 text-left">
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96]">GCash Mobile Number</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-sm font-bold text-[#007DFE]">+63</span>
+                    <input type="text" id="gcash-phone-input" value="{{ customer.phone|default:'9171234567' }}"
+                        class="w-full rounded-xl border border-white/10 bg-black/60 pl-14 pr-4 py-3 text-sm font-mono font-bold text-white focus:border-[#007DFE] focus:outline-none focus:ring-1 focus:ring-[#007DFE]"
+                        placeholder="9XX XXX XXXX">
+                </div>
+                <span class="text-[10px] text-stone-500 block">We will send a 6-digit authentication code to verify your GCash account.</span>
+            </div>
+
+            {% if payment_settings.gcash_qr_image %}
+            <div class="rounded-xl border border-white/10 bg-black/30 p-3 text-center space-y-2">
+                <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-wider block">Or Scan Merchant QR</span>
+                <img src="{{ payment_settings.gcash_qr_image.url }}" alt="GCash QR" class="w-32 h-32 mx-auto rounded-lg object-contain bg-white p-1 shadow-md">
+            </div>
+            {% endif %}
+
+            <button type="button" onclick="submitGcashStep1()"
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                Next: Send Authentication Code →
+            </button>
+        </div>
+
+        <!-- STEP 2: 6-Digit SMS OTP Authentication Code -->
+        <div id="gcash-step-2" class="hidden space-y-5">
+            <div class="text-center space-y-1">
+                <span class="text-3xl">💬</span>
+                <h4 class="text-sm font-black text-white uppercase tracking-wider">Enter Authentication Code</h4>
+                <p class="text-xs text-[#a0ac96]">A 6-digit code was sent to <span id="gcash-otp-sent-phone" class="font-mono text-[#007DFE] font-bold">09XX</span></p>
+            </div>
+
+            <div class="flex justify-center gap-2">
+                <input type="text" maxlength="1" value="8" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="9" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="2" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="4" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="1" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="9" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+            </div>
+
+            <div class="flex items-center justify-between text-[11px]">
+                <button type="button" onclick="autofillGcashOtp()" class="text-[#007DFE] hover:underline font-bold">Resend Code</button>
+                <span class="text-stone-400">Expires in 04:59</span>
+            </div>
+
+            <button type="button" onclick="submitGcashStep2()"
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                Submit Code →
+            </button>
+        </div>
+
+        <!-- STEP 3: 4-Digit MPIN Authorization -->
+        <div id="gcash-step-3" class="hidden space-y-5">
+            <div class="text-center space-y-1">
+                <span class="text-3xl">🔒</span>
+                <h4 class="text-sm font-black text-white uppercase tracking-wider">Enter 4-Digit MPIN</h4>
+                <p class="text-xs text-[#a0ac96]">Authorize deduction of <span class="gcash-display-amount font-black text-[#cca43b]">₱0.00</span></p>
+            </div>
+
+            <div class="flex justify-center gap-3">
+                <input type="password" maxlength="1" value="1" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="2" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="3" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="4" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+            </div>
+
+            <button type="button" onclick="submitGcashStep3()"
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                Authorize & Pay <span class="gcash-display-amount">₱0.00</span> →
+            </button>
+        </div>
+
+        <!-- STEP 4: Payment Success Animation & Auto-Confirm -->
+        <div id="gcash-step-4" class="hidden py-8 text-center space-y-4">
+            <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl animate-bounce">
+                ✓
+            </div>
+            <div class="space-y-1">
+                <h4 class="text-lg font-black text-white uppercase tracking-wider">Payment Successful!</h4>
+                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</p>
+                <p class="text-[11px] font-mono text-emerald-400 font-bold mt-2" id="gcash-success-ref">Ref: GCASH-00000000</p>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-xs text-[#cca43b] pt-2">
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-ping"></span>
+                <span>Generating your official order receipt...</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

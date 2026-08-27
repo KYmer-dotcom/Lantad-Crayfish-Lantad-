@@ -1,0 +1,7 @@
+{% include 'operations/partials/ponds_table.html' %}
+
+{% if farms %}
+<div id="farms-table" hx-swap-oob="true">
+    {% include 'operations/partials/farms_table.html' %}
+</div>
+{% endif %}

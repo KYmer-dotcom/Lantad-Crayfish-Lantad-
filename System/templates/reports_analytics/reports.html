@@ -1,0 +1,1192 @@
+{% extends 'layout.html' %}
+
+{% block header_title %}Printable Reports{% endblock %}
+
+{% block page_content %}
+<div class="space-y-8 p-2">
+    <!-- Page Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Reports & Analytics</p>
+            </div>
+            <h1 class="text-2xl font-semibold text-stone-100 tracking-tight">Printable Reports</h1>
+        </div>
+
+    </div>
+
+    <!-- Filter Controls Grid -->
+    <div id="filter-controls-grid" class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <div id="date-range-card"
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Date Range</p>
+            </div>
+            <div class="flex items-center gap-1.5 min-w-0">
+                <input type="date" id="start-date-input" value="{{ start_date }}"
+                    class="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-2 py-2 text-[10px] font-black text-white focus:border-[#cca43b] focus:outline-none transition-colors" />
+                <span class="text-[#a0ac96] text-[10px] font-black uppercase tracking-wider shrink-0">to</span>
+                <input type="date" id="end-date-input" value="{{ end_date }}"
+                    class="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-2 py-2 text-[10px] font-black text-white focus:border-[#cca43b] focus:outline-none transition-colors" />
+            </div>
+        </div>
+        <div
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Report Type</p>
+            </div>
+            <select id="report-type-select"
+                class="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer">
+                <option value="all" class="bg-[#01140e] text-white">Comprehensive Summary</option>
+                <option value="sales" class="bg-[#01140e] text-white">Sales Only</option>
+                <option value="operations" class="bg-[#01140e] text-white">Operations Only</option>
+                <option value="receipts" class="bg-[#01140e] text-white">Receipts Only</option>
+            </select>
+        </div>
+        <div
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Output Format</p>
+            </div>
+            <select
+                class="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer">
+                <option class="bg-[#01140e] text-white">Printable PDF</option>
+                <option class="bg-[#01140e] text-white">Dashboard View</option>
+            </select>
+        </div>
+        <div id="execution-card"
+            class="rounded-3xl border border-[#cca43b]/20 bg-[#cca43b]/5 backdrop-blur-xl p-6 shadow-2xl hover:border-[#cca43b]/40 transition-all duration-300 flex flex-col justify-between">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Execution</p>
+            </div>
+            <button id="generate-report-btn" class="btn-gold w-full py-3 text-xs font-bold shadow-lg cursor-pointer">
+                Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div data-report-group="sales"
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 shadow-2xl hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#cca43b]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            </div>
+            <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ sales_label|default:"Total Sales (This Month)" }}</p>
+            <p id="total-sales-val" class="mt-4 text-4xl font-black text-[#cca43b] font-mono tracking-tight">₱{{ monthly_sales_total|floatformat:2 }}</p>
+            <div class="mt-4 flex items-center gap-2 text-[11px] text-[#a0ac96]">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <span>Gross monthly revenue inflow</span>
+            </div>
+        </div>
+        <div data-report-group="sales harvest"
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 shadow-2xl hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#cca43b]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            </div>
+            <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ qty_label|default:"Quantity Sold (This Month)" }}</p>
+            <p id="total-qty-val" class="mt-4 text-4xl font-black text-white font-mono tracking-tight">{{ monthly_sales_qty|floatformat:2 }}</p>
+            <div class="mt-4 flex items-center gap-2 text-[11px] text-[#a0ac96]">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <span>Aggregate product volume dispatched</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales by Date -->
+    <div data-report-group="receipts"
+        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
+        <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-lg font-black text-white tracking-wide uppercase">Sales by Date</h3>
+            </div>
+            <span
+                class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Last
+                30 Days</span>
+        </div>
+        <div class="overflow-x-auto flex-grow">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead class="bg-white/[0.03]">
+                    <tr>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Date</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] order-num-col">
+                            Order Number</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Customer</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Product</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            City</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Quantity</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Paid Date / Status</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Total Amount</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] no-print receipt-action-col">
+                            Show</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-by-date-tbody" class="divide-y divide-white/5 bg-transparent">
+                    {% for order in sales_by_date %}
+                    <tr class="hover:bg-white/[0.03] transition-colors duration-200"
+                        data-product="{{ order.product.name|default:'Crayfish / Superworm' }}"
+                        data-price="{{ order.price_per_kg|default:0|floatformat:2 }}"
+                        data-discount="{{ order.discount|default:0|floatformat:2 }}"
+                        data-address="{{ order.customer.address|default:order.delivery_address }}"
+                        data-phone="{{ order.customer.phone|default:'' }}"
+                        data-receipt-image="{% if order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.customer.name }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.product.name|default:'N/A' }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.delivery_address|default:order.customer.address|truncatechars:20 }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ order.quantity_kg|default:0|floatformat:2 }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                            {% if order.payment_status == 'paid' %}
+                            <span class="text-emerald-400">Paid on {{ order.updated_at|date:"M d, Y" }}</span>
+                            {% elif order.payment_status == 'partial' %}
+                            <span class="text-amber-400">Partially Paid</span>
+                            {% else %}
+                            <span class="text-rose-400">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|default:0|floatformat:2 }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
+                            <button type="button" onclick="showSingleReceipt('{{ order.order_number }}')" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="px-8 py-16 text-center text-[#a0ac96]">
+                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected
+                                range</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Operations Log -->
+    <div id="ops-log-card" data-report-group="operations"
+        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
+        <div
+            class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-lg font-black text-white tracking-wide uppercase">Pond Operations Log</h3>
+            </div>
+            <div
+                class="flex items-center gap-2 text-xs font-bold text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Interactive Calendar Mode</span>
+            </div>
+        </div>
+
+        <!-- Premium Interactive Calendar Grid -->
+        <div class="px-8 py-8 border-b border-white/10 bg-black/30 backdrop-blur-sm">
+            <div class="max-w-3xl mx-auto">
+                <!-- Calendar Header -->
+                <div class="flex items-center justify-between mb-8 max-w-md mx-auto">
+                    <button type="button" id="prev-month-btn"
+                        class="p-2.5 rounded-xl hover:bg-white/10 text-white transition-all cursor-pointer select-none">
+                        <svg class="h-5 w-5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <h4 id="calendar-month-year"
+                        class="text-base md:text-lg font-black text-white uppercase tracking-widest font-mono">May 2026
+                    </h4>
+                    <button type="button" id="next-month-btn"
+                        class="p-2.5 rounded-xl hover:bg-white/10 text-white transition-all cursor-pointer select-none">
+                        <svg class="h-5 w-5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Weekdays Header -->
+                <div
+                    class="grid grid-cols-7 gap-3 text-center text-xs font-black text-[#a0ac96] uppercase tracking-[0.2em] mb-4">
+                    <div>Su</div>
+                    <div>Mo</div>
+                    <div>Tu</div>
+                    <div>We</div>
+                    <div>Th</div>
+                    <div>Fr</div>
+                    <div>Sa</div>
+                </div>
+                <!-- Days Grid -->
+                <div id="calendar-days-grid" class="grid grid-cols-7 gap-3">
+                    <!-- JavaScript will dynamically render days here -->
+                </div>
+            </div>
+        </div>
+        <div class="overflow-x-auto flex-grow">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead class="bg-white/[0.03]">
+                    <tr>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Date & Time</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Pond / Shelf</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Feed Type Used</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Status</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Recorded By</th>
+                    </tr>
+                </thead>
+                <tbody id="ops-log-tbody" class="divide-y divide-white/5 bg-transparent">
+                    {% for log in operations_logs %}
+                    <tr class="ops-log-row hover:bg-white/[0.03] transition-colors duration-200"
+                        data-date="{{ log.recorded_at|date:'Y-m-d' }}">
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.recorded_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-300">{{ log.pond.name }}
+                        </td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-semibold text-stone-400">
+                            {% if log.feed_type %}
+                            {% if log.feed_type.icon == 'wheat' %}🌾{% elif log.feed_type.icon == 'bug' %}🐛{% elif
+                            log.feed_type.icon == 'corn' %}🌽{% elif log.feed_type.icon == 'leaf' %}🥬{% elif
+                            log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ log.feed_type.name }}
+                            {% else %}
+                            <span class="text-stone-500">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                            {% if log.fed %}
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Fed
+                            </span>
+                            {% else %}
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 px-2.5 py-0.5 text-xs font-bold text-rose-400">
+                                <span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>
+                                Not Fed / Empty
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm text-[#a0ac96] font-bold">{{ log.recorded_by.get_full_name|default:log.recorded_by.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr id="ops-log-initial-empty-row">
+                        <td colspan="5" class="px-8 py-16 text-center text-[#a0ac96]">
+                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded yet</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="ops-log-empty-row" class="hidden">
+                        <td colspan="5" class="px-8 py-16 text-center text-[#a0ac96]">
+                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded on <span
+                                    id="ops-log-selected-date-str" class="text-[#cca43b] font-mono"></span></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Weekly and Monthly Sales Grid -->
+    <div data-report-group="sales" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
+            <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Weekly Sales Summary</h3>
+                </div>
+                <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Periodic Aggregation</span>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="min-w-full divide-y divide-white/10">
+                    <thead class="bg-white/[0.03]">
+                        <tr>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Week</th>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Quantity</th>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Total Sales (₱)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 bg-transparent">
+                        {% for row in sales_weekly %}
+                        <tr class="hover:bg-white/[0.03] transition-colors duration-200">
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.week|date:"M d, Y" }}</td>
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-8 py-16 text-center text-[#a0ac96]">
+                                <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p class="text-sm font-bold uppercase tracking-wider">No weekly sales data active</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div
+            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
+            <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Monthly Sales Summary</h3>
+                </div>
+                <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Macro Aggregation</span>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="min-w-full divide-y divide-white/10">
+                    <thead class="bg-white/[0.03]">
+                        <tr>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Month</th>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Quantity</th>
+                            <th
+                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                Total Sales (₱)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 bg-transparent">
+                        {% for row in sales_monthly %}
+                        <tr class="hover:bg-white/[0.03] transition-colors duration-200">
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.month|date:"M Y" }}</td>
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
+                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-8 py-16 text-center text-[#a0ac96]">
+                                <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p class="text-sm font-bold uppercase tracking-wider">No monthly sales data active</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    @media print {
+
+        /* Hide everything except sidebar */
+        body * {
+            visibility: hidden !important;
+        }
+
+        #report-sidebar,
+        #report-sidebar * {
+            visibility: visible !important;
+        }
+
+        #report-sidebar {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            background: white !important;
+            color: black !important;
+            box-shadow: none !important;
+            border: none !important;
+            transform: none !important;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+
+        .print-report-table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+            color: black !important;
+            margin-top: 15px !important;
+        }
+
+        .print-report-table th,
+        .print-report-table td {
+            border: 1px solid #ddd !important;
+            padding: 8px !important;
+            color: black !important;
+            background: transparent !important;
+        }
+
+        .print-report-table th {
+            background-color: #f2f2f2 !important;
+            font-weight: bold !important;
+        }
+
+        .text-emerald-400 {
+            color: #047857 !important;
+            /* dark emerald for print readability */
+        }
+
+        .text-amber-400 {
+            color: #b45309 !important;
+            /* dark amber for print */
+        }
+
+        .text-rose-400 {
+            color: #be123c !important;
+            /* dark rose for print */
+        }
+    }
+</style>
+
+<!-- Printable Report Sidebar -->
+<div id="report-sidebar"
+    class="fixed inset-y-0 right-0 z-50 w-full max-w-4xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 shadow-2xl flex flex-col no-print-sidebar-style">
+    <!-- Header (No Print) -->
+    <div class="flex items-center justify-between p-6 border-b border-white/10 no-print bg-[#01140e]">
+        <div>
+            <h2 class="text-xl font-bold text-stone-100">REPORT</h2>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()"
+                class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-black hover:bg-[#cca43b]/90 transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Print Report
+            </button>
+            <button onclick="closeReportSidebar()"
+                class="p-2 text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Area -->
+    <div class="flex-1 overflow-y-auto p-8 bg-[#021f15] text-stone-100 print:bg-white print:text-black font-sans">
+        <div class="max-w-3xl mx-auto space-y-8">
+            <!-- Report Branding Header -->
+            <div id="report-branding-header" class="border-b-2 border-[#cca43b] pb-6 flex justify-between items-end print:border-black">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight text-white print:text-black uppercase">Silay Superworm
+                        & Crayfish</h1>
+                    <p
+                        class="text-xs font-semibold tracking-[0.2em] text-[#cca43b] uppercase mt-1 print:text-stone-800">
+                        Operational & Sales Performance Report</p>
+                </div>
+                <div class="text-right font-mono text-xs text-[#a0ac96] print:text-black">
+                    <p>Generated: <span id="report-gen-date"></span></p>
+                    <p>Period: <span id="report-period"></span></p>
+                </div>
+            </div>
+
+
+            <!-- Summary KPI Block -->
+            <div id="report-kpi-block" class="grid grid-cols-2 gap-6">
+                <div class="bg-white/[0.02] border border-white/10 rounded-2xl p-6 print:border-black">
+                    <p class="text-xs font-black uppercase text-[#a0ac96] tracking-wider print:text-stone-800">Total
+                        Sales Revenue</p>
+                    <p id="report-kpi-sales" class="text-2xl font-black text-[#cca43b] print:text-black mt-2 font-mono">
+                        ₱0.00</p>
+                </div>
+                <div class="bg-white/[0.02] border border-white/10 rounded-2xl p-6 print:border-black">
+                    <p class="text-xs font-black uppercase text-[#a0ac96] tracking-wider print:text-stone-800">Biomass
+                        Volume Dispatched</p>
+                    <p id="report-kpi-qty" class="text-2xl font-black text-white print:text-black mt-2 font-mono">0.00
+                        kg</p>
+                </div>
+            </div>
+
+            <!-- Section: Sales Details -->
+            <div id="report-sales-section" class="space-y-4">
+                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
+                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
+                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Sales Ledger
+                    </h3>
+                </div>
+                <table class="w-full text-left text-sm print-report-table">
+                    <thead>
+                        <tr
+                            class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
+                            <th class="py-3 px-4 font-black">Date</th>
+                            <th class="py-3 px-4 font-black">Order No.</th>
+                            <th class="py-3 px-4 font-black">Customer</th>
+                            <th class="py-3 px-4 font-black">Product</th>
+                            <th class="py-3 px-4 font-black">City</th>
+                            <th class="py-3 px-4 font-black">Quantity</th>
+                            <th class="py-3 px-4 font-black">Paid Status</th>
+                            <th class="py-3 px-4 font-black text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-sales-tbody"
+                        class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section: Operations Details -->
+            <div id="report-ops-section" class="space-y-4">
+                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
+                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
+                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Operations Log
+                    </h3>
+                </div>
+                <table class="w-full text-left text-sm print-report-table">
+                    <thead>
+                        <tr
+                            class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
+                            <th class="py-3 px-4 font-black">Date & Time</th>
+                            <th class="py-3 px-4 font-black">Pond / Shelf</th>
+                            <th class="py-3 px-4 font-black">Feed Type</th>
+                            <th class="py-3 px-4 font-black">Status</th>
+                            <th class="py-3 px-4 font-black">Recorded By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-ops-tbody"
+                        class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section: Receipts -->
+            <div id="report-receipts-section" class="space-y-6">
+                <div class="pt-8">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black mb-6 no-print">
+                        <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
+                        <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Receipt
+                            Slips</h3>
+                    </div>
+                    <div id="receipts-slips-container" class="space-y-6">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Footer Signature Block -->
+            <div class="pt-16 grid grid-cols-2 gap-12 text-xs font-mono text-[#a0ac96] print:text-black">
+                <div class="border-t border-white/20 pt-4 text-center print:border-black">
+                    <p class="font-bold text-white print:text-black">Prepared By</p>
+                    <p class="mt-4">{{ request.user.get_full_name|default:request.user.username }}</p>
+                </div>
+                <div class="border-t border-white/20 pt-4 text-center print:border-black">
+                    <p class="font-bold text-white print:text-black">Authorized Signature</p>
+                    <p class="mt-4">Date: ________________________</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectEl = document.getElementById('report-type-select');
+        const generateBtn = document.getElementById('generate-report-btn');
+        const items = document.querySelectorAll('[data-report-group]');
+
+        // Calendar Components
+        const monthYearEl = document.getElementById('calendar-month-year');
+        const daysGridEl = document.getElementById('calendar-days-grid');
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+
+        // Table Components
+        const initialEmptyRow = document.getElementById('ops-log-initial-empty-row');
+        const emptyRow = document.getElementById('ops-log-empty-row');
+        const selectedDateStrSpan = document.getElementById('ops-log-selected-date-str');
+
+        // Parse existing logs to find dates with data
+        const loggedDatesSet = new Set();
+        const rows = document.querySelectorAll('.ops-log-row');
+        rows.forEach(row => {
+            const rowDate = row.getAttribute('data-date');
+            if (rowDate) loggedDatesSet.add(rowDate);
+        });
+
+        // Current Calendar State
+        const today = new Date();
+        let selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth(); // 0-indexed
+
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        function renderCalendar() {
+            if (!daysGridEl || !monthYearEl) return;
+
+            daysGridEl.innerHTML = '';
+            monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            // Render empty cells for leading weekday padding
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'w-10 h-10 md:w-12 md:h-12';
+                daysGridEl.appendChild(emptyCell);
+            }
+
+            // Render month days
+            for (let day = 1; day <= lastDay; day++) {
+                const dayString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayBtn = document.createElement('button');
+                dayBtn.type = 'button';
+                dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black transition-all cursor-pointer select-none';
+
+                dayBtn.textContent = day;
+
+                const isSelected = (dayString === selectedDate);
+                const isToday = (dayString === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
+                const hasLogs = loggedDatesSet.has(dayString);
+
+                if (isSelected) {
+                    dayBtn.className += ' bg-[#cca43b] text-black shadow-lg scale-110';
+                } else if (isToday) {
+                    dayBtn.className += ' border border-[#cca43b]/50 text-[#cca43b]';
+                } else {
+                    dayBtn.className += ' text-stone-300 hover:bg-white/10';
+                }
+
+                // Add a visual indicator dot if logs exist for this date
+                if (hasLogs) {
+                    const dot = document.createElement('span');
+                    dot.className = `absolute bottom-1.5 md:bottom-2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isSelected ? 'bg-black' : 'bg-[#cca43b]'}`;
+                    dayBtn.appendChild(dot);
+                }
+
+                dayBtn.addEventListener('click', () => {
+                    selectedDate = dayString;
+                    filterOpsLogsByDate(selectedDate);
+                    renderCalendar();
+                });
+
+                daysGridEl.appendChild(dayBtn);
+            }
+        }
+
+        function filterOpsLogsByDate(selectedDate) {
+            const rows = document.querySelectorAll('.ops-log-row');
+
+            // If there's an initial empty row in Django (no logs at all), don't filter
+            if (initialEmptyRow && !rows.length) return;
+
+            let matchCount = 0;
+            rows.forEach(row => {
+                const rowDate = row.getAttribute('data-date');
+                if (!selectedDate || rowDate === selectedDate) {
+                    row.style.display = '';
+                    matchCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (selectedDate && matchCount === 0) {
+                if (emptyRow) {
+                    emptyRow.classList.remove('hidden');
+                    if (selectedDateStrSpan) {
+                        const dateParts = selectedDate.split('-');
+                        const year = dateParts[0];
+                        const monthIndex = parseInt(dateParts[1]) - 1;
+                        const day = dateParts[2];
+                        const dateObj = new Date(year, monthIndex, day);
+                        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                        selectedDateStrSpan.textContent = dateObj.toLocaleDateString('en-US', options);
+                    }
+                }
+            } else {
+                if (emptyRow) emptyRow.classList.add('hidden');
+            }
+        }
+
+        if (prevMonthBtn && nextMonthBtn) {
+            prevMonthBtn.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+        }
+
+        // Initialize Calendar & Filter
+        renderCalendar();
+        filterOpsLogsByDate(selectedDate);
+
+        function applyFilter(selectedValue) {
+            items.forEach(item => {
+                const groups = item.getAttribute('data-report-group').split(' ');
+                if (selectedValue === 'all' || groups.includes(selectedValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            const execCard = document.getElementById('execution-card');
+            if (execCard) {
+                if (selectedValue === 'receipts') {
+                    execCard.style.display = 'none';
+                } else {
+                    execCard.style.display = '';
+                }
+            }
+
+            const dateCard = document.getElementById('date-range-card');
+            if (dateCard) {
+                if (selectedValue === 'receipts') {
+                    dateCard.style.display = 'none';
+                } else {
+                    dateCard.style.display = '';
+                }
+            }
+
+            const filterGrid = document.getElementById('filter-controls-grid');
+            if (filterGrid) {
+                if (selectedValue === 'receipts') {
+                    filterGrid.className = 'grid grid-cols-1 gap-6 lg:grid-cols-2';
+                } else {
+                    filterGrid.className = 'grid grid-cols-1 gap-6 lg:grid-cols-4';
+                }
+            }
+
+            // Toggle SHOW column visibility
+            const showCols = document.querySelectorAll('.receipt-action-col');
+            if (selectedValue === 'receipts') {
+                showCols.forEach(col => col.classList.remove('hidden'));
+            } else {
+                showCols.forEach(col => col.classList.add('hidden'));
+            }
+
+            // Toggle ORDER NUMBER column visibility
+            const orderNumCols = document.querySelectorAll('.order-num-col');
+            if (selectedValue === 'receipts') {
+                orderNumCols.forEach(col => col.classList.add('hidden'));
+            } else {
+                orderNumCols.forEach(col => col.classList.remove('hidden'));
+            }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const reportTypeParam = urlParams.get('report_type');
+        if (reportTypeParam && selectEl) {
+            selectEl.value = reportTypeParam;
+            applyFilter(reportTypeParam);
+        } else if (selectEl) {
+            applyFilter(selectEl.value);
+        }
+
+        if (selectEl) {
+            // Watch changes
+            selectEl.addEventListener('change', function () {
+                applyFilter(this.value);
+            });
+        }
+
+        if (generateBtn) {
+            generateBtn.addEventListener('click', function () {
+                const originalText = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>Generating...
+                `;
+
+                setTimeout(() => {
+                    const startDate = document.getElementById('start-date-input').value;
+                    const endDate = document.getElementById('end-date-input').value;
+                    const reportType = selectEl ? selectEl.value : 'all';
+
+                    let url = window.location.pathname + '?';
+                    if (startDate) url += `start_date=${startDate}&`;
+                    if (endDate) url += `end_date=${endDate}&`;
+                    if (reportType) url += `report_type=${reportType}&`;
+                    url += 'show_report=1';
+
+                    window.location.href = url;
+                }, 500);
+            });
+        }
+
+        // Sidebar Actions
+        window.openReportSidebar = function () {
+            // Populate Gen Date
+            const today = new Date();
+            document.getElementById('report-gen-date').textContent = today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Populate Period
+            const startVal = document.getElementById('start-date-input').value;
+            const endVal = document.getElementById('end-date-input').value;
+            if (startVal && endVal) {
+                document.getElementById('report-period').textContent = `${startVal} to ${endVal}`;
+            } else if (startVal) {
+                document.getElementById('report-period').textContent = `From ${startVal}`;
+            } else if (endVal) {
+                document.getElementById('report-period').textContent = `Until ${endVal}`;
+            } else {
+                document.getElementById('report-period').textContent = 'Last 30 Days';
+            }
+
+            // Populate Scope
+            const typeSelect = document.getElementById('report-type-select');
+            const scopeVal = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : 'Comprehensive Summary';
+            const scopeValEl = document.getElementById('report-scope-val');
+            if (scopeValEl) scopeValEl.textContent = scopeVal;
+
+            // Populate KPIs
+            const salesValEl = document.getElementById('total-sales-val');
+            const qtyValEl = document.getElementById('total-qty-val');
+            document.getElementById('report-kpi-sales').textContent = salesValEl ? salesValEl.textContent : '₱0.00';
+            document.getElementById('report-kpi-qty').textContent = qtyValEl ? qtyValEl.textContent + ' kg' : '0.00 kg';
+
+            // Populate Sales Ledger Table
+            const salesTbody = document.getElementById('report-sales-tbody');
+            const sourceSalesTbody = document.getElementById('sales-by-date-tbody');
+            if (salesTbody && sourceSalesTbody) {
+                salesTbody.innerHTML = '';
+                const rows = sourceSalesTbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 8) {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4">${cells[0].textContent}</td>
+                            <td class="py-3 px-4 font-mono font-bold">${cells[1].textContent}</td>
+                            <td class="py-3 px-4">${cells[2].textContent}</td>
+                            <td class="py-3 px-4">${cells[3].textContent}</td>
+                            <td class="py-3 px-4">${cells[4].textContent}</td>
+                            <td class="py-3 px-4 font-mono">${cells[5].textContent}</td>
+                            <td class="py-3 px-4">${cells[6].innerHTML}</td>
+                            <td class="py-3 px-4 text-right font-mono font-bold text-[#cca43b] print:text-black">${cells[7].textContent}</td>
+                        `;
+                        salesTbody.appendChild(tr);
+                    }
+                });
+                if (rows.length === 0) {
+                    salesTbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-500">No records</td></tr>';
+                }
+            }
+
+            // Populate Ops Log Table
+            const opsTbody = document.getElementById('report-ops-tbody');
+            const sourceOpsTbody = document.getElementById('ops-log-tbody');
+            if (opsTbody && sourceOpsTbody) {
+                opsTbody.innerHTML = '';
+                const rows = sourceOpsTbody.querySelectorAll('.ops-log-row');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 5) {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4">${cells[0].textContent}</td>
+                            <td class="py-3 px-4">${cells[1].textContent}</td>
+                            <td class="py-3 px-4">${cells[2].textContent}</td>
+                            <td class="py-3 px-4">${cells[3].innerHTML}</td>
+                            <td class="py-3 px-4">${cells[4].textContent}</td>
+                        `;
+                        opsTbody.appendChild(tr);
+                    }
+                });
+                if (opsTbody.children.length === 0) {
+                    opsTbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-stone-500">No records</td></tr>';
+                }
+            }
+
+            // Populate Receipts Section
+            const receiptsSummaryTbody = document.getElementById('receipts-summary-tbody');
+            const receiptsSlipsContainer = document.getElementById('receipts-slips-container');
+            const receiptsSection = document.getElementById('report-receipts-section');
+            if (sourceSalesTbody) {
+                if (receiptsSummaryTbody) receiptsSummaryTbody.innerHTML = '';
+                if (receiptsSlipsContainer) receiptsSlipsContainer.innerHTML = '';
+
+                const rows = sourceSalesTbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 8) {
+                        const date = cells[0].textContent;
+                        const orderNumber = cells[1].textContent;
+                        const customerName = cells[2].textContent;
+                        const quantity = cells[5].textContent;
+                        const paidStatus = cells[6].innerHTML;
+                        const totalAmount = cells[7].textContent;
+
+                        // 1. Populate summary table row
+                        if (receiptsSummaryTbody) {
+                            const tr = document.createElement('tr');
+                            tr.className = 'border-b border-white/5 print:border-black';
+                            tr.innerHTML = `
+                                <td class="py-3 px-4">${date}</td>
+                                <td class="py-3 px-4 font-mono font-bold">${orderNumber}</td>
+                                <td class="py-3 px-4">${customerName}</td>
+                                <td class="py-3 px-4 font-mono">${quantity}</td>
+                                <td class="py-3 px-4">${paidStatus}</td>
+                                <td class="py-3 px-4 text-right font-mono font-bold text-[#cca43b] print:text-black">${totalAmount}</td>
+                            `;
+                            receiptsSummaryTbody.appendChild(tr);
+                        }
+
+                        // 2. Populate receipt slip card
+                        if (receiptsSlipsContainer) {
+                            const product = row.getAttribute('data-product') || 'Crayfish / Superworm';
+                            const price = row.getAttribute('data-price') || '0.00';
+                            const discount = row.getAttribute('data-discount') || '0.00';
+                            const address = row.getAttribute('data-address') || 'N/A';
+                            const phone = row.getAttribute('data-phone') || 'N/A';
+                            const receiptImage = row.getAttribute('data-receipt-image') || '';
+
+                            const card = document.createElement('div');
+                            card.className = 'border-2 border-white/20 print:border-black rounded-2xl p-8 bg-white/[0.01] print:bg-white text-stone-200 print:text-black space-y-6 print:break-inside-avoid print:page-break-after-always max-w-2xl mx-auto';
+
+                            let imgHtml = '';
+                            if (receiptImage) {
+                                imgHtml = `
+                                    <div class="mt-2 border border-dashed border-white/20 print:border-black rounded-xl p-4 flex flex-col items-center gap-2">
+                                        <p class="text-[10px] uppercase font-bold text-[#a0ac96] print:text-black">Uploaded Receipt / Payment Proof</p>
+                                        <img src="${receiptImage}" class="max-h-64 object-contain rounded-lg border border-white/10 print:border-black" />
+                                    </div>
+                                `;
+                            }
+
+                            card.innerHTML = `
+                                <!-- Top branding section -->
+                                <div class="flex justify-between items-start border-b-2 border-white/10 print:border-black pb-4">
+                                    <div>
+                                        <h1 class="text-4xl font-extrabold tracking-wider text-white print:text-black">RECEIPT</h1>
+                                        <p class="text-xs font-mono font-bold text-[#cca43b] print:text-black mt-1">NO. <span class="receipt-order-number">${orderNumber}</span></p>
+                                    </div>
+                                    <div class="text-right text-xs space-y-1">
+                                        <p class="font-black text-sm uppercase text-[#cca43b] print:text-black">Silay Superworm & Crayfish</p>
+                                        <p class="text-[#a0ac96] print:text-stone-700 font-semibold">Silay City, Negros Occidental</p>
+                                        <p class="text-[#a0ac96] print:text-stone-700 font-mono">+63 912 345 6789</p>
+                                    </div>
+                                </div>
+
+                                <!-- Bill To Section -->
+                                <div class="w-full md:w-2/3 border border-white/10 print:border-black rounded-lg overflow-hidden">
+                                    <div class="bg-white/5 print:bg-black text-white px-3 py-1.5 text-xs font-black uppercase tracking-wider border-b border-white/10 print:border-black print:text-white">
+                                        Bill To:
+                                    </div>
+                                    <div class="p-3 text-xs space-y-1 text-stone-300 print:text-black">
+                                        <p class="font-bold text-white print:text-black uppercase">${customerName}</p>
+                                        <p class="leading-relaxed font-semibold">${address}</p>
+                                        <p class="font-mono font-semibold">Phone: ${phone}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Items Table -->
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs border-collapse">
+                                        <thead>
+                                            <tr class="bg-white/5 print:bg-black text-white print:text-white uppercase font-black border-b border-white/10 print:border-black">
+                                                <th class="py-2 px-3 border border-white/10 print:border-black w-12 text-center">No.</th>
+                                                <th class="py-2 px-3 border border-white/10 print:border-black">Description</th>
+                                                <th class="py-2 px-3 border border-white/10 print:border-black text-center w-24">Quantity</th>
+                                                <th class="py-2 px-3 border border-white/10 print:border-black text-right w-28">Unit Cost</th>
+                                                <th class="py-2 px-3 border border-white/10 print:border-black text-right w-28">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/5 print:divide-black font-mono">
+                                            <tr>
+                                                <td class="py-3 px-3 border border-white/10 print:border-black text-center">1</td>
+                                                <td class="py-3 px-3 border border-white/10 print:border-black font-sans font-bold text-white print:text-black">${product}</td>
+                                                <td class="py-3 px-3 border border-white/10 print:border-black text-center">${quantity}</td>
+                                                <td class="py-3 px-3 border border-white/10 print:border-black text-right">₱${price}</td>
+                                                <td class="py-3 px-3 border border-white/10 print:border-black text-right font-bold text-[#cca43b] print:text-black">${totalAmount}</td>
+                                            </tr>
+                                            <!-- Empty placeholders for classic paper look -->
+                                            <tr class="h-6">
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                            </tr>
+                                            <tr class="h-6">
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                            </tr>
+                                            <tr class="h-6">
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                                <td class="border border-white/10 print:border-black"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Subtotal Box & Optional Image -->
+                                <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+                                    <div class="w-full md:w-1/2">
+                                        ${imgHtml}
+                                    </div>
+                                    <div class="w-full md:w-1/3 flex justify-end">
+                                        <div class="border border-white/10 print:border-black flex w-full rounded overflow-hidden">
+                                            <span class="bg-white/5 print:bg-black text-white print:text-white text-[10px] font-black px-3 py-2 flex items-center justify-center uppercase tracking-wider w-1/2 border-r border-white/10 print:border-black shrink-0">
+                                                Subtotal
+                                            </span>
+                                            <span class="p-2 text-right font-mono font-bold text-sm text-[#cca43b] print:text-black w-1/2 flex items-center justify-end">
+                                                ${totalAmount}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            receiptsSlipsContainer.appendChild(card);
+                        }
+                    }
+                });
+                if (rows.length === 0 && receiptsSection) {
+                    receiptsSection.innerHTML = '<div class="text-center py-8 text-[#a0ac96]">No transactions recorded.</div>';
+                }
+            }
+
+            // Handle section visibilities based on type
+            const rType = typeSelect ? typeSelect.value : 'all';
+            const kpiBlock = document.getElementById('report-kpi-block');
+            const salesSection = document.getElementById('report-sales-section');
+            const opsSection = document.getElementById('report-ops-section');
+            const recSection = document.getElementById('report-receipts-section');
+
+            if (rType === 'sales') {
+                if (kpiBlock) kpiBlock.classList.remove('hidden');
+                if (salesSection) salesSection.classList.remove('hidden');
+                if (opsSection) opsSection.classList.add('hidden');
+                if (recSection) recSection.classList.add('hidden');
+            } else if (rType === 'operations') {
+                if (kpiBlock) kpiBlock.classList.add('hidden');
+                if (salesSection) salesSection.classList.add('hidden');
+                if (opsSection) opsSection.classList.remove('hidden');
+                if (recSection) recSection.classList.add('hidden');
+            } else if (rType === 'receipts') {
+                if (kpiBlock) kpiBlock.classList.add('hidden');
+                if (salesSection) salesSection.classList.add('hidden');
+                if (opsSection) opsSection.classList.add('hidden');
+                if (recSection) recSection.classList.remove('hidden');
+            } else {
+                if (kpiBlock) kpiBlock.classList.remove('hidden');
+                if (salesSection) salesSection.classList.remove('hidden');
+                if (opsSection) opsSection.classList.remove('hidden');
+                if (recSection) recSection.classList.add('hidden');
+            }
+
+            // Show Sidebar
+            const sidebar = document.getElementById('report-sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('translate-x-full');
+            }
+        };
+
+        window.showSingleReceipt = function (orderNumber) {
+            const kpiBlock = document.getElementById('report-kpi-block');
+            const salesSection = document.getElementById('report-sales-section');
+            const opsSection = document.getElementById('report-ops-section');
+            const recSection = document.getElementById('report-receipts-section');
+
+            if (kpiBlock) kpiBlock.classList.add('hidden');
+            if (salesSection) salesSection.classList.add('hidden');
+            if (opsSection) opsSection.classList.add('hidden');
+            if (recSection) recSection.classList.remove('hidden');
+
+            openReportSidebar();
+            setTimeout(() => {
+                const cards = document.querySelectorAll('#receipts-slips-container > div');
+                cards.forEach(card => {
+                    const cardOrderNumText = card.querySelector('.receipt-order-number');
+                    if (cardOrderNumText && cardOrderNumText.textContent.trim() === orderNumber) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            }, 150);
+        };
+
+        window.closeReportSidebar = function () {
+            const sidebar = document.getElementById('report-sidebar');
+            if (sidebar) {
+                sidebar.classList.add('translate-x-full');
+            }
+            // Remove parameter from URL quietly
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search.replace(/[&?]show_report=1/, '');
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        };
+
+        // Auto open if flagged in URL
+        if (urlParams.get('show_report') === '1') {
+            setTimeout(openReportSidebar, 100);
+        }
+    });
+</script>
+{% endblock %}

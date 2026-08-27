@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "PowerShell(Get-ChildItem -Path . -Exclude .venv -Recurse -Depth 3 | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"$PWD\\\\\", \"\"\\) })"
+    ]
+  }
+}

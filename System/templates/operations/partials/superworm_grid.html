@@ -1,0 +1,57 @@
+<div class="space-y-8">
+    
+    <!-- Left Shelf -->
+    <div class="rounded-2xl border border-white/10 bg-[#021f15]/80 shadow-sm overflow-hidden flex flex-col backdrop-blur-sm">
+        <div class="bg-gradient-to-r from-[#0a2e1b] to-[#04120a] border-b border-[#cca43b]/20 px-5 py-3.5 flex items-center justify-between text-stone-100 shadow-inner">
+            <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#cca43b]/10 backdrop-blur-sm">
+                    <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-base tracking-wide text-stone-100 drop-shadow-sm">Left Shelf</h3>
+            </div>
+            <span class="rounded-full bg-[#cca43b]/10 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] shadow-inner ring-1 ring-[#cca43b]/30 backdrop-blur-md">{{ sw_block1_ponds|length }} CONTAINERS</span>
+        </div>
+        <div class="p-5 bg-[#01140e]/50">
+            {% include 'operations/partials/superworm_card_grid.html' with section_ponds=sw_block1_ponds shelf_position='Left Shelf' %}
+        </div>
+    </div>
+
+    <!-- Right Shelf -->
+    <div class="rounded-2xl border border-white/10 bg-[#021f15]/80 shadow-sm overflow-hidden flex flex-col backdrop-blur-sm">
+        <div class="bg-gradient-to-r from-[#0a2e1b] to-[#04120a] border-b border-[#cca43b]/20 px-5 py-3.5 flex items-center justify-between text-stone-100 shadow-inner">
+            <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#cca43b]/10 backdrop-blur-sm">
+                    <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-base tracking-wide text-stone-100 drop-shadow-sm">Right Shelf</h3>
+            </div>
+            <span class="rounded-full bg-[#cca43b]/10 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] shadow-inner ring-1 ring-[#cca43b]/30 backdrop-blur-md">{{ sw_block2_ponds|length }} CONTAINERS</span>
+        </div>
+        <div class="p-5 bg-[#01140e]/50">
+            {% include 'operations/partials/superworm_card_grid.html' with section_ponds=sw_block2_ponds shelf_position='Right Shelf' %}
+        </div>
+    </div>
+
+    <!-- Back Shelf -->
+    <div class="rounded-2xl border border-white/10 bg-[#021f15]/80 shadow-sm overflow-hidden flex flex-col backdrop-blur-sm">
+        <div class="bg-gradient-to-r from-[#0a2e1b] to-[#04120a] border-b border-[#cca43b]/20 px-5 py-3.5 flex items-center justify-between text-stone-100 shadow-inner">
+            <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#cca43b]/10 backdrop-blur-sm">
+                    <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-base tracking-wide text-stone-100 drop-shadow-sm">Back Shelf</h3>
+            </div>
+            <span class="rounded-full bg-[#cca43b]/10 px-3 py-1 text-xs font-bold tracking-wider text-[#cca43b] shadow-inner ring-1 ring-[#cca43b]/30 backdrop-blur-md">{{ sw_block3_ponds|length }} CONTAINERS</span>
+        </div>
+        <div class="p-5 bg-[#01140e]/50">
+            {% include 'operations/partials/superworm_card_grid.html' with section_ponds=sw_block3_ponds shelf_position='Back Shelf' %}
+        </div>
+    </div>
+
+</div>

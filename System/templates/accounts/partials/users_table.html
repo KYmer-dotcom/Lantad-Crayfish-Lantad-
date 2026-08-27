@@ -1,0 +1,69 @@
+<div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+    <table class="w-full text-left text-sm text-stone-100">
+        <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+            <tr>
+                <th class="px-6 py-4">Username</th>
+                <th class="px-6 py-4">Name</th>
+                <th class="px-6 py-4">Assigned Farm</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">New Password</th>
+                <th class="px-6 py-4">Confirm</th>
+                <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+            {% for account in users %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-bold text-stone-100">{{ account.username }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">
+                    {{ account.get_full_name|default:"-" }}
+                </td>
+                <td class="px-6 py-4">
+                    <select name="assigned_farm" form="user-form-{{ account.id }}" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none">
+                        <option value="">Unassigned</option>
+                        {% for farm in farms %}
+                        <option value="{{ farm.id }}" {% if account.assigned_farm_id == farm.id %}selected{% endif %}>
+                            {{ farm.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="px-6 py-4">
+                    <select name="is_active" form="user-form-{{ account.id }}" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" {% if account.id == user.id %}disabled{% endif %}>
+                        <option value="true" {% if account.is_active %}selected{% endif %}>Active</option>
+                        <option value="false" {% if not account.is_active %}selected{% endif %}>Inactive</option>
+                    </select>
+                </td>
+                <td class="px-6 py-4">
+                    <input type="password" name="password1" form="user-form-{{ account.id }}" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="New password">
+                </td>
+                <td class="px-6 py-4">
+                    <input type="password" name="password2" form="user-form-{{ account.id }}" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="Confirm">
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center justify-end gap-2">
+                        <form id="user-form-{{ account.id }}" method="post" action="{% url 'accounts:user_update' account.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="rounded-xl bg-[#cca43b] px-3 py-1.5 text-xs font-bold text-[#021f15] hover:bg-[#cca43b]/90 transition-colors">Update</button>
+                        </form>
+                        <form method="post" action="{% url 'accounts:user_remove' account.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="rounded-xl bg-rose-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-600 transition-colors">Remove</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">
+                    <svg class="mx-auto h-12 w-12 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-semibold text-stone-100">No accounts found</h3>
+                    <p class="mt-1 text-xs text-[#a0ac96]">Create an account to get started.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

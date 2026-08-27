@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Register - Silay Superworm & Crayfish{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8" style="background-image: url('{% static 'images/auth/customer-login-bg.jpg' %}');">
+    <div class="max-w-2xl w-full space-y-8">
+        <div class="text-center">
+            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="mx-auto w-20 h-20 rounded-2xl bg-[#021f15] p-2 shadow-[0_10px_30px_rgba(204,164,59,0.15)] border-4 border-[#021f15]/50 object-contain">
+            <h2 class="mt-6 text-3xl font-extrabold text-[#cca43b] tracking-wider uppercase">SILAY SUPERWORM AND CRAYFISH RETAIL</h2>
+            <p class="mt-2 text-sm text-[#a0ac96]">Register</p>
+        </div>
+
+        <div class="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/10">
+            {% if messages %}
+            <div class="mb-4 space-y-2">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-700{% else %}bg-blue-50 border-blue-200 text-blue-700{% endif %} px-4 py-3 rounded-lg border text-sm">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">Username</label>
+                        <input type="text" name="username" value="{{ form.username.value|default:'' }}" required class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.username.errors %}<p class="mt-1 text-xs text-red-600">{{ form.username.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">Phone</label>
+                        <input type="text" name="phone" value="{{ form.phone.value|default:'' }}" required maxlength="11" minlength="11" pattern="[0-9]{11}" placeholder="e.g. 09123456789" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">First name</label>
+                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required oninput="this.value = this.value.replace(/[0-9]/g, '')" class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.first_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.first_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">Last name</label>
+                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required oninput="this.value = this.value.replace(/[0-9]/g, '')" class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.last_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.last_name.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#a0ac96] mb-2">Email (optional)</label>
+                    <input type="email" name="email" value="{{ form.email.value|default:'' }}" class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                    {% if form.email.errors %}<p class="mt-1 text-xs text-red-600">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#a0ac96] mb-2">Classification (optional)</label>
+                    <select name="classification" class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        <option value="" {% if not form.classification.value %}selected{% endif %}>Individual (default)</option>
+                        <option value="market" {% if form.classification.value == 'market' %}selected{% endif %}>Market</option>
+                        <option value="restaurant" {% if form.classification.value == 'restaurant' %}selected{% endif %}>Restaurant</option>
+                    </select>
+                    {% if form.classification.errors %}<p class="mt-1 text-xs text-red-600">{{ form.classification.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#a0ac96] mb-2">Address</label>
+                    <textarea name="address" rows="3" required class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">{{ form.address.value|default:'' }}</textarea>
+                    {% if form.address.errors %}<p class="mt-1 text-xs text-red-600">{{ form.address.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">Password</label>
+                        <input type="password" name="password1" required class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.password1.errors %}<p class="mt-1 text-xs text-red-600">{{ form.password1.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#a0ac96] mb-2">Confirm password</label>
+                        <input type="password" name="password2" required class="w-full px-4 py-3 border border-white/10 bg-black/20 text-stone-100 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#cca43b]">
+                        {% if form.password2.errors %}<p class="mt-1 text-xs text-red-600">{{ form.password2.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(204,164,59,0.3)] text-sm font-bold text-slate-950 bg-[#cca43b] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#cca43b] transition-all">
+                    Register Customer Account
+                </button>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-[#a0ac96]">
+                Already registered?
+                <a href="{% url 'customer_login' %}" class="font-semibold text-[#cca43b] hover:text-[#b08d33]">Go to customer login</a>
+            </p>
+        </div>
+
+        <p class="text-center text-sm text-white/70">Aquaculture Management System</p>
+    </div>
+</div>
+{% endblock %}

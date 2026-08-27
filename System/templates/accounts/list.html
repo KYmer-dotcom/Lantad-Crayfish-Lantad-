@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block page_content %}
+<div class="space-y-8">
+    <!-- Page Header -->
+    <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Administration Portal</p>
+        <h1 class="mt-2 text-2xl font-semibold text-stone-100">User Administration</h1>
+        <p class="mt-1 text-sm text-[#a0ac96]">Manage system accounts and customers</p>
+    </div>
+
+    <!-- Accounts Section -->
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-semibold text-stone-100">Owners</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-white/10 text-xs uppercase tracking-widest text-[#a0ac96]">
+                        <th class="pb-3 font-semibold">Name</th>
+                        <th class="pb-3 font-semibold">Username</th>
+                        <th class="pb-3 font-semibold">Date Joined</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for user in users %}
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td class="py-4 text-stone-100 font-medium">{{ user.get_full_name|default:user.username }}</td>
+                        <td class="py-4 text-[#a0ac96]">{{ user.username }}</td>
+                        <td class="py-4 text-[#a0ac96]">{{ user.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="py-4 text-center text-[#a0ac96]">No owners found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-semibold text-stone-100">Customers</h3>
+        </div>
+        <div id="customers-table">
+            {% include 'accounts/partials/customers_table.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

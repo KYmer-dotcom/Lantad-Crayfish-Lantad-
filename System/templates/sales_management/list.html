@@ -1,0 +1,249 @@
+{% extends "layout.html" %}
+{% block title %}Sales Management{% endblock %}
+{% block header_title %}Sales Management{% endblock %}
+
+{% block page_content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<div class="space-y-8">
+    <!-- Top Header -->
+    <div class="flex flex-wrap items-center justify-between gap-6">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Administration Portal</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Orders & Customer Relations</h1>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Stat Card 1 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Total Orders</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ total_orders|default:"0" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#cca43b] font-bold">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                All recorded orders
+            </div>
+        </div>
+
+        <!-- Stat Card 2 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Revenue</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-[#cca43b] tracking-tight">₱{{ total_revenue|floatformat:2|default:"0.00" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#a0ac96] font-medium">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                Completed transactions
+            </div>
+        </div>
+
+        <!-- Stat Card 3 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Pending Orders</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ pending_orders|default:"0" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#a0ac96] font-medium">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                Awaiting confirmation
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History Section -->
+    <div class="rounded-3xl border border-white/10 bg-black/20 shadow-2xl overflow-hidden backdrop-blur-md">
+        <div class="flex items-center justify-between border-b border-white/10 px-6 py-5 bg-white/[0.02]">
+            <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/10 text-[#cca43b]">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-lg font-black text-stone-50 tracking-tight">Transaction History</h2>
+            </div>
+        </div>
+        <div class="p-6">{% include 'sales_management/partials/transactions_table.html' %}</div>
+    </div>
+</div>
+
+<!-- Read-Only Payment Evidence / Receipt Viewer Modal -->
+<div id="receipt-viewer-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-8">
+    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all space-y-6">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg">
+                    🧾
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-[#cca43b] tracking-wider uppercase">Payment Evidence</h3>
+                    <p class="text-xs text-[#a0ac96]" id="viewer-order-title">Transaction Proof</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeReceiptModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+        </div>
+
+        <!-- Evidence Container -->
+        <div id="viewer-image-container" class="space-y-4">
+            <div class="relative max-h-[380px] overflow-hidden rounded-2xl border border-white/10 bg-black/50 flex items-center justify-center p-2">
+                <img id="viewer-receipt-img" src="" alt="Payment Receipt" class="max-h-[360px] w-auto object-contain rounded-xl shadow-2xl">
+            </div>
+            <div class="flex items-center justify-between text-xs pt-1">
+                <span class="font-bold text-[#a0ac96]">Status: <span id="viewer-status-badge" class="text-emerald-400 font-black uppercase">PAID</span></span>
+                <a id="viewer-full-link" href="#" target="_blank" class="inline-flex items-center gap-1.5 font-bold text-[#cca43b] hover:underline">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Open Full Image
+                </a>
+            </div>
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="viewer-empty-container" class="hidden py-8 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl text-stone-400">
+                📄
+            </div>
+            <p class="text-sm font-bold text-stone-300">No Receipt Screenshot Attached</p>
+            <p class="text-xs text-[#a0ac96] max-w-xs mx-auto">This order was placed via Cash or Direct Gateway with no manual receipt image.</p>
+        </div>
+
+        <div class="flex items-center justify-end border-t border-white/10 pt-4">
+            <button type="button" onclick="closeReceiptModal()" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors uppercase tracking-wider cursor-pointer shadow-lg shadow-[#cca43b]/20">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPaymentModal(orderId, currentStatus, receiptUrl, orderNumber = '') {
+    const modal = document.getElementById('receipt-viewer-modal');
+    const title = document.getElementById('viewer-order-title');
+    const imgContainer = document.getElementById('viewer-image-container');
+    const emptyContainer = document.getElementById('viewer-empty-container');
+    const receiptImg = document.getElementById('viewer-receipt-img');
+    const fullLink = document.getElementById('viewer-full-link');
+    const statusBadge = document.getElementById('viewer-status-badge');
+
+    if (title) title.textContent = orderNumber ? `Order #${orderNumber}` : `Order #${orderId}`;
+    if (statusBadge) {
+        statusBadge.textContent = (currentStatus || 'UNPAID').toUpperCase();
+        statusBadge.className = (currentStatus === 'paid') ? 'text-emerald-400 font-black uppercase' : 'text-rose-400 font-black uppercase';
+    }
+
+    if (receiptUrl && receiptUrl.trim() !== '') {
+        if (receiptImg) receiptImg.src = receiptUrl;
+        if (fullLink) fullLink.href = receiptUrl;
+        if (imgContainer) imgContainer.classList.remove('hidden');
+        if (emptyContainer) emptyContainer.classList.add('hidden');
+    } else {
+        if (imgContainer) imgContainer.classList.add('hidden');
+        if (emptyContainer) emptyContainer.classList.remove('hidden');
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeReceiptModal() {
+    const modal = document.getElementById('receipt-viewer-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
+
+<!-- Pinned Location Map Modal -->
+<div id="location-map-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div>
+                <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Pinned Delivery Location</h3>
+                <p id="location-modal-address" class="text-xs text-[#a0ac96] mt-1"></p>
+            </div>
+            <button type="button" onclick="closeLocationModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+        </div>
+        <div id="modal-delivery-map" class="w-full h-[350px] rounded-2xl border border-white/10 z-0"></div>
+        <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
+            <button type="button" onclick="closeLocationModal()" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let locationMap = null;
+let locationMarker = null;
+
+function openLocationModal(address, lat, lng) {
+    const modal = document.getElementById('location-map-modal');
+    document.getElementById('location-modal-address').textContent = address;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+    const hasCoords = !isNaN(latitude) && !isNaN(longitude);
+
+    setTimeout(() => {
+        if (!locationMap) {
+            locationMap = L.map('modal-delivery-map', {
+                attributionControl: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(locationMap);
+
+            locationMarker = L.marker([0, 0]).addTo(locationMap);
+        }
+
+        if (hasCoords) {
+            locationMap.setView([latitude, longitude], 15);
+            locationMarker.setLatLng([latitude, longitude]);
+            locationMap.invalidateSize();
+        } else {
+            const query = `${address}, Philippines`;
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const newLat = parseFloat(data[0].lat);
+                        const newLng = parseFloat(data[0].lon);
+                        locationMap.setView([newLat, newLng], 15);
+                        locationMarker.setLatLng([newLat, newLng]);
+                    } else {
+                        locationMap.setView([10.8000, 122.9700], 13);
+                        locationMarker.setLatLng([10.8000, 122.9700]);
+                    }
+                    locationMap.invalidateSize();
+                })
+                .catch(err => {
+                    locationMap.setView([10.8000, 122.9700], 13);
+                    locationMarker.setLatLng([10.8000, 122.9700]);
+                    locationMap.invalidateSize();
+                });
+        }
+    }, 200);
+}
+
+function closeLocationModal() {
+    const modal = document.getElementById('location-map-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
+{% endblock %}

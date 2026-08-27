@@ -1,0 +1,142 @@
+<div class="overflow-x-auto">
+    <table id="orders-customer-table" class="min-w-full divide-y divide-white/10">
+        <thead class="bg-white/[0.03]">
+            <tr>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer Name</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Phone</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Total Purchases</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Total Amount</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Delivery Method</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Payment</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5 bg-transparent">
+            {% for customer in customers %}
+            <tr class="hover:bg-white/[0.03] transition-colors duration-200 cursor-pointer" onclick="document.getElementById('customer-orders-{{ customer.id }}').classList.toggle('hidden')">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-100 flex items-center gap-2">
+                    <svg class="h-4 w-4 text-[#a0ac96] transition-transform duration-200 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    {{ customer.name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-300">{{ customer.phone }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ customer.product_types_count }} Product Type{% if customer.product_types_count != 1 %}s{% endif %}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ customer.active_total|default:"0.00"|floatformat:2 }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {% with latest_order=customer.orders.first %}
+                        {% if latest_order %}
+                            {% if latest_order.delivery_address|upper == 'PICKUP' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-black rounded-full bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 uppercase tracking-wider">Pickup</span>
+                            {% else %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-black rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">Delivery</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-stone-500 text-xs font-mono">-</span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {% with latest_order=customer.orders.first %}
+                        {% if latest_order %}
+                            <button type="button" onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                                {% if latest_order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                                {% elif latest_order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                                {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                                {{ latest_order.get_payment_status_display }}
+                            </button>
+                        {% else %}
+                            <span class="text-stone-500 text-xs font-mono">-</span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                    {% with latest_order=customer.orders.first %}
+                        {% if latest_order and latest_order.status == 'pending' %}
+                        <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}" class="inline mr-4" onclick="event.stopPropagation();">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <button type="submit" class="text-[#cca43b] hover:text-[#cca43b]/80 transition-colors cursor-pointer">Approve</button>
+                        </form>
+                        {% endif %}
+                    {% endwith %}
+                    <form method="POST" action="{% url 'sales:customer_delete' customer.id %}" class="inline" onclick="event.stopPropagation();">
+                        {% csrf_token %}
+                        <button type="submit" class="text-rose-400 hover:text-rose-300 transition-colors cursor-pointer">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <!-- Expandable Sub-table -->
+            <tr id="customer-orders-{{ customer.id }}" class="hidden bg-black/40 border-b border-white/5">
+                <td colspan="7" class="px-6 py-4">
+                    <div class="rounded-2xl border border-white/5 bg-[#01140e]/40 p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                            <h4 class="text-xs font-black uppercase tracking-[0.2em] text-[#cca43b]">Order & Purchased Products History</h4>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-white/5">
+                            <table class="min-w-full divide-y divide-white/5 bg-black/20">
+                                <thead class="bg-white/[0.02]">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Order ID</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Total Purchases</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Quantity</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Total Amount</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Order Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Delivery Address</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Payment Method</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5 text-xs text-stone-300">
+                                    {% for order in customer.orders.all %}
+                                    <tr class="hover:bg-white/[0.02] transition-colors">
+                                        <td class="px-4 py-3 font-mono font-bold text-stone-100">{{ order.order_number }}</td>
+                                        <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}</td>
+                                        <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg }}</td>
+                                        <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
+                                        <td class="px-4 py-3 font-mono text-stone-400">{{ order.order_date }}</td>
+                                        <td class="px-4 py-3 text-stone-300">
+                                            {% if order.delivery_address|upper == 'PICKUP' %}
+                                                <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded">Pickup</span>
+                                            {% else %}
+                                                <button type="button" 
+                                                    onclick="openLocationModal('{{ order.delivery_address|escapejs }}', '{{ customer.map_latitude|default:'' }}', '{{ customer.map_longitude|default:'' }}'); event.stopPropagation();" 
+                                                    class="underline text-[#cca43b] hover:text-[#cca43b]/80 transition-colors font-bold text-left focus:outline-none">
+                                                    {{ order.delivery_address|default:"-" }}
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-4 py-3 text-stone-300">{{ order.notes|default:"-" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-6 text-center text-stone-500">No orders registered for this customer.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr class="empty-table-row">
+                <td colspan="7" class="px-6 py-8 text-center text-sm text-stone-500">No customers registered</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    new TableEnhancer('#orders-customer-table', {
+        pageSize: 10,
+        filterColumns: [
+            { colIndex: 4, label: 'Method' },
+            { colIndex: 5, label: 'Payment' }
+        ],
+        searchPlaceholder: 'Search customer, phone, delivery method...'
+    });
+});
+</script>

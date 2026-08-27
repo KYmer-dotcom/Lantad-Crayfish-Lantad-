@@ -1,0 +1,448 @@
+{% extends "layout.html" %}
+{% block title %}Product Inventory{% endblock %}
+{% block page_content %}
+<div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Product Inventory</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Product Inventory</h1>
+        </div>
+        <div class="flex items-center gap-3"></div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Available Stocks</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ products|length }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span>Products currently recorded</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+            </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Active Batches</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ active_batches_count|default:"0" }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active product operations</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+            </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Total Quantity</p>
+                <p class="mt-2 text-3xl font-bold text-[#cca43b]">{{ total_product_quantity|floatformat:"0" }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <span>Total stock across all products</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-semibold text-stone-100">Products</h2>
+                <p class="text-sm text-[#a0ac96]">Quick add and manage inventory items.</p>
+            </div>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {% for product in products %}
+            {% if product.accent_color == 'cyan' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-cyan-800/50 bg-cyan-900/20 p-4 shadow-sm cursor-pointer hover:border-cyan-500 transition-colors">
+            {% elif product.accent_color == 'emerald' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-emerald-800/50 bg-emerald-900/20 p-4 shadow-sm cursor-pointer hover:border-emerald-500 transition-colors">
+            {% elif product.accent_color == 'amber' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-amber-800/50 bg-amber-900/20 p-4 shadow-sm cursor-pointer hover:border-amber-500 transition-colors">
+            {% elif product.accent_color == 'rose' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-rose-800/50 bg-rose-900/20 p-4 shadow-sm cursor-pointer hover:border-rose-500 transition-colors">
+            {% elif product.accent_color == 'violet' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-violet-800/50 bg-violet-900/20 p-4 shadow-sm cursor-pointer hover:border-violet-500 transition-colors">
+            {% else %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-white/10 bg-black/20 p-4 shadow-sm cursor-pointer hover:border-[#cca43b] transition-colors">
+            {% endif %}
+                <div class="flex items-center justify-between">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/30 border border-white/10 shadow-sm text-2xl">
+                        {% if product.icon == 'shrimp' %}🦐
+                        {% elif product.icon == 'lab' %}🧪
+                        {% elif product.icon == 'leaf' %}🌿
+                        {% elif product.icon == 'box' %}📦
+                        {% elif product.icon == 'water' %}💧
+                        {% else %}🐟{% endif %}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button
+                            type="button"
+                            data-delete-action="{% url 'sales:product_delete' product.id %}"
+                            data-product-name="{{ product.name }}"
+                            class="product-delete-btn rounded-full border border-white/10 bg-black/20 p-1 text-rose-500 hover:bg-rose-500/20 transition-colors"
+                        >
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 6V4h8v2" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l1 14h10l1-14" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-end justify-between">
+                    <div class="min-w-0 flex-1">
+                        <p class="text-base font-semibold text-stone-100 truncate">{{ product.name }}</p>
+                        <p class="mt-0.5 text-xs text-[#a0ac96] line-clamp-2">{{ product.notes|default:"No description provided." }}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0 ml-3">
+                        <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">stock</span></div>
+                        <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight">
+                            {% if product.unit_price > 0 %}<span>₱{{ product.unit_price|floatformat:"0" }}/pc</span>{% endif %}
+                            {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/kg</span>{% endif %}
+                            {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/kg)</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-center text-sm text-[#a0ac96]">
+                No products yet.
+            </div>
+            {% endfor %}
+            <button type="button" onclick="showProductModal()" class="flex min-h-[148px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-[#021f15]/40 text-[#a0ac96] hover:border-[#cca43b] hover:text-[#cca43b] transition-colors">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full border border-current text-2xl">+</div>
+                <p class="mt-3 text-sm font-semibold">Add product +</p>
+            </button>
+        </div>
+
+        <div class="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-[#a0ac96] enhanced-table">
+                    <thead class="border-b border-white/10 bg-white/5 text-xs uppercase">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 font-medium text-stone-100">Product</th>
+                            <th scope="col" class="px-6 py-4 font-medium text-stone-100">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for product in products %}
+                        <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-{{ product.id }}')">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    {% if product.accent_color == 'cyan' %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-800/50 bg-cyan-900/20 text-lg shadow-sm">
+                                    {% elif product.accent_color == 'emerald' %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-800/50 bg-emerald-900/20 text-lg shadow-sm">
+                                    {% elif product.accent_color == 'amber' %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-800/50 bg-amber-900/20 text-lg shadow-sm">
+                                    {% elif product.accent_color == 'rose' %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-800/50 bg-rose-900/20 text-lg shadow-sm">
+                                    {% elif product.accent_color == 'violet' %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-800/50 bg-violet-900/20 text-lg shadow-sm">
+                                    {% else %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-lg shadow-sm">
+                                    {% endif %}
+                                        {% if product.icon == 'shrimp' %}🦐
+                                        {% elif product.icon == 'lab' %}🧪
+                                        {% elif product.icon == 'leaf' %}🌿
+                                        {% elif product.icon == 'box' %}📦
+                                        {% elif product.icon == 'water' %}💧
+                                        {% else %}🐟{% endif %}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-stone-100">{{ product.name }}</span>
+                                        <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">{{ product.notes|default:"No description provided." }}</td>
+                        </tr>
+                        <tr id="sub-table-{{ product.id }}" class="bg-black/20 hidden">
+                            <td colspan="2" class="px-6 py-3">
+                                <div class="rounded-xl border border-white/5 bg-black/40 p-3">
+                                    <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Operations Using This Product</p>
+                                    <table class="w-full text-xs text-[#a0ac96]">
+                                        <thead class="border-b border-white/5 text-left text-[10px] uppercase">
+                                            <tr>
+                                                <th class="py-2 font-medium">Operation</th>
+                                                <th class="py-2 text-center font-medium">Quantity</th>
+                                                <th class="py-2 text-right font-medium">Transferred</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/5">
+                                            {% for op in product.used_in_operations %}
+                                            <tr>
+                                                <td class="py-2">
+                                                    <div class="font-bold text-stone-300">{{ op.name }}</div>
+                                                    <div class="text-[10px]">{{ op.location }}</div>
+                                                </td>
+                                                <td class="py-2 text-center text-stone-300">{{ op.capacity }}</td>
+                                                <td class="py-2 text-right text-stone-300">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="py-2 text-center font-medium text-stone-500 italic">Not used in any operations</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="px-6 py-8 text-center">
+                                <div class="flex flex-col items-center justify-center text-[#a0ac96]">
+                                    <p class="mb-2">No products yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="delete-product-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-stone-100">Remove Product</h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-white/40 hover:text-white">&times;</button>
+        </div>
+        <p class="mt-4 text-sm text-[#a0ac96]">Remove <span id="delete-product-name" class="font-semibold text-[#cca43b]"></span> from inventory?</p>
+        <form id="delete-product-form" method="post" class="mt-6 flex items-center justify-end gap-3">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}" />
+            <button type="button" onclick="closeDeleteModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+            <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90">Remove</button>
+        </form>
+    </div>
+</div>
+
+<div id="product-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 id="product-modal-title" class="text-lg font-semibold text-stone-100">Create Product</h3>
+            <button type="button" onclick="closeProductModal()" class="text-white/40 hover:text-white">&times;</button>
+        </div>
+
+        <form id="product-form" method="post" action="{% url 'sales:product_create' %}" class="mt-5 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="category" value="fish" />
+            <input type="hidden" name="reorder_level_kg" value="0" />
+            <input type="hidden" name="species" value="" />
+            <input type="hidden" name="pond" value="" />
+            <input type="hidden" name="is_active" value="on" />
+            <input type="hidden" name="next" value="{{ request.path }}" />
+            <input type="hidden" name="accent" id="product-accent" value="indigo" />
+            <input type="hidden" name="icon" id="product-icon" value="fish" />
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Product Name *</label>
+                <input type="text" id="product-name" name="name" placeholder="e.g. Live Tilapia" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required />
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Price/pc (₱)</label>
+                    <input type="number" step="0.01" id="product-unit-price" name="unit_price" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Price/kg (₱)</label>
+                    <input type="number" step="0.01" id="product-price-per-kg" name="price_per_kg" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Pcs / KG</label>
+                    <input type="number" step="0.01" id="product-pieces-per-kg" name="pieces_per_kg" placeholder="1.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Total Stock</label>
+                    <input type="number" step="0.01" id="product-quantity-kg" name="quantity_kg" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Description</label>
+                <textarea rows="3" id="product-notes" name="notes" placeholder="Brief description of this product..." class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none"></textarea>
+            </div>
+
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Accent Color</label>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button type="button" data-accent="indigo" class="accent-swatch h-8 w-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-[#021f15]"></button>
+                    <button type="button" data-accent="cyan" class="accent-swatch h-8 w-8 rounded-full bg-cyan-500"></button>
+                    <button type="button" data-accent="emerald" class="accent-swatch h-8 w-8 rounded-full bg-emerald-500"></button>
+                    <button type="button" data-accent="amber" class="accent-swatch h-8 w-8 rounded-full bg-amber-500"></button>
+                    <button type="button" data-accent="rose" class="accent-swatch h-8 w-8 rounded-full bg-rose-500"></button>
+                    <button type="button" data-accent="violet" class="accent-swatch h-8 w-8 rounded-full bg-violet-500"></button>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
+                <div class="mt-3 grid grid-cols-6 gap-2">
+                    <button type="button" data-icon="fish" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-[#cca43b] text-[#cca43b] bg-black/20">🐟</button>
+                    <button type="button" data-icon="shrimp" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🦐</button>
+                    <button type="button" data-icon="lab" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🧪</button>
+                    <button type="button" data-icon="leaf" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🌿</button>
+                    <button type="button" data-icon="box" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">📦</button>
+                    <button type="button" data-icon="water" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">💧</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="closeProductModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" id="product-submit-btn" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90">Create Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showProductModal() {
+    document.getElementById('product-modal-title').textContent = 'Create Product';
+    document.getElementById('product-form').action = "{% url 'sales:product_create' %}";
+    document.getElementById('product-submit-btn').textContent = 'Create Product';
+    
+    document.getElementById('product-name').value = '';
+    document.getElementById('product-notes').value = '';
+    document.getElementById('product-unit-price').value = '';
+    document.getElementById('product-price-per-kg').value = '';
+    document.getElementById('product-pieces-per-kg').value = '1';
+    document.getElementById('product-quantity-kg').value = '';
+    
+    // reset swatches to indigo and fish
+    selectAccent('indigo');
+    selectIcon('fish');
+
+    document.getElementById('product-modal').classList.remove('hidden');
+    document.getElementById('product-modal').classList.add('flex');
+}
+
+function openEditProductModal(actionUrl, name, notes, accent, icon, unitPrice, pricePerKg, piecesPerKg, quantityKg) {
+    document.getElementById('product-modal-title').textContent = 'Edit Product';
+    document.getElementById('product-form').action = actionUrl;
+    document.getElementById('product-submit-btn').textContent = 'Save Changes';
+    
+    document.getElementById('product-name').value = name;
+    document.getElementById('product-notes').value = notes;
+    document.getElementById('product-unit-price').value = unitPrice || 0;
+    document.getElementById('product-price-per-kg').value = pricePerKg || 0;
+    document.getElementById('product-pieces-per-kg').value = piecesPerKg || 1;
+    document.getElementById('product-quantity-kg').value = quantityKg || 0;
+    
+    selectAccent(accent || 'indigo');
+    selectIcon(icon || 'fish');
+
+    document.getElementById('product-modal').classList.remove('hidden');
+    document.getElementById('product-modal').classList.add('flex');
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('product-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+document.getElementById('product-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeProductModal();
+    }
+});
+
+function openDeleteModal(actionUrl, productName) {
+    const modal = document.getElementById('delete-product-modal');
+    const nameEl = document.getElementById('delete-product-name');
+    const form = document.getElementById('delete-product-form');
+    nameEl.textContent = productName;
+    form.action = actionUrl;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('delete-product-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+document.getElementById('delete-product-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+
+document.querySelectorAll('.product-delete-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        openDeleteModal(btn.dataset.deleteAction, btn.dataset.productName);
+    });
+});
+
+function selectAccent(accentValue) {
+    document.querySelectorAll('.accent-swatch').forEach((btn) => {
+        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
+    });
+    const swatch = document.querySelector(`.accent-swatch[data-accent="${accentValue}"]`);
+    if(swatch) swatch.classList.add('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
+    document.getElementById('product-accent').value = accentValue;
+}
+
+function selectIcon(iconValue) {
+    document.querySelectorAll('.icon-swatch').forEach((btn) => {
+        btn.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
+        btn.classList.add('border-white/10', 'text-[#a0ac96]');
+    });
+    const swatch = document.querySelector(`.icon-swatch[data-icon="${iconValue}"]`);
+    if(swatch) {
+        swatch.classList.remove('border-white/10', 'text-[#a0ac96]');
+        swatch.classList.add('border-[#cca43b]', 'text-[#cca43b]');
+    }
+    document.getElementById('product-icon').value = iconValue;
+}
+
+document.querySelectorAll('.accent-swatch').forEach((swatch) => {
+    swatch.addEventListener('click', () => {
+        selectAccent(swatch.dataset.accent);
+    });
+});
+
+document.querySelectorAll('.icon-swatch').forEach((swatch) => {
+    swatch.addEventListener('click', () => {
+        selectIcon(swatch.dataset.icon);
+    });
+});
+
+document.querySelectorAll('.product-card').forEach((card) => {
+    card.addEventListener('click', () => {
+        document.querySelectorAll('.product-card').forEach((item) => {
+            item.classList.remove('ring-2', 'ring-[#cca43b]');
+        });
+        card.classList.add('ring-2', 'ring-[#cca43b]');
+    });
+});
+function toggleSubTable(id) {
+    const row = document.getElementById(id);
+    if (row) {
+        row.classList.toggle('hidden');
+    }
+}
+</script>
+{% endblock %}

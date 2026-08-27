@@ -1,0 +1,60 @@
+<div class="overflow-x-auto">
+    <table id="transactions-table" class="min-w-full divide-y divide-white/10 enhanced-table">
+        <thead class="bg-white/[0.03]">
+            <tr>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order ID</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Total Purchases</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Total Amount</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order Date</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
+                <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Payment</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5 bg-transparent">
+            {% for order in all_orders %}
+            <tr class="hover:bg-white/[0.03] transition-colors duration-200">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-100">{{ order.order_number }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.customer.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ order.customer.product_types_count }} Product Type{{ order.customer.product_types_count|pluralize }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-400">{{ order.order_date }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border
+                        {% if order.status == 'completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                        {% elif order.status == 'shipped' %}bg-blue-500/10 text-blue-400 border-blue-500/20
+                        {% elif order.status == 'processing' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                        {% else %}bg-stone-500/10 text-stone-400 border-stone-500/20{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <button type="button" onclick="openPaymentModal('{{ order.id }}', '{{ order.payment_status }}', '{% if order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}', '{{ order.order_number }}'); event.stopPropagation();" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                        {% if order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                        {% elif order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                        {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                        {{ order.get_payment_status_display }}
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr class="empty-table-row">
+                <td colspan="7" class="px-6 py-8 text-center text-sm text-stone-500">No transactions recorded</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    new TableEnhancer('#transactions-table', {
+        pageSize: 10,
+        filterColumns: [
+            { colIndex: 5, label: 'Status' },
+            { colIndex: 6, label: 'Payment' }
+        ],
+        searchPlaceholder: 'Search transactions by ID, customer, amount...'
+    });
+});
+</script>

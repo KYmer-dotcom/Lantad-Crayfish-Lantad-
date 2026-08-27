@@ -1,0 +1,229 @@
+{% extends "layout.html" %}
+
+{% block title %}Operations Data{% endblock %}
+
+{% block page_content %}
+<div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Operations</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Operations Data</h1>
+            <p class="mt-1 text-sm text-[#a0ac96]">Detailed view of operational metrics across ponds and cabins.</p>
+        </div>
+    </div>
+
+    <!-- Ponds Section -->
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm mt-6">
+        <div class="border-b border-white/10 px-6 py-4">
+            <h2 class="text-lg font-semibold text-stone-100">Pond Operations</h2>
+        </div>
+        <div class="p-6 space-y-8">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Main Pond</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=main_ponds %}
+                </div>
+            </div>
+            
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Breeding Pond</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=breeding_ponds %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Superworm Cabin Section -->
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm shadow-sm mt-6">
+        <div class="border-b border-white/10 px-6 py-4">
+            <h2 class="text-lg font-semibold text-stone-100">Superworm Cabin Operations</h2>
+        </div>
+        <div class="p-6 space-y-8">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Left Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block1_ponds %}
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Right Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block2_ponds %}
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Back Shelf</h3>
+                    <button onclick="submitPondOperations(this)" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                        Record
+                    </button>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/operations_table.html" with table_ponds=sw_block3_ponds %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFedStatus(pondId, isChecked) {
+        const card = document.getElementById('pond-card-' + pondId);
+        const badge = document.getElementById('fed-badge-' + pondId);
+        
+        if (!card || !badge) return;
+
+        if (isChecked) {
+            card.classList.add('border-yellow-500/50', 'bg-yellow-900/20');
+            card.classList.remove('border-[#cca43b]/20', 'bg-[#021f15]/80');
+            badge.classList.remove('hidden');
+        } else {
+            card.classList.remove('border-yellow-500/50', 'bg-yellow-900/20');
+            card.classList.add('border-[#cca43b]/20', 'bg-[#021f15]/80');
+            badge.classList.add('hidden');
+        }
+    }
+
+    function submitPondOperations(button) {
+        const headerDiv = button.parentElement;
+        const tableWrapper = headerDiv.nextElementSibling;
+        if (!tableWrapper) return;
+        
+        const rows = tableWrapper.querySelectorAll('.operation-row');
+        const logs = [];
+        
+        rows.forEach(row => {
+            const pondId = row.getAttribute('data-pond-id');
+            const fedCheckbox = row.querySelector('.op-fed-checkbox');
+            const feedSelect = row.querySelector('.op-feed-select');
+            
+            if (pondId && fedCheckbox) {
+                logs.push({
+                    pond_id: parseInt(pondId),
+                    fed: fedCheckbox.checked,
+                    feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null
+                });
+            }
+        });
+        
+        if (logs.length === 0) {
+            showToast('No operational rows to submit.', 'error');
+            return;
+        }
+        
+        // Disable button to prevent double submit
+        const originalText = button.textContent;
+        button.textContent = 'Recording...';
+        button.disabled = true;
+        
+        fetch('/ponds/operations/record/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ logs: logs })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to record operations.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Operations recorded successfully!', 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error recording operations: ' + error.message, 'error');
+        })
+        .finally(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function checkRecordedTables() {
+        document.querySelectorAll('table').forEach(table => {
+            const rows = table.querySelectorAll('.operation-row');
+            if (rows.length === 0) return;
+            
+            const recordedCount = table.querySelectorAll('.recorded-badge').length;
+            if (rows.length === recordedCount) {
+                // Find the Record button above this table
+                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-2xl.border.border-white\\/10');
+                if (parent) {
+                    const sibling = parent.previousElementSibling;
+                    if (sibling) {
+                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"]');
+                        if (recordBtn) {
+                            recordBtn.disabled = true;
+                            recordBtn.textContent = 'Recorded Today';
+                            recordBtn.classList.remove('text-[#cca43b]', 'border-[#cca43b]/30', 'bg-[#cca43b]/10', 'hover:bg-[#cca43b]/20', 'hover:scale-105');
+                            recordBtn.classList.add('text-stone-500', 'border-white/5', 'bg-white/5', 'cursor-not-allowed');
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', checkRecordedTables);
+    window.addEventListener('load', function() {
+        checkRecordedTables();
+        if(sessionStorage.getItem('operationsScrollPosition') !== null) {
+            setTimeout(() => {
+                window.scrollTo(0, parseInt(sessionStorage.getItem('operationsScrollPosition')));
+                sessionStorage.removeItem('operationsScrollPosition');
+            }, 50);
+        }
+    });
+
+    window.addEventListener('scroll', function() {
+        sessionStorage.setItem('operationsScrollPosition', window.scrollY);
+    }, {passive: true});
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

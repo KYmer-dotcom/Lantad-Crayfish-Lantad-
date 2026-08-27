@@ -1,0 +1,39 @@
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Farm Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Location</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Area (m²)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Ponds</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for farm in farms %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ farm.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ farm.location }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ farm.total_area }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ farm.total_ponds }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {% if farm.is_active %}
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    {% else %}
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
+                    <a href="#" class="ml-4 text-red-600 hover:text-red-900">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No farms found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

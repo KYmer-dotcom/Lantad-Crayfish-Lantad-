@@ -1,0 +1,280 @@
+{% extends "layout.html" %}
+{% block title %}Orders{% endblock %}
+{% block header_title %}Orders{% endblock %}
+
+{% block page_content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<div class="space-y-8">
+    <!-- Top Header -->
+    <div class="flex flex-wrap items-center justify-between gap-6">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Administration Portal</p>
+            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Orders & Customer Purchases</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button type="button" onclick="openPaymentSidebar()"
+                class="inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] px-5 py-3 text-xs font-black uppercase tracking-wider text-[#021f15] shadow-lg shadow-[#cca43b]/20 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+                <svg class="h-4 w-4 text-[#021f15]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Payment Option
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Stat Card 1 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Active Orders</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ total_orders|default:"0" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#cca43b] font-bold">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                In-progress customer orders
+            </div>
+        </div>
+
+        <!-- Stat Card 2 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Total Active Value</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-[#cca43b] tracking-tight">₱{{ total_revenue|floatformat:2|default:"0.00" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#a0ac96] font-medium">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                Active pipeline volume
+            </div>
+        </div>
+
+        <!-- Stat Card 3 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Pending Approvals</p>
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ pending_orders|default:"0" }}</p>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#a0ac96] font-medium">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                Awaiting confirmation
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table Section -->
+    <div class="rounded-3xl border border-white/10 bg-black/20 shadow-2xl overflow-hidden backdrop-blur-md">
+        <div class="flex items-center justify-between border-b border-white/10 px-6 py-5 bg-white/[0.02]">
+            <div class="flex items-center gap-3">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/10 text-[#cca43b]">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+                <h2 class="text-lg font-black text-stone-50 tracking-tight">Active Customer Orders</h2>
+            </div>
+        </div>
+        <div class="p-6">
+            {% include 'sales_management/partials/customers_table.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- Payment & Receipt Modal -->
+<div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Payment & Receipt</h3>
+            <button type="button" onclick="closePaymentModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+        </div>
+        <form id="payment-form" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Payment Status</label>
+                <select name="payment_status" id="modal-payment-status" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                    <option value="unpaid">Unpaid</option>
+                    <option value="paid">Paid</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Receipt Image</label>
+                <input type="file" name="receipt_image" accept="image/*" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
+            </div>
+            <div id="current-receipt-container" class="hidden rounded-xl border border-white/5 bg-black/20 p-4 text-left">
+                <span class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Attached Receipt:</span>
+                <a id="current-receipt-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm text-[#cca43b] hover:underline font-bold">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    View Current Receipt
+                </a>
+            </div>
+            <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
+                <button type="button" onclick="closePaymentModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
+                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Save Updates</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payment Settings Slide-Over Sidebar Drawer -->
+<div id="payment-sidebar-backdrop" onclick="closePaymentSidebar()" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+<div id="payment-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[#01140e] border-l border-white/10 shadow-[-20px_0_50px_rgba(0,0,0,0.8)] p-8 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between overflow-y-auto">
+    <div class="space-y-6">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-[#cca43b]/15 border border-[#cca43b]/30 flex items-center justify-center text-lg text-[#cca43b]">
+                    💳
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-white uppercase tracking-wider">Payment Settings</h3>
+                    <p class="text-xs text-[#a0ac96]">Configure receiving accounts & destination</p>
+                </div>
+            </div>
+            <button type="button" onclick="closePaymentSidebar()" class="text-[#a0ac96] hover:text-white text-2xl font-bold p-1 cursor-pointer transition-colors">&times;</button>
+        </div>
+
+        <!-- Settings Form -->
+        <form id="payment-settings-form" method="POST" action="{% url 'sales:payment_settings_update' %}" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Section 1: GCash Destination -->
+            <div class="space-y-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-black uppercase tracking-wider text-[#007DFE] flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#007DFE]"></span>
+                        GCash Destination
+                    </span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_gcash_enabled" {% if payment_settings.is_gcash_enabled %}checked{% endif %} class="sr-only peer">
+                        <div class="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#007DFE]"></div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">GCash Mobile Number *</label>
+                    <input type="text" name="gcash_number" value="{{ payment_settings.gcash_number|default:'09171234567' }}" required
+                        class="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm font-mono font-bold text-white focus:border-[#007DFE] focus:outline-none focus:ring-1 focus:ring-[#007DFE] placeholder:text-stone-600"
+                        placeholder="e.g. 0917 123 4567">
+                    <span class="text-[10px] text-stone-500 mt-1 block">Customer GCash payments will be sent to this number.</span>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Account Name *</label>
+                    <input type="text" name="gcash_name" value="{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}" required
+                        class="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm font-bold text-white focus:border-[#007DFE] focus:outline-none focus:ring-1 focus:ring-[#007DFE] placeholder:text-stone-600"
+                        placeholder="e.g. SILAY SUPERWORM & CRAYFISH">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Custom QR Code Image (Optional)</label>
+                    <input type="file" name="gcash_qr_image" accept="image/*"
+                        class="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-xs text-stone-300 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#007DFE]/20 file:text-[#007DFE] hover:file:bg-[#007DFE]/30 file:transition-colors cursor-pointer">
+                    {% if payment_settings.gcash_qr_image %}
+                    <div class="mt-2 flex items-center gap-3">
+                        <img src="{{ payment_settings.gcash_qr_image.url }}" alt="Current QR" class="w-12 h-12 rounded-lg object-contain bg-white p-1">
+                        <span class="text-[11px] text-emerald-400 font-bold">Custom QR active</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Section 2: Cash on Delivery Toggle -->
+            <div class="rounded-2xl border border-white/10 bg-white/[0.02] p-5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-black uppercase tracking-wider text-[#cca43b] block">Cash on Delivery (COD)</span>
+                    <span class="text-[11px] text-[#a0ac96]">Allow customers to pay in physical cash</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="is_cod_enabled" {% if payment_settings.is_cod_enabled %}checked{% endif %} class="sr-only peer">
+                    <div class="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#cca43b]"></div>
+                </label>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit"
+                    class="w-full rounded-xl bg-[#cca43b] py-3.5 text-xs font-black uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer">
+                    Save Configuration
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openPaymentSidebar() {
+    const backdrop = document.getElementById('payment-sidebar-backdrop');
+    const sidebar = document.getElementById('payment-sidebar');
+    if (!backdrop || !sidebar) return;
+
+    backdrop.classList.remove('hidden');
+    setTimeout(() => {
+        backdrop.classList.remove('opacity-0');
+        backdrop.classList.add('opacity-100');
+        sidebar.classList.remove('translate-x-full');
+        sidebar.classList.add('translate-x-0');
+    }, 10);
+}
+
+function closePaymentSidebar() {
+    const backdrop = document.getElementById('payment-sidebar-backdrop');
+    const sidebar = document.getElementById('payment-sidebar');
+    if (!backdrop || !sidebar) return;
+
+    sidebar.classList.remove('translate-x-0');
+    sidebar.classList.add('translate-x-full');
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+
+    setTimeout(() => {
+        backdrop.classList.add('hidden');
+    }, 300);
+}
+
+function openPaymentModal(orderId, currentStatus, currentReceiptUrl) {
+    const modal = document.getElementById('payment-modal');
+    const form = document.getElementById('payment-form');
+    const statusSelect = document.getElementById('modal-payment-status');
+    const receiptContainer = document.getElementById('current-receipt-container');
+    const receiptLink = document.getElementById('current-receipt-link');
+
+    form.action = `/sales/order/${orderId}/payment/`;
+    statusSelect.value = currentStatus;
+
+    if (currentReceiptUrl && currentReceiptUrl.trim() !== '') {
+        receiptLink.href = currentReceiptUrl;
+        receiptContainer.classList.remove('hidden');
+    } else {
+        receiptContainer.classList.add('hidden');
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closePaymentModal() {
+    const modal = document.getElementById('payment-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
+{% endblock %}

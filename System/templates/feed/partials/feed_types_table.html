@@ -1,0 +1,41 @@
+<div class="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+    <table class="w-full text-left text-sm text-stone-100">
+        <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+            <tr>
+                <th class="px-6 py-4">Feed Type</th>
+                <th class="px-6 py-4">Brand</th>
+                <th class="px-6 py-4">Category</th>
+                <th class="px-6 py-4">Protein %</th>
+                <th class="px-6 py-4">Price (₱/kg)</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+            {% for feed in feed_types %}
+            <tr class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-bold text-stone-100">{{ feed.name }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ feed.brand|default:"-" }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ feed.get_category_display }}</td>
+                <td class="px-6 py-4 text-[#a0ac96]">{{ feed.protein_content|default:"-" }}</td>
+                <td class="px-6 py-4 text-[#cca43b] font-bold">₱{{ feed.price_per_kg }}</td>
+                <td class="px-6 py-4">
+                    {% if feed.is_active %}
+                    <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Active</span>
+                    {% else %}
+                    <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <a href="#" class="text-xs font-bold text-[#cca43b] hover:underline">Edit</a>
+                    <a href="#" class="ml-3 text-xs font-bold text-rose-400 hover:underline">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">No feed types found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,288 @@
+{% extends 'layout.html' %}
+
+{% block page_content %}
+<div class="space-y-6">
+    <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Inventory Management</p>
+        <h1 class="mt-2 text-2xl font-semibold text-stone-100">Farm Inventory Overview</h1>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Feed Types</p>
+                <p class="mt-2 text-3xl font-bold text-stone-100">{{ total_feed_types }}</p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span>Supply items tracked</span>
+                </div>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-inner group-hover:scale-105 transition-transform">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-stone-100">Feed Inventory</h2>
+                <p class="text-sm text-[#a0ac96]">Manage feed types and stock levels.</p>
+            </div>
+        </div>
+
+        <div class="mt-5 rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+            <table class="w-full text-left text-sm text-stone-100">
+                <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+                    <tr>
+                        <th class="px-6 py-4 w-16"></th>
+                        <th class="px-6 py-4">Feed Name</th>
+                        <th class="px-6 py-4">Category</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                    {% for feed in feed_inventory %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-black/30 border border-white/10 shadow-sm text-xl
+                                {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400
+                                {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400
+                                {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400
+                                {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400
+                                {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400
+                                {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400
+                                {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
+                                {% if feed.icon == 'wheat' %}🌾
+                                {% elif feed.icon == 'bug' %}🐛
+                                {% elif feed.icon == 'corn' %}🌽
+                                {% elif feed.icon == 'leaf' %}🥬
+                                {% elif feed.icon == 'meat' %}🥩
+                                {% else %}📦{% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-bold text-stone-100">{{ feed.name }}</td>
+                        <td class="px-6 py-4 text-[#a0ac96]">{{ feed.category }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </button>
+                                <button type="button" onclick="openDeleteFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-rose-500 hover:bg-rose-500/20 transition-colors">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96]">No feed types found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-5 flex justify-end">
+            <button type="button" onclick="showFeedModal()" class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90 transition-colors">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Feed Type
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="feed-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 id="feed-modal-title" class="text-lg font-semibold text-stone-100">Create Feed Type</h3>
+            <button type="button" onclick="closeFeedModal()" class="text-white/40 hover:text-white">&times;</button>
+        </div>
+
+        <form id="feed-form" method="post" action="{% url 'feed:feed_type_add' %}" class="mt-5 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="accent_color" id="feed-accent" value="cyan" />
+            <input type="hidden" name="icon" id="feed-icon" value="box" />
+            <!-- Keep minimal data for feed creation based on models -->
+            <input type="hidden" name="protein_content" value="0" />
+            <input type="hidden" name="price_per_kg" value="0.00" />
+            
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Feed Name *</label>
+                <input type="text" name="name" placeholder="e.g. Starter Crumble" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Category *</label>
+                    <select name="category" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required>
+                        <option value="starter">Starter Feed</option>
+                        <option value="grower">Grower Feed</option>
+                        <option value="finisher">Finisher Feed</option>
+                        <option value="specialty">Specialty Feed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Description</label>
+                <textarea rows="3" name="description" placeholder="Brief description of this feed..." class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Accent Color</label>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button type="button" data-accent="indigo" class="feed-accent-swatch h-8 w-8 rounded-full bg-indigo-500"></button>
+                    <button type="button" data-accent="cyan" class="feed-accent-swatch h-8 w-8 rounded-full bg-cyan-500 ring-2 ring-offset-2 ring-[#021f15]"></button>
+                    <button type="button" data-accent="emerald" class="feed-accent-swatch h-8 w-8 rounded-full bg-emerald-500"></button>
+                    <button type="button" data-accent="amber" class="feed-accent-swatch h-8 w-8 rounded-full bg-amber-500"></button>
+                    <button type="button" data-accent="rose" class="feed-accent-swatch h-8 w-8 rounded-full bg-rose-500"></button>
+                    <button type="button" data-accent="violet" class="feed-accent-swatch h-8 w-8 rounded-full bg-violet-500"></button>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
+                <div class="mt-3 grid grid-cols-6 gap-2">
+                    <button type="button" data-icon="wheat" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🌾</button>
+                    <button type="button" data-icon="bug" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🐛</button>
+                    <button type="button" data-icon="corn" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🌽</button>
+                    <button type="button" data-icon="leaf" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🥬</button>
+                    <button type="button" data-icon="box" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-[#cca43b] text-[#cca43b] bg-black/20">📦</button>
+                    <button type="button" data-icon="meat" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🥩</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="closeFeedModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" id="feed-submit-btn" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90">Create Feed</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="delete-feed-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+    <div class="w-full max-w-md rounded-3xl border border-white/10 bg-[#021f15] p-6 shadow-2xl">
+        <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-500">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-stone-100">Delete Feed Type</h3>
+                <p class="mt-1 text-sm text-[#a0ac96]">Are you sure you want to delete <span id="delete-feed-name" class="font-bold text-stone-100"></span>? This action cannot be undone.</p>
+            </div>
+        </div>
+        <form id="delete-feed-form" method="post" action="" class="mt-6 flex justify-end gap-3">
+            {% csrf_token %}
+            <button type="button" onclick="closeDeleteFeedModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+            <button type="submit" class="rounded-2xl bg-rose-500 px-4 py-2 text-sm font-bold text-white hover:bg-rose-600 shadow-[0_0_15px_rgba(244,63,94,0.3)]">Delete Feed</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function showFeedModal() {
+    document.getElementById('feed-modal-title').textContent = 'Create Feed Type';
+    document.getElementById('feed-form').action = "{% url 'feed:feed_type_add' %}";
+    document.getElementById('feed-form').reset();
+    document.getElementById('feed-submit-btn').textContent = 'Create Feed';
+    
+    // reset swatches
+    document.querySelectorAll('.feed-accent-swatch').forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-[#021f15]'));
+    document.querySelector('.feed-accent-swatch[data-accent="cyan"]').classList.add('ring-2', 'ring-offset-2', 'ring-[#021f15]');
+    document.getElementById('feed-accent').value = 'cyan';
+    
+    document.querySelectorAll('.feed-icon-swatch').forEach(b => {
+        b.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
+        b.classList.add('border-white/10', 'text-[#a0ac96]');
+    });
+    document.querySelector('.feed-icon-swatch[data-icon="box"]').classList.remove('border-white/10', 'text-[#a0ac96]');
+    document.querySelector('.feed-icon-swatch[data-icon="box"]').classList.add('border-[#cca43b]', 'text-[#cca43b]');
+    document.getElementById('feed-icon').value = 'box';
+
+    document.getElementById('feed-modal').classList.remove('hidden');
+    document.getElementById('feed-modal').classList.add('flex');
+}
+
+function editFeedModal(id, name, category, description, accent_color, icon) {
+    document.getElementById('feed-modal-title').textContent = 'Edit Feed Type';
+    document.getElementById('feed-form').action = `/feed/types/${id}/edit/`;
+    document.getElementById('feed-submit-btn').textContent = 'Save Changes';
+    
+    document.querySelector('#feed-form input[name="name"]').value = name;
+    document.querySelector('#feed-form select[name="category"]').value = category;
+    document.querySelector('#feed-form textarea[name="description"]').value = description;
+    
+    // Set accent color
+    document.querySelectorAll('.feed-accent-swatch').forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-[#021f15]'));
+    let accentBtn = document.querySelector(`.feed-accent-swatch[data-accent="${accent_color}"]`);
+    if(accentBtn) accentBtn.classList.add('ring-2', 'ring-offset-2', 'ring-[#021f15]');
+    document.getElementById('feed-accent').value = accent_color;
+    
+    // Set icon
+    document.querySelectorAll('.feed-icon-swatch').forEach(b => {
+        b.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
+        b.classList.add('border-white/10', 'text-[#a0ac96]');
+    });
+    let iconBtn = document.querySelector(`.feed-icon-swatch[data-icon="${icon}"]`);
+    if(iconBtn) {
+        iconBtn.classList.remove('border-white/10', 'text-[#a0ac96]');
+        iconBtn.classList.add('border-[#cca43b]', 'text-[#cca43b]');
+    }
+    document.getElementById('feed-icon').value = icon;
+    
+    document.getElementById('feed-modal').classList.remove('hidden');
+    document.getElementById('feed-modal').classList.add('flex');
+}
+
+function closeFeedModal() {
+    document.getElementById('feed-modal').classList.add('hidden');
+    document.getElementById('feed-modal').classList.remove('flex');
+}
+
+function openDeleteFeedModal(id, name) {
+    document.getElementById('delete-feed-name').textContent = name;
+    document.getElementById('delete-feed-form').action = `/feed/types/${id}/delete/`;
+    document.getElementById('delete-feed-modal').classList.remove('hidden');
+    document.getElementById('delete-feed-modal').classList.add('flex');
+}
+
+function closeDeleteFeedModal() {
+    document.getElementById('delete-feed-modal').classList.add('hidden');
+    document.getElementById('delete-feed-modal').classList.remove('flex');
+}
+
+document.querySelectorAll('.feed-accent-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.feed-accent-swatch').forEach(b => {
+            b.classList.remove('ring-2', 'ring-offset-2', 'ring-[#021f15]');
+        });
+        btn.classList.add('ring-2', 'ring-offset-2', 'ring-[#021f15]');
+        document.getElementById('feed-accent').value = btn.dataset.accent;
+    });
+});
+
+document.querySelectorAll('.feed-icon-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.feed-icon-swatch').forEach(b => {
+            b.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
+            b.classList.add('border-white/10', 'text-[#a0ac96]');
+        });
+        btn.classList.remove('border-white/10', 'text-[#a0ac96]');
+        btn.classList.add('border-[#cca43b]', 'text-[#cca43b]');
+        document.getElementById('feed-icon').value = btn.dataset.icon;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% if slot.pond %}
+    <!-- OCCUPIED -->
+    <div class="group relative flex flex-col items-center justify-center rounded-xl border-t-4 border-[#cca43b] bg-gradient-to-b from-[#cca43b]/20 to-[#021f15] p-2.5 text-center shadow-[0_2px_10px_-3px_rgba(204,164,59,0.15)] ring-1 ring-white/10 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(204,164,59,0.3)] transition-all duration-300 h-24 overflow-hidden backdrop-blur-sm">
+        
+        <!-- Subtle background pattern/glow -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#cca43b]/30 via-transparent to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+
+        <span class="relative z-10 text-[13px] font-black text-stone-100 tracking-tight">{{ slot.r }}-{{ slot.c }}</span>
+        
+        <span class="relative z-10 mt-1 w-full truncate text-[11px] font-bold text-[#cca43b] uppercase tracking-wide px-1" title="{{ slot.pond.name }}">
+            {{ slot.pond.name }}
+        </span>
+        
+        <span class="relative z-10 w-full truncate text-[9px] font-medium text-stone-300 px-1" title="{{ slot.pond.product_name|default:'No Product' }}">
+            {{ slot.pond.product_name|default:'No Product' }}
+        </span>
+        
+        <span class="relative z-10 mb-1 w-full truncate text-[8px] text-[#a0ac96] px-1">
+            {{ slot.pond.transfer_date|date:"M d, Y"|default:'-' }}
+        </span>
+        
+        <div class="relative z-10 mt-1.5 flex items-center justify-center">
+            <span class="rounded bg-[#cca43b]/20 border border-[#cca43b]/40 px-2 py-0.5 text-[8.5px] font-bold tracking-[0.1em] text-[#cca43b] shadow-sm backdrop-blur-sm">
+                OCCUPIED
+            </span>
+        </div>
+
+        <!-- Hover Actions -->
+        <div class="absolute inset-0 z-20 flex items-center justify-center gap-2 bg-[#021f15]/80 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+            <a href="{% url 'operations:pond_edit' slot.pond.id %}" title="Edit" class="flex h-8 w-8 items-center justify-center rounded-full bg-[#cca43b]/20 text-[#cca43b] hover:bg-[#cca43b] hover:text-[#021f15] transition-colors shadow-lg shadow-black/50">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+            </a>
+            <button type="button" onclick="openDeleteModal('{{ slot.pond.id }}', '{{ slot.pond.name|escapejs }}')" title="Delete" class="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors shadow-lg shadow-black/50">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>
+        </div>
+    </div>
+{% else %}
+    <!-- VACANT -->
+    <div class="group relative flex flex-col items-center justify-center rounded-xl border-t-4 border-white/10 bg-[#01140e] p-2.5 text-center shadow-[0_2px_8px_-3px_rgba(0,0,0,0.5)] ring-1 ring-white/5 hover:-translate-y-1 hover:border-[#cca43b]/50 hover:shadow-[0_8px_15px_-5px_rgba(204,164,59,0.15)] transition-all duration-300 h-24 overflow-hidden backdrop-blur-sm">
+        
+        <!-- Subtle background pattern/glow -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+
+        <span class="relative z-10 text-[13px] font-black text-[#a0ac96] group-hover:text-stone-100 transition-colors tracking-tight">{{ slot.r }}-{{ slot.c }}</span>
+        
+        <div class="relative z-10 mt-2 flex items-center justify-center">
+            <span class="rounded bg-black/40 border border-white/10 px-2 py-0.5 text-[8.5px] font-bold tracking-[0.1em] text-[#a0ac96] shadow-sm backdrop-blur-sm group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] group-hover:border-[#cca43b]/30 transition-colors">
+                VACANT
+            </span>
+        </div>
+
+        <!-- Hover Actions -->
+        <div class="absolute inset-0 z-20 flex items-center justify-center bg-[#021f15]/80 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+            <button type="button" onclick="openSuperwormModal('{{ slot.pos|escapejs }}', null)" title="Add Record" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#cca43b]/20 text-[#cca43b] hover:bg-[#cca43b] hover:text-[#021f15] transition-colors shadow-lg shadow-black/50">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        </div>
+    </div>
+{% endif %}

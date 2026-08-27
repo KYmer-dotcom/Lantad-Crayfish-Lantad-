@@ -1,0 +1,36 @@
+<div class="space-y-4">
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Feed Type *</label>
+        {{ form.feed_type }}
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity (kg) *</label>
+            {{ form.quantity_kg }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Purchase Date *</label>
+            {{ form.purchase_date }}
+        </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+            {{ form.expiry_date }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Batch Number</label>
+            {{ form.batch_number }}
+        </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Supplier *</label>
+            {{ form.supplier }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Total Cost (₱) *</label>
+            {{ form.total_cost }}
+        </div>
+    </div>
+</div>

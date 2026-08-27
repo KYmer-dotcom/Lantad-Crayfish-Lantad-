@@ -1,0 +1,273 @@
+{% extends 'layout.html' %}
+
+{% block title %}Notifications & Alerts{% endblock %}
+{% block header_title %}System Notifications{% endblock %}
+
+{% block page_content %}
+<div class="space-y-8 p-2">
+    <!-- Page Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Command Center</p>
+            </div>
+            <h1 class="text-2xl font-semibold text-stone-100 tracking-tight">Notifications & System Alerts</h1>
+        </div>
+    </div>
+
+    <!-- Priority Alert Cards Grid -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Azula Sanitization Card -->
+        {% if azula_alerts %}
+        {% with alert=azula_alerts.0 %}
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)] hover:-translate-y-1">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#cca43b]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full {{ alert.dot_class }}"></span>
+                    <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Pond Sanitization</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ alert.badge_class }}">{{ alert.status_text }}</span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">{{ alert.pond.name|default:"Azula Sector 1" }}</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">Scheduled sanitization cycle 15 days post-transfer. Ensure water treatment protocols are executed.</p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96]">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{ alert.sanitization_date|date:"b. d, Y" }}
+                </span>
+                <a href="{% url 'operations:list' %}" class="text-[#cca43b] font-bold hover:underline cursor-pointer">Manage Pond →</a>
+            </div>
+        </div>
+        {% endwith %}
+        {% endif %}
+
+        <!-- Upcoming Harvest Card -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:-translate-y-1">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {% if harvest1 %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <p class="text-xs font-black uppercase tracking-wider text-cyan-400">Upcoming Harvest</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">{{ harvest1.get_status_display }}</span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">{{ harvest1.stock_batch.batch_code }}</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">
+                Harvest of estimated {{ harvest1.estimated_quantity }} fish (est. yield {{ harvest1.estimated_total_weight }}) of {{ harvest1.stock_batch.species.name }} in {{ harvest1.stock_batch.pond.name }}.
+            </p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96]">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ harvest1.scheduled_date }}
+                </span>
+                <a href="{% url 'harvest:list' %}" class="text-cyan-400 font-bold hover:underline cursor-pointer">View Harvest →</a>
+            </div>
+            {% else %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <p class="text-xs font-black uppercase tracking-wider text-cyan-400">Upcoming Harvest</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">High Priority</span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">Harvest window in 3 days</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">Batch BATCH-20260512-002 (Crayfish Grade A) is approaching target market weight of 55g.</p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96]">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Today, 08:30 AM
+                </span>
+                <a href="{% url 'harvest:list' %}" class="text-cyan-400 font-bold hover:underline cursor-pointer">Schedule Harvest →</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pending Order Card 1 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:-translate-y-1">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {% if order1 %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full {% if order1.status == 'pending' or order1.status == 'processing' %}bg-amber-400 animate-pulse{% else %}bg-emerald-400{% endif %}"></span>
+                    <p class="text-xs font-black uppercase tracking-wider {% if order1.status == 'pending' or order1.status == 'processing' %}text-amber-400{% else %}text-emerald-400{% endif %}">{{ order1.get_status_display }} Order</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {% if order1.status == 'pending' or order1.status == 'processing' %}bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse{% else %}bg-emerald-500/10 text-emerald-300 border-emerald-500/20{% endif %}">
+                    {% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}
+                </span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">{{ order1.order_number }}</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">
+                {{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }} is {{ order1.get_status_display|lower }}.
+            </p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96] font-mono">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 {% if order1.status == 'pending' or order1.status == 'processing' %}text-amber-400{% else %}text-emerald-400{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ order1.order_date }}
+                </span>
+                <a href="{% url 'sales:list' %}" class="{% if order1.status == 'pending' or order1.status == 'processing' %}text-amber-400{% else %}text-emerald-400{% endif %} font-bold hover:underline cursor-pointer">Manage Order →</a>
+            </div>
+            {% else %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <p class="text-xs font-black uppercase tracking-wider text-emerald-400">Sales Status</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Resolved</span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">All Caught Up</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">
+                All customer sales orders have been successfully reviewed and processed.
+            </p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96] font-mono">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Real-time
+                </span>
+                <a href="{% url 'sales:list' %}" class="text-emerald-400 font-bold hover:underline cursor-pointer">Sales Admin →</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pending Order Card 2 -->
+        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:-translate-y-1">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {% if order2 %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full {% if order2.status == 'pending' or order2.status == 'processing' %}bg-amber-400 animate-pulse{% else %}bg-cyan-400{% endif %}"></span>
+                    <p class="text-xs font-black uppercase tracking-wider {% if order2.status == 'pending' or order2.status == 'processing' %}text-amber-400{% else %}text-cyan-400{% endif %}">{{ order2.get_status_display }} Order</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {% if order2.status == 'pending' or order2.status == 'processing' %}bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse{% else %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20{% endif %}">
+                    {% if order2.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}
+                </span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">{{ order2.order_number }}</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">
+                {{ order2.get_order_type_display }} order of {{ order2.quantity_kg }} {{ order2.product.name }} by {{ order2.customer.name }} is {{ order2.get_status_display|lower }}.
+            </p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96] font-mono">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 {% if order2.status == 'pending' or order2.status == 'processing' %}text-amber-400{% else %}text-cyan-400{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ order2.order_date }}
+                </span>
+                <a href="{% url 'sales:list' %}" class="{% if order2.status == 'pending' or order2.status == 'processing' %}text-amber-400{% else %}text-cyan-400{% endif %} font-bold hover:underline cursor-pointer">Manage Order →</a>
+            </div>
+            {% else %}
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <p class="text-xs font-black uppercase tracking-wider text-emerald-400">Sales Status</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Resolved</span>
+            </div>
+            <p class="text-xl font-black text-white tracking-tight mb-2">All Caught Up</p>
+            <p class="text-xs text-[#a0ac96] leading-relaxed mb-6 font-mono">
+                No other customer sales orders are currently awaiting approval.
+            </p>
+            <div class="flex items-center justify-between pt-4 border-t border-white/5 text-[11px] text-[#a0ac96] font-mono">
+                <span class="flex items-center gap-1 font-bold text-white font-mono">
+                    <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Real-time
+                </span>
+                <a href="{% url 'sales:list' %}" class="text-emerald-400 font-bold hover:underline cursor-pointer">Sales Admin →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Notification Feed Section -->
+    <div class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
+        <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-8 py-6 bg-white/[0.01]">
+            <div class="flex items-center gap-3">
+                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <div>
+                    <h2 class="text-lg font-black text-white tracking-wide uppercase">Notification Feed</h2>
+                    <p class="text-xs text-[#a0ac96] mt-0.5">Comprehensive audit trail of farm activity, sales transactions, and inventory movements.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="divide-y divide-white/10">
+            <!-- Azula Feed Alerts -->
+            {% for alert in azula_alerts %}
+            <div class="flex items-start gap-6 px-8 py-6 hover:bg-white/[0.02] transition-colors duration-200 group">
+                <div class="flex-grow">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <p class="text-base font-black text-white group-hover:text-[#cca43b] transition-colors">Pond Sanitization Schedule: {{ alert.pond.name|default:"Azula Sector 1" }}</p>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ alert.badge_class }} font-mono">{{ alert.status_text }}</span>
+                    </div>
+                    <p class="text-xs text-stone-300 leading-relaxed max-w-4xl font-mono mb-3">Azula pond requires sanitization 15 days after transfer date (Transfer: {{ alert.pond.transfer_date|default:"Recent" }}). Target sanitization date is {{ alert.sanitization_date|date:"b. d, Y" }}.</p>
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'operations:list' %}" class="text-[11px] font-black text-[#cca43b] hover:underline uppercase tracking-wider">Execute Sanitization Protocol →</a>
+                    </div>
+                </div>
+                <div class="h-2 w-2 rounded-full {{ alert.dot_class }} mt-2"></div>
+            </div>
+            {% endfor %}
+
+            <!-- Feed Item 1 -->
+            <div class="flex items-start gap-6 px-8 py-6 hover:bg-white/[0.02] transition-colors duration-200 group">
+                <div class="flex-grow">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <p class="text-base font-black text-white group-hover:text-[#cca43b] transition-colors">Pending orders require confirmation</p>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">10 mins ago</span>
+                    </div>
+                    <p class="text-xs text-stone-300 leading-relaxed max-w-4xl font-mono mb-3">3 customer orders (Thea Salinas, Cleo Corioso) have not been confirmed in the last 24 hours. Prompt approval required for delivery dispatch.</p>
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'sales:list' %}" class="text-[11px] font-black text-[#cca43b] hover:underline uppercase tracking-wider">Review Orders →</a>
+                    </div>
+                </div>
+                <div class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse mt-2"></div>
+            </div>
+
+            <!-- Feed Item 2 -->
+            <div class="flex items-start gap-6 px-8 py-6 hover:bg-white/[0.02] transition-colors duration-200 group">
+                <div class="flex-grow">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <p class="text-base font-black text-white group-hover:text-cyan-400 transition-colors">Superworm Substrate Replenishment</p>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-mono">2 hours ago</span>
+                    </div>
+                    <p class="text-xs text-stone-300 leading-relaxed max-w-4xl font-mono mb-3">Breeding tubs in Cabin sector require fresh wheat bran substrate. Moisture levels currently optimal at 65%.</p>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[11px] font-black text-cyan-400 hover:underline uppercase tracking-wider cursor-pointer">Acknowledge Task ✓</span>
+                    </div>
+                </div>
+                <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse mt-2"></div>
+            </div>
+
+            <!-- Feed Item 3 -->
+            <div class="flex items-start gap-6 px-8 py-6 hover:bg-white/[0.02] transition-colors duration-200 group">
+                <div class="flex-grow">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <p class="text-base font-black text-white group-hover:text-emerald-400 transition-colors">Monthly Sales & Analytics Report Ready</p>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Yesterday</span>
+                    </div>
+                    <p class="text-xs text-stone-300 leading-relaxed max-w-4xl font-mono mb-3">Comprehensive monthly revenue, biomass yield, and predictive demand AI summary is ready for executive review and export.</p>
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'analytics:reports' %}" class="text-[11px] font-black text-emerald-400 hover:underline uppercase tracking-wider">Download Report CSV ↓</a>
+                    </div>
+                </div>
+                <div class="h-2 w-2 rounded-full bg-emerald-400 mt-2 opacity-40"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

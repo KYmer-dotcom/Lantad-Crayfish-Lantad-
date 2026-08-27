@@ -1,0 +1,26 @@
+<div class="space-y-4">
+    <div>
+        <label class="block text-sm font-semibold text-[#a0ac96] mb-1">Farm Name *</label>
+        {{ form.name }}
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-[#a0ac96] mb-1">Location *</label>
+            {{ form.location }}
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-[#a0ac96] mb-1">Total Area (m²) *</label>
+            {{ form.total_area }}
+        </div>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-[#a0ac96] mb-1">Description</label>
+        {{ form.description }}
+    </div>
+    <div>
+        <label class="flex items-center">
+            <input type="checkbox" class="rounded" name="is_active" {% if form.is_active.value %}checked{% endif %}>
+            <span class="ml-2 text-sm text-gray-700">Is Active</span>
+        </label>
+    </div>
+</div>
