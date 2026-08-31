@@ -90,7 +90,7 @@
                     Orders
                 </a>
                 <div class="relative">
-                    <button onclick="toggleDeliveryMenu()" class="w-full flex items-center justify-between px-5 py-3.5 font-medium text-sm transition-all {% if 'deliver' in current_url or 'rider' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <button onclick="toggleDeliveryMenu()" class="w-full flex items-center justify-between px-5 py-3.5 font-medium text-sm transition-all {% if 'deliver' in current_url or 'rider' in current_url or 'track' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
                         <div class="flex items-center gap-3">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -98,13 +98,14 @@
                             </svg>
                             Delivery
                         </div>
-                        <svg id="deliv-chevron" class="h-4 w-4 transition-transform duration-200 {% if 'deliver' in current_url or 'rider' in current_url %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg id="deliv-chevron" class="h-4 w-4 transition-transform duration-200 {% if 'deliver' in current_url or 'rider' in current_url or 'track' in current_url %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div id="deliv-dropdown" class="{% if 'deliver' not in current_url and 'rider' not in current_url %}hidden{% endif %} bg-black/20">
-                        <a href="{% url 'sales:delivery_list' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'deliver' in current_url and 'rider' not in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Deliveries</a>
+                    <div id="deliv-dropdown" class="{% if 'deliver' not in current_url and 'rider' not in current_url and 'track' not in current_url %}hidden{% endif %} bg-black/20">
+                        <a href="{% url 'sales:delivery_list' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'delivery_list' in current_url and 'track' not in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Deliveries</a>
                         <a href="{% url 'sales:rider_list' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'rider' in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Riders</a>
+                        <a href="{% url 'sales:delivery_track' %}" class="block py-2.5 pl-14 pr-5 text-sm transition-all hover:text-stone-100 {% if 'track' in current_url %}text-[#cca43b] font-semibold{% else %}text-[#a0ac96]{% endif %}">Track Order</a>
                     </div>
                 </div>
             </div>
@@ -120,6 +121,12 @@
                     Sales Management
                 </a>
                 {% endif %}
+                <a href="{% url 'sales:delivery_logs' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if 'delivery_logs' in current_url or 'deliveries/logs' in current_url or 'delivery-logs' in current_url %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Delivery Logs
+                </a>
                 <a href="{% url 'analytics:dashboard' %}" class="flex items-center gap-3 px-5 py-3.5 font-medium text-sm transition-all {% if request.path|slice:":10" == '/analytics' %} border-l-4 border-[#cca43b] bg-[#cca43b]/10 text-[#cca43b] {% else %} border-l-4 border-transparent text-[#a0ac96] hover:bg-white/5 hover:text-stone-100 {% endif %}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

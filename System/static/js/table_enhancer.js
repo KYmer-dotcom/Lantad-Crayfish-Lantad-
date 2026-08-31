@@ -22,7 +22,8 @@ class TableEnhancer {
         this.tbody = this.table.querySelector('tbody');
         if (!this.tbody) return;
 
-        this.allRows = Array.from(this.tbody.querySelectorAll('tr'));
+        // ONLY get direct child rows of this tbody, ignoring inner nested tables
+        this.allRows = Array.from(this.tbody.children).filter(el => el.tagName === 'TR');
         // Group nested child rows if any (e.g. customer-orders-X)
         this.rowGroups = this.extractRowGroups();
         this.filteredGroups = [...this.rowGroups];
@@ -42,17 +43,20 @@ class TableEnhancer {
         let currentParent = null;
 
         this.allRows.forEach(row => {
-            if (row.classList.contains('empty-table-row') || row.querySelector('td[colspan]')) {
-                // Ignore initial empty placeholder row
+            if (row.classList.contains('empty-table-row') || row.classList.contains('enhancer-empty-row')) {
+                // Ignore empty placeholder row
                 return;
             }
 
             const id = row.getAttribute('id') || '';
-            if (id.startsWith('customer-orders-') || row.classList.contains('child-row') || row.classList.contains('nested-row')) {
+            const isChild = id.startsWith('customer-orders-') || 
+                            row.classList.contains('child-row') || 
+                            row.classList.contains('nested-row') ||
+                            (row.querySelector('td[colspan]') && currentParent !== null);
+
+            if (isChild) {
                 if (currentParent) {
                     currentParent.children.push(row);
-                } else {
-                    groups.push({ parent: row, children: [], text: row.textContent.toLowerCase() });
                 }
             } else {
                 currentParent = { parent: row, children: [], text: row.textContent.toLowerCase() };
@@ -175,7 +179,7 @@ class TableEnhancer {
             const cell = group.parent.children[colIndex];
             if (cell) {
                 const text = cell.textContent.trim().replace(/\s+/g, ' ');
-                if (text && text.length < 30) {
+                if (text && text !== '-' && text.length < 30) {
                     values.add(text);
                 }
             }
@@ -195,7 +199,12 @@ class TableEnhancer {
                 const targetVal = this.columnFilters[colIndex];
                 if (targetVal) {
                     const cell = group.parent.children[colIndex];
-                    if (!cell || !cell.textContent.toLowerCase().includes(targetVal)) {
+                    if (!cell) return false;
+                    const cellText = cell.textContent.trim().toLowerCase().replace(/\s+/g, ' ');
+                    const words = cellText.split(/\s+/);
+                    // Match full word or exact match (prevents 'paid' matching 'unpaid')
+                    const isMatch = cellText === targetVal || words.includes(targetVal) || (cellText.includes(targetVal) && targetVal !== 'paid');
+                    if (!isMatch) {
                         return false;
                     }
                 }
@@ -243,22 +252,23 @@ class TableEnhancer {
         const startIndex = (this.currentPage - 1) * this.pageSize;
         const endIndex = Math.min(startIndex + this.pageSize, total);
 
-        // Hide all rows first
-        this.rowGroups.forEach(group => {
-            group.parent.style.display = 'none';
-            group.children.forEach(child => child.style.display = 'none');
-        });
-
-        // Show slice
+        // Update row visibility based on pagination
         const visibleGroups = this.filteredGroups.slice(startIndex, endIndex);
-        visibleGroups.forEach(group => {
-            group.parent.style.display = '';
-            // If child row was toggled open, keep its state
-            group.children.forEach(child => {
-                if (!child.classList.contains('hidden')) {
-                    child.style.display = '';
-                }
-            });
+        const visibleSet = new Set(visibleGroups);
+
+        this.rowGroups.forEach(group => {
+            if (visibleSet.has(group)) {
+                group.parent.style.display = '';
+                group.children.forEach(child => {
+                    // When parent is visible, let CSS classes (e.g. .hidden) toggle child display
+                    child.style.display = child.classList.contains('hidden') ? 'none' : '';
+                });
+            } else {
+                group.parent.style.display = 'none';
+                group.children.forEach(child => {
+                    child.style.display = 'none';
+                });
+            }
         });
 
         // Handle empty message

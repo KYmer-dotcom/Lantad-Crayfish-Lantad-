@@ -1752,6 +1752,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
+    /* Hide Leaflet watermark and attribution */
+    .leaflet-control-attribution {
+        display: none !important;
+    }
     /* Custom Leaflet Popup Styles matching Dark-Gold Theme */
     .custom-leaflet-popup .leaflet-popup-content-wrapper {
         background: #021f15 !important;
@@ -2466,7 +2470,9 @@
         const centerLat = hasExisting ? existingLat : defaultLat;
         const centerLng = hasExisting ? existingLng : defaultLng;
 
-        const map = L.map('customer-account-map').setView([centerLat, centerLng], hasExisting ? 15 : 10);
+        const map = L.map('customer-account-map', {
+            attributionControl: false
+        }).setView([centerLat, centerLng], hasExisting ? 15 : 10);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19,
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'

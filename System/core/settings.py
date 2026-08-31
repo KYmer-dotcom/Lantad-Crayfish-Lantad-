@@ -119,7 +119,7 @@ if os.environ.get('DATABASE_URL'):
             conn_health_checks=True,
         )
     }
-elif os.environ.get('DB_NAME'):
+elif os.environ.get('USE_SQLITE') != 'True':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

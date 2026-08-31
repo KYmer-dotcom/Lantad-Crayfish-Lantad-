@@ -66,6 +66,10 @@
     .btn-gold:active {
         transform: translateY(0);
     }
+    /* Hide Leaflet map attribution watermark globally */
+    .leaflet-control-attribution {
+        display: none !important;
+    }
 </style>
 <div class="min-h-screen app-shell text-stone-100 bg-[#021f15]">
     <div class="flex min-h-screen">
@@ -260,12 +264,9 @@
     function toggleDeliveryMenu() {
         const dropdown = document.getElementById('deliv-dropdown');
         const chevron = document.getElementById('deliv-chevron');
-        if (dropdown.classList.contains('hidden')) {
-            dropdown.classList.remove('hidden');
-            chevron.classList.add('rotate-180');
-        } else {
-            dropdown.classList.add('hidden');
-            chevron.classList.remove('rotate-180');
+        if (dropdown && chevron) {
+            dropdown.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
         }
     }
     

@@ -89,3 +89,7 @@ Server runs locally at: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - **Frontend Architecture:** Django Templates, Vanilla CSS (Premium Dark Aquaculture Theme), HTMX Partials
 - **Authentication:** Session-based Authentication & JWT (SimpleJWT)
 - **Database:** SQLite3 (Development / Local Storage)
+
+2500 per kilo Crayfish and breeder Crayfish
+35 per kilo azula 
+500 per kilo 

@@ -5,7 +5,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.db.models import Sum, Count, Q, Case, When, Value, IntegerField, Prefetch
+from django.db.models import Sum, Count, Q, Case, When, Value, IntegerField, Prefetch, F
+from django.core.paginator import Paginator
 from django import forms
 from decimal import Decimal
 import datetime
@@ -1369,6 +1370,137 @@ def delivery_delete(request, delivery_id):
     return redirect('sales:delivery_list')
 
 
+@login_required
+def delivery_logs_page(request):
+    """Delivery Audit and Logs page tracking approvals, receipts, proof of delivery, and completion dates."""
+    access_response = _ensure_sales_owner(request)
+    if access_response:
+        return access_response
+
+    # Base queryset with relations
+    logs_qs = Delivery.objects.select_related(
+        'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
+    ).all()
+
+    # Search query
+    query = request.GET.get('q', '').strip()
+    if query:
+        logs_qs = logs_qs.filter(
+            Q(order__order_number__icontains=query) |
+            Q(order__customer__name__icontains=query) |
+            Q(order__customer__phone__icontains=query) |
+            Q(created_by__username__icontains=query) |
+            Q(created_by__first_name__icontains=query) |
+            Q(created_by__last_name__icontains=query) |
+            Q(order__created_by__username__icontains=query) |
+            Q(rider__name__icontains=query) |
+            Q(delivery_location__icontains=query)
+        )
+
+    # Status filter
+    status_filter = request.GET.get('status', 'all').strip().lower()
+    if status_filter in [Delivery.Status.DELIVERED, Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED, Delivery.Status.CANCELLED]:
+        filtered_logs = logs_qs.filter(status=status_filter)
+    else:
+        status_filter = 'all'
+        filtered_logs = logs_qs
+
+    # Ordering: Completed/Delivered orders first, then active/scheduled
+    filtered_logs = filtered_logs.order_by(
+        Case(
+            When(status=Delivery.Status.DELIVERED, then=Value(0)),
+            When(status=Delivery.Status.IN_TRANSIT, then=Value(1)),
+            When(status=Delivery.Status.SCHEDULED, then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField(),
+        ),
+        F('delivered_date').desc(nulls_last=True),
+        '-created_at'
+    )
+
+    # Aggregates / Stats
+    total_logs = Delivery.objects.count()
+    delivered_count = Delivery.objects.filter(status=Delivery.Status.DELIVERED).count()
+    in_transit_count = Delivery.objects.filter(status=Delivery.Status.IN_TRANSIT).count()
+    scheduled_count = Delivery.objects.filter(status=Delivery.Status.SCHEDULED).count()
+
+    delivered_qs = Delivery.objects.filter(status=Delivery.Status.DELIVERED)
+    total_delivered_kg = delivered_qs.aggregate(total=Sum('quantity_kg'))['total'] or Decimal('0')
+    total_delivered_revenue = delivered_qs.aggregate(total=Sum('order__total_amount'))['total'] or Decimal('0')
+
+    # Pagination: 15 per page
+    paginator = Paginator(filtered_logs, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'deliveries': page_obj,
+        'page_obj': page_obj,
+        'total_logs': total_logs,
+        'delivered_count': delivered_count,
+        'in_transit_count': in_transit_count,
+        'scheduled_count': scheduled_count,
+        'total_delivered_kg': total_delivered_kg,
+        'total_delivered_revenue': total_delivered_revenue,
+        'status_filter': status_filter,
+        'query': query,
+    }
+    return render(request, 'sales_management/delivery_logs.html', context)
+
+
+@login_required
+def delivery_track_page(request):
+    """Live GPS Delivery Tracking page for staff and owners."""
+    access_response = _ensure_sales_owner(request)
+    if access_response:
+        return access_response
+
+    all_deliveries_qs = Delivery.objects.select_related(
+        'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
+    ).all()
+
+    active_deliveries = all_deliveries_qs.filter(
+        status__in=[Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED]
+    ).order_by(
+        Case(
+            When(status=Delivery.Status.IN_TRANSIT, then=Value(0)),
+            When(status=Delivery.Status.SCHEDULED, then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        ),
+        '-scheduled_date', '-created_at'
+    )
+
+    recent_completed = all_deliveries_qs.filter(
+        status=Delivery.Status.DELIVERED
+    ).order_by('-delivered_date', '-created_at')[:10]
+
+    selected_delivery = None
+    query = request.GET.get('q', '').strip()
+    delivery_id = request.GET.get('id', '').strip()
+
+    if delivery_id and delivery_id.isdigit():
+        selected_delivery = all_deliveries_qs.filter(id=int(delivery_id)).first()
+    elif query:
+        selected_delivery = all_deliveries_qs.filter(
+            Q(order__order_number__iexact=query) |
+            Q(order__order_number__icontains=query) |
+            Q(order__customer__name__icontains=query) |
+            Q(order__customer__phone__icontains=query)
+        ).first()
+
+    if not selected_delivery:
+        selected_delivery = active_deliveries.first() or recent_completed.first() or all_deliveries_qs.first()
+
+    context = {
+        'selected_delivery': selected_delivery,
+        'active_deliveries': active_deliveries,
+        'recent_completed': recent_completed,
+        'query': query,
+    }
+    return render(request, 'sales_management/track_order.html', context)
+
+
 # ============================================================
 # RIDERS MANAGEMENT VIEWS
 # ============================================================
@@ -1553,13 +1685,24 @@ def rider_portal(request):
     active_deliveries = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
     completed_deliveries = deliveries_qs.filter(status=Delivery.Status.DELIVERED)
 
+    # Available / Unassigned delivery dispatches that riders can claim
+    available_deliveries = Delivery.objects.filter(
+        rider__isnull=True,
+        status=Delivery.Status.SCHEDULED
+    ).exclude(
+        delivery_location__iexact='pickup'
+    ).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
+
     active_count = active_deliveries.count()
+    available_count = available_deliveries.count()
     in_transit_count = active_deliveries.filter(status=Delivery.Status.IN_TRANSIT).count()
     completed_count = completed_deliveries.count()
     total_volume_today = deliveries_qs.filter(delivered_date=datetime.date.today()).aggregate(total=Sum('quantity_kg'))['total'] or 0
 
     context = {
         'rider': rider,
+        'available_deliveries': available_deliveries,
+        'available_count': available_count,
         'active_deliveries': active_deliveries,
         'completed_deliveries': completed_deliveries,
         'active_count': active_count,
@@ -1572,15 +1715,22 @@ def rider_portal(request):
 
 @login_required
 def rider_delivery_action(request, delivery_id):
-    """Update delivery progress by rider (Start transit / Mark delivered)."""
+    """Update delivery progress by rider (Claim / Start transit / Mark delivered)."""
     rider = get_rider_profile(request.user)
     if not rider:
         messages.error(request, 'Rider access required.')
         return redirect('sales:rider_portal')
 
-    delivery = get_object_or_404(Delivery, pk=delivery_id, rider=rider)
     if request.method == 'POST':
         action = request.POST.get('action')
+        if action == 'claim_order':
+            delivery = get_object_or_404(Delivery, pk=delivery_id, rider__isnull=True)
+            delivery.rider = rider
+            delivery.save(update_fields=['rider'])
+            messages.success(request, f'Order #{delivery.order.order_number} accepted! It is now in your active deliveries.')
+            return redirect('sales:rider_portal')
+
+        delivery = get_object_or_404(Delivery, pk=delivery_id, rider=rider)
         if action == 'start_transit':
             delivery.status = Delivery.Status.IN_TRANSIT
             delivery.save(update_fields=['status'])

@@ -1,0 +1,377 @@
+{% extends "layout.html" %}
+{% block title %}Track Order • Live Delivery GPS{% endblock %}
+{% block header_title %}Track Order • Live GPS{% endblock %}
+
+{% block page_content %}
+<!-- Leaflet & Esri Styles -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+    .leaflet-control-attribution { display: none !important; }
+    .leaflet-bar { border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 1rem !important; overflow: hidden; background: rgba(2,31,21,0.9) !important; }
+    .leaflet-bar a { background-color: rgba(2,31,21,0.9) !important; color: #cca43b !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
+    .leaflet-bar a:hover { background-color: #cca43b !important; color: #021f15 !important; }
+</style>
+
+<div class="space-y-6">
+    <!-- Header with Search -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+                    Live GPS Telemetry
+                </span>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#a0ac96]">Logistics & Fleet Tracking</p>
+            </div>
+            <h1 class="mt-2 text-2xl font-bold text-stone-100">Live Order Tracking</h1>
+        </div>
+
+        <!-- Search by Order Number -->
+        <form method="GET" class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="relative flex-1 sm:w-80">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search Order # (e.g. SO-20260831-0001)..." class="w-full rounded-2xl border border-white/10 bg-black/30 pl-10 pr-4 py-2.5 text-xs text-stone-100 placeholder:text-stone-500 focus:border-[#cca43b] focus:outline-none">
+                <svg class="h-4 w-4 text-[#a0ac96] absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all cursor-pointer">
+                Track
+            </button>
+            {% if query %}
+            <a href="{% url 'sales:delivery_track' %}" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-[#a0ac96] hover:text-white">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if selected_delivery %}
+    <!-- Active Shipment Main Banner -->
+    <div class="rounded-[2.5rem] border border-[#cca43b]/30 bg-gradient-to-r from-black/40 via-black/20 to-black/40 p-6 shadow-2xl backdrop-blur-md">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 text-2xl font-black shrink-0">
+                    🛵
+                </div>
+                <div>
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <h2 class="text-xl font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
+                        <span class="px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border
+                            {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40
+                            {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse
+                            {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40
+                            {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
+                            {{ selected_delivery.get_status_display }}
+                        </span>
+                        {% if selected_delivery.order.payment_status == 'paid' %}
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Paid</span>
+                        {% else %}
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">COD (Collect on Delivery)</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-[#a0ac96] mt-1">
+                        Customer: <strong class="text-white">{{ selected_delivery.order.customer.name }}</strong> • 
+                        Item: <strong class="text-[#cca43b]">{{ selected_delivery.order.product.name|default:"Stock" }} ({{ selected_delivery.quantity_kg }} kg)</strong> •
+                        Total: <strong class="text-white font-mono">₱{{ selected_delivery.order.total_amount|floatformat:2 }}</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Recenter & Map Controls -->
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="recenterTrackingMap()" class="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 hover:bg-[#cca43b]/10 transition-all cursor-pointer">
+                    <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Fit Route View
+                </button>
+            </div>
+        </div>
+
+        <!-- Stepper Progress Bar -->
+        <div class="mt-6 pt-6 border-t border-white/10">
+            <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold">
+                <!-- Step 1: Placed -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-center">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center bg-emerald-500 text-[#021f15] font-black text-xs shadow-lg shadow-emerald-500/30">
+                            ✓
+                        </div>
+                    </div>
+                    <p class="text-white">Order Placed</p>
+                    <p class="text-[10px] text-[#a0ac96]">{{ selected_delivery.order.order_date|date:"M d" }}</p>
+                </div>
+
+                <!-- Step 2: Approved / Dispatched -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-center">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center bg-emerald-500 text-[#021f15] font-black text-xs shadow-lg shadow-emerald-500/30">
+                            ✓
+                        </div>
+                    </div>
+                    <p class="text-white">Approved & Dispatched</p>
+                    <p class="text-[10px] text-[#a0ac96]">{{ selected_delivery.created_by.username|default:"Admin" }}</p>
+                </div>
+
+                <!-- Step 3: In Transit -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-center">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center 
+                            {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#021f15] shadow-lg shadow-cyan-400/30 animate-pulse{% else %}bg-white/10 text-stone-500{% endif %} font-black text-xs">
+                            {% if selected_delivery.status == 'in_transit' %}🛵{% elif selected_delivery.status == 'delivered' %}✓{% else %}3{% endif %}
+                        </div>
+                    </div>
+                    <p class="{% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}text-white{% else %}text-stone-500{% endif %}">Out for Delivery</p>
+                    <p class="text-[10px] text-cyan-400">{{ selected_delivery.rider.name|default:"Courier Assigned" }}</p>
+                </div>
+
+                <!-- Step 4: Delivered -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-center">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center 
+                            {% if selected_delivery.status == 'delivered' %}bg-emerald-500 text-[#021f15] shadow-lg shadow-emerald-500/30{% else %}bg-white/10 text-stone-500{% endif %} font-black text-xs">
+                            {% if selected_delivery.status == 'delivered' %}✓{% else %}4{% endif %}
+                        </div>
+                    </div>
+                    <p class="{% if selected_delivery.status == 'delivered' %}text-white{% else %}text-stone-500{% endif %}">Delivered</p>
+                    <p class="text-[10px] text-emerald-400">{% if selected_delivery.delivered_date %}{{ selected_delivery.delivered_date|date:"M d, Y" }}{% else %}Estimated Today{% endif %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map & Delivery Details 2-Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Live GPS Map Column (Span 2) -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/40 shadow-2xl backdrop-blur-md">
+                <div id="live-tracking-gps-map" class="w-full h-[480px] z-0"></div>
+
+                <!-- Floating Route Info Legend -->
+                <div class="absolute bottom-4 left-4 right-4 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-3">
+                    <div class="pointer-events-auto rounded-2xl border border-white/15 bg-[#021f15]/90 px-4 py-2.5 text-xs backdrop-blur-md shadow-xl text-stone-200 flex items-center gap-3">
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+                            <span class="font-bold text-white">Origin:</span> AquaFarm Depot
+                        </div>
+                        <span class="text-white/20">•</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-3 w-3 rounded-full bg-purple-500"></span>
+                            <span class="font-bold text-purple-300">Turn-by-turn Road Route</span>
+                        </div>
+                        <span class="text-white/20">•</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-3 w-3 rounded-full bg-rose-500"></span>
+                            <span class="font-bold text-rose-400">Destination Drop-off</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar / Shipment Telemetry Card (Span 1) -->
+        <div class="space-y-6">
+            <!-- Delivery Info Card -->
+            <div class="rounded-[2.5rem] border border-white/10 bg-black/30 p-6 shadow-xl space-y-5">
+                <h3 class="text-sm font-black uppercase tracking-wider text-[#cca43b]">Shipment Dispatch Details</h3>
+                
+                <!-- Destination -->
+                <div class="space-y-1">
+                    <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Delivery Destination</p>
+                    <p class="text-xs text-white font-bold leading-snug">📍 {{ selected_delivery.delivery_location|default:selected_delivery.order.customer.address }}</p>
+                    {% if selected_delivery.order.customer.phone %}
+                    <p class="text-[11px] font-mono text-[#cca43b] mt-1">Customer: {{ selected_delivery.order.customer.phone }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Rider Info -->
+                <div class="border-t border-white/10 pt-4 space-y-2">
+                    <p class="text-[10px] uppercase font-black tracking-wider text-cyan-400">Assigned Driver / Rider</p>
+                    {% if selected_delivery.rider %}
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-bold text-white">{{ selected_delivery.rider.name }}</p>
+                            <p class="text-[11px] text-[#a0ac96]">{{ selected_delivery.rider.vehicle_type }} • {{ selected_delivery.rider.plate_number|default:"No plate" }}</p>
+                        </div>
+                        {% if selected_delivery.rider.phone %}
+                        <a href="tel:{{ selected_delivery.rider.phone }}" class="rounded-xl bg-cyan-500/10 border border-cyan-500/30 px-3 py-1.5 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20 transition-all inline-flex items-center gap-1">
+                            📞 Call
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-stone-400 italic">No rider assigned yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Approver & Timestamps -->
+                <div class="border-t border-white/10 pt-4 space-y-1 text-xs">
+                    <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Approved By</p>
+                    <p class="text-stone-200 font-bold">{{ selected_delivery.created_by.get_full_name|default:selected_delivery.created_by.username|default:"System Admin" }}</p>
+                    <p class="text-[10px] text-[#a0ac96] font-mono">{{ selected_delivery.created_at|date:"M d, Y • h:i A" }}</p>
+                </div>
+
+                <!-- Notes / Instructions -->
+                {% if selected_delivery.notes %}
+                <div class="border-t border-white/10 pt-4 space-y-1 text-xs">
+                    <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Driver Remarks</p>
+                    <p class="text-stone-300 italic bg-white/5 p-3 rounded-xl border border-white/5">{{ selected_delivery.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Active Shipments Quick Selector -->
+            <div class="rounded-[2.5rem] border border-white/10 bg-black/30 p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Other Active Shipments</h3>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#cca43b]/15 text-[#cca43b]">
+                        {{ active_deliveries.count }} Active
+                    </span>
+                </div>
+                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    {% for d in active_deliveries %}
+                    <a href="?id={{ d.id }}" class="block p-3 rounded-2xl border transition-all {% if selected_delivery.id == d.id %}border-[#cca43b] bg-[#cca43b]/10 text-white{% else %}border-white/5 bg-white/[0.02] hover:bg-white/[0.05] text-stone-300{% endif %}">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono font-bold">{{ d.order.order_number }}</span>
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border
+                                {% if d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30
+                                {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
+                                {{ d.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-[#a0ac96] mt-1 truncate">{{ d.order.customer.name }} • {{ d.quantity_kg }} kg</p>
+                    </a>
+                    {% empty %}
+                    <p class="text-xs text-stone-500 italic py-2 text-center">No other shipments in progress.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="rounded-[2.5rem] border border-white/10 bg-black/30 p-12 text-center shadow-2xl max-w-lg mx-auto">
+        <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#cca43b]/15 text-[#cca43b] text-3xl mx-auto mb-4">
+            🛵
+        </div>
+        <h3 class="text-lg font-bold text-white">No Active Delivery Selected</h3>
+        <p class="text-xs text-[#a0ac96] mt-2">Enter an order number above or schedule a new delivery from the Delivery Management page.</p>
+        <div class="mt-6">
+            <a href="{% url 'sales:delivery_list' %}" class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-5 py-2.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all">
+                Go to Deliveries
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if selected_delivery %}
+<script>
+let trackMap = null;
+let routePolyline = null;
+let originMarker = null;
+let destMarker = null;
+
+// Origin: Silay Superworm & Crayfish Farm, Brgy Lantad, Silay City
+const FARM_ORIGIN = { lat: 10.8033, lng: 122.9733 };
+
+// Destination coords
+let destLat = parseFloat("{{ selected_delivery.order.customer.map_latitude|default:'' }}");
+let destLng = parseFloat("{{ selected_delivery.order.customer.map_longitude|default:'' }}");
+
+if (isNaN(destLat) || isNaN(destLng)) {
+    // Default fallback near Silay / Bacolod area
+    destLat = 10.7950;
+    destLng = 122.9650;
+}
+
+function initLiveTrackingMap() {
+    const container = document.getElementById('live-tracking-gps-map');
+    if (!container) return;
+
+    trackMap = L.map('live-tracking-gps-map', {
+        zoomControl: true,
+        attributionControl: false
+    }).setView([FARM_ORIGIN.lat, FARM_ORIGIN.lng], 13);
+
+    // Free high-detail Esri World Street Map tiles (no API keys, zero watermarks)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18
+    }).addTo(trackMap);
+
+    // Custom Origin Marker (Farm Depot)
+    const farmIcon = L.divIcon({
+        className: 'farm-origin-marker',
+        html: `<div style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#10b981; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(16,185,129,0.7); font-size:18px;">
+                   🦐
+               </div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+
+    originMarker = L.marker([FARM_ORIGIN.lat, FARM_ORIGIN.lng], { icon: farmIcon }).addTo(trackMap);
+    originMarker.bindPopup('<b>Silay Superworm & Crayfish Farm</b><br>Origin Depot • Brgy Lantad, Silay City');
+
+    // Custom Destination Marker (Customer Pin)
+    const destIcon = L.divIcon({
+        className: 'dest-customer-marker',
+        html: `<div style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#ef4444; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(239,68,68,0.7); font-size:16px;">
+                   📍
+               </div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+
+    destMarker = L.marker([destLat, destLng], { icon: destIcon }).addTo(trackMap);
+    destMarker.bindPopup('<b>Destination: {{ selected_delivery.order.customer.name|escapejs }}</b><br>{{ selected_delivery.delivery_location|escapejs }}');
+
+    // Turn-by-turn OSRM Road Route
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${FARM_ORIGIN.lng},${FARM_ORIGIN.lat};${destLng},${destLat}?overview=full&geometries=geojson`;
+
+    fetch(osrmUrl)
+        .then(res => res.json())
+        .then(data => {
+            let coords;
+            if (data && data.routes && data.routes.length > 0) {
+                coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+            } else {
+                coords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
+            }
+
+            routePolyline = L.polyline(coords, {
+                color: '#8b5cf6', // Road Purple
+                weight: 6,
+                opacity: 0.95,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(trackMap);
+
+            trackMap.fitBounds(routePolyline.getBounds(), { padding: [60, 60] });
+        })
+        .catch(() => {
+            const fallbackCoords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
+            routePolyline = L.polyline(fallbackCoords, {
+                color: '#8b5cf6',
+                weight: 6,
+                opacity: 0.95,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(trackMap);
+            trackMap.fitBounds(routePolyline.getBounds(), { padding: [60, 60] });
+        });
+}
+
+function recenterTrackingMap() {
+    if (routePolyline && trackMap) {
+        trackMap.fitBounds(routePolyline.getBounds(), { padding: [60, 60] });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initLiveTrackingMap, 150);
+});
+</script>
+{% endif %}
+{% endblock %}

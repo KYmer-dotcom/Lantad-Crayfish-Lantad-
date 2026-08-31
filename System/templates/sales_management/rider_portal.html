@@ -5,19 +5,25 @@
 
 {% block page_content %}
 <!-- Leaflet Map CSS & JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <div class="space-y-6 max-w-6xl mx-auto pb-12">
-    
+
     <!-- Driver Profile & Duty Status Card (Grab-style Driver Header) -->
-    <div class="relative overflow-hidden rounded-[2.5rem] border border-[#cca43b]/30 bg-gradient-to-r from-[#021f15] via-[#041a12] to-[#021f15] p-6 lg:p-8 shadow-2xl backdrop-blur-md">
+    <div
+        class="relative overflow-hidden rounded-[2.5rem] border border-[#cca43b]/30 bg-gradient-to-r from-[#021f15] via-[#041a12] to-[#021f15] p-6 lg:p-8 shadow-2xl backdrop-blur-md">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <!-- Driver Info -->
             <div class="flex items-center gap-4">
-                <div class="relative flex h-16 w-16 items-center justify-center rounded-3xl bg-[#cca43b]/10 border-2 border-[#cca43b]/30 text-[#cca43b] font-black text-2xl shadow-lg shadow-[#cca43b]/10">
+                <div
+                    class="relative flex h-16 w-16 items-center justify-center rounded-3xl bg-[#cca43b]/10 border-2 border-[#cca43b]/30 text-[#cca43b] font-black text-2xl shadow-lg shadow-[#cca43b]/10">
                     {{ rider.name|slice:":1"|upper }}
-                    <span class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-[#021f15] {% if rider.status == 'available' %}bg-emerald-400 animate-pulse{% elif rider.status == 'on_delivery' %}bg-cyan-400 animate-ping{% else %}bg-stone-500{% endif %}" title="{{ rider.get_status_display }}"></span>
+                    <span
+                        class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-[#021f15] {% if rider.status == 'available' %}bg-emerald-400 animate-pulse{% elif rider.status == 'on_delivery' %}bg-cyan-400 animate-ping{% else %}bg-stone-500{% endif %}"
+                        title="{{ rider.get_status_display }}"></span>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 flex-wrap">
@@ -31,12 +37,20 @@
                     </div>
                     <div class="flex items-center gap-3 text-xs text-[#a0ac96] mt-1.5 flex-wrap">
                         <span class="flex items-center gap-1">
-                            <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                            <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                            </svg>
                             {{ rider.vehicle_type }}{% if rider.plate_number %} ({{ rider.plate_number }}){% endif %}
                         </span>
                         <span>•</span>
                         <span class="flex items-center gap-1">
-                            <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
                             {{ rider.phone }}
                         </span>
                     </div>
@@ -47,12 +61,14 @@
             <form method="POST" action="{% url 'sales:rider_duty_toggle' %}" class="flex items-center gap-3">
                 {% csrf_token %}
                 {% if rider.status == 'off_duty' %}
-                <button type="submit" class="w-full md:w-auto rounded-2xl bg-emerald-500 hover:bg-emerald-600 px-6 py-3 text-sm font-black text-[#021f15] shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
+                <button type="submit"
+                    class="w-full md:w-auto rounded-2xl bg-emerald-500 hover:bg-emerald-600 px-6 py-3 text-sm font-black text-[#021f15] shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
                     <span class="h-2.5 w-2.5 rounded-full bg-[#021f15] animate-ping"></span>
                     Go Online (Ready to Dispatch)
                 </button>
                 {% else %}
-                <button type="submit" class="w-full md:w-auto rounded-2xl border border-white/10 bg-black/40 hover:bg-white/10 px-5 py-3 text-sm font-bold text-[#a0ac96] hover:text-stone-100 transition-all flex items-center justify-center gap-2">
+                <button type="submit"
+                    class="w-full md:w-auto rounded-2xl border border-white/10 bg-black/40 hover:bg-white/10 px-5 py-3 text-sm font-bold text-[#a0ac96] hover:text-stone-100 transition-all flex items-center justify-center gap-2">
                     <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
                     Go Off Duty
                 </button>
@@ -61,15 +77,30 @@
         </div>
 
         <!-- Subtle Background Glow -->
-        <div class="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-[#cca43b]/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-[#cca43b]/10 blur-3xl pointer-events-none">
+        </div>
     </div>
 
     <!-- Quick Stats Grid (Driver Dashboard KPIs) -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Available Orders -->
+        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm hover:border-[#cca43b]/40 transition-all cursor-pointer"
+            onclick="switchTab('available')">
+            <div
+                class="flex items-center justify-between text-[#cca43b] text-xs font-bold uppercase tracking-wider mb-2">
+                <span>Available</span>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+            </div>
+            <p class="text-3xl font-black text-[#cca43b]">{{ available_count }}</p>
+            <p class="text-[11px] text-[#a0ac96] mt-1">Ready to accept</p>
+        </div>
+
         <!-- Active Shipments -->
-        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
-            <div class="flex items-center justify-between text-[#a0ac96] text-xs font-bold uppercase tracking-wider mb-2">
-                <span>Active Tasks</span>
+        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm hover:border-amber-400/40 transition-all cursor-pointer"
+            onclick="switchTab('active')">
+            <div
+                class="flex items-center justify-between text-[#a0ac96] text-xs font-bold uppercase tracking-wider mb-2">
+                <span>My Tasks</span>
                 <span class="h-2 w-2 rounded-full bg-amber-400"></span>
             </div>
             <p class="text-3xl font-black text-white">{{ active_count }}</p>
@@ -78,7 +109,8 @@
 
         <!-- In Transit -->
         <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
-            <div class="flex items-center justify-between text-cyan-300 text-xs font-bold uppercase tracking-wider mb-2">
+            <div
+                class="flex items-center justify-between text-cyan-300 text-xs font-bold uppercase tracking-wider mb-2">
                 <span>In Transit</span>
                 <span class="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
             </div>
@@ -87,65 +119,61 @@
         </div>
 
         <!-- Delivered Today -->
-        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
-            <div class="flex items-center justify-between text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm hover:border-emerald-400/40 transition-all cursor-pointer"
+            onclick="switchTab('history')">
+            <div
+                class="flex items-center justify-between text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
                 <span>Delivered</span>
                 <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
             </div>
             <p class="text-3xl font-black text-emerald-400">{{ completed_count }}</p>
             <p class="text-[11px] text-[#a0ac96] mt-1">Completed shipments</p>
         </div>
-
-        <!-- Total Volume -->
-        <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
-            <div class="flex items-center justify-between text-[#cca43b] text-xs font-bold uppercase tracking-wider mb-2">
-                <span>Volume Today</span>
-                <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
-            </div>
-            <p class="text-3xl font-black text-[#cca43b]">{{ total_volume_today }} <span class="text-sm font-bold">kg</span></p>
-            <p class="text-[11px] text-[#a0ac96] mt-1">Dispatched volume</p>
-        </div>
     </div>
 
     <!-- Delivery Tabs Navigation -->
     <div class="flex items-center justify-between border-b border-white/10 pb-4">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="switchTab('active')" id="tab-btn-active" class="px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20">
-                Active Deliveries ({{ active_count }})
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <button type="button" onclick="switchTab('available')" id="tab-btn-available"
+                class="px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20">
+                Available Orders ({{ available_count }})
             </button>
-            <button type="button" onclick="switchTab('history')" id="tab-btn-history" class="px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white">
-                Completed History ({{ completed_count }})
+            <button type="button" onclick="switchTab('active')" id="tab-btn-active"
+                class="px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white">
+                My Active Tasks ({{ active_count }})
+            </button>
+            <button type="button" onclick="switchTab('history')" id="tab-btn-history"
+                class="px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white">
+                History ({{ completed_count }})
             </button>
         </div>
-        <span class="text-xs text-[#a0ac96] hidden sm:inline">Silay Superworm & Crayfish Logistics</span>
+        <span class="text-xs text-[#a0ac96] hidden md:inline">Silay Superworm & Crayfish Logistics</span>
     </div>
 
-    <!-- TAB 1: ACTIVE DELIVERIES (Grab-Style Delivery Cards) -->
-    <div id="section-active" class="space-y-4">
-        {% for delivery in active_deliveries %}
-        <div class="rounded-[2rem] border border-white/10 bg-black/30 p-6 lg:p-7 shadow-2xl backdrop-blur-md transition-all hover:border-[#cca43b]/40">
-            <!-- Card Header: Order # & Status -->
+    <!-- TAB 0: AVAILABLE UNASSIGNED ORDERS (Orders ready to be claimed) -->
+    <div id="section-available" class="space-y-4">
+        {% for delivery in available_deliveries %}
+        <div class="rounded-[2rem] border border-[#cca43b]/30 bg-black/40 p-6 lg:p-7 shadow-2xl backdrop-blur-md transition-all hover:border-[#cca43b]/60">
+            <!-- Card Header: Order # & Ready Badge -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4 mb-5">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/30 font-black">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <h2 class="text-base font-black text-stone-50 font-mono tracking-tight">{{ delivery.order.order_number }}</h2>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border
-                                {% if delivery.status == 'in_transit' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/30 animate-pulse
-                                {% else %}bg-amber-500/10 text-amber-400 border-amber-500/30{% endif %}">
-                                {{ delivery.get_status_display }}
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                Open for Pickup
                             </span>
                         </div>
-                        <p class="text-xs text-[#a0ac96] mt-0.5">Scheduled for: <span class="text-stone-200 font-semibold">{{ delivery.scheduled_date|date:"M d, Y" }}</span></p>
+                        <p class="text-xs text-[#a0ac96] mt-0.5">Scheduled Date: <span class="text-stone-200 font-semibold">{{ delivery.scheduled_date|date:"M d, Y"|default:"Today" }}</span></p>
                     </div>
                 </div>
 
-                <!-- Product & Payment Badge -->
+                <!-- Product & Volume Badge -->
                 <div class="flex items-center gap-3">
                     <div class="text-right">
                         <p class="text-xs font-bold text-stone-200">{{ delivery.order.product.name|default:"Aquaculture Order" }}</p>
@@ -159,9 +187,9 @@
                 </div>
             </div>
 
-            <!-- Grab-Inspired Route Stepper (Pickup ➡️ Dropoff) -->
+            <!-- Route Stepper -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 rounded-2xl p-5 border border-white/5 mb-5">
-                <!-- STEP 1: PICKUP (Farm) -->
+                <!-- STEP 1: PICKUP -->
                 <div class="flex items-start gap-3">
                     <div class="flex flex-col items-center">
                         <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
@@ -176,7 +204,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: DROPOFF (Customer Destination) -->
+                <!-- STEP 2: DESTINATION -->
                 <div class="flex items-start gap-3">
                     <div class="flex flex-col items-center">
                         <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
@@ -188,28 +216,40 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between gap-2">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-rose-400">Delivery Destination</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-rose-400">Customer Destination</p>
                             {% if delivery.order.customer.phone %}
                             <a href="tel:{{ delivery.order.customer.phone }}" class="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500/20 transition-all">
-                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
                                 Call {{ delivery.order.customer.phone }}
                             </a>
                             {% endif %}
                         </div>
                         <p class="text-sm font-bold text-white mt-0.5">{{ delivery.order.customer.name }}</p>
                         <p class="text-xs text-stone-300 mt-0.5 break-words">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</p>
-                        
-                        <!-- Map & Navigation Buttons -->
+
+                        <!-- Map & Navigation -->
                         <div class="flex items-center gap-2 mt-3 flex-wrap">
-                            <button type="button" onclick="openDriverMapModal('{{ delivery.order.order_number }}', '{{ delivery.order.customer.name|escapejs }}', '{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/20 transition-all inline-flex items-center gap-1.5">
-                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                                View Map Pin
+                            <button type="button"
+                                onclick="openDriverMapModal('{{ delivery.order.order_number }}', '{{ delivery.order.customer.name|escapejs }}', '{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')"
+                                class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/20 transition-all inline-flex items-center gap-1.5">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                </svg>
+                                View Pin
                             </button>
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}" target="_blank" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
-                                <svg class="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}"
+                                target="_blank"
+                                class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
+                                <svg class="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
                                 Google Maps
                             </a>
-                            <a href="https://waze.com/ul?q={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}&navigate=yes" target="_blank" class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
+                            <a href="https://waze.com/ul?q={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}&navigate=yes"
+                                target="_blank"
+                                class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
                                 Waze
                             </a>
                         </div>
@@ -217,50 +257,169 @@
                 </div>
             </div>
 
-            <!-- Notes & Instructions -->
+            <!-- Notes -->
             {% if delivery.notes or delivery.order.notes %}
             <div class="mb-5 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs text-[#a0ac96]">
-                <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] block mb-1">Delivery Notes:</span>
+                <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] block mb-1">Notes:</span>
                 {{ delivery.notes|default:delivery.order.notes }}
             </div>
             {% endif %}
 
-            <!-- Action Bar (Grab-style Start Transit / Delivered) -->
-            <div class="flex items-center justify-end gap-3 pt-2">
-                {% if delivery.status == 'scheduled' %}
+            <!-- Accept & Claim Action Button -->
+            <div class="flex items-center justify-end pt-2">
                 <form method="POST" action="{% url 'sales:rider_delivery_action' delivery.id %}" class="w-full sm:w-auto">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="start_transit">
-                    <button type="submit" class="w-full sm:w-auto rounded-2xl bg-cyan-500 hover:bg-cyan-600 px-6 py-3 text-sm font-black text-[#021f15] shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <input type="hidden" name="action" value="claim_order">
+                    <button type="submit" class="w-full sm:w-auto rounded-2xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] hover:opacity-95 px-7 py-3.5 text-xs font-black uppercase tracking-wider text-[#021f15] shadow-lg shadow-[#cca43b]/25 transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                        <svg class="h-4 w-4 text-[#021f15]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
-                        Start Delivery (In Transit)
+                        Accept & Claim Order
                     </button>
                 </form>
-                {% elif delivery.status == 'in_transit' %}
-                <form method="POST" action="{% url 'sales:rider_delivery_action' delivery.id %}" onsubmit="return confirm('Confirm delivery completed for order {{ delivery.order.order_number }}?');" class="w-full sm:w-auto">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="mark_delivered">
-                    <button type="submit" class="w-full sm:w-auto rounded-2xl bg-emerald-500 hover:bg-emerald-600 px-6 py-3 text-sm font-black text-[#021f15] shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </div>
+        </div>
+        {% empty %}
+        <div class="rounded-3xl border border-white/10 bg-black/20 p-12 text-center">
+            <div
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mx-auto mb-3 text-2xl">
+                📦
+            </div>
+            <p class="text-sm font-bold text-stone-200">No unassigned orders available</p>
+            <p class="text-xs text-[#a0ac96] mt-1">All confirmed delivery orders are currently assigned or dispatched.
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- TAB 1: ACTIVE DELIVERIES (Grab/Uber GPS Navigation Interface) -->
+    <div id="section-active" class="space-y-6 hidden">
+        {% for delivery in active_deliveries %}
+        <div class="rounded-[2.5rem] border border-[#cca43b]/40 bg-[#021f15] shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden relative">
+
+            <!-- TOP: Full Live GPS Route Map (Spacious 380px/450px matching user preference) -->
+            <div class="relative w-full h-[380px] sm:h-[450px] bg-black/60 overflow-hidden">
+                <div id="active-gps-map-{{ delivery.id }}" class="w-full h-full z-0"></div>
+
+                <!-- Floating Order & Transit Badge (Crisp, No Squish) -->
+                <div class="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
+                    <div class="flex items-center gap-2 bg-[#021f15]/95 border border-[#cca43b]/40 backdrop-blur-md px-4 py-2 rounded-full shadow-2xl pointer-events-auto">
+                        <span class="h-2.5 w-2.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-400 animate-ping{% else %}bg-amber-400 animate-pulse{% endif %}"></span>
+                        <span class="font-mono text-xs font-black text-white whitespace-nowrap tracking-wider">{{ delivery.order.order_number }}</span>
+                        <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border border-cyan-500/30{% else %}bg-amber-500/20 text-amber-300 border border-amber-500/30{% endif %} whitespace-nowrap">{{ delivery.get_status_display }}</span>
+                    </div>
+
+                    <!-- Recenter Route Button -->
+                    <button type="button" onclick="recenterGpsMap('{{ delivery.id }}')" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#021f15]/95 border border-[#cca43b]/40 text-[#cca43b] shadow-2xl backdrop-blur-md hover:bg-[#cca43b] hover:text-[#021f15] transition-all cursor-pointer" title="Recenter Route View">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTTOM SHEET / DRAWER CARD (Polished, Clean Attached Dock without Blurry Overlap) -->
+            <div class="relative bg-[#021f15] border-t border-[#cca43b]/30 p-6 sm:p-7 space-y-5 z-10 shadow-2xl">
+                <!-- Slide / Drag Handle -->
+                <div class="w-12 h-1.5 rounded-full bg-white/20 mx-auto -mt-2 mb-3"></div>
+
+                <!-- Route Stepper (Green Circle ➡️ Red Pin) -->
+                <div class="flex items-start gap-4 pl-1">
+                    <!-- Left Column: Green Dot + Dashed Connector + Red Dot -->
+                    <div class="flex flex-col items-center shrink-0 pt-0.5">
+                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 border-2 border-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)]">
+                            <div class="h-2.5 w-2.5 rounded-full bg-emerald-400"></div>
+                        </div>
+                        <!-- Dashed Line strictly between green and red dot -->
+                        <div class="w-0.5 h-12 border-l-2 border-dashed border-white/30 my-1"></div>
+                        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-rose-500/20 border-2 border-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.5)]">
+                            <div class="h-2.5 w-2.5 rounded-full bg-rose-500"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Details for Pickup & Dropoff -->
+                    <div class="flex-1 min-w-0 flex flex-col justify-between space-y-4">
+                        <!-- Pickup info -->
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-[#a0ac96]">Pickup Location</p>
+                            <h4 class="text-sm font-bold text-white leading-tight mt-0.5">Silay Superworm & Crayfish Farm</h4>
+                            <p class="text-xs text-[#a0ac96] truncate">Brgy. Lantad, Silay City, Negros Occidental</p>
+                        </div>
+
+                        <!-- Dropoff info -->
+                        <div>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-rose-400">Delivery Destination</p>
+                                {% if delivery.order.customer.phone %}
+                                <a href="tel:{{ delivery.order.customer.phone }}" class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-400 hover:bg-emerald-500/25 transition-all">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    Call {{ delivery.order.customer.phone }}
+                                </a>
+                                {% endif %}
+                            </div>
+                            <h4 class="text-sm font-bold text-white leading-tight mt-0.5">{{ delivery.order.customer.name }}</h4>
+                            <p class="text-xs text-stone-300 break-words mt-0.5">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Details Strip (Matches 'Just go' Card in 2nd image) -->
+                <div class="rounded-2xl border border-white/10 bg-black/40 p-4 flex items-center justify-between gap-4 backdrop-blur-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#cca43b]/10 text-2xl text-[#cca43b] border border-[#cca43b]/20 shrink-0">
+                            🛵
+                        </div>
+                        <div>
+                            <p class="text-xs font-black text-white">{{ delivery.order.product.name|default:"Aquaculture Stock" }}</p>
+                            <p class="text-[11px] text-[#a0ac96] mt-0.5">{{ delivery.quantity_kg }} kg • Fresh Packaging</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-2.5 py-0.5 rounded-xl text-[10px] font-black uppercase tracking-wider border inline-block
+                            {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
+                            {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
+                            {{ delivery.order.get_payment_status_display }}
+                        </span>
+                        <p class="text-sm font-mono font-bold text-[#cca43b] mt-1">₱{{ delivery.order.total_amount|floatformat:2|default:"0.00" }}</p>
+                    </div>
+                </div>
+
+                <!-- Primary Bottom Action Button (Full-width CTA from Reference Image) -->
+                <div class="pt-1">
+                    {% if delivery.status == 'scheduled' %}
+                    <form method="POST" action="{% url 'sales:rider_delivery_action' delivery.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="start_transit">
+                        <button type="submit" class="w-full rounded-2xl bg-cyan-400 hover:bg-cyan-300 py-4 text-sm font-black uppercase tracking-wider text-[#021f15] shadow-lg shadow-cyan-400/25 transition-all flex items-center justify-center gap-2.5 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Start Delivery (In Transit)
+                        </button>
+                    </form>
+                    {% elif delivery.status == 'in_transit' %}
+                    <button type="button" onclick="openCompleteDeliveryModal('{{ delivery.id }}', '{{ delivery.order.order_number|escapejs }}', '{{ delivery.order.customer.name|escapejs }}', '{{ delivery.order.product.name|escapejs }}', '{{ delivery.quantity_kg }}', '₱{{ delivery.order.total_amount|floatformat:2|default:"0.00"|escapejs }}')" class="w-full rounded-2xl bg-emerald-400 hover:bg-emerald-300 py-4 text-sm font-black uppercase tracking-wider text-[#021f15] shadow-lg shadow-emerald-400/25 transition-all flex items-center justify-center gap-2.5 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         Complete & Mark as Delivered
                     </button>
-                </form>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% empty %}
         <div class="rounded-[2.5rem] border border-white/10 bg-black/20 p-12 text-center">
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 text-[#cca43b] mx-auto mb-4 border border-white/10">
+            <div
+                class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 text-[#cca43b] mx-auto mb-4 border border-white/10">
                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
             <h3 class="text-lg font-black text-white">No Active Deliveries</h3>
-            <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">You are all caught up! New assigned dispatch tasks from management will automatically show up here.</p>
+            <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">Accept an order from the "Available Orders" tab to
+                launch your live GPS navigation!</p>
         </div>
         {% endfor %}
     </div>
@@ -271,7 +430,8 @@
         <div class="rounded-3xl border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-xs">
+                    <div
+                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-xs">
                         ✓
                     </div>
                     <div>
@@ -306,104 +466,429 @@
 </div>
 
 <!-- Driver Interactive Map Modal -->
-<div id="driver-map-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+<div id="driver-map-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Destination Route Pin</h3>
                 <p id="driver-modal-subtitle" class="text-xs text-[#a0ac96] mt-0.5"></p>
             </div>
-            <button type="button" onclick="closeDriverMapModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeDriverMapModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
         </div>
         <p id="driver-modal-address" class="text-xs text-stone-300 mb-4 break-words"></p>
         <div id="driver-leaflet-map" class="w-full h-[320px] rounded-2xl border border-white/10 z-0 mb-6"></div>
         <div class="flex items-center justify-end gap-3 border-t border-white/10 pt-4">
-            <button type="button" onclick="closeDriverMapModal()" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors">Close</button>
+            <button type="button" onclick="closeDriverMapModal()"
+                class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors">Close</button>
         </div>
     </div>
 </div>
 
+<!-- Custom In-App Delivery Completion Modal -->
+<div id="complete-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md px-4 py-8">
+    <div class="relative w-full max-w-sm rounded-[2.5rem] border border-[#cca43b]/40 bg-[#021f15] p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all text-center">
+        <!-- Floating Close Button -->
+        <button type="button" onclick="closeCompleteDeliveryModal()" class="absolute top-5 right-5 text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+
+        <!-- Emerald Checkmark Icon -->
+        <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/30 mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+
+        <h3 class="text-xl font-black text-white tracking-tight">Confirm Drop-off</h3>
+        <p class="text-xs text-stone-300 mt-1.5 leading-relaxed">
+            Mark order <span id="modal-order-number" class="font-mono font-bold text-[#cca43b]"></span> as completed and delivered?
+        </p>
+
+        <!-- Delivery Quick Info Card -->
+        <div class="rounded-2xl border border-white/10 bg-black/40 p-4 my-5 text-left space-y-2 backdrop-blur-sm">
+            <div class="flex items-center justify-between gap-2">
+                <p class="text-[10px] uppercase font-bold text-[#a0ac96]">Customer</p>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Drop-off</span>
+            </div>
+            <p id="modal-customer-name" class="text-xs font-bold text-white truncate"></p>
+            <div class="border-t border-white/10 pt-2 flex items-center justify-between text-xs">
+                <span id="modal-order-item" class="text-[#a0ac96] text-[11px] truncate"></span>
+                <span id="modal-order-amount" class="font-mono font-bold text-[#cca43b]"></span>
+            </div>
+        </div>
+
+        <!-- Form Action -->
+        <form id="complete-delivery-form" method="POST" action="">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="mark_delivered">
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="closeCompleteDeliveryModal()" class="w-full rounded-2xl border border-white/10 bg-black/40 py-3.5 text-xs font-bold text-[#a0ac96] hover:text-white hover:border-white/30 transition-all cursor-pointer">
+                    Cancel
+                </button>
+                <button type="submit" class="w-full rounded-2xl bg-emerald-400 hover:bg-emerald-300 py-3.5 text-xs font-black uppercase tracking-wider text-[#021f15] shadow-lg shadow-emerald-400/25 transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-function switchTab(tab) {
-    const activeSec = document.getElementById('section-active');
-    const historySec = document.getElementById('section-history');
-    const activeBtn = document.getElementById('tab-btn-active');
-    const historyBtn = document.getElementById('tab-btn-history');
+    function openCompleteDeliveryModal(deliveryId, orderNum, customerName, product, qty, totalAmount) {
+        const modal = document.getElementById('complete-delivery-modal');
+        const orderSpan = document.getElementById('modal-order-number');
+        const custSpan = document.getElementById('modal-customer-name');
+        const itemSpan = document.getElementById('modal-order-item');
+        const amtSpan = document.getElementById('modal-order-amount');
+        const form = document.getElementById('complete-delivery-form');
 
-    if (tab === 'active') {
-        activeSec.classList.remove('hidden');
-        historySec.classList.add('hidden');
-        activeBtn.className = "px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20";
-        historyBtn.className = "px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white";
-    } else {
-        activeSec.classList.add('hidden');
-        historySec.classList.remove('hidden');
-        historyBtn.className = "px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20";
-        activeBtn.className = "px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white";
+        if (orderSpan) orderSpan.textContent = orderNum;
+        if (custSpan) custSpan.textContent = customerName;
+        if (itemSpan) itemSpan.textContent = `${product || 'Aquaculture Stock'} (${qty || '0'} kg)`;
+        if (amtSpan) amtSpan.textContent = totalAmount;
+        if (form) form.action = `/sales/rider/delivery/${deliveryId}/action/`;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
-}
 
-let driverMap = null;
-let driverMarker = null;
+    function closeCompleteDeliveryModal() {
+        const modal = document.getElementById('complete-delivery-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+    function switchTab(tab) {
+        const availableSec = document.getElementById('section-available');
+        const activeSec = document.getElementById('section-active');
+        const historySec = document.getElementById('section-history');
+        const availableBtn = document.getElementById('tab-btn-available');
+        const activeBtn = document.getElementById('tab-btn-active');
+        const historyBtn = document.getElementById('tab-btn-history');
 
-function openDriverMapModal(orderNum, customerName, address, lat, lon) {
-    const modal = document.getElementById('driver-map-modal');
-    const subtitle = document.getElementById('driver-modal-subtitle');
-    const addressLabel = document.getElementById('driver-modal-address');
+        const activeClass = "px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20";
+        const inactiveClass = "px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white";
 
-    subtitle.textContent = `Order #${orderNum} • ${customerName}`;
-    addressLabel.textContent = `Destination: ${address || 'Location provided in order'}`;
+        if (availableSec) availableSec.classList.add('hidden');
+        if (activeSec) activeSec.classList.add('hidden');
+        if (historySec) historySec.classList.add('hidden');
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+        if (availableBtn) availableBtn.className = inactiveClass;
+        if (activeBtn) activeBtn.className = inactiveClass;
+        if (historyBtn) historyBtn.className = inactiveClass;
 
-    setTimeout(() => {
-        if (!driverMap) {
-            driverMap = L.map('driver-leaflet-map').setView([10.8000, 122.9700], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(driverMap);
-            driverMarker = L.marker([10.8000, 122.9700]).addTo(driverMap);
+        if (tab === 'available') {
+            if (availableSec) availableSec.classList.remove('hidden');
+            if (availableBtn) availableBtn.className = activeClass;
+        } else if (tab === 'history') {
+            if (historySec) historySec.classList.remove('hidden');
+            if (historyBtn) historyBtn.className = activeClass;
+        } else {
+            if (activeSec) activeSec.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = activeClass;
+            setTimeout(initAllActiveGpsMaps, 150);
+        }
+    }
+
+    const activeGpsMaps = {};
+    let liveRiderCoords = null;
+
+    // Custom Live Rider Beacon (Pulsing Cyan GPS Dot matching Uber/Google Maps)
+    const riderLiveBeaconIcon = L.divIcon({
+        className: 'gps-rider-phone-marker',
+        html: `<div style="position:relative; display:flex; align-items:center; justify-content:center; width:38px; height:38px;">
+                   <div style="position:absolute; width:36px; height:36px; border-radius:50%; background:rgba(6,182,212,0.35); border:1.5px solid #06b6d4; box-shadow:0 0 16px rgba(6,182,212,0.8); animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
+                   <div style="position:relative; width:16px; height:16px; border-radius:50%; background:#06b6d4; border:3px solid #ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>
+               </div>`,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+    });
+
+    const activeDeliveryList = [
+        {% for d in active_deliveries %}
+        {
+            id: '{{ d.id }}',
+            orderNumber: '{{ d.order.order_number|escapejs }}',
+            customerName: '{{ d.order.customer.name|escapejs }}',
+            address: '{{ d.delivery_location|default:d.order.customer.address|escapejs }}',
+            lat: '{{ d.order.customer.map_latitude|default:"" }}',
+            lng: '{{ d.order.customer.map_longitude|default:"" }}'
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function initAllActiveGpsMaps() {
+        activeDeliveryList.forEach(item => {
+            initActiveGpsMap(item.id, item.address, item.lat, item.lng, item.customerName);
+        });
+    }
+
+    function fetchRoadRoute(map, entry, originLat, originLng, destLat, destLng) {
+        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson`;
+
+        fetch(osrmUrl)
+            .then(res => res.json())
+            .then(data => {
+                let routeCoords;
+                if (data && data.routes && data.routes.length > 0) {
+                    routeCoords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                } else {
+                    routeCoords = [[originLat, originLng], [destLat, destLng]];
+                }
+
+                if (entry.polyline) {
+                    entry.polyline.setLatLngs(routeCoords);
+                } else {
+                    entry.polyline = L.polyline(routeCoords, {
+                        color: '#8b5cf6', // Purple road route line
+                        weight: 6,
+                        opacity: 0.95,
+                        lineCap: 'round',
+                        lineJoin: 'round'
+                    }).addTo(map);
+                }
+
+                map.fitBounds(entry.polyline.getBounds(), { padding: [50, 50] });
+                map.invalidateSize();
+            })
+            .catch(() => {
+                const fallbackCoords = [[originLat, originLng], [destLat, destLng]];
+                if (entry.polyline) {
+                    entry.polyline.setLatLngs(fallbackCoords);
+                } else {
+                    entry.polyline = L.polyline(fallbackCoords, {
+                        color: '#8b5cf6',
+                        weight: 6,
+                        opacity: 0.95,
+                        lineCap: 'round',
+                        lineJoin: 'round'
+                    }).addTo(map);
+                }
+                map.fitBounds(entry.polyline.getBounds(), { padding: [50, 50] });
+                map.invalidateSize();
+            });
+    }
+
+    function updateRiderPhoneLocation(deliveryId, lat, lng) {
+        liveRiderCoords = { lat, lng };
+        const entry = activeGpsMaps[deliveryId];
+        if (!entry || !entry.map) return;
+
+        if (entry.riderMarker) {
+            entry.riderMarker.setLatLng([lat, lng]);
+        } else {
+            entry.riderMarker = L.marker([lat, lng], {
+                icon: riderLiveBeaconIcon,
+                zIndexOffset: 1000
+            }).addTo(entry.map);
+            entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
         }
 
-        if (lat && lon && lat.trim() !== '' && lon.trim() !== '') {
-            const latitude = parseFloat(lat);
-            const longitude = parseFloat(lon);
-            driverMap.setView([latitude, longitude], 15);
-            driverMarker.setLatLng([latitude, longitude]);
-            driverMarker.bindPopup(`<b>${customerName}</b><br>${address}`).openPopup();
-            driverMap.invalidateSize();
+        // Dynamically update road route from Rider's current GPS position to Destination
+        if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
+            fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
+        }
+    }
+
+    function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName) {
+        const container = document.getElementById(`active-gps-map-${deliveryId}`);
+        if (!container) return;
+
+        if (activeGpsMaps[deliveryId]) {
+            activeGpsMaps[deliveryId].map.invalidateSize();
+            return;
+        }
+
+        // Farm origin coords (Silay Farm / Pickup)
+        const farmLat = 10.815194;
+        const farmLng = 122.961972;
+
+        const map = L.map(container, {
+            attributionControl: false,
+            zoomControl: false
+        }).setView([farmLat, farmLng], 14);
+
+        // Clean mobile GPS map: no desktop zoom control box collision
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
+        }).addTo(map);
+
+        // Custom Pickup Marker (Clean glowing green halo matching Grab/Uber)
+        const pickupIcon = L.divIcon({
+            className: 'gps-pickup-marker',
+            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:rgba(16,185,129,0.3); border:2.5px solid #10b981; box-shadow:0 0 16px rgba(16,185,129,0.7);">
+                   <div style="width:12px; height:12px; border-radius:50%; background:#10b981; border:2px solid #ffffff; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
+               </div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+
+        // Custom Dropoff Marker (Clean red pin matching reference image)
+        const dropoffIcon = L.divIcon({
+            className: 'gps-dropoff-marker',
+            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#f43f5e; border:2.5px solid #ffffff; box-shadow:0 4px 14px rgba(244,63,94,0.7);">
+                   <svg style="width:18px; height:18px; color:#ffffff;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+               </div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+
+        const pickupMarker = L.marker([farmLat, farmLng], { icon: pickupIcon }).addTo(map);
+        pickupMarker.bindPopup('<b>Farm Pickup</b><br>Silay Superworm & Crayfish Farm');
+
+        function renderGpsRoute(targetLat, targetLng) {
+            const dropoffMarker = L.marker([targetLat, targetLng], { icon: dropoffIcon }).addTo(map);
+            dropoffMarker.bindPopup(`<b>${customerName || 'Destination'}</b><br>${destAddress}`);
+
+            const entry = {
+                map: map,
+                polyline: null,
+                pickupMarker: pickupMarker,
+                dropoffMarker: dropoffMarker,
+                riderMarker: null,
+                destCoords: { lat: targetLat, lng: targetLng }
+            };
+            activeGpsMaps[deliveryId] = entry;
+
+            // Route from Live Phone Location if available, otherwise from Farm
+            const startLat = liveRiderCoords ? liveRiderCoords.lat : farmLat;
+            const startLng = liveRiderCoords ? liveRiderCoords.lng : farmLng;
+
+            fetchRoadRoute(map, entry, startLat, startLng, targetLat, targetLng);
+
+            // Request Phone GPS Location
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        updateRiderPhoneLocation(deliveryId, pos.coords.latitude, pos.coords.longitude);
+                    },
+                    function (err) {
+                        console.log("Phone GPS not available, using farm origin.");
+                    },
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+                );
+
+                if (!window.riderGpsWatchId) {
+                    window.riderGpsWatchId = navigator.geolocation.watchPosition(
+                        function (pos) {
+                            Object.keys(activeGpsMaps).forEach(delId => {
+                                updateRiderPhoneLocation(delId, pos.coords.latitude, pos.coords.longitude);
+                            });
+                        },
+                        null,
+                        { enableHighAccuracy: true, maximumAge: 4000 }
+                    );
+                }
+            }
+        }
+
+        const hasExactCoords = destLat && destLng && !isNaN(parseFloat(destLat)) && !isNaN(parseFloat(destLng));
+        if (hasExactCoords) {
+            renderGpsRoute(parseFloat(destLat), parseFloat(destLng));
         } else {
-            const query = `${address || 'Silay City'}, Philippines`;
+            const query = `${destAddress || 'Silay City'}, Philippines`;
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        const newLat = parseFloat(data[0].lat);
-                        const newLng = parseFloat(data[0].lon);
-                        driverMap.setView([newLat, newLng], 15);
-                        driverMarker.setLatLng([newLat, newLng]);
-                        driverMarker.bindPopup(`<b>${customerName}</b><br>${address}`).openPopup();
+                        renderGpsRoute(parseFloat(data[0].lat), parseFloat(data[0].lon));
                     } else {
-                        driverMap.setView([10.8000, 122.9700], 13);
-                        driverMarker.setLatLng([10.8000, 122.9700]);
+                        renderGpsRoute(10.7950, 122.9850);
                     }
-                    driverMap.invalidateSize();
                 })
                 .catch(() => {
-                    driverMap.setView([10.8000, 122.9700], 13);
-                    driverMarker.setLatLng([10.8000, 122.9700]);
-                    driverMap.invalidateSize();
+                    renderGpsRoute(10.7950, 122.9850);
                 });
         }
-    }, 200);
-}
+    }
 
-function closeDriverMapModal() {
-    const modal = document.getElementById('driver-map-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+    function recenterGpsMap(deliveryId) {
+        const entry = activeGpsMaps[deliveryId];
+        if (!entry || !entry.map) return;
+
+        if (liveRiderCoords) {
+            entry.map.setView([liveRiderCoords.lat, liveRiderCoords.lng], 17);
+            if (entry.riderMarker) entry.riderMarker.openPopup();
+        } else if (entry.polyline) {
+            entry.map.fitBounds(entry.polyline.getBounds(), { padding: [50, 50] });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        {% if active_count == 0 and available_count > 0 %}
+        switchTab('available');
+        {% else %}
+        switchTab('active');
+        {% endif %}
+    });
+
+    let driverMap = null;
+    let driverMarker = null;
+
+    function openDriverMapModal(orderNum, customerName, address, lat, lon) {
+        const modal = document.getElementById('driver-map-modal');
+        const subtitle = document.getElementById('driver-modal-subtitle');
+        const addressLabel = document.getElementById('driver-modal-address');
+
+        subtitle.textContent = `Order #${orderNum} • ${customerName}`;
+        addressLabel.textContent = `Destination: ${address || 'Location provided in order'}`;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        setTimeout(() => {
+            if (!driverMap) {
+                driverMap = L.map('driver-leaflet-map', {
+                    attributionControl: false
+                }).setView([10.8000, 122.9700], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(driverMap);
+                driverMarker = L.marker([10.8000, 122.9700]).addTo(driverMap);
+            }
+
+            if (lat && lon && lat.trim() !== '' && lon.trim() !== '') {
+                const latitude = parseFloat(lat);
+                const longitude = parseFloat(lon);
+                driverMap.setView([latitude, longitude], 17);
+                driverMarker.setLatLng([latitude, longitude]);
+                driverMarker.bindPopup(`<b>${customerName}</b><br>${address}`).openPopup();
+                driverMap.invalidateSize();
+            } else {
+                const query = `${address || 'Silay City'}, Philippines`;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const newLat = parseFloat(data[0].lat);
+                            const newLng = parseFloat(data[0].lon);
+                            driverMap.setView([newLat, newLng], 17);
+                            driverMarker.setLatLng([newLat, newLng]);
+                            driverMarker.bindPopup(`<b>${customerName}</b><br>${address}`).openPopup();
+                        } else {
+                            driverMap.setView([10.8000, 122.9700], 16);
+                            driverMarker.setLatLng([10.8000, 122.9700]);
+                        }
+                        driverMap.invalidateSize();
+                    })
+                    .catch(() => {
+                        driverMap.setView([10.8000, 122.9700], 16);
+                        driverMarker.setLatLng([10.8000, 122.9700]);
+                        driverMap.invalidateSize();
+                    });
+            }
+        }, 200);
+    }
+
+    function closeDriverMapModal() {
+        const modal = document.getElementById('driver-map-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 </script>
 {% endblock %}

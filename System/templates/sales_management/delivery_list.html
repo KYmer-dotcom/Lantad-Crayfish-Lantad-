@@ -153,7 +153,6 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order #</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Assigned Rider</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product & Volume</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Destination</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Schedule / Date</th>
@@ -180,22 +179,6 @@
                             </div>
                         </td>
 
-                        <!-- Assigned Rider -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {% if delivery.rider %}
-                            <div class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                                <div>
-                                    <div class="text-xs font-bold text-stone-100">{{ delivery.rider.name }}</div>
-                                    <p class="text-[10px] text-[#a0ac96]">{{ delivery.rider.vehicle_type }}</p>
-                                </div>
-                            </div>
-                            {% else %}
-                            <button type="button" onclick="openStatusModal('{{ delivery.id }}', '{{ delivery.order.order_number }}', '{{ delivery.status }}', '')" class="text-[11px] font-bold text-amber-400/90 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg hover:bg-amber-500/20 transition-all">
-                                + Assign Rider
-                            </button>
-                            {% endif %}
-                        </td>
 
                         <!-- Product & Quantity -->
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -493,7 +476,7 @@ function openLocationModal(address, lat, lng) {
         }
 
         if (hasCoords) {
-            locationMap.setView([latitude, longitude], 15);
+            locationMap.setView([latitude, longitude], 17);
             locationMarker.setLatLng([latitude, longitude]);
             locationMap.invalidateSize();
         } else {
@@ -504,16 +487,16 @@ function openLocationModal(address, lat, lng) {
                     if (data && data.length > 0) {
                         const newLat = parseFloat(data[0].lat);
                         const newLng = parseFloat(data[0].lon);
-                        locationMap.setView([newLat, newLng], 15);
+                        locationMap.setView([newLat, newLng], 17);
                         locationMarker.setLatLng([newLat, newLng]);
                     } else {
-                        locationMap.setView([10.8000, 122.9700], 13);
+                        locationMap.setView([10.8000, 122.9700], 16);
                         locationMarker.setLatLng([10.8000, 122.9700]);
                     }
                     locationMap.invalidateSize();
                 })
                 .catch(err => {
-                    locationMap.setView([10.8000, 122.9700], 13);
+                    locationMap.setView([10.8000, 122.9700], 16);
                     locationMarker.setLatLng([10.8000, 122.9700]);
                     locationMap.invalidateSize();
                 });

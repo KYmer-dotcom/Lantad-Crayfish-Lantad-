@@ -30,6 +30,10 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('inventory/', views.inventory_overview, name='inventory'),
     path('delivery/', lambda request: redirect('sales:delivery_list'), name='delivery'),
+    path('track-order/', lambda request: redirect('sales:delivery_track'), name='track_order_root'),
+    path('delivery/track/', lambda request: redirect('sales:delivery_track')),
+    path('delivery-logs/', lambda request: redirect('sales:delivery_logs'), name='delivery_logs_root'),
+    path('delivery/logs/', lambda request: redirect('sales:delivery_logs')),
     path('notifications/', views.notifications, name='notifications'),
     
     # Module Pages
