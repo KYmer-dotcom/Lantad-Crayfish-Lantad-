@@ -48,7 +48,7 @@
 
         <!-- Navigation Links -->
         <nav
-            class="w-full md:w-auto md:flex-1 flex justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide order-last md:order-none py-1 md:py-0">
+            class="w-full md:w-auto md:flex-1 flex justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide order-last md:order-none py-1 md:py-0 select-none">
             <a href="{% url 'sales:customer_portal' %}"
                 class="{% if active_page == 'market' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase">Market</a>
             <a href="{% url 'sales:customer_cart_page' %}"

@@ -1248,6 +1248,7 @@ def customer_checkout_submit(request):
                 if order.product and order.product.quantity_kg >= order.quantity_kg:
                     order.product.quantity_kg -= order.quantity_kg
                     order.product.save(update_fields=['quantity_kg'])
+            _sync_order_deliveries()
             from django.http import JsonResponse
             return JsonResponse({'success': True, 'redirect_url': reverse('sales:customer_orders_page'), 'is_gateway': False})
 
@@ -1270,11 +1271,46 @@ def customer_checkout_submit(request):
                 order.product.quantity_kg -= order.quantity_kg
                 order.product.save(update_fields=['quantity_kg'])
             
+        _sync_order_deliveries()
         from django.http import JsonResponse
         return JsonResponse({'success': True, 'redirect_url': reverse('sales:customer_orders_page'), 'is_gateway': False})
 
     from django.http import JsonResponse
     return JsonResponse({'success': False, 'error': 'POST required'})
+
+
+def _sync_order_deliveries():
+    """Auto-sync delivery records for all orders with a delivery address."""
+    missing_deliveries = SalesOrder.objects.exclude(
+        delivery_address__iexact='pickup'
+    ).exclude(
+        delivery_address=''
+    ).filter(
+        deliveries__isnull=True
+    ).exclude(
+        status=SalesOrder.Status.CANCELLED
+    ).select_related('created_by')
+
+    for ord_obj in missing_deliveries:
+        if ord_obj.status in [SalesOrder.Status.DELIVERED, SalesOrder.Status.COMPLETED]:
+            deliv_status = Delivery.Status.DELIVERED
+            deliv_date = ord_obj.order_date
+        elif ord_obj.status == SalesOrder.Status.SHIPPED:
+            deliv_status = Delivery.Status.IN_TRANSIT
+            deliv_date = None
+        else:
+            deliv_status = Delivery.Status.SCHEDULED
+            deliv_date = None
+
+        Delivery.objects.create(
+            order=ord_obj,
+            scheduled_date=ord_obj.order_date,
+            delivered_date=deliv_date,
+            delivery_location=ord_obj.delivery_address or "Standard Delivery",
+            quantity_kg=ord_obj.quantity_kg,
+            status=deliv_status,
+            created_by=ord_obj.created_by
+        )
 
 
 def paymongo_payment_success(request):
@@ -1294,6 +1330,7 @@ def paymongo_payment_success(request):
             if order.product and order.product.quantity_kg >= order.quantity_kg:
                 order.product.quantity_kg -= order.quantity_kg
                 order.product.save(update_fields=['quantity_kg'])
+        _sync_order_deliveries()
                 
     messages.success(request, '🎉 Payment successful! Your order has been placed.')
     return redirect('sales:customer_orders_page')
@@ -1307,31 +1344,7 @@ def delivery_list_page(request):
         return access_response
 
     # Auto-sync delivery records for orders with delivery address
-    all_orders = SalesOrder.objects.select_related('customer', 'product').all()
-    missing_deliveries = all_orders.exclude(delivery_address__iexact='pickup').filter(deliveries__isnull=True)
-    for ord_obj in missing_deliveries:
-        if ord_obj.status in [SalesOrder.Status.DELIVERED, SalesOrder.Status.COMPLETED]:
-            deliv_status = Delivery.Status.DELIVERED
-            deliv_date = ord_obj.order_date
-        elif ord_obj.status == SalesOrder.Status.CANCELLED:
-            deliv_status = Delivery.Status.CANCELLED
-            deliv_date = None
-        elif ord_obj.status == SalesOrder.Status.SHIPPED:
-            deliv_status = Delivery.Status.IN_TRANSIT
-            deliv_date = None
-        else:
-            deliv_status = Delivery.Status.SCHEDULED
-            deliv_date = None
-
-        Delivery.objects.create(
-            order=ord_obj,
-            scheduled_date=ord_obj.order_date,
-            delivered_date=deliv_date,
-            delivery_location=ord_obj.delivery_address or "Standard Delivery",
-            quantity_kg=ord_obj.quantity_kg,
-            status=deliv_status,
-            created_by=ord_obj.created_by
-        )
+    _sync_order_deliveries()
 
     deliveries_qs = Delivery.objects.select_related('order', 'order__customer', 'order__product', 'rider', 'created_by').all()
 
@@ -1938,6 +1951,9 @@ def rider_portal(request):
         else:
             messages.error(request, 'You do not have rider driver permissions.')
             return redirect('dashboard')
+
+    # Ensure all new customer delivery orders have a Delivery dispatch record
+    _sync_order_deliveries()
 
     deliveries_qs = Delivery.objects.filter(rider=rider).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
 
