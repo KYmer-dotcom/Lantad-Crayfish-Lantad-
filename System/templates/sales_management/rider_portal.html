@@ -223,25 +223,12 @@
                         <div class="flex items-center gap-2 mt-3 flex-wrap">
                             <button type="button"
                                 onclick="openDriverMapModal('{{ delivery.order.order_number }}', '{{ delivery.order.customer.name|escapejs }}', '{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')"
-                                class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/20 transition-all inline-flex items-center gap-1.5">
+                                class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/20 transition-all inline-flex items-center gap-1.5 cursor-pointer">
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                 </svg>
                                 View Pin
                             </button>
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}"
-                                target="_blank"
-                                class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
-                                <svg class="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                Google Maps
-                            </a>
-                            <a href="https://waze.com/ul?q={{ delivery.delivery_location|urlencode|default:delivery.order.customer.address|urlencode }}&navigate=yes"
-                                target="_blank"
-                                class="rounded-xl border border-white/10 bg-black/40 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-white/30 transition-all inline-flex items-center gap-1.5">
-                                Waze
-                            </a>
                         </div>
                     </div>
                 </div>
