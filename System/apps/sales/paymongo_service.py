@@ -6,8 +6,20 @@ from django.conf import settings
 
 PAYMONGO_API_BASE = "https://api.paymongo.com/v1"
 
-def get_auth_header():
-    secret_key = getattr(settings, 'PAYMONGO_SECRET_KEY', '') or 'sk_test_placeholder'
+def get_paymongo_secret_key():
+    """Retrieve PayMongo secret key from DB settings or Django settings/env."""
+    try:
+        from apps.sales.models import PaymentSetting
+        db_settings = PaymentSetting.get_settings()
+        if db_settings and db_settings.paymongo_secret_key:
+            return db_settings.paymongo_secret_key.strip()
+    except Exception:
+        pass
+    return (getattr(settings, 'PAYMONGO_SECRET_KEY', '') or '').strip()
+
+def get_auth_header(secret_key=None):
+    if not secret_key:
+        secret_key = get_paymongo_secret_key() or 'sk_test_placeholder'
     auth_str = f"{secret_key}:"
     encoded_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
     return {
@@ -21,14 +33,15 @@ def create_paymongo_checkout_session(orders, customer, success_url, cancel_url):
     Creates a PayMongo Checkout Session for GCash / Maya / Card.
     Returns: dict with 'id', 'checkout_url', and 'simulated' flag.
     """
-    secret_key = getattr(settings, 'PAYMONGO_SECRET_KEY', '').strip()
+    secret_key = get_paymongo_secret_key()
     
-    # If no live/test PayMongo secret key configured, allow seamless automated simulation
+    # If no live/test PayMongo secret key configured, prompt admin to configure it
     if not secret_key or secret_key.startswith('placeholder'):
         return {
-            'id': 'sim_cs_' + str(orders[0].id),
+            'id': None,
             'checkout_url': None,
-            'simulated': True
+            'simulated': False,
+            'error': 'PayMongo Secret Key not configured yet. Please enter your PayMongo Secret Key (sk_test_... or sk_live_...) in Orders & Deliveries → Payment Settings panel.'
         }
 
     line_items = []
@@ -70,7 +83,7 @@ def create_paymongo_checkout_session(orders, customer, success_url, cancel_url):
         req = urllib.request.Request(
             f"{PAYMONGO_API_BASE}/checkout_sessions",
             data=json.dumps(payload).encode('utf-8'),
-            headers=get_auth_header(),
+            headers=get_auth_header(secret_key),
             method="POST"
         )
         with urllib.request.urlopen(req, timeout=15) as response:
@@ -82,11 +95,25 @@ def create_paymongo_checkout_session(orders, customer, success_url, cancel_url):
                 'checkout_url': checkout_url,
                 'simulated': False
             }
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode('utf-8')
+        print("PayMongo API HTTP Error:", err_body)
+        try:
+            err_json = json.loads(err_body)
+            err_msg = err_json.get('errors', [{}])[0].get('detail', err_body)
+        except Exception:
+            err_msg = err_body
+        return {
+            'id': None,
+            'checkout_url': None,
+            'simulated': False,
+            'error': f"PayMongo API Error: {err_msg}"
+        }
     except Exception as e:
         print("PayMongo API Connection Error:", e)
         return {
-            'id': 'sim_cs_' + str(orders[0].id),
+            'id': None,
             'checkout_url': None,
-            'simulated': True,
-            'error': str(e)
+            'simulated': False,
+            'error': f"PayMongo Connection Error: {str(e)}"
         }

@@ -210,6 +210,27 @@
                 </label>
             </div>
 
+            <!-- Section 3: PayMongo Gateway API Keys (GCash / Maya / Card) -->
+            <div class="space-y-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-5">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-xs font-black uppercase tracking-wider text-emerald-400">PayMongo Live Gateway</span>
+                </div>
+                <p class="text-[11px] text-stone-400">Enable real GCash checkout with SMS OTP verification from PayMongo.</p>
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Secret Key (sk_live_... / sk_test_...)</label>
+                    <input type="password" name="paymongo_secret_key" value="{{ payment_settings.paymongo_secret_key|default:'' }}"
+                        class="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm font-mono text-white focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 placeholder:text-stone-600"
+                        placeholder="sk_test_... or sk_live_...">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Public Key (pk_live_... / pk_test_...)</label>
+                    <input type="text" name="paymongo_public_key" value="{{ payment_settings.paymongo_public_key|default:'' }}"
+                        class="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm font-mono text-white focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 placeholder:text-stone-600"
+                        placeholder="pk_test_... or pk_live_...">
+                </div>
+            </div>
+
             <div class="pt-2">
                 <button type="submit"
                     class="w-full rounded-xl bg-[#cca43b] py-3.5 text-xs font-black uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer">

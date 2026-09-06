@@ -629,18 +629,18 @@
                                                 </div>
                                                 <div>
                                                     <span class="text-base font-black text-white uppercase tracking-wider block">GCash Online</span>
-                                                    <span class="text-[10px] font-black text-[#007DFE] uppercase tracking-widest">Automated • 1-Tap</span>
+                                                    <span class="text-[10px] font-black text-[#007DFE] uppercase tracking-widest">PayMongo Gateway</span>
                                                 </div>
                                             </div>
                                             <span id="pay-dot-gcash" class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center"></span>
                                         </div>
                                         <p class="text-xs text-[#a0ac96] leading-relaxed mt-2">
-                                            Instant direct authorization via official GCash OTP / MPIN.
+                                            Secure instant payment via PayMongo. Enter your GCash number to receive your real SMS OTP and authorize payment.
                                         </p>
                                     </div>
                                     <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
-                                        <span>Auto-Confirmation</span>
-                                        <span class="text-[#007DFE]">Official Portal</span>
+                                        <span>Instant Verification</span>
+                                        <span class="text-[#007DFE]">Official GCash Portal</span>
                                     </div>
                                 </label>
                             </div>
@@ -649,23 +649,23 @@
                             <div id="gcash-payment-panel" class="hidden rounded-2xl border border-[#007DFE]/30 bg-gradient-to-r from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
                                 <div class="flex items-center gap-2 text-xs font-black text-white uppercase tracking-wider">
                                     <span class="text-[#007DFE] text-sm">⚡</span>
-                                    <span>How Automated GCash Works</span>
+                                    <span>How Live GCash Payment Works</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
                                         <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 1</span>
-                                        <p class="text-xs font-bold text-white">Tap Pay button</p>
-                                        <p class="text-[10px] text-[#a0ac96]">Opens GCash portal</p>
+                                        <p class="text-xs font-bold text-white">Click Pay With GCash</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Redirects to PayMongo gateway</p>
                                     </div>
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
                                         <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 2</span>
-                                        <p class="text-xs font-bold text-white">Enter MPIN / OTP</p>
-                                        <p class="text-[10px] text-[#a0ac96]">Authorize exact total</p>
+                                        <p class="text-xs font-bold text-white">Enter GCash & SMS OTP</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Verify with code sent to phone</p>
                                     </div>
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
                                         <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">Step 3</span>
-                                        <p class="text-xs font-bold text-white">Order Confirmed</p>
-                                        <p class="text-[10px] text-[#a0ac96]">Auto-marked as Paid</p>
+                                        <p class="text-xs font-bold text-white">Instant Confirmation</p>
+                                        <p class="text-[10px] text-[#a0ac96]">Order auto-marked as Paid</p>
                                     </div>
                                 </div>
                             </div>
@@ -1237,7 +1237,8 @@
                 if (isCod) {
                     handleFinalCheckout('cod');
                 } else {
-                    openGcashPortalModal();
+                    // Direct live PayMongo / GCash Gateway checkout!
+                    handleFinalCheckout('gcash');
                 }
             }
 

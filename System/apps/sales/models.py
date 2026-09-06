@@ -8,6 +8,7 @@ Manages customers, sales orders, and delivery tracking.
 
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 class Customer(models.Model):
@@ -248,6 +249,7 @@ class Delivery(models.Model):
     delivery_location = models.CharField(max_length=255)
     quantity_kg = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SCHEDULED)
+    proof_of_delivery = models.ImageField(upload_to='proof_of_delivery/', null=True, blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -283,5 +285,48 @@ class PaymentSetting(models.Model):
 
     def __str__(self):
         return f"Payment Setting ({self.gcash_number})"
+
+
+class InputLog(models.Model):
+    """Audit trail tracking who added or deleted data across the system."""
+    class Action(models.TextChoices):
+        ADDED = 'added', 'Added Data'
+        DELETED = 'deleted', 'Deleted Data'
+        UPDATED = 'updated', 'Updated Data'
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    user_name = models.CharField(max_length=150)
+    user_role = models.CharField(max_length=50, default='Owner')
+    action = models.CharField(max_length=20, choices=Action.choices, default=Action.ADDED)
+    module = models.CharField(max_length=100, default='Sales Orders')
+    target_entity = models.CharField(max_length=255)
+    details = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name = 'Input Log'
+        verbose_name_plural = 'Input Logs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.get_action_display()}] {self.target_entity} by {self.user_name}"
+
+    @classmethod
+    def log(cls, user, action, module, target_entity, details=""):
+        user_name = 'System Admin'
+        user_role = 'Admin'
+        if user and hasattr(user, 'is_authenticated') and user.is_authenticated:
+            user_name = user.get_full_name() or user.username
+            user_role = user.role.title() if hasattr(user, 'role') else 'Owner'
+        return cls.objects.create(
+            user=user if user and hasattr(user, 'is_authenticated') and user.is_authenticated else None,
+            user_name=user_name,
+            user_role=user_role,
+            action=action,
+            module=module,
+            target_entity=target_entity,
+            details=details,
+            created_at=timezone.now()
+        )
 
 

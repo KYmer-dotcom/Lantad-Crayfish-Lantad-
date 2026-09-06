@@ -13,14 +13,6 @@
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Logistics & Dispatch</p>
             <h1 class="mt-2 text-2xl font-semibold text-stone-100">Delivery Management</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="openScheduleDeliveryModal()" class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-5 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all shadow-lg shadow-[#cca43b]/20 hover:scale-105 active:scale-95">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                </svg>
-                Schedule Delivery
-            </button>
-        </div>
     </div>
 
     <!-- Stats Grid -->
@@ -158,7 +150,6 @@
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Schedule / Date</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Payment</th>
-                        <th class="px-6 py-4 text-right text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5 bg-transparent">
@@ -242,26 +233,10 @@
                                 {{ delivery.order.get_payment_status_display }}
                             </button>
                         </td>
-
-                        <!-- Actions -->
-                        <td class="px-6 py-4 whitespace-nowrap text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <button type="button" onclick="openAssignRiderModal('{{ delivery.id }}', '{{ delivery.order.order_number }}', '{{ delivery.rider_id|default:'' }}')" class="rounded-xl border border-white/10 bg-black/20 p-2 text-[#cca43b] hover:bg-[#cca43b]/20 transition-all hover:scale-105" title="Assign Rider">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </button>
-                                <button type="button" onclick="openDeleteDeliveryModal('{{ delivery.id }}', '{{ delivery.order.order_number }}')" class="rounded-xl border border-white/10 bg-black/20 p-2 text-rose-400 hover:bg-rose-500/20 transition-all hover:scale-105" title="Delete Delivery">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -549,8 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
     new TableEnhancer('#deliveries-registry-table', {
         pageSize: 10,
         filterColumns: [
-            { colIndex: 6, label: 'Status' },
-            { colIndex: 7, label: 'Payment' }
+            { colIndex: 5, label: 'Status' },
+            { colIndex: 6, label: 'Payment' }
         ],
         searchPlaceholder: 'Search deliveries by order, rider, destination...'
     });

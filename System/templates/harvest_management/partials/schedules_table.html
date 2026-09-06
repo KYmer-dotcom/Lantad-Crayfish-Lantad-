@@ -20,12 +20,17 @@
         {% endif %}
         <tbody class="divide-y divide-white/10">
             {% for schedule in schedules %}
-            <tr class="hover:bg-white/5 transition-colors cursor-pointer group" onclick="document.getElementById('details-{{ schedule.id }}').classList.toggle('hidden')">
+            <tr class="hover:bg-white/5 transition-colors cursor-pointer group" onclick="toggleHarvestDetails('details-{{ schedule.id }}')">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-100 group-hover:text-[#cca43b] transition-colors">
-                    {{ schedule.name }}
-                    {% if schedule.shelf_position %}
-                        <span class="text-xs font-normal text-[#a0ac96] ml-1">({{ schedule.shelf_position }})</span>
-                    {% endif %}
+                    <div class="flex items-center gap-2">
+                        <svg class="h-3.5 w-3.5 text-[#a0ac96] transition-transform duration-200 group-hover:text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <span>{{ schedule.name }}</span>
+                        {% if schedule.shelf_position %}
+                            <span class="text-xs font-normal text-[#a0ac96]">({{ schedule.shelf_position }})</span>
+                        {% endif %}
+                    </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ schedule.location|default:schedule.breeding_type|default:"-" }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ schedule.product_name|default:"-" }}</td>
@@ -145,3 +150,14 @@
         </tbody>
     </table>
 </div>
+
+<script>
+if (typeof toggleHarvestDetails === 'undefined') {
+    window.toggleHarvestDetails = function(id) {
+        const row = document.getElementById(id);
+        if (!row) return;
+        const isHidden = row.classList.toggle('hidden');
+        row.style.display = isHidden ? 'none' : '';
+    };
+}
+</script>

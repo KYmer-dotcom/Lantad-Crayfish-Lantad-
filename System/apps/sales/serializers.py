@@ -1,9 +1,5 @@
-"""
-SALES MODULE - Serializers
-"""
-
 from rest_framework import serializers
-from .models import Customer, Product, SalesOrder, Payment, InventoryTransaction, Delivery
+from .models import Customer, Product, SalesOrder, Delivery, InventoryTransaction, PaymentSetting
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -20,18 +16,14 @@ class CustomerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
-class PaymentSerializer(serializers.ModelSerializer):
-    """Serializer for Payment model."""
-    
-    payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
-    received_by_name = serializers.CharField(source='received_by.username', read_only=True)
+class PaymentSettingSerializer(serializers.ModelSerializer):
+    """Serializer for PaymentSetting model."""
     
     class Meta:
-        model = Payment
-        fields = ['id', 'order', 'amount', 'payment_method', 'payment_method_display',
-                  'payment_date', 'reference_number', 'received_by', 'received_by_name',
-                  'notes', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        model = PaymentSetting
+        fields = ['id', 'gcash_name', 'gcash_number', 'is_gcash_enabled',
+                  'is_cod_enabled', 'paymongo_public_key', 'paymongo_secret_key', 'updated_at']
+        read_only_fields = ['id', 'updated_at']
 
 
 class SalesOrderSerializer(serializers.ModelSerializer):
@@ -41,7 +33,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True)
     created_by_name = serializers.CharField(source='created_by.username', read_only=True)
-    payments = PaymentSerializer(many=True, read_only=True)
     
     class Meta:
         model = SalesOrder
@@ -50,7 +41,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
                   'order_date', 'delivery_date', 'quantity_kg', 'price_per_kg',
                   'total_amount', 'discount', 'status', 'status_display',
                   'payment_status', 'payment_status_display', 'delivery_address',
-                  'notes', 'created_by', 'created_by_name', 'payments', 'stock_deducted',
+                  'notes', 'created_by', 'created_by_name', 'stock_deducted',
                   'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 

@@ -50,6 +50,7 @@ class TableEnhancer {
 
             const id = row.getAttribute('id') || '';
             const isChild = id.startsWith('customer-orders-') || 
+                            id.startsWith('details-') ||
                             row.classList.contains('child-row') || 
                             row.classList.contains('nested-row') ||
                             (row.querySelector('td[colspan]') && currentParent !== null);
@@ -57,6 +58,7 @@ class TableEnhancer {
             if (isChild) {
                 if (currentParent) {
                     currentParent.children.push(row);
+                    currentParent.text += ' ' + row.textContent.toLowerCase();
                 }
             } else {
                 currentParent = { parent: row, children: [], text: row.textContent.toLowerCase() };
@@ -256,12 +258,20 @@ class TableEnhancer {
         const visibleGroups = this.filteredGroups.slice(startIndex, endIndex);
         const visibleSet = new Set(visibleGroups);
 
+        // Keep DOM rows ordered according to current filter/sort and keep children adjacent to parents
+        visibleGroups.forEach(group => {
+            this.tbody.appendChild(group.parent);
+            group.children.forEach(child => {
+                this.tbody.appendChild(child);
+            });
+        });
+
         this.rowGroups.forEach(group => {
             if (visibleSet.has(group)) {
                 group.parent.style.display = '';
                 group.children.forEach(child => {
-                    // When parent is visible, let CSS classes (e.g. .hidden) toggle child display
-                    child.style.display = child.classList.contains('hidden') ? 'none' : '';
+                    // When parent is visible, remove inline display override so CSS .hidden or user toggle works
+                    child.style.display = '';
                 });
             } else {
                 group.parent.style.display = 'none';

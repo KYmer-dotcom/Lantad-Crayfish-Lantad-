@@ -13,9 +13,9 @@
         </thead>
         <tbody class="divide-y divide-white/5 bg-transparent">
             {% for customer in customers %}
-            <tr class="hover:bg-white/[0.03] transition-colors duration-200 cursor-pointer" onclick="document.getElementById('customer-orders-{{ customer.id }}').classList.toggle('hidden')">
+            <tr class="hover:bg-white/[0.03] transition-colors duration-200 cursor-pointer group" onclick="toggleCustomerOrders('customer-orders-{{ customer.id }}')">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-100 flex items-center gap-2">
-                    <svg class="h-4 w-4 text-[#a0ac96] transition-transform duration-200 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg id="chevron-{{ customer.id }}" class="h-4 w-4 text-[#a0ac96] transition-transform duration-200 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                     {{ customer.name }}
@@ -129,6 +129,36 @@
 </div>
 
 <script>
+if (typeof toggleCustomerOrders === 'undefined') {
+    window.toggleCustomerOrders = function(id) {
+        const row = document.getElementById(id);
+        if (!row) return;
+        const isHidden = row.classList.toggle('hidden');
+        row.style.display = isHidden ? 'none' : '';
+        const chevronId = 'chevron-' + id.replace('customer-orders-', '');
+        const chevron = document.getElementById(chevronId);
+        if (chevron) {
+            chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+    };
+}
+
+if (typeof openLocationModal === 'undefined') {
+    window.openLocationModal = function(address, lat, lng) {
+        const modal = document.getElementById('location-map-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            return;
+        }
+        if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+        } else if (address) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     new TableEnhancer('#orders-customer-table', {
         pageSize: 10,

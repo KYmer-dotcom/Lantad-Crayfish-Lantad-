@@ -10,7 +10,6 @@ from . import views
 router = DefaultRouter()
 router.register(r'harvest-forecasts', views.HarvestForecastViewSet, basename='harvest-forecast')
 router.register(r'sales-forecasts', views.SalesForecastViewSet, basename='sales-forecast')
-router.register(r'metrics', views.PerformanceMetricViewSet, basename='metric')
 
 urlpatterns = [
     path('', include(router.urls)),

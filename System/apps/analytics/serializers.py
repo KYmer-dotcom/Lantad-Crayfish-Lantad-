@@ -1,9 +1,5 @@
-"""
-ANALYTICS MODULE - Serializers
-"""
-
 from rest_framework import serializers
-from .models import HarvestForecast, SalesForecast, PerformanceMetric
+from .models import HarvestForecast, SalesForecast
 
 
 class HarvestForecastSerializer(serializers.ModelSerializer):
@@ -32,19 +28,4 @@ class SalesForecastSerializer(serializers.ModelSerializer):
                   'predicted_demand_kg', 'predicted_revenue', 'species', 'species_name',
                   'confidence_level', 'algorithm_used', 'actual_demand_kg',
                   'actual_revenue', 'accuracy', 'notes', 'created_at']
-        read_only_fields = ['id', 'created_at']
-
-
-class PerformanceMetricSerializer(serializers.ModelSerializer):
-    """Serializer for PerformanceMetric model."""
-    
-    metric_type_display = serializers.CharField(source='get_metric_type_display', read_only=True)
-    
-    class Meta:
-        model = PerformanceMetric
-        fields = ['id', 'metric_date', 'metric_type', 'metric_type_display',
-                  'total_ponds_active', 'total_fish_stock', 'total_biomass_kg',
-                  'total_feed_used_kg', 'feed_cost', 'total_mortality', 'mortality_rate',
-                  'total_harvest_kg', 'harvest_value', 'total_sales', 'total_orders',
-                  'created_at']
         read_only_fields = ['id', 'created_at']

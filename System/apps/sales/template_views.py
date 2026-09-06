@@ -13,7 +13,7 @@ import datetime
 import re
 from apps.accounts.access import is_customer, get_customer_profile, is_owner, is_rider, get_rider_profile, get_accessible_ponds
 from apps.accounts.models import User
-from .models import Customer, Product, SalesOrder, Delivery, Rider, PaymentSetting
+from .models import Customer, Product, SalesOrder, Delivery, Rider, PaymentSetting, InputLog
 
 
 
@@ -203,17 +203,21 @@ def sales_list(request):
     
     # Summary stats
     total_orders = all_orders.exclude(status='cancelled').count()
-    total_revenue = all_orders.filter(status='completed').aggregate(
+    total_revenue = all_orders.filter(
+        Q(status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED]) | Q(payment_status=SalesOrder.PaymentStatus.PAID)
+    ).exclude(status='cancelled').aggregate(
         total=Sum('total_amount')
     )['total'] or Decimal('0')
-    pending_orders = all_orders.exclude(status__in=['completed', 'cancelled']).count()
+    pending_orders = all_orders.filter(
+        status__in=[SalesOrder.Status.PENDING, SalesOrder.Status.CONFIRMED, SalesOrder.Status.PROCESSING]
+    ).count()
     
     # Filter to show only Pickup orders in the "Pick up Orders" list
     pickup_orders = all_orders.filter(delivery_address__iexact='pickup')
     
     context = {
         'orders': pickup_orders,
-        'all_orders': all_orders.filter(status='completed').order_by('-order_date', '-id'),
+        'all_orders': all_orders.exclude(status='cancelled').order_by('-order_date', '-id'),
         'products': products,
         'deliveries': deliveries,
         'customers': customers,
@@ -274,12 +278,16 @@ def payment_settings_update(request):
         settings_obj.gcash_number = request.POST.get('gcash_number', '').strip() or "09171234567"
         settings_obj.is_gcash_enabled = (request.POST.get('is_gcash_enabled') == 'on' or request.POST.get('is_gcash_enabled') == 'true')
         settings_obj.is_cod_enabled = (request.POST.get('is_cod_enabled') == 'on' or request.POST.get('is_cod_enabled') == 'true')
+        if 'paymongo_secret_key' in request.POST:
+            settings_obj.paymongo_secret_key = request.POST.get('paymongo_secret_key', '').strip()
+        if 'paymongo_public_key' in request.POST:
+            settings_obj.paymongo_public_key = request.POST.get('paymongo_public_key', '').strip()
 
         if 'gcash_qr_image' in request.FILES:
             settings_obj.gcash_qr_image = request.FILES['gcash_qr_image']
 
         settings_obj.save()
-        messages.success(request, f'Payment settings saved! GCash payments will now be routed to {settings_obj.gcash_number}.')
+        messages.success(request, f'Payment settings saved! GCash payments configured.')
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             from django.http import JsonResponse
@@ -331,6 +339,14 @@ def order_delete_admin(request, order_id):
     )
     if request.method == 'POST':
         order_number = order.order_number
+        cust_name = order.customer.name if order.customer else 'Customer'
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Sales Orders',
+            target_entity=f'Order #{order_number}',
+            details=f'Deleted customer sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
+        )
         order.delete()
         messages.success(request, f'Order "{order_number}" deleted successfully.')
     return redirect('sales:orders_admin')
@@ -345,6 +361,14 @@ def order_delete(request, order_id):
     order = get_object_or_404(SalesOrder, pk=order_id)
     if request.method == 'POST':
         order_number = order.order_number
+        cust_name = order.customer.name if order.customer else 'Customer'
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Sales Orders',
+            target_entity=f'Order #{order_number}',
+            details=f'Deleted sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
+        )
         order.delete()
         messages.success(request, f'Order "{order_number}" deleted successfully.')
     referer = request.META.get('HTTP_REFERER')
@@ -363,6 +387,13 @@ def customer_create(request):
         form = CustomerForm(request.POST)
         if form.is_valid():
             customer = form.save()
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.ADDED,
+                module='Customer Registry',
+                target_entity=f'Customer: {customer.name}',
+                details=f'Admin added new customer profile for "{customer.name}" (Phone: {customer.phone or "None"} • Type: {customer.get_customer_type_display()})'
+            )
             messages.success(request, f'Customer "{customer.name}" created successfully!')
             
             if request.htmx:
@@ -390,6 +421,13 @@ def customer_delete(request, customer_id):
     customer = get_object_or_404(Customer, pk=customer_id)
     if request.method == 'POST':
         name = customer.name
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Customer Registry',
+            target_entity=f'Customer: {name}',
+            details=f'Admin deleted customer profile "{name}"'
+        )
         customer.delete()
         messages.success(request, f'Customer "{name}" deleted successfully!')
     return redirect('sales:list')
@@ -409,14 +447,30 @@ def order_create(request):
             order.total_amount = (order.quantity_kg * order.price_per_kg) - order.discount
             order.created_by = request.user
             order.save()
+
+            prod_name = order.product.name if order.product else "Stock Item"
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.ADDED,
+                module='Sales Orders',
+                target_entity=f'Order #{order.order_number}',
+                details=f'Admin created order #{order.order_number} for {order.customer.name} ({prod_name} • {order.quantity_kg} kg @ ₱{order.total_amount:,.2f})'
+            )
             
             if order.delivery_address and order.delivery_address.lower() != 'pickup':
-                Delivery.objects.create(
+                deliv = Delivery.objects.create(
                     order=order,
                     scheduled_date=order.order_date,
                     delivery_location=order.delivery_address,
                     quantity_kg=order.quantity_kg,
                     created_by=request.user
+                )
+                InputLog.log(
+                    user=request.user,
+                    action=InputLog.Action.ADDED,
+                    module='Delivery Dispatch',
+                    target_entity=f'Dispatch #{order.order_number}',
+                    details=f'Admin scheduled delivery drop-off to {order.delivery_address}'
                 )
                 
             messages.success(request, f'Order "{order.order_number}" created successfully!')
@@ -737,6 +791,14 @@ def product_create(request):
         form = ProductForm(data, user=request.user)
         if form.is_valid():
             product = form.save()
+            price_val = product.price_per_kg if product.price_per_kg else product.unit_price
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.ADDED,
+                module='Product Management',
+                target_entity=f'Product: {product.name}',
+                details=f'Admin added new product "{product.name}" (Stock: {product.quantity_kg} kg • Price: ₱{price_val:,.2f}/kg • Category: {product.get_category_display()})'
+            )
             messages.success(request, f'Product "{product.name}" created successfully!')
 
             if request.htmx:
@@ -764,6 +826,13 @@ def product_delete(request, product_id):
 
     product.is_active = False
     product.save(update_fields=['is_active'])
+    InputLog.log(
+        user=request.user,
+        action=InputLog.Action.DELETED,
+        module='Product Management',
+        target_entity=f'Product: {product.name}',
+        details=f'Admin deleted product "{product.name}" from active catalog.'
+    )
     messages.success(request, f'Product "{product.name}" removed successfully.')
 
     next_url = request.POST.get('next') or request.GET.get('next')
@@ -1090,6 +1159,15 @@ def customer_order_delete(request, order_id):
         messages.error(request, 'Cannot remove a finalized order.')
         return redirect('sales:customer_orders_page')
         
+    ord_num = order.order_number
+    prod_name = order.product.name if order.product else 'Crayfish Item'
+    InputLog.log(
+        user=request.user,
+        action=InputLog.Action.DELETED,
+        module='Storefront Cart',
+        target_entity=f'Order #{ord_num}',
+        details=f'Customer {customer.name} removed {prod_name} ({order.quantity_kg} kg) from cart.'
+    )
     order.delete()
     messages.success(request, 'Item removed from your cart.')
     return redirect('sales:customer_orders_page')
@@ -1152,6 +1230,10 @@ def customer_checkout_submit(request):
                     order.save(update_fields=['notes'])
                 from django.http import JsonResponse
                 return JsonResponse({'success': True, 'redirect_url': session_data['checkout_url'], 'is_gateway': True})
+
+            if session_data.get('error'):
+                from django.http import JsonResponse
+                return JsonResponse({'success': False, 'error': session_data['error']})
             
             # Confirm GCash payment with verified reference
             ref_label = payment_reference if payment_reference else "Verified Online"
@@ -1344,9 +1426,16 @@ def delivery_edit(request, delivery_id):
         form = DeliveryForm(request.POST, instance=delivery, user=request.user)
         if form.is_valid():
             deliv = form.save()
-            if deliv.status == Delivery.Status.DELIVERED and not deliv.delivered_date:
-                deliv.delivered_date = datetime.date.today()
-                deliv.save(update_fields=['delivered_date'])
+            if deliv.status == Delivery.Status.DELIVERED:
+                if not deliv.delivered_date:
+                    deliv.delivered_date = datetime.date.today()
+                    deliv.save(update_fields=['delivered_date'])
+                if deliv.order:
+                    if deliv.order.status != SalesOrder.Status.COMPLETED:
+                        deliv.order.status = SalesOrder.Status.DELIVERED
+                    if deliv.order.payment_status == SalesOrder.PaymentStatus.UNPAID:
+                        deliv.order.payment_status = SalesOrder.PaymentStatus.PAID
+                    deliv.order.save(update_fields=['status', 'payment_status', 'updated_at'])
             messages.success(request, f'Delivery {deliv.order.order_number} updated successfully.')
             return redirect('sales:delivery_list')
     else:
@@ -1433,9 +1522,127 @@ def delivery_logs_page(request):
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
+    # Active Log Type Tab: 'product' vs 'activity' vs 'input'
+    tab_filter = request.GET.get('tab', 'product').strip().lower()
+    if tab_filter not in ['product', 'activity', 'input']:
+        tab_filter = 'product'
+
+    # Fetch Input / Deletion Logs (Who added that data and deleted that)
+    input_logs_qs = InputLog.objects.all()
+    if query:
+        input_logs_qs = input_logs_qs.filter(
+            Q(user_name__icontains=query) |
+            Q(target_entity__icontains=query) |
+            Q(module__icontains=query) |
+            Q(details__icontains=query) |
+            Q(action__icontains=query)
+        )
+    input_logs_count = input_logs_qs.count()
+    input_logs_added_count = input_logs_qs.filter(action=InputLog.Action.ADDED).count()
+    input_logs_deleted_count = input_logs_qs.filter(action=InputLog.Action.DELETED).count()
+
+    # Compile structured Activity Logs
+    activity_logs = []
+    for d in logs_qs:
+        approver = d.created_by.get_full_name() if d.created_by else (d.created_by.username if d.created_by else 'Admin')
+        prod_name = d.order.product.name if d.order and d.order.product else 'Stock'
+        cust_name = d.order.customer.name if d.order and d.order.customer else 'Direct Customer'
+        ord_num = d.order.order_number if d.order else f"DEL-{d.id}"
+        
+        # 1. Approval / Dispatch Event
+        activity_logs.append({
+            'timestamp': d.created_at,
+            'actor': approver,
+            'role': 'Store Manager / Admin',
+            'role_badge': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            'action': 'Dispatch Approved',
+            'entity': f"Order #{ord_num}",
+            'product': f"{prod_name} ({d.quantity_kg} kg)",
+            'customer': cust_name,
+            'details': f"Approved dispatch to {d.delivery_location or 'Customer Address'}",
+            'status': 'Approved',
+            'status_badge': 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+            'icon': '📝'
+        })
+        
+        # 2. Courier Assignment Event
+        if d.rider:
+            activity_logs.append({
+                'timestamp': d.created_at,
+                'actor': d.rider.name,
+                'role': 'Delivery Rider',
+                'role_badge': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                'action': 'Courier Assigned',
+                'entity': f"Order #{ord_num}",
+                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'customer': cust_name,
+                'details': f"Assigned to {d.rider.vehicle_type} • Plate: {d.rider.plate_number or 'Unregistered'}",
+                'status': 'Assigned',
+                'status_badge': 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+                'icon': '🛵'
+            })
+            
+        # 3. In-Transit / Completion Event
+        if d.status == Delivery.Status.IN_TRANSIT:
+            activity_logs.append({
+                'timestamp': d.created_at,
+                'actor': d.rider.name if d.rider else 'Assigned Courier',
+                'role': 'Delivery Rider',
+                'role_badge': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                'action': 'Out for Delivery',
+                'entity': f"Order #{ord_num}",
+                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'customer': cust_name,
+                'details': f"Live GPS tracking active. En route to {d.delivery_location or cust_name}",
+                'status': 'In Transit',
+                'status_badge': 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+                'icon': '🚚'
+            })
+        elif d.status == Delivery.Status.DELIVERED:
+            from django.utils import timezone
+            if d.delivered_date:
+                naive_dt = datetime.datetime.combine(d.delivered_date, datetime.time(12, 0))
+                deliv_time = timezone.make_aware(naive_dt, timezone.get_current_timezone())
+            else:
+                deliv_time = d.created_at
+            activity_logs.append({
+                'timestamp': deliv_time,
+                'actor': d.rider.name if d.rider else approver,
+                'role': 'Courier / Rider' if d.rider else 'Store Admin',
+                'role_badge': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                'action': 'Drop-off Completed',
+                'entity': f"Order #{ord_num}",
+                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'customer': cust_name,
+                'details': f"Order successfully fulfilled. Proof of delivery and official receipt generated.",
+                'status': 'Delivered',
+                'status_badge': 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+                'icon': '✅'
+            })
+
+    if query:
+        q_lower = query.lower()
+        activity_logs = [
+            a for a in activity_logs
+            if q_lower in a['actor'].lower() or
+               q_lower in a['entity'].lower() or
+               q_lower in a['product'].lower() or
+               q_lower in a['customer'].lower() or
+               q_lower in a['action'].lower() or
+               q_lower in a['details'].lower()
+        ]
+
+    from django.utils import timezone
+    activity_logs.sort(key=lambda x: x['timestamp'] if x['timestamp'] else timezone.now(), reverse=True)
+
     context = {
         'deliveries': page_obj,
         'page_obj': page_obj,
+        'activity_logs': activity_logs,
+        'input_logs': input_logs_qs,
+        'input_logs_count': input_logs_count,
+        'input_logs_added_count': input_logs_added_count,
+        'input_logs_deleted_count': input_logs_deleted_count,
         'total_logs': total_logs,
         'delivered_count': delivered_count,
         'in_transit_count': in_transit_count,
@@ -1443,6 +1650,7 @@ def delivery_logs_page(request):
         'total_delivered_kg': total_delivered_kg,
         'total_delivered_revenue': total_delivered_revenue,
         'status_filter': status_filter,
+        'tab_filter': tab_filter,
         'query': query,
     }
     return render(request, 'sales_management/delivery_logs.html', context)
@@ -1459,21 +1667,20 @@ def delivery_track_page(request):
         'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
     ).all()
 
-    active_deliveries = all_deliveries_qs.filter(
-        status__in=[Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED]
-    ).order_by(
+    all_deliveries = all_deliveries_qs.order_by(
         Case(
             When(status=Delivery.Status.IN_TRANSIT, then=Value(0)),
             When(status=Delivery.Status.SCHEDULED, then=Value(1)),
-            default=Value(2),
+            When(status=Delivery.Status.DELIVERED, then=Value(2)),
+            default=Value(3),
             output_field=IntegerField(),
         ),
         '-scheduled_date', '-created_at'
     )
 
-    recent_completed = all_deliveries_qs.filter(
-        status=Delivery.Status.DELIVERED
-    ).order_by('-delivered_date', '-created_at')[:10]
+    in_transit_count = all_deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
+    scheduled_count = all_deliveries_qs.filter(status=Delivery.Status.SCHEDULED).count()
+    delivered_count = all_deliveries_qs.filter(status=Delivery.Status.DELIVERED).count()
 
     selected_delivery = None
     query = request.GET.get('q', '').strip()
@@ -1490,12 +1697,50 @@ def delivery_track_page(request):
         ).first()
 
     if not selected_delivery:
-        selected_delivery = active_deliveries.first() or recent_completed.first() or all_deliveries_qs.first()
+        selected_delivery = all_deliveries.first()
+
+    import json
+    deliveries_data = []
+    for d in all_deliveries:
+        cust = d.order.customer if d.order else None
+        lat = float(cust.map_latitude) if (cust and cust.map_latitude) else 10.7950
+        lng = float(cust.map_longitude) if (cust and cust.map_longitude) else 122.9650
+        approver = d.created_by.get_full_name() or d.created_by.username if d.created_by else 'Admin'
+        rider_name = d.rider.name if d.rider else 'No rider assigned yet'
+        rider_phone = d.rider.phone if (d.rider and d.rider.phone) else ''
+        rider_vehicle = f"{d.rider.vehicle_type} • {d.rider.plate_number or 'No plate'}" if d.rider else ''
+        prod_name = d.order.product.name if (d.order and d.order.product) else 'Stock Item'
+        deliveries_data.append({
+            'id': d.id,
+            'order_number': d.order.order_number if d.order else f'DEL-{d.id}',
+            'status': d.status,
+            'status_display': d.get_status_display(),
+            'payment_status': d.order.payment_status if d.order else 'unpaid',
+            'customer_name': cust.name if cust else 'Customer',
+            'customer_phone': cust.phone if cust else '',
+            'delivery_location': d.delivery_location or (cust.address if cust else 'Silay City, Negros Occidental'),
+            'product_name': prod_name,
+            'quantity_kg': str(d.quantity_kg),
+            'total_amount': float(d.order.total_amount) if d.order else 0.0,
+            'order_date': d.order.order_date.strftime('%b %d') if (d.order and d.order.order_date) else '',
+            'created_by': approver,
+            'created_at': d.created_at.strftime('%b %d, %Y • %I:%M %p') if d.created_at else '',
+            'delivered_date': d.delivered_date.strftime('%b %d, %Y') if d.delivered_date else '',
+            'rider_name': rider_name,
+            'rider_phone': rider_phone,
+            'rider_vehicle': rider_vehicle,
+            'notes': d.notes or '',
+            'lat': lat,
+            'lng': lng,
+        })
 
     context = {
         'selected_delivery': selected_delivery,
-        'active_deliveries': active_deliveries,
-        'recent_completed': recent_completed,
+        'all_deliveries': all_deliveries,
+        'deliveries_json': json.dumps(deliveries_data),
+        'in_transit_count': in_transit_count,
+        'scheduled_count': scheduled_count,
+        'delivered_count': delivered_count,
         'query': query,
     }
     return render(request, 'sales_management/track_order.html', context)
@@ -1589,6 +1834,13 @@ def rider_create(request):
 
             rider.user = user
             rider.save()
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.ADDED,
+                module='Logistics & Dispatch',
+                target_entity=f'Rider: {rider.name}',
+                details=f'Admin registered delivery driver "{rider.name}" (Phone: {phone} • Vehicle: {rider.vehicle_type} • Plate: {rider.plate_number or "Unregistered"})'
+            )
             messages.success(request, f'Rider "{rider.name}" and account ({phone}) created successfully!')
         else:
             messages.error(request, 'Failed to add rider. Please check the inputs.')
@@ -1648,6 +1900,13 @@ def rider_delete(request, rider_id):
         rider.delete()
         if user and user.role == User.Role.RIDER:
             user.delete()
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Logistics & Dispatch',
+            target_entity=f'Rider: {name}',
+            details=f'Admin deleted delivery rider profile "{name}"'
+        )
         messages.success(request, f'Rider "{name}" removed from registry.')
     return redirect('sales:rider_list')
 
@@ -1740,11 +1999,48 @@ def rider_delivery_action(request, delivery_id):
         elif action == 'mark_delivered':
             delivery.status = Delivery.Status.DELIVERED
             delivery.delivered_date = datetime.date.today()
-            delivery.save(update_fields=['status', 'delivered_date'])
+            
+            photo = request.FILES.get('proof_of_delivery')
+            if photo:
+                delivery.proof_of_delivery = photo
+                if not delivery.order.receipt_image:
+                    try:
+                        photo.seek(0)
+                        delivery.order.receipt_image = photo.read()
+                        photo.seek(0)
+                        delivery.order.save(update_fields=['receipt_image'])
+                    except Exception:
+                        pass
+            
+            update_fields = ['status', 'delivered_date', 'proof_of_delivery'] if photo else ['status', 'delivered_date']
+            delivery.save(update_fields=update_fields)
+
+            # Sync order status & payment
+            if delivery.order.status != SalesOrder.Status.COMPLETED:
+                delivery.order.status = SalesOrder.Status.DELIVERED
+            if delivery.order.payment_status == SalesOrder.PaymentStatus.UNPAID:
+                delivery.order.payment_status = SalesOrder.PaymentStatus.PAID
+            delivery.order.save(update_fields=['status', 'payment_status', 'updated_at'])
+
             if not rider.deliveries.filter(status=Delivery.Status.IN_TRANSIT).exists():
                 rider.status = Rider.Status.AVAILABLE
                 rider.save(update_fields=['status', 'updated_at'])
-            messages.success(request, f'Order #{delivery.order.order_number} marked as DELIVERED!')
+
+            # Log audit record for Admin updates
+            try:
+                from .models import InputLog
+                has_photo_msg = " with Proof of Delivery photo attached" if photo else ""
+                InputLog.log(
+                    user=request.user,
+                    module='Delivery & Logistics',
+                    action='updated',
+                    target_entity=f"Order #{delivery.order.order_number}",
+                    details=f"Drop-off completed and marked DELIVERED by Courier {rider.name}{has_photo_msg}."
+                )
+            except Exception:
+                pass
+
+            messages.success(request, f'Order #{delivery.order.order_number} marked as DELIVERED! Proof of delivery recorded.')
     return redirect('sales:rider_portal')
 
 

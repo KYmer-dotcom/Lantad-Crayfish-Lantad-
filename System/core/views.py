@@ -515,6 +515,94 @@ def notifications(request):
     if is_customer(request.user):
         return redirect('sales:customer_portal')
 
+    if is_rider(request.user):
+        from apps.sales.models import Delivery, Rider
+        from apps.accounts.access import get_rider_profile
+        import datetime
+
+        rider = get_rider_profile(request.user)
+        if not rider:
+            rider = Rider.objects.create(
+                user=request.user,
+                name=request.user.get_full_name() or request.user.username,
+                phone=request.user.phone or request.user.username,
+                vehicle_type="Motorcycle",
+                status=Rider.Status.AVAILABLE,
+            )
+
+        deliveries_qs = Delivery.objects.filter(rider=rider).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
+        active_deliveries = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+        completed_deliveries = deliveries_qs.filter(status=Delivery.Status.DELIVERED)
+
+        available_deliveries = Delivery.objects.filter(
+            rider__isnull=True,
+            status=Delivery.Status.SCHEDULED
+        ).exclude(
+            delivery_location__iexact='pickup'
+        ).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
+
+        rider_notifications = []
+
+        for d in available_deliveries[:6]:
+            dest = d.delivery_location or (d.order.customer.address if d.order and d.order.customer else 'Silay Area')
+            prod = d.order.product.name if d.order and d.order.product else 'Aquaculture'
+            cust = d.order.customer.name if d.order and d.order.customer else 'Customer'
+            order_num = d.order.order_number if d.order else f"DEL-{d.id}"
+            rider_notifications.append({
+                'title': f"Available Dispatch: Order #{order_num}",
+                'category': 'Dispatch Pool',
+                'badge_text': 'Ready for Pickup',
+                'badge_class': 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 animate-pulse',
+                'dot_class': 'bg-cyan-400 animate-pulse',
+                'description': f"Order for {cust} ({d.quantity_kg}kg {prod}) is packed and awaiting pickup. Destination: {dest}.",
+                'time': d.scheduled_date.strftime("%b %d, %Y") if d.scheduled_date else "Today",
+                'link_text': 'Claim in Driver Portal →',
+            })
+
+        for d in active_deliveries[:6]:
+            is_transit = (d.status == Delivery.Status.IN_TRANSIT)
+            dest = d.delivery_location or (d.order.customer.address if d.order and d.order.customer else 'Silay Area')
+            cust = d.order.customer.name if d.order and d.order.customer else 'Customer'
+            phone = d.order.customer.phone if d.order and d.order.customer else ''
+            order_num = d.order.order_number if d.order else f"DEL-{d.id}"
+            rider_notifications.append({
+                'title': f"{'In Transit' if is_transit else 'Assigned'}: #{order_num}",
+                'category': 'Active Run',
+                'badge_text': 'Out for Delivery' if is_transit else 'Assigned to You',
+                'badge_class': 'bg-amber-500/10 text-amber-300 border border-amber-500/20 animate-pulse' if is_transit else 'bg-blue-500/10 text-blue-300 border border-blue-500/20',
+                'dot_class': 'bg-amber-400 animate-pulse' if is_transit else 'bg-blue-400',
+                'description': f"Deliver to {cust} ({phone or 'Contact on file'}). Destination: {dest}. Notes: {d.special_instructions or 'Handle live aquaculture with care.'}",
+                'time': d.scheduled_date.strftime("%b %d, %Y") if d.scheduled_date else "Today",
+                'link_text': 'Update Delivery in Driver Portal →',
+            })
+
+        for d in completed_deliveries[:4]:
+            cust = d.order.customer.name if d.order and d.order.customer else 'Customer'
+            order_num = d.order.order_number if d.order else f"DEL-{d.id}"
+            rider_notifications.append({
+                'title': f"Drop-off Completed: #{order_num}",
+                'category': 'Delivered',
+                'badge_text': 'Delivered',
+                'badge_class': 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20',
+                'dot_class': 'bg-emerald-400',
+                'description': f"Successfully delivered {d.quantity_kg}kg to {cust}. Proof of delivery recorded.",
+                'time': d.delivered_date.strftime("%b %d, %Y") if d.delivered_date else "Recent",
+                'link_text': 'View in Driver Portal →',
+            })
+
+        context = {
+            'is_rider_view': True,
+            'rider': rider,
+            'available_count': available_deliveries.count(),
+            'active_count': active_deliveries.count(),
+            'in_transit_count': active_deliveries.filter(status=Delivery.Status.IN_TRANSIT).count(),
+            'completed_count': completed_deliveries.count(),
+            'available_first': available_deliveries.first(),
+            'active_first': active_deliveries.first(),
+            'rider_notifications': rider_notifications,
+        }
+        return render(request, 'notifications/index.html', context)
+
     from apps.operations.models import Pond
     from datetime import timedelta
     from django.utils import timezone
@@ -574,6 +662,7 @@ def notifications(request):
     order2 = recent_orders[1] if len(recent_orders) > 1 else None
 
     context = {
+        'is_rider_view': False,
         'azula_alerts': azula_alerts,
         'alerts': [],
         'order1': order1,

@@ -1,0 +1,44 @@
+# Documentation & Research
+Documents/
+*.docx
+*.pdf
+*.pptx
+*.csv
+dashboard_mockup.png
+figma_tokens.json
+lantad_dashboard.svg
+ERD.md
+
+# AI / IDE Agents
+.agents/
+.claude/
+skills-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django
+*.sqlite3.backup
+*.log
+media/
+staticfiles/
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db

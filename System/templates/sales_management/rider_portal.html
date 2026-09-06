@@ -519,10 +519,37 @@
         </div>
 
         <!-- Form Action -->
-        <form id="complete-delivery-form" method="POST" action="">
+        <form id="complete-delivery-form" method="POST" enctype="multipart/form-data" action="" class="space-y-4">
             {% csrf_token %}
             <input type="hidden" name="action" value="mark_delivered">
-            <div class="grid grid-cols-2 gap-3">
+
+            <!-- Take Photo / Proof of Delivery Upload Section -->
+            <div class="rounded-2xl border border-dashed border-[#cca43b]/40 bg-black/40 p-3.5 text-center">
+                <input type="file" id="proof-photo-input" name="proof_of_delivery" accept="image/*" capture="environment" class="hidden" onchange="handleProofPhotoSelect(this)">
+                
+                <!-- Initial Photo Prompt State -->
+                <div id="proof-photo-prompt" class="space-y-1.5">
+                    <button type="button" onclick="document.getElementById('proof-photo-input').click()" class="w-full py-2.5 px-3 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b]/25 border border-[#cca43b]/40 text-[#cca43b] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Take Photo / Upload Proof
+                    </button>
+                    <p class="text-[10px] text-[#a0ac96]">Capture drop-off package / sign-off</p>
+                </div>
+
+                <!-- Selected Photo Preview State -->
+                <div id="proof-photo-preview-wrap" class="hidden relative">
+                    <img id="proof-photo-preview-img" src="" alt="Proof Preview" class="w-full max-h-36 object-cover rounded-xl border border-emerald-500/40 shadow-md">
+                    <div class="absolute top-1.5 right-1.5 flex items-center gap-1">
+                        <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow">Attached ✓</span>
+                        <button type="button" onclick="removeProofPhoto()" class="h-6 w-6 rounded-full bg-black/80 hover:bg-rose-600 text-white flex items-center justify-center text-xs font-bold transition-colors cursor-pointer" title="Remove photo">&times;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-1">
                 <button type="button" onclick="closeCompleteDeliveryModal()" class="w-full rounded-2xl border border-white/10 bg-black/40 py-3.5 text-xs font-bold text-[#a0ac96] hover:text-white hover:border-white/30 transition-all cursor-pointer">
                     Cancel
                 </button>
@@ -538,7 +565,34 @@
 </div>
 
 <script>
+    function handleProofPhotoSelect(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.getElementById('proof-photo-preview-img');
+                const wrap = document.getElementById('proof-photo-preview-wrap');
+                const prompt = document.getElementById('proof-photo-prompt');
+                if (img) img.src = e.target.result;
+                if (wrap) wrap.classList.remove('hidden');
+                if (prompt) prompt.classList.add('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeProofPhoto() {
+        const input = document.getElementById('proof-photo-input');
+        const wrap = document.getElementById('proof-photo-preview-wrap');
+        const prompt = document.getElementById('proof-photo-prompt');
+        const img = document.getElementById('proof-photo-preview-img');
+        if (input) input.value = '';
+        if (img) img.src = '';
+        if (wrap) wrap.classList.add('hidden');
+        if (prompt) prompt.classList.remove('hidden');
+    }
+
     function openCompleteDeliveryModal(deliveryId, orderNum, customerName, product, qty, totalAmount) {
+        removeProofPhoto();
         const modal = document.getElementById('complete-delivery-modal');
         const orderSpan = document.getElementById('modal-order-number');
         const custSpan = document.getElementById('modal-customer-name');
@@ -557,6 +611,7 @@
     }
 
     function closeCompleteDeliveryModal() {
+        removeProofPhoto();
         const modal = document.getElementById('complete-delivery-modal');
         if (modal) {
             modal.classList.add('hidden');

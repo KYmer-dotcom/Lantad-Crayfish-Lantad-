@@ -46,8 +46,15 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.template_urls')),
     
     # ============================================================
-    # API ENDPOINTS - REST API (REMOVED)
+    # API ENDPOINTS - REST API
     # ============================================================
+    path('api/operations/', include('apps.operations.urls')),
+    path('api/stock/', include('apps.stock.urls')),
+    path('api/feed/', include('apps.feed.urls')),
+    path('api/harvest/', include('apps.harvest.urls')),
+    path('api/sales/', include('apps.sales.urls')),
+    path('api/analytics/', include('apps.analytics.urls')),
+    path('api/accounts/', include('apps.accounts.urls')),
 ]
 
 # Serve media files in development mode

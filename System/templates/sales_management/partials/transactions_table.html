@@ -21,9 +21,10 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-400">{{ order.order_date }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border
-                        {% if order.status == 'completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                        {% if order.status == 'completed' or order.status == 'delivered' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
                         {% elif order.status == 'shipped' %}bg-blue-500/10 text-blue-400 border-blue-500/20
-                        {% elif order.status == 'processing' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                        {% elif order.status == 'processing' or order.status == 'confirmed' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                        {% elif order.status == 'pending' %}bg-cyan-500/10 text-cyan-400 border-cyan-500/20
                         {% else %}bg-stone-500/10 text-stone-400 border-stone-500/20{% endif %}">
                         {{ order.get_status_display }}
                     </span>

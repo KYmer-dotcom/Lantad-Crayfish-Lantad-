@@ -15,7 +15,7 @@ from django.utils import timezone
 from apps.accounts.access import filter_by_pond, get_accessible_ponds, is_customer
 from apps.stock.models import StockBatch
 from apps.harvest.models import HarvestRecord
-from apps.sales.models import SalesOrder, Product
+from apps.sales.models import SalesOrder, Product, Delivery, InputLog
 from apps.operations.models import PondFeedingLog
 from .models import HarvestForecast, SalesForecast
 from .predictive_services import forecast_sales_moving_average, linear_regression_trend, get_product_recommendations
@@ -440,7 +440,7 @@ def reports(request):
     if end_date:
         sales_qs = sales_qs.filter(order_date__lte=end_date)
 
-    sales_by_date = sales_qs.select_related('customer').order_by('-order_date', '-id')[:30]
+    sales_by_date = sales_qs.select_related('customer', 'product', 'created_by').prefetch_related('deliveries__rider', 'deliveries__created_by').order_by('-order_date', '-id')[:30]
 
     sales_weekly = sales_qs.annotate(week=TruncWeek('order_date')).values('week').annotate(
         total_sales=Sum('total_amount'),
@@ -494,6 +494,73 @@ def reports(request):
         )
     ).order_by('location_order', 'pond__name', '-recorded_at')[:200]
 
+    # Fetch Product Delivery Logs
+    deliveries_logs_qs = Delivery.objects.select_related(
+        'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
+    ).all()
+    if start_date:
+        deliveries_logs_qs = deliveries_logs_qs.filter(created_at__date__gte=start_date)
+    if end_date:
+        deliveries_logs_qs = deliveries_logs_qs.filter(created_at__date__lte=end_date)
+    product_logs = deliveries_logs_qs.order_by('-created_at')[:150]
+
+    # Fetch Input / Data Modification Logs
+    input_logs_qs = InputLog.objects.all()
+    if start_date:
+        input_logs_qs = input_logs_qs.filter(created_at__date__gte=start_date)
+    if end_date:
+        input_logs_qs = input_logs_qs.filter(created_at__date__lte=end_date)
+    input_logs = input_logs_qs.order_by('-created_at')[:150]
+
+    # Compile structured Activity Logs
+    activity_logs = []
+    for d in product_logs:
+        approver = d.created_by.get_full_name() if d.created_by else (d.created_by.username if d.created_by else 'Admin')
+        prod_name = d.order.product.name if d.order and d.order.product else 'Stock'
+        cust_name = d.order.customer.name if d.order and d.order.customer else 'Direct Customer'
+        ord_num = d.order.order_number if d.order else f"DEL-{d.id}"
+        
+        activity_logs.append({
+            'timestamp': d.created_at,
+            'actor': approver,
+            'role': 'Store Manager / Admin',
+            'action': 'Dispatch Approved',
+            'entity': f"Order #{ord_num}",
+            'product': f"{prod_name} ({d.quantity_kg} kg)",
+            'customer': cust_name,
+            'details': f"Approved dispatch to {d.delivery_location or 'Customer Address'}",
+            'status': 'Approved',
+            'icon': '📝'
+        })
+        if d.rider:
+            activity_logs.append({
+                'timestamp': d.created_at,
+                'actor': d.rider.name,
+                'role': 'Delivery Rider',
+                'action': 'Courier Assigned',
+                'entity': f"Order #{ord_num}",
+                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'customer': cust_name,
+                'details': f"Assigned to {d.rider.vehicle_type} • Plate: {d.rider.plate_number or 'Unregistered'}",
+                'status': 'Assigned',
+                'icon': '🛵'
+            })
+        if d.status == Delivery.Status.DELIVERED:
+            deliv_time = d.created_at
+            activity_logs.append({
+                'timestamp': deliv_time,
+                'actor': d.rider.name if d.rider else approver,
+                'role': 'Courier / Rider' if d.rider else 'Store Admin',
+                'action': 'Drop-off Completed',
+                'entity': f"Order #{ord_num}",
+                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'customer': cust_name,
+                'details': f"Order successfully fulfilled to {cust_name}.",
+                'status': 'Delivered',
+                'icon': '✅'
+            })
+    activity_logs.sort(key=lambda x: str(x['timestamp']) if x['timestamp'] else '', reverse=True)
+
     if request.GET.get('export') == 'csv':
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="analytics-reports.csv"'
@@ -538,6 +605,9 @@ def reports(request):
         'monthly_sales_qty': monthly_sales['total_qty'] or 0,
         'monthly_expenses_total': monthly_expenses['total_expenses'] or 0,
         'operations_logs': operations_logs,
+        'product_logs': product_logs,
+        'activity_logs': activity_logs,
+        'input_logs': input_logs,
         'start_date': start_date_str or '',
         'end_date': end_date_str or '',
         'sales_label': sales_label,
