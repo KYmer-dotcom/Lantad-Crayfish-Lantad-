@@ -508,18 +508,18 @@ def order_status_update(request, order_id):
 
             # Automatically synchronize Delivery dispatch record if delivery is requested
             if status in [SalesOrder.Status.CONFIRMED, SalesOrder.Status.SHIPPED, SalesOrder.Status.PROCESSING] and (order.delivery_address or '').upper() != 'PICKUP':
-                delivery, created = Delivery.objects.get_or_create(
-                    order=order,
-                    defaults={
-                        'quantity_kg': order.quantity_kg,
-                        'delivery_location': order.delivery_address or (order.customer.address if order.customer else ''),
-                        'scheduled_date': datetime.date.today(),
-                        'status': Delivery.Status.SCHEDULED,
-                    }
-                )
-                if not created and delivery.status == Delivery.Status.PENDING:
-                    delivery.status = Delivery.Status.SCHEDULED
-                    delivery.save()
+                existing_delivery = Delivery.objects.filter(order=order).first()
+                if not existing_delivery:
+                    Delivery.objects.create(
+                        order=order,
+                        quantity_kg=order.quantity_kg,
+                        delivery_location=order.delivery_address or (order.customer.address if order.customer else ''),
+                        scheduled_date=datetime.date.today(),
+                        status=Delivery.Status.SCHEDULED,
+                    )
+                elif existing_delivery.status == Delivery.Status.SCHEDULED:
+                    existing_delivery.scheduled_date = datetime.date.today()
+                    existing_delivery.save()
 
             # Record audit trail in InputLog
             is_approved = status in [SalesOrder.Status.CONFIRMED, SalesOrder.Status.SHIPPED]
