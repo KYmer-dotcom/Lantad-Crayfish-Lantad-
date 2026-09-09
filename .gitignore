@@ -35,6 +35,12 @@ env/
 media/
 staticfiles/
 
+# Test Coverage
+.coverage
+.coverage.*
+.coveragerc
+htmlcov/
+
 # Environment files
 .env
 .env.*

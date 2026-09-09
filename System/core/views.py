@@ -464,6 +464,8 @@ def inventory_overview(request):
     """Simple inventory list of species and feeds for accessible farms/ponds."""
     if is_customer(request.user):
         return redirect('sales:customer_portal')
+    if is_rider(request.user):
+        return redirect('sales:rider_portal')
 
     from apps.stock.models import StockBatch
     from apps.feed.models import FeedType
