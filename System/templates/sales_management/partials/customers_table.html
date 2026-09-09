@@ -63,7 +63,7 @@
                             <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}" class="inline" onclick="event.stopPropagation();">
                                 {% csrf_token %}
                                 <input type="hidden" name="status" value="shipped">
-                                <button type="submit" class="text-xs px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-400 hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve Dispatch</button>
+                                <button type="submit" class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
                             </form>
                             {% endif %}
                         {% endwith %}
@@ -141,8 +141,8 @@
                                                 <form method="POST" action="{% url 'sales:order_status_update' order.id %}" class="inline" onclick="event.stopPropagation();">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="status" value="shipped">
-                                                    <button type="submit" class="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-400 text-cyan-300 hover:text-[#01140e] border border-cyan-500/40 font-black text-[10px] uppercase transition-all cursor-pointer">
-                                                        Approve Dispatch
+                                                    <button type="submit" class="px-2 py-0.5 rounded bg-[#cca43b]/20 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] border border-[#cca43b]/40 font-black text-[10px] uppercase transition-all cursor-pointer">
+                                                        Approve
                                                     </button>
                                                 </form>
                                                 {% elif order.status == 'shipped' or order.status == 'processing' %}
