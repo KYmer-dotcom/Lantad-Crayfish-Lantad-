@@ -413,17 +413,36 @@
                                             </div>
                                         </div>
 
-                                        <div class="flex items-center gap-6">
-                                            <!-- Static Quantity -->
+                                        <div class="flex items-center gap-4 sm:gap-6 flex-wrap sm:flex-nowrap justify-end">
+                                            <!-- Interactive Quantity Stepper -->
                                             <div class="text-right shrink-0">
                                                 <p
-                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40">
-                                                    Qty</p>
+                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40 mb-1">
+                                                    Quantity</p>
+                                                {% if order.status == 'pending' %}
+                                                <div class="flex items-center bg-black/50 border border-white/20 rounded-xl p-1 shadow-inner">
+                                                    <button type="button" onclick="changeCardQuantity('{{ order.id }}', -1)"
+                                                        class="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] text-white flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
+                                                        -
+                                                    </button>
+                                                    <input type="number" id="qty-input-{{ order.id }}" value="{{ order.quantity_kg|floatformat:0 }}"
+                                                        min="1" max="9999" step="1"
+                                                        onchange="updateCardQuantity('{{ order.id }}', this.value)"
+                                                        class="w-12 text-center bg-transparent border-none text-white font-black text-base focus:outline-none p-0 focus:ring-0 appearance-none">
+                                                    <button type="button" onclick="changeCardQuantity('{{ order.id }}', 1)"
+                                                        class="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] text-white flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
+                                                        +
+                                                    </button>
+                                                    <span class="text-xs font-bold text-[#cca43b] px-1.5 uppercase">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span>
+                                                </div>
+                                                <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
+                                                {% else %}
                                                 <p class="font-black text-lg text-white mt-0.5">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</p>
+                                                {% endif %}
                                             </div>
 
                                             <!-- Total Item Price -->
-                                            <div class="text-right shrink-0">
+                                            <div class="text-right shrink-0 min-w-[70px]">
                                                 <p
                                                     class="text-[10px] uppercase font-bold tracking-widest text-white/40">
                                                     Subtotal</p>
@@ -840,7 +859,10 @@
             }
 
             function updateCardQuantity(orderId, quantity) {
-                const qty = parseInt(quantity) || 1;
+                let qty = parseInt(quantity) || 1;
+                if (qty < 1) qty = 1;
+                const input = document.getElementById(`qty-input-${orderId}`);
+                if (input) input.value = qty;
                 const card = document.getElementById(`order-card-${orderId}`);
                 if (!card) return;
 
@@ -849,11 +871,11 @@
 
                 // Update local UI subtotal instantly
                 const newSubtotal = qty * unitPrice;
-                subtotalText.textContent = newSubtotal.toFixed(0);
+                if (subtotalText) subtotalText.textContent = newSubtotal.toFixed(0);
 
                 recalculateCart();
 
-                // Debounced backend save endpoint fetch request
+                // Backend save endpoint fetch request
                 fetch(`/sales/market/orders/${orderId}/update-quantity/`, {
                     method: 'POST',
                     headers: {
@@ -864,7 +886,12 @@
                 })
                     .then(res => res.json())
                     .then(data => {
-                        if (!data.success) {
+                        if (data.success) {
+                            if (subtotalText && data.total_amount !== undefined) {
+                                subtotalText.textContent = Math.round(data.total_amount).toLocaleString();
+                            }
+                            recalculateCart();
+                        } else {
                             console.error("Failed to update database quantity: ", data.error);
                         }
                     })
