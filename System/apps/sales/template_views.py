@@ -490,7 +490,7 @@ def order_create(request):
 
 @login_required
 def order_status_update(request, order_id):
-    """Update order status"""
+    """Update order status and handle dispatch approvals"""
     access_response = _ensure_sales_owner(request)
     if access_response:
         return access_response
@@ -500,15 +500,48 @@ def order_status_update(request, order_id):
         status = request.POST.get('status')
         valid_statuses = [choice[0] for choice in SalesOrder.Status.choices]
         if status in valid_statuses:
+            prev_status = order.status
             order.status = status
             if status in [SalesOrder.Status.DELIVERED, SalesOrder.Status.COMPLETED] and not order.delivery_date:
                 order.delivery_date = datetime.date.today()
             order.save()
-            messages.success(request, f'Order "{order.order_number}" updated successfully!')
+
+            # Automatically synchronize Delivery dispatch record if delivery is requested
+            if status in [SalesOrder.Status.CONFIRMED, SalesOrder.Status.SHIPPED, SalesOrder.Status.PROCESSING] and (order.delivery_address or '').upper() != 'PICKUP':
+                delivery, created = Delivery.objects.get_or_create(
+                    order=order,
+                    defaults={
+                        'quantity_kg': order.quantity_kg,
+                        'delivery_location': order.delivery_address or (order.customer.address if order.customer else ''),
+                        'scheduled_date': datetime.date.today(),
+                        'status': Delivery.Status.SCHEDULED,
+                    }
+                )
+                if not created and delivery.status == Delivery.Status.PENDING:
+                    delivery.status = Delivery.Status.SCHEDULED
+                    delivery.save()
+
+            # Record audit trail in InputLog
+            is_approved = status in [SalesOrder.Status.CONFIRMED, SalesOrder.Status.SHIPPED]
+            action_type = InputLog.Action.ADDED if is_approved else InputLog.Action.UPDATED
+            cust_name = order.customer.name if order.customer else 'Customer'
+            action_tag = 'DISPATCH APPROVED' if status in [SalesOrder.Status.CONFIRMED, SalesOrder.Status.SHIPPED] else f'STATUS {status.upper()}'
+            InputLog.log(
+                user=request.user,
+                action=action_type,
+                module='Sales Orders',
+                target_entity=f'Order #{order.order_number}',
+                details=f'{action_tag}: Admin updated order #{order.order_number} for {cust_name} ({order.quantity_kg} kg) from {prev_status.upper()} to {status.upper()}'
+            )
+
+            messages.success(request, f'Order "{order.order_number}" updated to {order.get_status_display()} successfully!')
 
         if request.htmx:
             orders = SalesOrder.objects.select_related('customer', 'product').all()
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('sales:list')
 
 
