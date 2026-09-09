@@ -898,11 +898,16 @@
                     .catch(err => console.error("Network error updating quantity:", err));
             }
 
-            function showCustomConfirm(message, onConfirm) {
+            function showCustomConfirm(title, message, onConfirm) {
                 const modal = document.getElementById('custom-confirm-modal');
                 const box = document.getElementById('confirm-modal-box');
                 const yesBtn = document.getElementById('confirm-yes-btn');
                 const cancelBtn = document.getElementById('confirm-cancel-btn');
+                const titleEl = document.getElementById('confirm-modal-title');
+                const descEl = document.getElementById('confirm-modal-desc');
+
+                if (titleEl && title) titleEl.textContent = title;
+                if (descEl && message) descEl.textContent = message;
 
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -912,7 +917,7 @@
 
                 yesBtn.onclick = function () {
                     closeConfirm();
-                    onConfirm();
+                    if (typeof onConfirm === 'function') onConfirm();
                 };
 
                 cancelBtn.onclick = closeConfirm;
@@ -927,25 +932,7 @@
             }
 
             function confirmDeleteCard(orderId) {
-                const card = document.getElementById(`order-card-${orderId}`);
-                if (card) {
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.95)';
-                    card.style.transition = 'all 0.3s ease';
-                    setTimeout(() => {
-                        card.remove();
-                        recalculateCart();
-                    }, 300);
-                }
-                fetch(`/sales/market/orders/${orderId}/delete/`);
-            }
-
-            function removeAllSelected() {
-                const checkboxes = document.querySelectorAll('.order-checkbox:checked');
-                if (checkboxes.length === 0) return;
-
-                checkboxes.forEach(chk => {
-                    const orderId = chk.value;
+                showCustomConfirm("Remove Item?", "Are you sure you want to remove this item from your cart?", function () {
                     const card = document.getElementById(`order-card-${orderId}`);
                     if (card) {
                         card.style.opacity = '0';
@@ -954,9 +941,39 @@
                         setTimeout(() => {
                             card.remove();
                             recalculateCart();
+                            const remaining = document.querySelectorAll('.order-item-card');
+                            if (remaining.length === 0) {
+                                window.location.reload();
+                            }
                         }, 300);
                     }
                     fetch(`/sales/market/orders/${orderId}/delete/`);
+                });
+            }
+
+            function removeAllSelected() {
+                const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+                if (checkboxes.length === 0) return;
+
+                showCustomConfirm("Remove Selected?", `Are you sure you want to remove ${checkboxes.length} selected item(s) from your cart?`, function () {
+                    checkboxes.forEach(chk => {
+                        const orderId = chk.value;
+                        const card = document.getElementById(`order-card-${orderId}`);
+                        if (card) {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.95)';
+                            card.style.transition = 'all 0.3s ease';
+                            setTimeout(() => {
+                                card.remove();
+                                recalculateCart();
+                                const remaining = document.querySelectorAll('.order-item-card');
+                                if (remaining.length === 0) {
+                                    window.location.reload();
+                                }
+                            }, 300);
+                        }
+                        fetch(`/sales/market/orders/${orderId}/delete/`);
+                    });
                 });
             }
 
@@ -1751,8 +1768,8 @@
             class="w-16 h-16 bg-[#cca43b]/10 border border-[#cca43b]/30 text-[#cca43b] rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
             ⚠️
         </div>
-        <h4 class="text-2xl font-black text-white uppercase tracking-wider mb-2">Remove Items?</h4>
-        <p class="text-[#a0ac96] text-sm leading-relaxed mb-8">Are you sure you want to remove the selected items from
+        <h4 id="confirm-modal-title" class="text-2xl font-black text-white uppercase tracking-wider mb-2">Remove Items?</h4>
+        <p id="confirm-modal-desc" class="text-[#a0ac96] text-sm leading-relaxed mb-8">Are you sure you want to remove the selected items from
             your cart?</p>
         <div class="flex gap-4">
             <button id="confirm-cancel-btn"
