@@ -506,7 +506,7 @@
                                         <div class="space-y-2">
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Municipality / City</label>
                                             <div class="relative">
-                                                <select id="checkout-city-select" onchange="updateBarangays()"
+                                                <select id="checkout-city-select" onchange="updateBarangays(null, null, true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="Silay City" class="bg-[#01140e] text-white py-2" selected>Silay City</option>
                                                     <option value="Talisay City" class="bg-[#01140e] text-white py-2">Talisay City</option>
@@ -524,7 +524,7 @@
                                         <div class="space-y-2">
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Barangay</label>
                                             <div class="relative">
-                                                <select id="checkout-barangay-select" onchange="updateStreets()"
+                                                <select id="checkout-barangay-select" onchange="updateStreets(null, true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="" class="bg-[#01140e] text-white">Select Barangay</option>
                                                 </select>
@@ -536,7 +536,7 @@
                                         <div class="space-y-2">
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Street / Purok / Road</label>
                                             <div class="relative">
-                                                <select id="checkout-street-select" onchange="onStreetSelectChange()"
+                                                <select id="checkout-street-select" onchange="onStreetSelectChange(true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="" class="bg-[#01140e] text-white">Select Street / Purok</option>
                                                 </select>
@@ -1121,8 +1121,11 @@
                 const establishmentLat = 10.815194;
                 const establishmentLng = 122.961972;
 
-                const defaultLat = allPickup ? establishmentLat : (parseFloat('{{ customer.map_latitude|default:"10.8000" }}') || 10.8000);
-                const defaultLng = allPickup ? establishmentLng : (parseFloat('{{ customer.map_longitude|default:"122.9700" }}') || 122.9700);
+                const inputLat = parseFloat(document.getElementById('checkout-latitude')?.value);
+                const inputLng = parseFloat(document.getElementById('checkout-longitude')?.value);
+
+                const defaultLat = allPickup ? establishmentLat : (Number.isFinite(inputLat) && inputLat !== 0 ? inputLat : (parseFloat('{{ customer.map_latitude|default:"10.8000" }}') || 10.8000));
+                const defaultLng = allPickup ? establishmentLng : (Number.isFinite(inputLng) && inputLng !== 0 ? inputLng : (parseFloat('{{ customer.map_longitude|default:"122.9700" }}') || 122.9700));
 
                 // Custom green marker icon
                 const greenIcon = L.icon({
@@ -2087,7 +2090,7 @@
         }
     };
 
-    function updateBarangays(selectedBrgyToSet = null, selectedStreetToSet = null) {
+    function updateBarangays(selectedBrgyToSet = null, selectedStreetToSet = null, shouldGeocode = false) {
         const citySelect = document.getElementById('checkout-city-select');
         const brgySelect = document.getElementById('checkout-barangay-select');
         if (!citySelect || !brgySelect) return;
@@ -2114,10 +2117,10 @@
             }
         }
 
-        updateStreets(selectedStreetToSet);
+        updateStreets(selectedStreetToSet, shouldGeocode);
     }
 
-    function updateStreets(selectedStreetToSet = null) {
+    function updateStreets(selectedStreetToSet = null, shouldGeocode = false) {
         const citySelect = document.getElementById('checkout-city-select');
         const brgySelect = document.getElementById('checkout-barangay-select');
         const streetSelect = document.getElementById('checkout-street-select');
@@ -2158,10 +2161,10 @@
             }
         }
 
-        onStreetSelectChange();
+        onStreetSelectChange(shouldGeocode);
     }
 
-    function onStreetSelectChange() {
+    function onStreetSelectChange(shouldGeocode = false) {
         const streetSelect = document.getElementById('checkout-street-select');
         const customInput = document.getElementById('checkout-custom-street-input');
         if (streetSelect && customInput) {
@@ -2171,7 +2174,7 @@
                 customInput.classList.add('hidden');
             }
         }
-        combineAddressFields(true);
+        combineAddressFields(shouldGeocode);
         if (typeof recalculateCart === 'function') {
             recalculateCart();
         }
@@ -2217,7 +2220,7 @@
                     fallback = specificBrgyCoords[city][brgy];
                 }
 
-                // Immediately move map view & marker to the chosen barangay / municipality coordinates
+                // Move map view & marker when manually picking from dropdowns
                 checkoutMap.setView([fallback.lat, fallback.lng], 16);
                 checkoutMarker.setLatLng([fallback.lat, fallback.lng]);
                 document.getElementById('checkout-latitude').value = fallback.lat.toFixed(6);
@@ -2272,6 +2275,13 @@
         const lngInput = document.getElementById('checkout-longitude');
         if (latInput) latInput.value = Number(lat).toFixed(6);
         if (lngInput) lngInput.value = Number(lng).toFixed(6);
+
+        if (checkoutMarker) {
+            checkoutMarker.setLatLng([lat, lng]);
+        }
+        if (checkoutMap) {
+            checkoutMap.setView([lat, lng], 17);
+        }
 
         if (sourceLabel && pinDisplay) {
             pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} (${sourceLabel})`;
@@ -2368,8 +2378,8 @@
                 const road = addr.road || addr.pedestrian || addr.path || addr.street || '';
                 const detectedStreet = road;
 
-                // 4. Update Dropdowns and Fields
-                updateBarangays(detectedBrgy, detectedStreet);
+                // 4. Update Dropdowns and Fields without resetting map pin
+                updateBarangays(detectedBrgy, detectedStreet, false);
 
                 // 5. House / Landmark / Building
                 const houseNo = addr.house_number || '';
@@ -2385,6 +2395,11 @@
                 }
 
                 combineAddressFields(false);
+
+                // Re-enforce exact coordinates on inputs & display
+                if (latInput) latInput.value = Number(lat).toFixed(6);
+                if (lngInput) lngInput.value = Number(lng).toFixed(6);
+                if (checkoutMarker) checkoutMarker.setLatLng([lat, lng]);
 
                 if (pinDisplay) {
                     const label = sourceLabel ? ` (${sourceLabel})` : ` (${detectedBrgy || activeCity})`;
