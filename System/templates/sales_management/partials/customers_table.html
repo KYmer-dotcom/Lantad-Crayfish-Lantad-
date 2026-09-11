@@ -122,6 +122,9 @@
                                         </td>
                                         <td class="px-4 py-3 text-stone-300">{{ order.notes|default:"-" }}</td>
                                         <td class="px-4 py-3 whitespace-nowrap text-xs">
+                                            {% if order.status == 'shipped' or order.status == 'delivered' or order.status == 'completed' %}
+                                                <span class="text-stone-500 text-[11px] font-mono italic">Deployed</span>
+                                            {% else %}
                                             <div class="flex items-center gap-2">
                                                 {% if order.status == 'pending' %}
                                                 <form method="POST" action="{% url 'sales:order_status_update' order.id %}" class="inline" onclick="event.stopPropagation();">
@@ -155,6 +158,7 @@
                                                     </button>
                                                 </form>
                                             </div>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% empty %}
