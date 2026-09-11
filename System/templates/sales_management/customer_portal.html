@@ -301,13 +301,7 @@
         <div class="flex-1 max-w-6xl mx-auto w-full py-8 px-4 sm:px-6">
             <!-- Stepper Progress Bar -->
             <div class="mb-10 max-w-xl mx-auto">
-                <div id="stepper-container" class="relative flex items-center justify-between">
-                    <!-- Progress Line -->
-                    <div class="absolute left-8 right-8 top-5 h-0.5 bg-white/10 z-0"></div>
-                    <div id="stepper-line"
-                        class="absolute left-8 top-5 h-0.5 bg-[#cca43b] transition-all duration-500 z-0"
-                        style="width: 0%;"></div>
-
+                <div id="stepper-container" class="relative flex items-start justify-between">
                     <!-- Step 1: Cart -->
                     <div class="relative z-10 flex flex-col items-center">
                         <div id="step-cart-circle"
@@ -318,6 +312,12 @@
                             class="text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2 transition-colors">Cart</span>
                     </div>
 
+                    <!-- Line 1-2 -->
+                    <div class="flex-1 h-0.5 mx-3 mt-5 bg-white/10 relative overflow-hidden rounded-full">
+                        <div id="stepper-line-1"
+                            class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
+                    </div>
+
                     <!-- Step 2: Address -->
                     <div class="relative z-10 flex flex-col items-center">
                         <div id="step-address-circle"
@@ -326,6 +326,12 @@
                         </div>
                         <span id="step-address-label"
                             class="text-xs font-bold uppercase tracking-wider text-white/40 mt-2 transition-colors">Address</span>
+                    </div>
+
+                    <!-- Line 2-3 -->
+                    <div class="flex-1 h-0.5 mx-3 mt-5 bg-white/10 relative overflow-hidden rounded-full">
+                        <div id="stepper-line-2"
+                            class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
                     </div>
 
                     <!-- Step 3: Payment -->
@@ -1067,7 +1073,8 @@
                 const paymentNum = document.getElementById('step-payment-circle');
                 const paymentLabel = document.getElementById('step-payment-label');
 
-                const stepperLine = document.getElementById('stepper-line');
+                const line1 = document.getElementById('stepper-line-1');
+                const line2 = document.getElementById('stepper-line-2');
 
                 // Active vs Inactive classes
                 const activeCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm shadow-[0_0_15px_rgba(204,164,59,0.4)] transition-all';
@@ -1093,13 +1100,15 @@
                 if (step === 1) {
                     if (stepCartNum) stepCartNum.className = activeCircleClass;
                     if (stepCartLabel) stepCartLabel.className = activeLabelClass;
-                    if (stepperLine) stepperLine.style.width = '0%';
+                    if (line1) line1.style.width = '0%';
+                    if (line2) line2.style.width = '0%';
                 } else if (step === 2) {
                     if (stepCartNum) stepCartNum.className = activeCircleClass;
                     if (stepCartLabel) stepCartLabel.className = activeLabelClass;
                     if (stepAddressNum) stepAddressNum.className = activeCircleClass;
                     if (stepAddressLabel) stepAddressLabel.className = activeLabelClass;
-                    if (stepperLine) stepperLine.style.width = '50%';
+                    if (line1) line1.style.width = '100%';
+                    if (line2) line2.style.width = '0%';
                 } else if (step === 3) {
                     if (stepCartNum) stepCartNum.className = activeCircleClass;
                     if (stepCartLabel) stepCartLabel.className = activeLabelClass;
@@ -1107,7 +1116,8 @@
                     if (stepAddressLabel) stepAddressLabel.className = activeLabelClass;
                     if (paymentNum) paymentNum.className = activeCircleClass;
                     if (paymentLabel) paymentLabel.className = activeLabelClass;
-                    if (stepperLine) stepperLine.style.width = '100%';
+                    if (line1) line1.style.width = '100%';
+                    if (line2) line2.style.width = '100%';
                 }
             }
 
@@ -1387,10 +1397,10 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.success && data.redirect_url) {
-                            const stepperLine = document.getElementById('stepper-line');
-                            if (stepperLine) {
-                                stepperLine.style.width = '100%';
-                            }
+                            const line1 = document.getElementById('stepper-line-1');
+                            const line2 = document.getElementById('stepper-line-2');
+                            if (line1) line1.style.width = '100%';
+                            if (line2) line2.style.width = '100%';
 
                             if (data.is_gateway) {
                                 window.location.href = data.redirect_url;
