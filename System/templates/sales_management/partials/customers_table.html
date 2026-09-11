@@ -53,12 +53,16 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                     <div class="flex items-center gap-2">
                         {% with latest_order=customer.orders.first %}
-                            {% if latest_order and latest_order.status == 'pending' %}
-                            <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}" class="inline" onclick="event.stopPropagation();">
-                                {% csrf_token %}
-                                <input type="hidden" name="status" value="confirmed">
-                                <button type="submit" class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
-                            </form>
+                            {% if latest_order %}
+                                {% if latest_order.status == 'pending' %}
+                                <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}" class="inline" onclick="event.stopPropagation();">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="confirmed">
+                                    <button type="submit" class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
+                                </form>
+                                {% else %}
+                                <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-black uppercase">Approved</span>
+                                {% endif %}
                             {% endif %}
                         {% endwith %}
                         <form method="POST" action="{% url 'sales:customer_delete' customer.id %}" class="inline" onclick="event.stopPropagation();">
@@ -88,7 +92,6 @@
                                         <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Delivery Address</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Status</th>
                                         <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Payment Method</th>
-                                        <th class="px-4 py-3 text-left text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-white/5 text-xs text-stone-300">
@@ -121,49 +124,10 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-stone-300">{{ order.notes|default:"-" }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-xs">
-                                            {% if order.status == 'shipped' or order.status == 'delivered' or order.status == 'completed' %}
-                                                <span class="text-stone-500 text-[11px] font-mono italic">Deployed</span>
-                                            {% else %}
-                                            <div class="flex items-center gap-2">
-                                                {% if order.status == 'pending' %}
-                                                <form method="POST" action="{% url 'sales:order_status_update' order.id %}" class="inline" onclick="event.stopPropagation();">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="status" value="confirmed">
-                                                    <button type="submit" class="px-2 py-0.5 rounded bg-[#cca43b]/20 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] border border-[#cca43b]/40 font-black text-[10px] uppercase transition-all cursor-pointer">
-                                                        Approve
-                                                    </button>
-                                                </form>
-                                                {% endif %}
-
-                                                <!-- Status Select Dropdown -->
-                                                <form method="POST" action="{% url 'sales:order_status_update' order.id %}" class="inline" onclick="event.stopPropagation();">
-                                                    {% csrf_token %}
-                                                    <select name="status" onchange="this.form.submit()" class="bg-black/60 border border-white/10 hover:border-[#cca43b]/40 text-stone-200 text-[10px] font-bold rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
-                                                        <option value="" disabled selected>Status ▾</option>
-                                                        <option value="pending" class="bg-[#01140e]">Pending</option>
-                                                        <option value="confirmed" class="bg-[#01140e]">Confirmed</option>
-                                                        <option value="shipped" class="bg-[#01140e]">Shipped (Dispatch)</option>
-                                                        <option value="delivered" class="bg-[#01140e]">Delivered</option>
-                                                        <option value="completed" class="bg-[#01140e]">Completed</option>
-                                                        <option value="cancelled" class="bg-[#01140e]">Cancelled</option>
-                                                    </select>
-                                                </form>
-
-                                                <!-- Delete Single Order -->
-                                                <form method="POST" action="{% url 'sales:order_delete' order.id %}" class="inline" onclick="event.stopPropagation();">
-                                                    {% csrf_token %}
-                                                    <button type="button" onclick="confirmDelete(event, 'Are you sure you want to delete order #{{ order.order_number }} ({{ order.product.name|default:'Product'|escapejs }})?', 'Delete Order #{{ order.order_number }}?')" class="text-rose-400 hover:text-rose-300 text-[11px] font-bold px-1 transition-colors cursor-pointer" title="Delete Order">
-                                                        ✕
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            {% endif %}
-                                        </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="9" class="px-4 py-6 text-center text-stone-500">No orders registered for this customer.</td>
+                                        <td colspan="8" class="px-4 py-6 text-center text-stone-500">No orders registered for this customer.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
