@@ -294,43 +294,46 @@
             <h3 class="text-4xl font-black text-white uppercase tracking-wider">Market is Closed</h3>
             <p class="text-[#a0ac96] mt-4 max-w-md mx-auto">There are no products available for sale at the moment.
                 Please check back later.</p>
-        </div>
-        {% endif %}
-
-        {% elif active_page == 'cart' %}
+              {% elif active_page == 'cart' %}
         <div class="flex-1 max-w-6xl mx-auto w-full py-8 px-4 sm:px-6">
             <!-- Stepper Progress Bar -->
-            <div class="mb-12 max-w-2xl mx-auto">
-                <div id="stepper-container" class="flex items-center justify-between relative h-10">
+            <div class="mb-10 max-w-xl mx-auto">
+                <div id="stepper-container" class="relative flex items-center justify-between">
                     <!-- Progress Line -->
-                    <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-white/10 z-0"></div>
+                    <div class="absolute left-8 right-8 top-5 h-0.5 bg-white/10 z-0"></div>
                     <div id="stepper-line"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-[#cca43b] transition-all duration-500 z-0"
+                        class="absolute left-8 top-5 h-0.5 bg-[#cca43b] transition-all duration-500 z-0"
                         style="width: 0%;"></div>
 
                     <!-- Step 1: Cart -->
-                    <div id="step-cart-circle"
-                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(204,164,59,0.4)]">
-                        1</div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-cart-circle"
+                            class="w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm shadow-[0_0_15px_rgba(204,164,59,0.4)] transition-all">
+                            1
+                        </div>
+                        <span id="step-cart-label"
+                            class="text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2 transition-colors">Cart</span>
+                    </div>
 
                     <!-- Step 2: Address -->
-                    <div id="step-address-circle"
-                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40">
-                        2</div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-address-circle"
+                            class="w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 text-sm transition-all">
+                            2
+                        </div>
+                        <span id="step-address-label"
+                            class="text-xs font-bold uppercase tracking-wider text-white/40 mt-2 transition-colors">Address</span>
+                    </div>
 
                     <!-- Step 3: Payment -->
-                    <div id="step-payment-circle"
-                        class="relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40">
-                        3</div>
-                </div>
-
-                <div class="flex justify-between mt-2 px-1">
-                    <span id="step-cart-label"
-                        class="text-xs font-black uppercase tracking-wider text-[#cca43b] w-12 text-center -ml-1">Cart</span>
-                    <span id="step-address-label"
-                        class="text-xs font-bold uppercase tracking-wider text-white/40 w-16 text-center">Address</span>
-                    <span id="step-payment-label"
-                        class="text-xs font-bold uppercase tracking-wider text-white/40 w-16 text-center -mr-3">Payment</span>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-payment-circle"
+                            class="w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 text-sm transition-all">
+                            3
+                        </div>
+                        <span id="step-payment-label"
+                            class="text-xs font-bold uppercase tracking-wider text-white/40 mt-2 transition-colors">Payment</span>
+                    </div>
                 </div>
             </div>
 
@@ -349,16 +352,14 @@
                                     <input type="checkbox" id="select-all-checkbox" checked
                                         onchange="toggleSelectAll(this)" class="sr-only peer">
                                     <div
-                                        class="w-6 h-6 border-2 border-white/20 rounded-md bg-transparent peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-sm after:hidden peer-checked:after:block">
+                                        class="w-6 h-6 border-2 border-white/20 rounded-lg bg-black/40 peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-xs after:hidden peer-checked:after:block">
                                     </div>
                                 </label>
-                                <span id="items-selected-count" class="text-sm font-bold text-white/80">0/0 items
-                                    selected</span>
+                                <span id="items-selected-count" class="text-xs font-bold uppercase tracking-wider text-stone-300">0/0 items selected</span>
                             </div>
-                            <div class="flex items-center gap-4 text-xs font-bold text-[#a0ac96]">
-                                <button onclick="removeAllSelected()"
-                                    class="hover:text-rose-400 transition-colors uppercase tracking-wider">Remove
-                                    Selected</button>
+                            <div class="flex items-center gap-4 text-xs font-black uppercase tracking-wider">
+                                <button type="button" onclick="removeAllSelected()"
+                                    class="text-[#a0ac96] hover:text-rose-400 transition-colors cursor-pointer">Remove Selected</button>
                             </div>
                         </div>
 
@@ -366,99 +367,95 @@
                         <div class="space-y-4">
                             {% for order in orders %}
                             <div id="order-card-{{ order.id }}" data-delivery-address="{{ order.delivery_address }}"
-                                class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-5 flex items-center gap-4 relative group hover:border-[#cca43b]/40 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+                                class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/85 backdrop-blur-md p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative group hover:border-[#cca43b]/40 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
 
-                                <!-- Custom Checkbox -->
-                                {% if order.status == 'pending' %}
-                                <label class="relative flex items-center cursor-pointer pl-2">
-                                    <input type="checkbox" value="{{ order.id }}" checked onchange="recalculateCart()"
-                                        class="sr-only peer order-checkbox">
-                                    <div
-                                        class="w-6 h-6 border-2 border-white/20 rounded-md bg-transparent peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-sm after:hidden peer-checked:after:block">
+                                <div class="flex items-center gap-4 flex-1 min-w-0 pr-8 sm:pr-0">
+                                    <!-- Custom Checkbox -->
+                                    {% if order.status == 'pending' %}
+                                    <label class="relative flex items-center cursor-pointer flex-shrink-0">
+                                        <input type="checkbox" value="{{ order.id }}" checked onchange="recalculateCart()"
+                                            class="sr-only peer order-checkbox">
+                                        <div
+                                            class="w-6 h-6 border-2 border-white/20 rounded-lg bg-black/40 peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-xs after:hidden peer-checked:after:block">
+                                        </div>
+                                    </label>
+                                    {% else %}
+                                    <div class="flex-shrink-0">
+                                        <div
+                                            class="w-6 h-6 rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 flex items-center justify-center text-xs text-[#cca43b]">
+                                            🔒</div>
                                     </div>
-                                </label>
-                                {% else %}
-                                <div class="pl-2">
+                                    {% endif %}
+
+                                    <!-- Product Thumbnail Image -->
                                     <div
-                                        class="w-6 h-6 rounded-md bg-[#cca43b]/10 border border-[#cca43b]/30 flex items-center justify-center text-xs text-[#cca43b]">
-                                        🔒</div>
-                                </div>
-                                {% endif %}
+                                        class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 relative shadow-inner">
+                                        <img src="{% if 'Superworm' in order.product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in order.product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                                            alt="{{ order.product.name }}" class="w-full h-full object-cover">
+                                    </div>
 
-                                <!-- Product Thumbnail Image -->
-                                <div
-                                    class="w-20 h-20 rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 flex items-center justify-center relative">
-                                    <img src="{% if 'Superworm' in order.product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in order.product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
-                                        alt="{{ order.product.name }}" class="w-full h-full object-cover">
-                                </div>
-
-                                <!-- Card Body -->
-                                <div class="flex-1 min-w-0 pr-6">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div>
-                                            <p class="font-bold text-xl text-white truncate">{{ order.product.name }}
-                                            </p>
-                                            <div class="flex items-center gap-3 mt-1.5 flex-wrap">
-                                                <span
-                                                    class="text-[9px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-md">{{ order.get_status_display }}</span>
-                                                {% if order.delivery_address|upper == "PICKUP" %}
-                                                <span
-                                                    class="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">🏪
-                                                    Pickup</span>
-                                                {% else %}
-                                                <span
-                                                    class="text-[9px] font-black uppercase tracking-wider text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-md">🚚
-                                                    Delivery</span>
-                                                {% endif %}
-                                            </div>
+                                    <!-- Product Details -->
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-black text-lg sm:text-xl text-white truncate tracking-tight">{{ order.product.name }}</h4>
+                                        <div class="flex items-center gap-2 mt-2 flex-wrap">
+                                            <span
+                                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
+                                            {% if order.delivery_address|upper == "PICKUP" %}
+                                            <span
+                                                class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🏪 Pickup</span>
+                                            {% else %}
+                                            <span
+                                                class="text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🚚 Delivery</span>
+                                            {% endif %}
                                         </div>
+                                    </div>
+                                </div>
 
-                                        <div class="flex items-center gap-4 sm:gap-6 flex-wrap sm:flex-nowrap justify-end">
-                                            <!-- Interactive Quantity Stepper -->
-                                            <div class="text-right shrink-0">
-                                                <p
-                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40 mb-1">
-                                                    Quantity</p>
-                                                {% if order.status == 'pending' %}
-                                                <div class="flex items-center bg-black/50 border border-white/20 rounded-xl p-1 shadow-inner">
-                                                    <button type="button" onclick="changeCardQuantity('{{ order.id }}', -1)"
-                                                        class="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] text-white flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
-                                                        -
-                                                    </button>
-                                                    <input type="number" id="qty-input-{{ order.id }}" value="{{ order.quantity_kg|floatformat:0 }}"
-                                                        min="1" max="9999" step="1"
-                                                        onchange="updateCardQuantity('{{ order.id }}', this.value)"
-                                                        class="w-12 text-center bg-transparent border-none text-white font-black text-base focus:outline-none p-0 focus:ring-0 appearance-none">
-                                                    <button type="button" onclick="changeCardQuantity('{{ order.id }}', 1)"
-                                                        class="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] text-white flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
-                                                        +
-                                                    </button>
-                                                    <span class="text-xs font-bold text-[#cca43b] px-1.5 uppercase">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span>
-                                                </div>
-                                                <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
-                                                {% else %}
-                                                <p class="font-black text-lg text-white mt-0.5">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</p>
-                                                {% endif %}
+                                <!-- Quantity & Subtotal Controls -->
+                                <div class="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-white/5">
+                                    <!-- Interactive Quantity Stepper -->
+                                    <div class="text-left sm:text-right shrink-0">
+                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5">Quantity</p>
+                                        {% if order.status == 'pending' %}
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 shadow-inner transition-colors">
+                                                <button type="button" onclick="changeCardQuantity('{{ order.id }}', -1)"
+                                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#cca43b] hover:text-[#01140e] text-stone-200 flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
+                                                    -
+                                                </button>
+                                                <input type="number" id="qty-input-{{ order.id }}" value="{{ order.quantity_kg|floatformat:0 }}"
+                                                    min="1" max="9999" step="1"
+                                                    onchange="updateCardQuantity('{{ order.id }}', this.value)"
+                                                    class="w-10 text-center bg-transparent border-none text-white font-black text-sm focus:outline-none p-0 focus:ring-0 appearance-none">
+                                                <button type="button" onclick="changeCardQuantity('{{ order.id }}', 1)"
+                                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#cca43b] hover:text-[#01140e] text-stone-200 flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
+                                                    +
+                                                </button>
                                             </div>
-
-                                            <!-- Total Item Price -->
-                                            <div class="text-right shrink-0 min-w-[70px]">
-                                                <p
-                                                    class="text-[10px] uppercase font-bold tracking-widest text-white/40">
-                                                    Subtotal</p>
-                                                <p class="font-black text-xl text-white mt-0.5">₱<span
-                                                        id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span></p>
-                                            </div>
+                                            <span class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-1.5 rounded-lg">
+                                                {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}
+                                            </span>
                                         </div>
+                                        <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
+                                        {% else %}
+                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Total Item Price -->
+                                    <div class="text-right shrink-0 min-w-[90px]">
+                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5">Subtotal</p>
+                                        <p class="font-black text-xl text-white font-mono tracking-tight flex items-baseline justify-end gap-0.5">
+                                            <span class="text-sm font-bold text-[#cca43b]">₱</span><span id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
+                                        </p>
                                     </div>
                                 </div>
 
                                 <!-- Remove / Delete Card button -->
                                 {% if order.status == 'pending' %}
                                 <button type="button" onclick="confirmDeleteCard('{{ order.id }}')"
-                                    class="absolute top-4 right-4 text-white/30 hover:text-rose-500 transition-colors focus:outline-none">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                        stroke-width="2">
+                                    class="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/5 hover:bg-rose-500/20 text-stone-400 hover:text-rose-400 flex items-center justify-center transition-all focus:outline-none cursor-pointer" title="Remove Item">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -1068,11 +1065,11 @@
                 const stepperLine = document.getElementById('stepper-line');
 
                 // Active vs Inactive classes
-                const activeCircleClass = 'relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(204,164,59,0.4)]';
-                const inactiveCircleClass = 'relative z-10 w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 shadow-none';
+                const activeCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm shadow-[0_0_15px_rgba(204,164,59,0.4)] transition-all';
+                const inactiveCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 text-sm transition-all';
 
-                const activeLabelClass = 'text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2';
-                const inactiveLabelClass = 'text-xs font-bold uppercase tracking-wider text-white/40 mt-2';
+                const activeLabelClass = 'text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2 transition-colors';
+                const inactiveLabelClass = 'text-xs font-bold uppercase tracking-wider text-white/40 mt-2 transition-colors';
 
                 // Default all to inactive
                 if (stepCartNum) stepCartNum.className = inactiveCircleClass;
