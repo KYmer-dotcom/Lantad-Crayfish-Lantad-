@@ -415,10 +415,10 @@
                                 </div>
 
                                 <!-- Quantity & Subtotal Controls -->
-                                <div class="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-white/5">
+                                <div class="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto pt-3 sm:pt-0 sm:pr-8 border-t sm:border-t-0 border-white/5">
                                     <!-- Interactive Quantity Stepper -->
-                                    <div class="text-left sm:text-right shrink-0">
-                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5">Quantity</p>
+                                    <div class="flex flex-col items-center shrink-0">
+                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-center w-full">Quantity</p>
                                         {% if order.status == 'pending' %}
                                         <div class="flex items-center gap-2">
                                             <div class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 shadow-inner transition-colors">
@@ -435,7 +435,7 @@
                                                     +
                                                 </button>
                                             </div>
-                                            <span class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-1.5 rounded-lg">
+                                            <span class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
                                                 {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}
                                             </span>
                                         </div>
@@ -446,11 +446,13 @@
                                     </div>
 
                                     <!-- Total Item Price -->
-                                    <div class="text-right shrink-0 min-w-[90px]">
-                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5">Subtotal</p>
-                                        <p class="font-black text-xl text-white font-mono tracking-tight flex items-baseline justify-end gap-0.5">
-                                            <span class="text-sm font-bold text-[#cca43b]">₱</span><span id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
-                                        </p>
+                                    <div class="flex flex-col items-end shrink-0 min-w-[85px]">
+                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-right w-full">Subtotal</p>
+                                        <div class="h-[38px] flex items-center justify-end">
+                                            <p class="font-black text-xl sm:text-2xl text-white font-mono tracking-tight flex items-baseline justify-end gap-1">
+                                                <span class="text-sm font-bold text-[#cca43b]">₱</span><span id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
