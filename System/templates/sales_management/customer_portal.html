@@ -1180,18 +1180,18 @@
 
                         checkoutMarker.on('dragend', function () {
                             const pos = checkoutMarker.getLatLng();
-                            document.getElementById('checkout-latitude').value = pos.lat.toFixed(6);
-                            document.getElementById('checkout-longitude').value = pos.lng.toFixed(6);
-                            updatePinDisplay(pos.lat, pos.lng);
+                            if (typeof reverseGeocodeToAddress === 'function') {
+                                reverseGeocodeToAddress(pos.lat, pos.lng);
+                            }
                         });
 
                         checkoutMap.on('click', function (e) {
                             const lat = e.latlng.lat;
                             const lng = e.latlng.lng;
                             checkoutMarker.setLatLng([lat, lng]);
-                            document.getElementById('checkout-latitude').value = lat.toFixed(6);
-                            document.getElementById('checkout-longitude').value = lng.toFixed(6);
-                            updatePinDisplay(lat, lng);
+                            if (typeof reverseGeocodeToAddress === 'function') {
+                                reverseGeocodeToAddress(lat, lng);
+                            }
                         });
                     }
                     checkoutMap.invalidateSize();
@@ -1227,18 +1227,18 @@
                 } else {
                     checkoutMarker.on('dragend', function () {
                         const pos = checkoutMarker.getLatLng();
-                        document.getElementById('checkout-latitude').value = pos.lat.toFixed(6);
-                        document.getElementById('checkout-longitude').value = pos.lng.toFixed(6);
-                        updatePinDisplay(pos.lat, pos.lng);
+                        if (typeof reverseGeocodeToAddress === 'function') {
+                            reverseGeocodeToAddress(pos.lat, pos.lng);
+                        }
                     });
 
                     checkoutMap.on('click', function (e) {
                         const lat = e.latlng.lat;
                         const lng = e.latlng.lng;
                         checkoutMarker.setLatLng([lat, lng]);
-                        document.getElementById('checkout-latitude').value = lat.toFixed(6);
-                        document.getElementById('checkout-longitude').value = lng.toFixed(6);
-                        updatePinDisplay(lat, lng);
+                        if (typeof reverseGeocodeToAddress === 'function') {
+                            reverseGeocodeToAddress(lat, lng);
+                        }
                     });
                 }
             }
@@ -2249,6 +2249,159 @@
         }
     }
 
+    function findClosestBrgy(city, lat, lng) {
+        if (!specificBrgyCoords || !specificBrgyCoords[city]) return null;
+        let closestBrgy = null;
+        let minDistance = Infinity;
+        for (const [brgy, coords] of Object.entries(specificBrgyCoords[city])) {
+            const dLat = coords.lat - lat;
+            const dLng = coords.lng - lng;
+            const dist = dLat * dLat + dLng * dLng;
+            if (dist < minDistance) {
+                minDistance = dist;
+                closestBrgy = brgy;
+            }
+        }
+        return closestBrgy;
+    }
+
+    let reverseGeocodeAbortController = null;
+    function reverseGeocodeToAddress(lat, lng, sourceLabel = null) {
+        const pinDisplay = document.getElementById('pin-coords-display');
+        const latInput = document.getElementById('checkout-latitude');
+        const lngInput = document.getElementById('checkout-longitude');
+        if (latInput) latInput.value = Number(lat).toFixed(6);
+        if (lngInput) lngInput.value = Number(lng).toFixed(6);
+
+        if (sourceLabel && pinDisplay) {
+            pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} (${sourceLabel})`;
+        } else if (pinDisplay) {
+            pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+        }
+
+        if (reverseGeocodeAbortController) {
+            reverseGeocodeAbortController.abort();
+        }
+        reverseGeocodeAbortController = new AbortController();
+
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`, {
+            signal: reverseGeocodeAbortController.signal
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.address) return;
+                const addr = data.address;
+                const fullText = (data.display_name || '').toLowerCase();
+
+                // 1. Determine City / Municipality
+                const rawCity = (addr.city || addr.town || addr.municipality || addr.county || '').toLowerCase();
+                let detectedCity = null;
+
+                if (rawCity.includes('talisay') || fullText.includes('talisay')) {
+                    detectedCity = 'Talisay City';
+                } else if (rawCity.includes('bacolod') || fullText.includes('bacolod')) {
+                    detectedCity = 'Bacolod City';
+                } else if (rawCity.includes('silay') || fullText.includes('silay')) {
+                    detectedCity = 'Silay City';
+                } else {
+                    // Geometric distance fallback
+                    const dSilay = Math.hypot(10.7999 - lat, 122.9777 - lng);
+                    const dTalisay = Math.hypot(10.7410 - lat, 122.9660 - lng);
+                    const dBacolod = Math.hypot(10.6765 - lat, 122.9509 - lng);
+                    if (dTalisay <= dSilay && dTalisay <= dBacolod) {
+                        detectedCity = 'Talisay City';
+                    } else if (dBacolod <= dSilay && dBacolod <= dTalisay) {
+                        detectedCity = 'Bacolod City';
+                    } else {
+                        detectedCity = 'Silay City';
+                    }
+                }
+
+                const citySelect = document.getElementById('checkout-city-select');
+                if (citySelect && detectedCity) {
+                    citySelect.value = detectedCity;
+                }
+
+                const activeCity = (citySelect && citySelect.value) ? citySelect.value : (detectedCity || 'Silay City');
+
+                // 2. Determine Barangay
+                const cityData = citiesAndMunicipalities[activeCity];
+                const brgys = cityData ? cityData.barangays : [];
+                let detectedBrgy = null;
+
+                const brgyCandidates = [
+                    addr.village, addr.suburb, addr.neighbourhood, addr.quarter,
+                    addr.residential, addr.city_district, addr.hamlet
+                ].filter(Boolean).map(s => s.toLowerCase());
+
+                // Match candidate against known barangays
+                for (const candidate of brgyCandidates) {
+                    for (const b of brgys) {
+                        const bLower = b.toLowerCase();
+                        if (candidate.includes(bLower) || bLower.includes(candidate) ||
+                            (candidate.includes('zone 1') && bLower.includes('zone 1')) ||
+                            (candidate.includes('zone 2') && bLower.includes('zone 2')) ||
+                            (candidate.includes('zone 3') && bLower.includes('zone 3'))) {
+                            detectedBrgy = b;
+                            break;
+                        }
+                    }
+                    if (detectedBrgy) break;
+                }
+
+                // If not found in candidate list, search full display_name
+                if (!detectedBrgy) {
+                    for (const b of brgys) {
+                        if (fullText.includes(b.toLowerCase())) {
+                            detectedBrgy = b;
+                            break;
+                        }
+                    }
+                }
+
+                // Fallback to geometric closest barangay
+                if (!detectedBrgy) {
+                    detectedBrgy = findClosestBrgy(activeCity, lat, lng) || (brgys.length > 0 ? brgys[0] : null);
+                }
+
+                // 3. Determine Road / Street
+                const road = addr.road || addr.pedestrian || addr.path || addr.street || '';
+                const detectedStreet = road;
+
+                // 4. Update Dropdowns and Fields
+                updateBarangays(detectedBrgy, detectedStreet);
+
+                // 5. House / Landmark / Building
+                const houseNo = addr.house_number || '';
+                const landmark = addr.amenity || addr.building || addr.shop || data.name || '';
+                const houseInput = document.getElementById('checkout-house-input');
+
+                if (houseInput) {
+                    if (landmark && !landmark.toLowerCase().includes(road.toLowerCase())) {
+                        houseInput.value = landmark + (houseNo ? ` (#${houseNo})` : '');
+                    } else if (houseNo) {
+                        houseInput.value = 'House #' + houseNo;
+                    }
+                }
+
+                combineAddressFields(false);
+
+                if (pinDisplay) {
+                    const label = sourceLabel ? ` (${sourceLabel})` : ` (${detectedBrgy || activeCity})`;
+                    pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}${label}`;
+                }
+
+                if (typeof recalculateCart === 'function') {
+                    recalculateCart();
+                }
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') {
+                    console.warn("Reverse geocoding error:", err);
+                }
+            });
+    }
+
     function locateCurrentPosition() {
         const pinDisplay = document.getElementById('pin-coords-display');
         if (pinDisplay) pinDisplay.textContent = 'Locating GPS...';
@@ -2258,50 +2411,7 @@
                 checkoutMap.flyTo([lat, lng], 17, { animate: true, duration: 1 });
                 checkoutMarker.setLatLng([lat, lng]);
             }
-            const latInput = document.getElementById('checkout-latitude');
-            const lngInput = document.getElementById('checkout-longitude');
-            if (latInput) latInput.value = Number(lat).toFixed(6);
-            if (lngInput) lngInput.value = Number(lng).toFixed(6);
-            if (pinDisplay) pinDisplay.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} (${sourceLabel})`;
-
-            // Reverse geocode to assist street & house
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.address) {
-                        const road = data.address.road || data.address.neighbourhood || data.address.suburb || '';
-                        const houseNo = data.address.house_number || '';
-                        if (road) {
-                            const streetSelect = document.getElementById('checkout-street-select');
-                            if (streetSelect) {
-                                let matched = false;
-                                for (let opt of streetSelect.options) {
-                                    if (opt.value.toLowerCase() === road.toLowerCase()) {
-                                        streetSelect.value = opt.value;
-                                        matched = true;
-                                        break;
-                                    }
-                                }
-                                if (!matched) {
-                                    streetSelect.value = 'Other / Specific Street';
-                                    const customStreet = document.getElementById('checkout-custom-street-input');
-                                    if (customStreet) {
-                                        customStreet.value = road;
-                                        customStreet.classList.remove('hidden');
-                                    }
-                                }
-                            }
-                        }
-                        if (houseNo) {
-                            const houseInput = document.getElementById('checkout-house-input');
-                            if (houseInput && !houseInput.value) {
-                                houseInput.value = 'House #' + houseNo;
-                            }
-                        }
-                        combineAddressFields(false);
-                    }
-                })
-                .catch(() => {});
+            reverseGeocodeToAddress(lat, lng, sourceLabel);
         };
 
         if (navigator.geolocation) {
