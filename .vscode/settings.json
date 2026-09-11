@@ -1,0 +1,23 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/System",
+        "${workspaceFolder}/System/apps",
+        "c:/Users/kymer/Desktop/Lantad ACarwfish Django/System",
+        "c:/Users/kymer/Desktop/Lantad ACarwfish Django/System/apps"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/System",
+        "${workspaceFolder}/System/apps",
+        "c:/Users/kymer/Desktop/Lantad ACarwfish Django/System",
+        "c:/Users/kymer/Desktop/Lantad ACarwfish Django/System/apps"
+    ],
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none",
+        "reportMissingModuleSource": "none",
+        "reportUndefinedVariable": "none",
+        "reportGeneralTypeIssues": "none",
+        "reportAttributeAccessIssue": "none"
+    }
+}
