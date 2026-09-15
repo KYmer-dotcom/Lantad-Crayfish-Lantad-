@@ -17,18 +17,16 @@
         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Farm Inventory Overview</h1>
     </div>
 
-    <!-- Metric Card (No Logo) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-        <div class="glass-card rounded-lg p-4 sm:p-5 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Feed Types</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ total_feed_types|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span class="truncate">Supply items tracked</span>
-                </div>
+    <!-- Metric Card (Full Line Width) -->
+    <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div>
+            <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Feed Types</p>
+        </div>
+        <div class="mt-2">
+            <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_types|default:"0" }}</p>
+            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                <span>Supply items tracked</span>
             </div>
         </div>
     </div>
