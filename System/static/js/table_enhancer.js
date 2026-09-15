@@ -347,81 +347,66 @@ class TableEnhancer {
     }
 
     renderPagination(startIndex, endIndex, total, totalPages) {
-        const infoHtml = total > 0
-            ? `Showing <span class="font-bold text-white">${startIndex + 1}</span> to <span class="font-bold text-white">${endIndex}</span> of <span class="font-bold text-[#cca43b]">${total}</span> entries`
-            : `Showing 0 entries`;
-
-        let paginationButtonsHtml = '';
-        if (totalPages > 1) {
-            paginationButtonsHtml = `
-                <div class="flex items-center justify-center gap-4 sm:gap-6 mt-1">
-                    <!-- Previous -->
-                    <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs transition-colors cursor-pointer ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed' : 'text-[#a0ac96] hover:text-white'}" ${this.currentPage === 1 ? 'disabled' : ''}>
-                        <span>&larr;</span>
-                        <span>PREV</span>
-                    </button>
-
-                    <!-- Page Numbers -->
-                    <div class="flex items-center gap-2 sm:gap-2.5">
-            `;
-
-            for (let p = 1; p <= totalPages; p++) {
-                if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
-                    const isActive = p === this.currentPage;
-                    if (isActive) {
-                        paginationButtonsHtml += `
-                            <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md">
-                                ${p}
-                            </span>
-                        `;
-                    } else {
-                        paginationButtonsHtml += `
-                            <button type="button" data-page="${p}" class="btn-page h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center rounded-full font-bold text-xs text-[#a0ac96] hover:text-white hover:bg-white/5 transition-all cursor-pointer">
-                                ${p}
-                            </button>
-                        `;
-                    }
-                } else if (p === this.currentPage - 2 || p === this.currentPage + 2) {
-                    paginationButtonsHtml += `<span class="px-1 text-[#a0ac96]/40 font-bold">...</span>`;
+        let pagesHtml = '';
+        for (let p = 1; p <= totalPages; p++) {
+            if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
+                const isActive = p === this.currentPage;
+                if (isActive) {
+                    pagesHtml += `
+                        <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md select-none">
+                            ${p}
+                        </span>
+                    `;
+                } else {
+                    pagesHtml += `
+                        <button type="button" data-page="${p}" class="btn-page text-xs font-black text-[#a0ac96] hover:text-white transition-colors cursor-pointer px-2 py-1 select-none">
+                            ${p}
+                        </button>
+                    `;
                 }
+            } else if (p === this.currentPage - 2 || p === this.currentPage + 2) {
+                pagesHtml += `<span class="px-1 text-[#a0ac96]/40 font-bold select-none">...</span>`;
             }
-
-            paginationButtonsHtml += `
-                    </div>
-
-                    <!-- Next -->
-                    <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs transition-colors cursor-pointer ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed' : 'text-[#a0ac96] hover:text-white'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
-                        <span>NEXT</span>
-                        <span>&rarr;</span>
-                    </button>
-                </div>
-            `;
         }
 
-        this.paginationBar.style.display = 'flex';
-        this.paginationBar.innerHTML = `
-            <div class="text-[11px] font-mono text-center w-full">${infoHtml}</div>
-            ${paginationButtonsHtml ? `<div class="w-full flex justify-center">${paginationButtonsHtml}</div>` : ''}
+        const paginationHtml = `
+            <div class="flex items-center justify-center gap-6 sm:gap-8 w-full select-none py-1">
+                <!-- Previous -->
+                <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === 1 ? 'disabled' : ''}>
+                    <span>&larr;</span>
+                    <span>PREV</span>
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center gap-4 sm:gap-6">
+                    ${pagesHtml}
+                </div>
+
+                <!-- Next -->
+                <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
+                    <span>NEXT</span>
+                    <span>&rarr;</span>
+                </button>
+            </div>
         `;
+
+        this.paginationBar.style.display = 'flex';
+        this.paginationBar.innerHTML = paginationHtml;
 
         // Wire pagination clicks
         const prevBtn = this.paginationBar.querySelector('.btn-prev');
-        if (prevBtn) {
+        if (prevBtn && this.currentPage > 1) {
             prevBtn.addEventListener('click', () => {
-                if (this.currentPage > 1) {
-                    this.currentPage--;
-                    this.render();
-                }
+                this.currentPage--;
+                this.render();
             });
         }
 
         const nextBtn = this.paginationBar.querySelector('.btn-next');
-        if (nextBtn) {
+        if (nextBtn && this.currentPage < totalPages) {
             nextBtn.addEventListener('click', () => {
-                if (this.currentPage < totalPages) {
-                    this.currentPage++;
-                    this.render();
-                }
+                this.currentPage++;
+                this.render();
             });
         }
 
