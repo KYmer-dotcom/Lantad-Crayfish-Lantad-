@@ -672,3 +672,6 @@ def notifications(request):
         'harvest1': harvest1,
     }
     return render(request, 'notifications/index.html', context)
+
+
+
