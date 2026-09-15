@@ -97,7 +97,7 @@ class TableEnhancer {
 
         // Left side: Search and Filters
         const leftBox = document.createElement('div');
-        leftBox.className = 'flex flex-wrap items-center gap-3 flex-1 min-w-[240px]';
+        leftBox.className = 'flex flex-wrap items-center gap-3';
 
         if (this.options.searchable) {
             const searchContainer = document.createElement('div');
@@ -151,9 +151,14 @@ class TableEnhancer {
 
         this.controlsBar.appendChild(leftBox);
 
+        // Center: Info text (Showing X to Y of Z entries)
+        this.infoBox = document.createElement('div');
+        this.infoBox.className = 'text-[11px] font-mono text-[#a0ac96] text-center px-2 flex-1 min-w-[180px]';
+        this.controlsBar.appendChild(this.infoBox);
+
         // Right side: Page size selector
         const rightBox = document.createElement('div');
-        rightBox.className = 'flex items-center gap-2 text-xs text-[#a0ac96]';
+        rightBox.className = 'flex items-center gap-2 text-xs text-[#a0ac96] shrink-0';
         rightBox.innerHTML = `
             <span class="font-bold text-[10px] uppercase tracking-wider text-[#a0ac96]">Show</span>
             <select class="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none cursor-pointer">
@@ -171,7 +176,7 @@ class TableEnhancer {
 
         // Footer Pagination Bar with proper padding and styling
         this.paginationBar = document.createElement('div');
-        this.paginationBar.className = 'flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-t border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] select-none';
+        this.paginationBar.className = 'flex flex-wrap items-center justify-center gap-4 px-6 py-4 border-t border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] select-none';
 
         // Mount table and pagination cleanly
         if (isCard) {
@@ -351,10 +356,14 @@ class TableEnhancer {
             ? `Showing <span class="font-bold text-white">${startIndex + 1}</span> to <span class="font-bold text-white">${endIndex}</span> of <span class="font-bold text-[#cca43b]">${total}</span> entries`
             : `Showing 0 entries`;
 
+        if (this.infoBox) {
+            this.infoBox.innerHTML = infoHtml;
+        }
+
         let paginationButtonsHtml = '';
         if (totalPages > 1) {
             paginationButtonsHtml = `
-                <div class="flex items-center gap-4 sm:gap-6">
+                <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
                     <!-- Previous -->
                     <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs transition-colors cursor-pointer ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed' : 'text-[#a0ac96] hover:text-white'}" ${this.currentPage === 1 ? 'disabled' : ''}>
                         <span>&larr;</span>
@@ -396,40 +405,41 @@ class TableEnhancer {
                     </button>
                 </div>
             `;
-        }
 
-        this.paginationBar.innerHTML = `
-            <div class="text-[11px] font-mono">${infoHtml}</div>
-            <div>${paginationButtonsHtml}</div>
-        `;
+            this.paginationBar.style.display = 'flex';
+            this.paginationBar.innerHTML = paginationButtonsHtml;
 
-        // Wire pagination clicks
-        const prevBtn = this.paginationBar.querySelector('.btn-prev');
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                if (this.currentPage > 1) {
-                    this.currentPage--;
+            // Wire pagination clicks
+            const prevBtn = this.paginationBar.querySelector('.btn-prev');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.render();
+                    }
+                });
+            }
+
+            const nextBtn = this.paginationBar.querySelector('.btn-next');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (this.currentPage < totalPages) {
+                        this.currentPage++;
+                        this.render();
+                    }
+                });
+            }
+
+            this.paginationBar.querySelectorAll('.btn-page').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    this.currentPage = parseInt(btn.getAttribute('data-page'));
                     this.render();
-                }
+                });
             });
+        } else {
+            this.paginationBar.style.display = 'none';
+            this.paginationBar.innerHTML = '';
         }
-
-        const nextBtn = this.paginationBar.querySelector('.btn-next');
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                if (this.currentPage < totalPages) {
-                    this.currentPage++;
-                    this.render();
-                }
-            });
-        }
-
-        this.paginationBar.querySelectorAll('.btn-page').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.currentPage = parseInt(btn.getAttribute('data-page'));
-                this.render();
-            });
-        });
     }
 }
 
