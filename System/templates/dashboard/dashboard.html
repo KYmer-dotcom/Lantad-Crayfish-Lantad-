@@ -24,7 +24,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-3.5">
 
         <!-- Stat Card 1: Active Stocks -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Active Stocks</p>
             </div>
@@ -38,7 +38,7 @@
         </div>
 
         <!-- Stat Card 2: Daily Sales -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Daily Sales</p>
             </div>
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Stat Card 3: 30D Revenue -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Revenue (30D)</p>
             </div>
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Stat Card 4: Pending Orders -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Pending Orders</p>
             </div>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Stat Card 5: Upcoming Harvests -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Upcoming Harvests</p>
             </div>
@@ -94,7 +94,7 @@
         </div>
 
         <!-- Stat Card 6: Total Products -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Total Products</p>
             </div>
@@ -113,13 +113,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Sales History (8 cols) -->
-        <div class="glass-card rounded-3xl p-6 shadow-xl lg:col-span-8 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-6 shadow-xl lg:col-span-8 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-4">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-white">Sales History</h2>
                     <p class="text-xs text-[#a0ac96] font-medium">Gross sales revenue tracking</p>
                 </div>
-                <span class="rounded-full bg-[#cca43b]/15 border border-[#cca43b]/30 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">Last 10 Days</span>
+                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">Last 10 Days</span>
             </div>
             <div class="h-72 w-full">
                 <canvas id="salesAnalyticsChart"></canvas>
@@ -127,7 +127,7 @@
         </div>
 
         <!-- Key Alerts (4 cols) -->
-        <div class="glass-card rounded-3xl p-6 shadow-xl lg:col-span-4 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-6 shadow-xl lg:col-span-4 flex flex-col justify-between">
             <div>
                 <div class="border-b border-white/10 pb-4 mb-4">
                     <h2 class="text-base font-black text-white tracking-tight">Key Alerts</h2>
@@ -136,12 +136,12 @@
                 <div class="space-y-3">
                     {% if azula_alerts %}
                     {% with alert=azula_alerts.0 %}
-                    <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
+                    <div class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
                         <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] flex-shrink-0"></span>
                         <div class="w-full">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Pond Sanitization</p>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ alert.status_text }}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ alert.status_text }}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ alert.pond.name }}</p>
                             <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Sanitization due for {{ alert.pond.name }} ({{ alert.pond.farm.name }}).</p>
@@ -151,12 +151,12 @@
                     {% endif %}
 
                     {% if harvest1 %}
-                    <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 flex items-start gap-3">
+                    <div class="rounded-lg border border-white/10 bg-white/[0.03] p-3.5 flex items-start gap-3">
                         <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] flex-shrink-0"></span>
                         <div class="w-full">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <p class="text-xs font-black uppercase tracking-wider text-white">Harvest Alert</p>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ harvest1.get_status_display }}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ harvest1.get_status_display }}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ harvest1.stock_batch.batch_code }}</p>
                             <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Est: {{ harvest1.estimated_quantity }} pcs ({{ harvest1.estimated_total_weight }})</p>
@@ -165,12 +165,12 @@
                     {% endif %}
 
                     {% if order1 %}
-                    <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
+                    <div class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
                         <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] animate-pulse flex-shrink-0"></span>
                         <div class="w-full">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ order1.get_status_display }} Order</p>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ order1.order_number }}</p>
                             <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">{{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }}.</p>
@@ -187,7 +187,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <!-- Recent Activity (Sales Metrics Table) -->
-        <div class="glass-card rounded-3xl shadow-xl overflow-hidden">
+        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
             <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
                 <div>
                     <h2 class="text-base font-black text-white tracking-tight">Recent Activity</h2>
@@ -221,13 +221,13 @@
         </div>
 
         <!-- Recent Orders Queue -->
-        <div class="glass-card rounded-3xl shadow-xl overflow-hidden">
+        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
             <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
                 <div>
                     <h2 class="text-base font-black text-white tracking-tight">Recent Orders</h2>
                     <p class="text-xs text-[#a0ac96]">Processing queue overview</p>
                 </div>
-                <a href="{% url 'sales:list' %}" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
+                <a href="{% url 'sales:list' %}" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
                     Manage &rarr;
                 </a>
             </div>
@@ -247,7 +247,7 @@
                             <td class="px-6 py-3.5 font-mono font-bold text-white">{{ order.order_number }}</td>
                             <td class="px-6 py-3.5 font-bold text-stone-200">{{ order.customer.name }}</td>
                             <td class="px-6 py-3.5">
-                                <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border
+                                <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-md uppercase tracking-wider border
                                     {% if order.status == 'pending' %}bg-[#cca43b]/20 text-[#cca43b] border-[#cca43b]/40
                                     {% elif order.status == 'completed' %}bg-white/10 text-white border-white/20
                                     {% else %}bg-[#cca43b]/10 text-[#cca43b] border-[#cca43b]/20{% endif %}">
