@@ -3,22 +3,17 @@
 <!-- Sidebar Container -->
 <div id="admin-sidebar" class="hidden md:flex md:flex-col bg-[#01140e] border-r border-[#cca43b]/15 sticky top-0 h-screen transition-all duration-300 ease-in-out md:w-64 z-40 select-none">
     <div class="flex flex-col flex-grow pb-4 pt-5 overflow-y-auto overflow-x-hidden">
-        <!-- Brand/Logo Area & Toggle Switch -->
-        <div class="flex items-center justify-between px-3.5 mb-6">
-            <a href="{% url 'dashboard' %}" class="flex items-center gap-3 overflow-hidden group">
-                <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="h-10 w-10 rounded-xl bg-white/90 p-1 object-contain shrink-0 ring-1 ring-[#cca43b]/30 group-hover:ring-[#cca43b] transition-all">
+        <!-- Brand/Logo Area (Click Logo to Toggle Collapse/Expand) -->
+        <div id="sidebar-brand-wrapper" class="flex items-center px-3 mb-6 transition-all">
+            <button type="button" onclick="toggleSidebarCollapse()" 
+                class="flex items-center gap-3 w-full text-left p-1 rounded-2xl hover:bg-white/5 transition-all group focus:outline-none cursor-pointer" 
+                title="Click logo to expand or collapse sidebar">
+                <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" 
+                    class="h-12 w-12 rounded-2xl bg-white/95 p-1 object-contain shrink-0 ring-1 ring-[#cca43b]/40 group-hover:ring-[#cca43b] group-hover:scale-105 transition-all shadow-md">
                 <div class="sidebar-text-label transition-opacity duration-200 whitespace-nowrap overflow-hidden">
                     <p class="text-xs font-black tracking-tight leading-tight text-white uppercase">SILAY SUPERWORM<br>& CRAYFISH</p>
                     <p class="text-[9px] uppercase tracking-widest text-[#cca43b] mt-0.5 font-bold">Aquaculture</p>
                 </div>
-            </a>
-            <!-- Collapse / Expand Icon Button -->
-            <button type="button" id="sidebar-toggle-btn" onclick="toggleSidebarCollapse()" 
-                class="h-8 w-8 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#cca43b] text-[#a0ac96] hover:text-[#01140e] transition-all border border-white/10 shrink-0 cursor-pointer shadow-sm"
-                title="Toggle Icon / Full View">
-                <svg id="sidebar-toggle-chevron" class="h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                </svg>
             </button>
         </div>
 
@@ -32,7 +27,7 @@
                 
                 <!-- My Deliveries -->
                 <a href="{% url 'sales:rider_portal' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:rider_portal' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:rider_portal' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="My Deliveries">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
@@ -43,7 +38,7 @@
 
                 <!-- Notifications -->
                 <a href="{% url 'notifications' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'notifications' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'notifications' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Notifications">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
@@ -58,7 +53,7 @@
             <div class="pb-1.5">
                 <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Main</p>
                 <a href="{% url 'dashboard' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'dashboard' or request.path == '/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'dashboard' or request.path == '/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Dashboard">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -74,7 +69,7 @@
                 
                 <!-- Stock Monitoring -->
                 <a href="{% url 'stock:list' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'stock:' in current_url or '/products' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'stock:' in current_url or '/products' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Stock Monitoring">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -86,7 +81,7 @@
                 <!-- Operations Dropdown -->
                 <div class="relative">
                     <button type="button" onclick="toggleOperationsMenu()" 
-                        class="w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'operations:' in current_url or '/operations' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                        class="sidebar-nav-item w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'operations:' in current_url or '/operations' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Operations">
                         <div class="flex items-center gap-3 min-w-0">
                             <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +103,7 @@
 
                 <!-- Inventory Management -->
                 <a href="{% url 'inventory' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'inventory' or '/inventory' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'inventory' or '/inventory' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Inventory Management">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -119,7 +114,7 @@
 
                 <!-- Harvest Management -->
                 <a href="{% url 'harvest:list' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'harvest:' in current_url or '/harvest' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'harvest:' in current_url or '/harvest' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Harvest Management">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -130,7 +125,7 @@
 
                 <!-- Orders -->
                 <a href="{% url 'sales:orders_admin' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/orders' in request.path or 'orders_admin' in current_url or current_url == 'sales:order_create' or current_url == 'sales:order_edit_admin' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/orders' in request.path or 'orders_admin' in current_url or current_url == 'sales:order_create' or current_url == 'sales:order_edit_admin' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Orders">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -142,7 +137,7 @@
                 <!-- Delivery Dropdown -->
                 <div class="relative">
                     <button type="button" onclick="toggleDeliveryMenu()" 
-                        class="w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                        class="sidebar-nav-item w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Delivery">
                         <div class="flex items-center gap-3 min-w-0">
                             <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,7 +166,7 @@
                 {% if user.is_owner %}
                 <!-- Sales Management -->
                 <a href="{% url 'sales:list' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:list' or request.path == '/sales/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:list' or request.path == '/sales/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Sales Management">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -183,7 +178,7 @@
 
                 <!-- Logs -->
                 <a href="{% url 'sales:delivery_logs' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:delivery_logs' or current_url == 'delivery_logs_root' or '/deliveries/logs' in request.path or '/delivery-logs' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:delivery_logs' or current_url == 'delivery_logs_root' or '/deliveries/logs' in request.path or '/delivery-logs' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Logs">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -194,7 +189,7 @@
 
                 <!-- Reports & Analytics -->
                 <a href="{% url 'analytics:dashboard' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'analytics:' in current_url or '/analytics' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'analytics:' in current_url or '/analytics' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Reports & Analytics">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -205,7 +200,7 @@
 
                 <!-- Notifications -->
                 <a href="{% url 'notifications' %}" 
-                    class="group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'notifications' or '/notifications' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'notifications' or '/notifications' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Notifications">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
@@ -224,17 +219,32 @@
 <script>
     function applySidebarState(isCollapsed) {
         const sidebar = document.getElementById('admin-sidebar');
-        const chevron = document.getElementById('sidebar-toggle-chevron');
         if (!sidebar) return;
 
+        const brandWrapper = document.getElementById('sidebar-brand-wrapper');
+        const brandBtn = brandWrapper ? brandWrapper.querySelector('button') : null;
         const labels = sidebar.querySelectorAll('.sidebar-text-label');
         const tooltips = sidebar.querySelectorAll('.sidebar-floating-tooltip');
         const submenus = sidebar.querySelectorAll('.sidebar-submenu');
+        const navItems = sidebar.querySelectorAll('.sidebar-nav-item');
 
         if (isCollapsed) {
             sidebar.classList.remove('md:w-64');
             sidebar.classList.add('md:w-20');
-            if (chevron) chevron.classList.add('rotate-180');
+
+            if (brandWrapper) {
+                brandWrapper.classList.remove('px-3');
+                brandWrapper.classList.add('px-1', 'justify-center');
+            }
+            if (brandBtn) {
+                brandBtn.classList.add('justify-center');
+                brandBtn.classList.remove('gap-3');
+            }
+
+            navItems.forEach(el => {
+                el.classList.add('justify-center');
+                el.classList.remove('gap-3');
+            });
 
             labels.forEach(el => el.classList.add('hidden'));
             tooltips.forEach(el => el.classList.remove('hidden'));
@@ -242,7 +252,20 @@
         } else {
             sidebar.classList.remove('md:w-20');
             sidebar.classList.add('md:w-64');
-            if (chevron) chevron.classList.remove('rotate-180');
+
+            if (brandWrapper) {
+                brandWrapper.classList.add('px-3');
+                brandWrapper.classList.remove('px-1', 'justify-center');
+            }
+            if (brandBtn) {
+                brandBtn.classList.remove('justify-center');
+                brandBtn.classList.add('gap-3');
+            }
+
+            navItems.forEach(el => {
+                el.classList.remove('justify-center');
+                el.classList.add('gap-3');
+            });
 
             labels.forEach(el => el.classList.remove('hidden'));
             tooltips.forEach(el => el.classList.add('hidden'));
