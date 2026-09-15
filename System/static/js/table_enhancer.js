@@ -361,7 +361,7 @@ class TableEnhancer {
         }
 
         let pagesHtml = '';
-        if (totalPages > 1) {
+        if (totalPages >= 1) {
             for (let p = 1; p <= totalPages; p++) {
                 if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
                     const isActive = p === this.currentPage;
@@ -386,7 +386,7 @@ class TableEnhancer {
             const paginationHtml = `
                 <div class="flex items-center justify-center gap-6 sm:gap-8 w-full select-none py-1">
                     <!-- Previous -->
-                    <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === 1 ? 'disabled' : ''}>
+                    <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage <= 1 ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage <= 1 ? 'disabled' : ''}>
                         <span>&larr;</span>
                         <span>PREV</span>
                     </button>
@@ -397,7 +397,7 @@ class TableEnhancer {
                     </div>
 
                     <!-- Next -->
-                    <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
+                    <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage >= totalPages ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage >= totalPages ? 'disabled' : ''}>
                         <span>NEXT</span>
                         <span>&rarr;</span>
                     </button>
