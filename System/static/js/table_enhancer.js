@@ -70,10 +70,25 @@ class TableEnhancer {
     }
 
     initDOM() {
-        // Wrap table in container
+        // Find if table is wrapped in an overflow container
+        const parent = this.table.parentElement;
+        const isParentOverflow = parent && (parent.classList.contains('overflow-x-auto') || parent.classList.contains('overflow-auto'));
+        
+        // Find top-level table card or container if any
+        let cardContainer = isParentOverflow ? parent.parentElement : parent;
+        const isCard = cardContainer && (
+            cardContainer.classList.contains('border') ||
+            cardContainer.classList.contains('rounded-lg') ||
+            cardContainer.classList.contains('rounded-xl') ||
+            cardContainer.classList.contains('rounded-2xl') ||
+            cardContainer.classList.contains('rounded-3xl') ||
+            cardContainer.classList.contains('bg-black/20') ||
+            cardContainer.classList.contains('glass-card')
+        ) && cardContainer.children.length === 1;
+
+        // Container wrapper
         this.container = document.createElement('div');
         this.container.className = 'enhanced-table-wrapper space-y-4';
-        this.table.parentNode.insertBefore(this.container, this.table);
 
         // Header controls (Search, Filters, Page Size)
         this.controlsBar = document.createElement('div');
@@ -154,13 +169,38 @@ class TableEnhancer {
         });
         this.controlsBar.appendChild(rightBox);
 
-        // Insert table into container
-        this.container.appendChild(this.table);
-
-        // Footer Pagination Bar
+        // Footer Pagination Bar with proper padding and styling
         this.paginationBar = document.createElement('div');
-        this.paginationBar.className = 'flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs text-[#a0ac96] select-none';
-        this.container.appendChild(this.paginationBar);
+        this.paginationBar.className = 'flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-t border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] select-none';
+
+        // Mount table and pagination cleanly
+        if (isCard) {
+            cardContainer.parentNode.insertBefore(this.container, cardContainer);
+            this.container.appendChild(this.controlsBar);
+            this.container.appendChild(cardContainer);
+            cardContainer.appendChild(this.paginationBar);
+        } else if (isParentOverflow) {
+            parent.parentNode.insertBefore(this.container, parent);
+            this.container.appendChild(this.controlsBar);
+
+            const card = document.createElement('div');
+            card.className = 'overflow-hidden rounded-lg border border-white/10 bg-black/20';
+            card.appendChild(parent);
+            card.appendChild(this.paginationBar);
+            this.container.appendChild(card);
+        } else {
+            this.table.parentNode.insertBefore(this.container, this.table);
+            this.container.appendChild(this.controlsBar);
+
+            const card = document.createElement('div');
+            card.className = 'overflow-hidden rounded-lg border border-white/10 bg-black/20';
+            const scroll = document.createElement('div');
+            scroll.className = 'overflow-x-auto';
+            scroll.appendChild(this.table);
+            card.appendChild(scroll);
+            card.appendChild(this.paginationBar);
+            this.container.appendChild(card);
+        }
 
         // Enable sorting on headers if enabled
         if (this.options.sortable) {
