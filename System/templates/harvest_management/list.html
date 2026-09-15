@@ -31,53 +31,44 @@
     <!-- Top 3 Metrics Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <!-- Total Schedules -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex items-center justify-between">
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Schedules</p>
-                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_schedules }}</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_schedules }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Upcoming harvest schedules</span>
                 </div>
             </div>
-            <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shrink-0 shadow-inner">
-                <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-            </div>
         </div>
 
         <!-- Transfers -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex items-center justify-between">
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Transfers</p>
-                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ transfers_count }}</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ transfers_count }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Recorded pond transfers</span>
                 </div>
             </div>
-            <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shrink-0 shadow-inner">
-                <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-            </div>
         </div>
 
         <!-- Estimated Harvest -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex items-center justify-between">
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Estimated Harvest</p>
-                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ estimated_harvest_count }}</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ estimated_harvest_count }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Projected harvest events</span>
                 </div>
-            </div>
-            <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shrink-0 shadow-inner">
-                <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
             </div>
         </div>
     </div>
