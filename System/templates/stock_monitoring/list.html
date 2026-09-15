@@ -1,88 +1,90 @@
 {% extends "layout.html" %}
-{% block title %}Product Inventory{% endblock %}
+{% load static %}
+
+{% block header_title %}Product Inventory{% endblock %}
+
 {% block page_content %}
-<div class="space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Product Inventory</p>
-            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Product Inventory</h1>
-        </div>
-        <div class="flex items-center gap-3"></div>
+<style>
+    /* Elevated Glass Card Effect matching Dashboard */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
+    <!-- Header -->
+    <div class="flex flex-col gap-1 border-b border-white/10 pb-4">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Product Inventory</p>
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Product Inventory</h1>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+    <!-- 3 Metric Cards in a Single Horizontal Row (Matching Dashboard) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        
+        <!-- Stat Card 1: Available Stocks -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Available Stocks</p>
-                <p class="mt-2 text-3xl font-bold text-stone-100">{{ products|length }}</p>
-                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span>Products currently recorded</span>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Available Stocks</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ products|length }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">Products currently recorded</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-inner group-hover:scale-105 transition-transform">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-            </div>
         </div>
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+
+        <!-- Stat Card 2: Active Batches -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Active Batches</p>
-                <p class="mt-2 text-3xl font-bold text-stone-100">{{ active_batches_count|default:"0" }}</p>
-                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Active product operations</span>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Active Batches</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ active_batches_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">Active product operations</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-inner group-hover:scale-105 transition-transform">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-            </div>
         </div>
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm flex items-center justify-between group hover:border-white/20 transition-all">
+
+        <!-- Stat Card 3: Total Quantity -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#a0ac96]">Total Quantity</p>
-                <p class="mt-2 text-3xl font-bold text-[#cca43b]">{{ total_product_quantity|floatformat:"0" }}</p>
-                <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96]">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                    <span>Total stock across all products</span>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Total Quantity</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight truncate">{{ total_product_quantity|floatformat:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">Total stock across all products</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] shadow-inner group-hover:scale-105 transition-transform">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
         </div>
+
     </div>
 
-    <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-4">
+    <!-- Products Showcase & Management Grid -->
+    <div class="glass-card rounded-xl p-6 shadow-xl space-y-5">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
-                <h2 class="text-lg font-semibold text-stone-100">Products</h2>
-                <p class="text-sm text-[#a0ac96]">Quick add and manage inventory items.</p>
+                <h2 class="text-lg font-black tracking-tight text-white">Products</h2>
+                <p class="text-xs text-[#a0ac96] font-medium">Quick add and manage inventory items.</p>
             </div>
+            <button type="button" onclick="showProductModal()" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
+                + Add Product
+            </button>
         </div>
 
-        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {% for product in products %}
-            {% if product.accent_color == 'cyan' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-cyan-800/50 bg-cyan-900/20 p-4 shadow-sm cursor-pointer hover:border-cyan-500 transition-colors">
-            {% elif product.accent_color == 'emerald' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-emerald-800/50 bg-emerald-900/20 p-4 shadow-sm cursor-pointer hover:border-emerald-500 transition-colors">
-            {% elif product.accent_color == 'amber' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-amber-800/50 bg-amber-900/20 p-4 shadow-sm cursor-pointer hover:border-amber-500 transition-colors">
-            {% elif product.accent_color == 'rose' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-rose-800/50 bg-rose-900/20 p-4 shadow-sm cursor-pointer hover:border-rose-500 transition-colors">
-            {% elif product.accent_color == 'violet' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-violet-800/50 bg-violet-900/20 p-4 shadow-sm cursor-pointer hover:border-violet-500 transition-colors">
-            {% else %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-2xl border border-white/10 bg-black/20 p-4 shadow-sm cursor-pointer hover:border-[#cca43b] transition-colors">
-            {% endif %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" 
+                 class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-white/10 bg-white/[0.02] p-4 shadow-sm cursor-pointer hover:border-[#cca43b]/40 hover:bg-white/[0.04] transition-all">
                 <div class="flex items-center justify-between">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/30 border border-white/10 shadow-sm text-2xl">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/25 shadow-sm text-xl text-[#cca43b]">
                         {% if product.icon == 'shrimp' %}🦐
                         {% elif product.icon == 'lab' %}🧪
                         {% elif product.icon == 'leaf' %}🌿
@@ -95,9 +97,10 @@
                             type="button"
                             data-delete-action="{% url 'sales:product_delete' product.id %}"
                             data-product-name="{{ product.name }}"
-                            class="product-delete-btn rounded-full border border-white/10 bg-black/20 p-1 text-rose-500 hover:bg-rose-500/20 transition-colors"
+                            class="product-delete-btn rounded-md border border-white/10 bg-black/20 p-1.5 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors"
+                            onclick="event.stopPropagation();"
                         >
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 6V4h8v2" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l1 14h10l1-14" />
@@ -105,14 +108,14 @@
                         </button>
                     </div>
                 </div>
-                <div class="mt-4 flex items-end justify-between">
+                <div class="mt-4 flex items-end justify-between gap-2">
                     <div class="min-w-0 flex-1">
-                        <p class="text-base font-semibold text-stone-100 truncate">{{ product.name }}</p>
-                        <p class="mt-0.5 text-xs text-[#a0ac96] line-clamp-2">{{ product.notes|default:"No description provided." }}</p>
+                        <p class="text-sm font-black text-white truncate">{{ product.name }}</p>
+                        <p class="mt-0.5 text-[11px] text-[#a0ac96] line-clamp-2 leading-relaxed">{{ product.notes|default:"No description provided." }}</p>
                     </div>
-                    <div class="text-right flex-shrink-0 ml-3">
-                        <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">stock</span></div>
-                        <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight">
+                    <div class="text-right shrink-0">
+                        <div class="text-xs font-black text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">stock</span></div>
+                        <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight font-mono">
                             {% if product.unit_price > 0 %}<span>₱{{ product.unit_price|floatformat:"0" }}/pc</span>{% endif %}
                             {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/kg</span>{% endif %}
                             {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/kg)</span>{% endif %}
@@ -121,43 +124,32 @@
                 </div>
             </div>
             {% empty %}
-            <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 p-6 text-center text-sm text-[#a0ac96]">
-                No products yet.
+            <div class="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-[#a0ac96] font-mono">
+                No products recorded yet.
             </div>
             {% endfor %}
-            <button type="button" onclick="showProductModal()" class="flex min-h-[148px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-[#021f15]/40 text-[#a0ac96] hover:border-[#cca43b] hover:text-[#cca43b] transition-colors">
-                <div class="flex h-12 w-12 items-center justify-center rounded-full border border-current text-2xl">+</div>
-                <p class="mt-3 text-sm font-semibold">Add product +</p>
+            <button type="button" onclick="showProductModal()" class="flex min-h-[148px] flex-col items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/[0.01] text-[#a0ac96] hover:border-[#cca43b] hover:text-[#cca43b] hover:bg-white/[0.03] transition-all">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-current text-xl font-bold">+</div>
+                <p class="mt-2 text-xs font-bold uppercase tracking-wider">Add product +</p>
             </button>
         </div>
 
-        <div class="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+        <!-- Detail Table -->
+        <div class="mt-6 overflow-hidden rounded-lg border border-white/10 bg-white/[0.01]">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-[#a0ac96] enhanced-table">
-                    <thead class="border-b border-white/10 bg-white/5 text-xs uppercase">
+                <table class="w-full text-left text-sm text-[#a0ac96]">
+                    <thead class="border-b border-white/10 bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
                         <tr>
-                            <th scope="col" class="px-6 py-4 font-medium text-stone-100">Product</th>
-                            <th scope="col" class="px-6 py-4 font-medium text-stone-100">Description</th>
+                            <th scope="col" class="px-6 py-3.5 font-black text-white">Product</th>
+                            <th scope="col" class="px-6 py-3.5 font-black text-white">Description</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         {% for product in products %}
-                        <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-{{ product.id }}')">
-                            <td class="px-6 py-4">
+                        <tr class="hover:bg-white/[0.02] transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-{{ product.id }}')">
+                            <td class="px-6 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    {% if product.accent_color == 'cyan' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-800/50 bg-cyan-900/20 text-lg shadow-sm">
-                                    {% elif product.accent_color == 'emerald' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-800/50 bg-emerald-900/20 text-lg shadow-sm">
-                                    {% elif product.accent_color == 'amber' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-800/50 bg-amber-900/20 text-lg shadow-sm">
-                                    {% elif product.accent_color == 'rose' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-800/50 bg-rose-900/20 text-lg shadow-sm">
-                                    {% elif product.accent_color == 'violet' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-800/50 bg-violet-900/20 text-lg shadow-sm">
-                                    {% else %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-lg shadow-sm">
-                                    {% endif %}
+                                    <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-[#cca43b]/25 bg-[#cca43b]/10 text-base shadow-sm text-[#cca43b]">
                                         {% if product.icon == 'shrimp' %}🦐
                                         {% elif product.icon == 'lab' %}🧪
                                         {% elif product.icon == 'leaf' %}🌿
@@ -166,38 +158,38 @@
                                         {% else %}🐟{% endif %}
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="font-medium text-stone-100">{{ product.name }}</span>
-                                        <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
+                                        <span class="font-bold text-white text-xs">{{ product.name }}</span>
+                                        <span class="text-[11px] text-[#cca43b] font-mono font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">{{ product.notes|default:"No description provided." }}</td>
+                            <td class="px-6 py-3.5 text-xs text-[#a0ac96]">{{ product.notes|default:"No description provided." }}</td>
                         </tr>
-                        <tr id="sub-table-{{ product.id }}" class="bg-black/20 hidden">
+                        <tr id="sub-table-{{ product.id }}" class="bg-black/30 hidden">
                             <td colspan="2" class="px-6 py-3">
-                                <div class="rounded-xl border border-white/5 bg-black/40 p-3">
-                                    <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Operations Using This Product</p>
+                                <div class="rounded-lg border border-white/5 bg-black/40 p-3">
+                                    <p class="mb-2 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">Operations Using This Product</p>
                                     <table class="w-full text-xs text-[#a0ac96]">
-                                        <thead class="border-b border-white/5 text-left text-[10px] uppercase">
+                                        <thead class="border-b border-white/5 text-left text-[10px] font-black uppercase tracking-wider">
                                             <tr>
-                                                <th class="py-2 font-medium">Operation</th>
-                                                <th class="py-2 text-center font-medium">Quantity</th>
-                                                <th class="py-2 text-right font-medium">Transferred</th>
+                                                <th class="py-2 text-white">Operation</th>
+                                                <th class="py-2 text-center text-white">Quantity</th>
+                                                <th class="py-2 text-right text-white">Transferred</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-white/5">
+                                        <tbody class="divide-y divide-white/5 font-mono text-xs">
                                             {% for op in product.used_in_operations %}
                                             <tr>
                                                 <td class="py-2">
-                                                    <div class="font-bold text-stone-300">{{ op.name }}</div>
-                                                    <div class="text-[10px]">{{ op.location }}</div>
+                                                    <div class="font-bold text-stone-200">{{ op.name }}</div>
+                                                    <div class="text-[10px] text-[#a0ac96]">{{ op.location }}</div>
                                                 </td>
-                                                <td class="py-2 text-center text-stone-300">{{ op.capacity }}</td>
-                                                <td class="py-2 text-right text-stone-300">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
+                                                <td class="py-2 text-center text-[#cca43b] font-bold">{{ op.capacity }}</td>
+                                                <td class="py-2 text-right text-[#a0ac96]">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
                                             </tr>
                                             {% empty %}
                                             <tr>
-                                                <td colspan="3" class="py-2 text-center font-medium text-stone-500 italic">Not used in any operations</td>
+                                                <td colspan="3" class="py-2 text-center font-medium text-[#a0ac96]/60 italic font-sans">Not used in any operations</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -207,13 +199,12 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="2" class="px-6 py-8 text-center">
-                                <div class="flex flex-col items-center justify-center text-[#a0ac96]">
-                                    <p class="mb-2">No products yet.</p>
-                                </div>
+                            <td colspan="2" class="px-6 py-8 text-center text-xs text-[#a0ac96] font-mono">
+                                No products recorded yet.
                             </td>
                         </tr>
                         {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -221,27 +212,29 @@
 
 </div>
 
+<!-- Delete Product Modal -->
 <div id="delete-product-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
-        <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-stone-100">Remove Product</h3>
-            <button type="button" onclick="closeDeleteModal()" class="text-white/40 hover:text-white">&times;</button>
+    <div class="w-full max-w-md rounded-xl glass-card border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 class="text-base font-black text-white">Remove Product</h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-[#a0ac96] hover:text-white">&times;</button>
         </div>
-        <p class="mt-4 text-sm text-[#a0ac96]">Remove <span id="delete-product-name" class="font-semibold text-[#cca43b]"></span> from inventory?</p>
+        <p class="mt-4 text-xs text-[#a0ac96]">Remove <span id="delete-product-name" class="font-black text-[#cca43b]"></span> from inventory?</p>
         <form id="delete-product-form" method="post" class="mt-6 flex items-center justify-end gap-3">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.path }}" />
-            <button type="button" onclick="closeDeleteModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
-            <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90">Remove</button>
+            <button type="button" onclick="closeDeleteModal()" class="rounded-md border border-white/10 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+            <button type="submit" class="rounded-md bg-rose-500/20 border border-rose-500/40 px-4 py-2 text-xs font-black text-rose-300 hover:bg-rose-500/30">Remove</button>
         </form>
     </div>
 </div>
 
+<!-- Create / Edit Product Modal -->
 <div id="product-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
-        <div class="flex items-center justify-between">
-            <h3 id="product-modal-title" class="text-lg font-semibold text-stone-100">Create Product</h3>
-            <button type="button" onclick="closeProductModal()" class="text-white/40 hover:text-white">&times;</button>
+    <div class="w-full max-w-lg rounded-xl glass-card border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 id="product-modal-title" class="text-base font-black text-white">Create Product</h3>
+            <button type="button" onclick="closeProductModal()" class="text-[#a0ac96] hover:text-white">&times;</button>
         </div>
 
         <form id="product-form" method="post" action="{% url 'sales:product_create' %}" class="mt-5 space-y-4">
@@ -255,62 +248,49 @@
             <input type="hidden" name="accent" id="product-accent" value="indigo" />
             <input type="hidden" name="icon" id="product-icon" value="fish" />
             <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Product Name *</label>
-                <input type="text" id="product-name" name="name" placeholder="e.g. Live Tilapia" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required />
+                <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Product Name *</label>
+                <input type="text" id="product-name" name="name" placeholder="e.g. Live Tilapia" class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3.5 py-2.5 text-xs text-white focus:border-[#cca43b] focus:outline-none" required />
             </div>
             
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Price/pc (₱)</label>
-                    <input type="number" step="0.01" id="product-unit-price" name="unit_price" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Price/pc (₱)</label>
+                    <input type="number" step="0.01" id="product-unit-price" name="unit_price" placeholder="0.00" class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-xs text-white font-mono focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Price/kg (₱)</label>
-                    <input type="number" step="0.01" id="product-price-per-kg" name="price_per_kg" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Price/kg (₱)</label>
+                    <input type="number" step="0.01" id="product-price-per-kg" name="price_per_kg" placeholder="0.00" class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-xs text-white font-mono focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Pcs / KG</label>
-                    <input type="number" step="0.01" id="product-pieces-per-kg" name="pieces_per_kg" placeholder="1.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Pcs / KG</label>
+                    <input type="number" step="0.01" id="product-pieces-per-kg" name="pieces_per_kg" placeholder="1.00" class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-xs text-white font-mono focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Total Stock</label>
-                    <input type="number" step="0.01" id="product-quantity-kg" name="quantity_kg" placeholder="0.00" class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
+                    <label class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Total Stock</label>
+                    <input type="number" step="0.01" id="product-quantity-kg" name="quantity_kg" placeholder="0.00" class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-xs text-white font-mono focus:border-[#cca43b] focus:outline-none" />
                 </div>
             </div>
 
             <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Description</label>
-                <textarea rows="3" id="product-notes" name="notes" placeholder="Brief description of this product..." class="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none"></textarea>
-            </div>
-
-
-            <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Accent Color</label>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <button type="button" data-accent="indigo" class="accent-swatch h-8 w-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-[#021f15]"></button>
-                    <button type="button" data-accent="cyan" class="accent-swatch h-8 w-8 rounded-full bg-cyan-500"></button>
-                    <button type="button" data-accent="emerald" class="accent-swatch h-8 w-8 rounded-full bg-emerald-500"></button>
-                    <button type="button" data-accent="amber" class="accent-swatch h-8 w-8 rounded-full bg-amber-500"></button>
-                    <button type="button" data-accent="rose" class="accent-swatch h-8 w-8 rounded-full bg-rose-500"></button>
-                    <button type="button" data-accent="violet" class="accent-swatch h-8 w-8 rounded-full bg-violet-500"></button>
-                </div>
+                <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Description</label>
+                <textarea rows="3" id="product-notes" name="notes" placeholder="Brief description of this product..." class="mt-1.5 w-full rounded-md border border-white/10 bg-black/30 px-3.5 py-2.5 text-xs text-white focus:border-[#cca43b] focus:outline-none"></textarea>
             </div>
 
             <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
-                <div class="mt-3 grid grid-cols-6 gap-2">
-                    <button type="button" data-icon="fish" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-[#cca43b] text-[#cca43b] bg-black/20">🐟</button>
-                    <button type="button" data-icon="shrimp" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🦐</button>
-                    <button type="button" data-icon="lab" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🧪</button>
-                    <button type="button" data-icon="leaf" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🌿</button>
-                    <button type="button" data-icon="box" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">📦</button>
-                    <button type="button" data-icon="water" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">💧</button>
+                <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Icon</label>
+                <div class="mt-2 grid grid-cols-6 gap-2">
+                    <button type="button" data-icon="fish" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-[#cca43b] text-[#cca43b] bg-black/30">🐟</button>
+                    <button type="button" data-icon="shrimp" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-[#a0ac96] bg-black/30 hover:border-[#cca43b]">🦐</button>
+                    <button type="button" data-icon="lab" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-[#a0ac96] bg-black/30 hover:border-[#cca43b]">🧪</button>
+                    <button type="button" data-icon="leaf" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-[#a0ac96] bg-black/30 hover:border-[#cca43b]">🌿</button>
+                    <button type="button" data-icon="box" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-[#a0ac96] bg-black/30 hover:border-[#cca43b]">📦</button>
+                    <button type="button" data-icon="water" class="icon-swatch flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-[#a0ac96] bg-black/30 hover:border-[#cca43b]">💧</button>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-2">
-                <button type="button" onclick="closeProductModal()" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:bg-white/5">Cancel</button>
-                <button type="submit" id="product-submit-btn" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-[#021f15] hover:bg-[#cca43b]/90">Create Product</button>
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                <button type="button" onclick="closeProductModal()" class="rounded-md border border-white/10 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:bg-white/5">Cancel</button>
+                <button type="submit" id="product-submit-btn" class="rounded-md bg-[#cca43b] px-4 py-2 text-xs font-black text-[#01140e] hover:bg-[#e5b945] transition-colors">Create Product</button>
             </div>
         </form>
     </div>
@@ -329,8 +309,6 @@ function showProductModal() {
     document.getElementById('product-pieces-per-kg').value = '1';
     document.getElementById('product-quantity-kg').value = '';
     
-    // reset swatches to indigo and fish
-    selectAccent('indigo');
     selectIcon('fish');
 
     document.getElementById('product-modal').classList.remove('hidden');
@@ -349,7 +327,6 @@ function openEditProductModal(actionUrl, name, notes, accent, icon, unitPrice, p
     document.getElementById('product-pieces-per-kg').value = piecesPerKg || 1;
     document.getElementById('product-quantity-kg').value = quantityKg || 0;
     
-    selectAccent(accent || 'indigo');
     selectIcon(icon || 'fish');
 
     document.getElementById('product-modal').classList.remove('hidden');
@@ -390,21 +367,6 @@ document.getElementById('delete-product-modal').addEventListener('click', functi
     }
 });
 
-document.querySelectorAll('.product-delete-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-        openDeleteModal(btn.dataset.deleteAction, btn.dataset.productName);
-    });
-});
-
-function selectAccent(accentValue) {
-    document.querySelectorAll('.accent-swatch').forEach((btn) => {
-        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
-    });
-    const swatch = document.querySelector(`.accent-swatch[data-accent="${accentValue}"]`);
-    if(swatch) swatch.classList.add('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
-    document.getElementById('product-accent').value = accentValue;
-}
-
 function selectIcon(iconValue) {
     document.querySelectorAll('.icon-swatch').forEach((btn) => {
         btn.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
@@ -418,26 +380,12 @@ function selectIcon(iconValue) {
     document.getElementById('product-icon').value = iconValue;
 }
 
-document.querySelectorAll('.accent-swatch').forEach((swatch) => {
-    swatch.addEventListener('click', () => {
-        selectAccent(swatch.dataset.accent);
-    });
-});
-
 document.querySelectorAll('.icon-swatch').forEach((swatch) => {
     swatch.addEventListener('click', () => {
         selectIcon(swatch.dataset.icon);
     });
 });
 
-document.querySelectorAll('.product-card').forEach((card) => {
-    card.addEventListener('click', () => {
-        document.querySelectorAll('.product-card').forEach((item) => {
-            item.classList.remove('ring-2', 'ring-[#cca43b]');
-        });
-        card.classList.add('ring-2', 'ring-[#cca43b]');
-    });
-});
 function toggleSubTable(id) {
     const row = document.getElementById(id);
     if (row) {
