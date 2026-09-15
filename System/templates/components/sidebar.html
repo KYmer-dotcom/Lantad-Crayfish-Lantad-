@@ -8,7 +8,10 @@
             <button type="button" onclick="toggleSidebarCollapse()" 
                 class="flex items-center gap-3 w-full text-left p-1 rounded-2xl hover:bg-white/5 transition-all group focus:outline-none cursor-pointer" 
                 title="Click logo to expand or collapse sidebar">
-                <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" 
+                <img src="{% static 'images/brand-logo.jpg' %}" 
+                    onerror="this.onerror=null; this.src='{% static 'images/logo.png' %}';"
+                    loading="eager"
+                    alt="Silay Superworm & Crayfish" 
                     class="h-12 w-12 rounded-2xl bg-white/95 p-1 object-contain shrink-0 ring-1 ring-[#cca43b]/40 group-hover:ring-[#cca43b] group-hover:scale-105 transition-all shadow-md">
                 <div class="sidebar-text-label transition-opacity duration-200 whitespace-nowrap overflow-hidden">
                     <p class="text-xs font-black tracking-tight leading-tight text-white uppercase">SILAY SUPERWORM<br>& CRAYFISH</p>
