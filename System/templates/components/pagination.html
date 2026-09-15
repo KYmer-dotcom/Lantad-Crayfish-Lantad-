@@ -1,0 +1,49 @@
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<div class="flex items-center justify-center gap-6 sm:gap-8 py-6 w-full text-xs select-none">
+    <!-- Previous Link -->
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+       class="inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-[#a0ac96] hover:text-white transition-colors cursor-pointer">
+        <span>&larr;</span>
+        <span>PREV</span>
+    </a>
+    {% else %}
+    <span class="inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-white/20 cursor-not-allowed">
+        <span>&larr;</span>
+        <span>PREV</span>
+    </span>
+    {% endif %}
+
+    <!-- Numbered Page Range -->
+    <div class="flex items-center gap-2 sm:gap-3">
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <!-- Active Page: Solid Circle -->
+                <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md">
+                    {{ num }}
+                </span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <!-- Inactive Page Link -->
+                <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                   class="h-8 w-8 flex items-center justify-center rounded-full font-bold text-xs text-[#a0ac96] hover:text-white hover:bg-white/5 transition-all">
+                    {{ num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Next Link -->
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+       class="inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-[#a0ac96] hover:text-white transition-colors cursor-pointer">
+        <span>NEXT</span>
+        <span>&rarr;</span>
+    </a>
+    {% else %}
+    <span class="inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-white/20 cursor-not-allowed">
+        <span>NEXT</span>
+        <span>&rarr;</span>
+    </span>
+    {% endif %}
+</div>
+{% endif %}
