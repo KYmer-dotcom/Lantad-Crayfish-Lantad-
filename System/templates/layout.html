@@ -250,18 +250,25 @@
     }
 
     function toggleOperationsMenu() {
+        const sidebar = document.getElementById('admin-sidebar');
+        if (sidebar && sidebar.classList.contains('md:w-20')) {
+            toggleSidebarCollapse();
+            return;
+        }
         const dropdown = document.getElementById('op-dropdown');
         const chevron = document.getElementById('op-chevron');
-        if (dropdown.classList.contains('hidden')) {
-            dropdown.classList.remove('hidden');
-            chevron.classList.add('rotate-180');
-        } else {
-            dropdown.classList.add('hidden');
-            chevron.classList.remove('rotate-180');
+        if (dropdown && chevron) {
+            dropdown.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
         }
     }
 
     function toggleDeliveryMenu() {
+        const sidebar = document.getElementById('admin-sidebar');
+        if (sidebar && sidebar.classList.contains('md:w-20')) {
+            toggleSidebarCollapse();
+            return;
+        }
         const dropdown = document.getElementById('deliv-dropdown');
         const chevron = document.getElementById('deliv-chevron');
         if (dropdown && chevron) {

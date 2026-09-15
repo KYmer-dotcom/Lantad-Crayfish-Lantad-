@@ -82,7 +82,7 @@
                 </a>
 
                 <!-- Operations Dropdown -->
-                <div class="relative w-full">
+                <div class="relative w-full group/op">
                     <button type="button" onclick="toggleOperationsMenu()" 
                         class="sidebar-nav-item w-full group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'operations:' in current_url or '/operations' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Operations">
@@ -93,12 +93,51 @@
                         <svg id="op-chevron" class="sidebar-text-label h-3.5 w-3.5 shrink-0 transition-transform duration-200 {% if 'operations:' in current_url or '/operations' in request.path %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
-                        <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap shadow-2xl opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Operations</span>
                     </button>
-                    <div id="op-dropdown" class="sidebar-submenu {% if 'operations:' not in current_url and '/operations' not in request.path %}hidden{% endif %} pl-7 pr-1 py-1 space-y-0.5">
-                        <a href="{% url 'operations:list' %}?type=pond" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Pond</a>
-                        <a href="{% url 'operations:list' %}?type=cabin" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Cabin</a>
-                        <a href="{% url 'operations:list' %}?type=azula" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Azula</a>
+
+                    <!-- Expanded Inline Submenu with Icons -->
+                    <div id="op-dropdown" class="sidebar-submenu {% if 'operations:' not in current_url and '/operations' not in request.path %}hidden{% endif %} pl-5 pr-1 py-1 space-y-1">
+                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0M3 9c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0" />
+                            </svg>
+                            <span class="sidebar-text-label">Pond</span>
+                        </a>
+                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span class="sidebar-text-label">Cabin</span>
+                        </a>
+                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span class="sidebar-text-label">Azula</span>
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Hover Popout Menu -->
+                    <div class="sidebar-floating-flyout hidden absolute left-full top-0 ml-3 p-2 w-44 rounded-2xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold shadow-2xl z-50 group-hover/op:flex flex-col gap-1">
+                        <div class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b] border-b border-white/10 mb-0.5">Operations</div>
+                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0M3 9c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0" />
+                            </svg>
+                            <span>Pond</span>
+                        </a>
+                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type == 'cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span>Cabin</span>
+                        </a>
+                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type == 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span>Azula</span>
+                        </a>
                     </div>
                 </div>
 
@@ -136,7 +175,7 @@
                 </a>
 
                 <!-- Delivery Dropdown -->
-                <div class="relative w-full">
+                <div class="relative w-full group/deliv">
                     <button type="button" onclick="toggleDeliveryMenu()" 
                         class="sidebar-nav-item w-full group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Delivery">
@@ -148,12 +187,53 @@
                         <svg id="deliv-chevron" class="sidebar-text-label h-3.5 w-3.5 shrink-0 transition-transform duration-200 {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
-                        <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap shadow-2xl opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Delivery</span>
                     </button>
-                    <div id="deliv-dropdown" class="sidebar-submenu {% if '/sales/deliveries' not in request.path and '/sales/riders' not in request.path and '/delivery' not in request.path and '/track-order' not in request.path and current_url != 'sales:delivery_list' and current_url != 'sales:rider_list' and current_url != 'sales:delivery_track' and current_url != 'delivery' and current_url != 'track_order_root' or '/logs' in request.path %}hidden{% endif %} pl-7 pr-1 py-1 space-y-0.5">
-                        <a href="{% url 'sales:delivery_list' %}" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if current_url == 'sales:delivery_list' or current_url == 'delivery' or '/sales/deliveries' in request.path and '/track' not in request.path and '/logs' not in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Deliveries</a>
-                        <a href="{% url 'sales:rider_list' %}" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if 'rider' in current_url and 'portal' not in current_url or '/sales/riders' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Riders</a>
-                        <a href="{% url 'sales:delivery_track' %}" class="block py-1.5 px-3 rounded-lg text-xs transition-all hover:bg-white/5 hover:text-white {% if current_url == 'sales:delivery_track' or current_url == 'track_order_root' or '/track' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">Track Order</a>
+
+                    <!-- Expanded Inline Submenu with Icons -->
+                    <div id="deliv-dropdown" class="sidebar-submenu {% if '/sales/deliveries' not in request.path and '/sales/riders' not in request.path and '/delivery' not in request.path and '/track-order' not in request.path and current_url != 'sales:delivery_list' and current_url != 'sales:rider_list' and current_url != 'sales:delivery_track' and current_url != 'delivery' and current_url != 'track_order_root' or '/logs' in request.path %}hidden{% endif %} pl-5 pr-1 py-1 space-y-1">
+                        <a href="{% url 'sales:delivery_list' %}" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if current_url == 'sales:delivery_list' or current_url == 'delivery' or '/sales/deliveries' in request.path and '/track' not in request.path and '/logs' not in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            <span class="sidebar-text-label">Deliveries</span>
+                        </a>
+                        <a href="{% url 'sales:rider_list' %}" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if 'rider' in current_url and 'portal' not in current_url or '/sales/riders' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="sidebar-text-label">Riders</span>
+                        </a>
+                        <a href="{% url 'sales:delivery_track' %}" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if current_url == 'sales:delivery_track' or current_url == 'track_order_root' or '/track' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="sidebar-text-label">Track Order</span>
+                        </a>
+                    </div>
+
+                    <!-- Collapsed Hover Popout Menu -->
+                    <div class="sidebar-floating-flyout hidden absolute left-full top-0 ml-3 p-2 w-44 rounded-2xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold shadow-2xl z-50 group-hover/deliv:flex flex-col gap-1">
+                        <div class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b] border-b border-white/10 mb-0.5">Delivery</div>
+                        <a href="{% url 'sales:delivery_list' %}" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if current_url == 'sales:delivery_list' or current_url == 'delivery' or '/sales/deliveries' in request.path and '/track' not in request.path and '/logs' not in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            <span>Deliveries</span>
+                        </a>
+                        <a href="{% url 'sales:rider_list' %}" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if 'rider' in current_url and 'portal' not in current_url or '/sales/riders' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span>Riders</span>
+                        </a>
+                        <a href="{% url 'sales:delivery_track' %}" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if current_url == 'sales:delivery_track' or current_url == 'track_order_root' or '/track' in request.path %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>Track Order</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -226,6 +306,7 @@
         const tooltips = sidebar.querySelectorAll('.sidebar-floating-tooltip');
         const submenus = sidebar.querySelectorAll('.sidebar-submenu');
         const navItems = sidebar.querySelectorAll('.sidebar-nav-item');
+        const flyouts = sidebar.querySelectorAll('.sidebar-floating-flyout');
 
         if (isCollapsed) {
             sidebar.classList.remove('md:w-64');
@@ -248,6 +329,7 @@
             labels.forEach(el => el.classList.add('hidden'));
             tooltips.forEach(el => el.classList.remove('hidden'));
             submenus.forEach(el => el.classList.add('hidden'));
+            flyouts.forEach(el => el.classList.remove('!hidden'));
         } else {
             sidebar.classList.remove('md:w-20');
             sidebar.classList.add('md:w-64');
@@ -268,6 +350,7 @@
 
             labels.forEach(el => el.classList.remove('hidden'));
             tooltips.forEach(el => el.classList.add('hidden'));
+            flyouts.forEach(el => el.classList.add('!hidden'));
         }
     }
 
