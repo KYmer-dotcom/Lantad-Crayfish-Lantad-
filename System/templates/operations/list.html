@@ -3,22 +3,31 @@
 {% block title %}Ponds Management{% endblock %}
 
 {% block page_content %}
-<div class="space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-            <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#cca43b]">Operations</p>
-            <h1 class="mt-2 text-2xl font-black tracking-tight text-stone-100">Farm Operations</h1>
-        </div>
-        <div class="flex items-center gap-3"></div>
+<style>
+    /* Elevated Glass Card Effect */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
+    <!-- Header -->
+    <div class="flex flex-col gap-1 border-b border-white/10 pb-4">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Operations</p>
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Farm Operations</h1>
     </div>
 
+    <!-- 3 Metric Cards in a Row -->
     <div class="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
-        <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md p-6 shadow-xl flex items-center justify-between">
+        <!-- Ponds -->
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Ponds</p>
-                <p class="mt-2 text-3xl font-black text-stone-100">{{ outdoor_ponds_count }}</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Ponds</p>
+                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ outdoor_ponds_count }}</p>
                 <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b]"></span>
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                     <span>Active outdoor ponds</span>
                 </div>
             </div>
@@ -30,12 +39,14 @@
                 </svg>
             </div>
         </div>
-        <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md p-6 shadow-xl flex items-center justify-between">
+
+        <!-- Cabin -->
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Cabin</p>
-                <p class="mt-2 text-3xl font-black text-stone-100">{{ cabin_ponds_count }}</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Cabin</p>
+                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ cabin_ponds_count }}</p>
                 <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b]"></span>
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                     <span>Superworm cabin boxes</span>
                 </div>
             </div>
@@ -49,12 +60,14 @@
                 </svg>
             </div>
         </div>
-        <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md p-6 shadow-xl flex items-center justify-between">
+
+        <!-- Azula -->
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex items-center justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Azula</p>
-                <p class="mt-2 text-3xl font-black text-stone-100">{{ azula_ponds_count }}</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Azula</p>
+                <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ azula_ponds_count }}</p>
                 <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b]"></span>
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                     <span>Azula indoor tanks</span>
                 </div>
             </div>
@@ -68,9 +81,9 @@
     </div>
 
     {% if request.GET.type != 'cabin' and request.GET.type != 'azula' %}
-    <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md shadow-xl overflow-hidden">
+    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-            <h2 class="text-lg font-black tracking-tight text-stone-100">Main Pond</h2>
+            <h2 class="text-lg font-black tracking-tight text-white">Main Pond</h2>
             {% if main_pond_recorded_today %}
             <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
             {% else %}
@@ -82,9 +95,9 @@
         </div>
     </div>
 
-    <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md shadow-xl overflow-hidden mt-6">
+    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-            <h2 class="text-lg font-black tracking-tight text-stone-100">Breeding Pond</h2>
+            <h2 class="text-lg font-black tracking-tight text-white">Breeding Pond</h2>
             {% if breeding_pond_recorded_today %}
             <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
             {% else %}
@@ -98,9 +111,9 @@
     {% endif %}
 
     {% if not request.GET.type or request.GET.type == 'cabin' %}
-    <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md shadow-xl overflow-hidden mt-6">
+    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-            <h2 class="text-lg font-black tracking-tight text-stone-100">Superworm Cabin</h2>
+            <h2 class="text-lg font-black tracking-tight text-white">Superworm Cabin</h2>
             {% if superworm_cabin_recorded_today %}
             <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
             {% else %}
@@ -114,9 +127,9 @@
     {% endif %}
 
     {% if request.GET.type == 'azula' %}
-    <div class="rounded-xl border border-white/10 bg-black/20 backdrop-blur-md shadow-xl overflow-hidden mt-6">
+    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-            <h2 class="text-lg font-black tracking-tight text-stone-100">Azula</h2>
+            <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
         </div>
         <div class="p-6">
             <div class="grid gap-4 min-h-[600px] text-stone-100 font-bold" style="grid-template-columns: 2fr 2fr 1fr 2fr 3fr; grid-template-rows: repeat(10, 1fr);">
