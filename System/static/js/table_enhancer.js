@@ -77,20 +77,20 @@ class TableEnhancer {
 
         // Header controls (Search, Filters, Page Size)
         this.controlsBar = document.createElement('div');
-        this.controlsBar.className = 'flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md';
+        this.controlsBar.className = 'flex flex-wrap items-center justify-between gap-4 p-3.5 sm:p-4 rounded-xl border border-white/10 bg-black/30 backdrop-blur-md';
         this.container.appendChild(this.controlsBar);
 
         // Left side: Search and Filters
         const leftBox = document.createElement('div');
-        leftBox.className = 'flex flex-wrap items-center gap-3 flex-1 min-w-[280px]';
+        leftBox.className = 'flex flex-wrap items-center gap-3 flex-1 min-w-[240px]';
 
         if (this.options.searchable) {
             const searchContainer = document.createElement('div');
             searchContainer.className = 'relative flex-1 max-w-xs min-w-[200px]';
             searchContainer.innerHTML = `
                 <input type="search" placeholder="${this.options.searchPlaceholder}" 
-                    class="w-full rounded-xl border border-white/10 bg-black/50 px-4 py-2.5 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] transition-all">
-                <svg class="absolute left-3 top-3 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2 pl-9 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] transition-all">
+                <svg class="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             `;
@@ -118,7 +118,7 @@ class TableEnhancer {
                     });
 
                     selectContainer.innerHTML = `
-                        <select class="rounded-xl border border-white/10 bg-black/50 px-3 py-2.5 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+                        <select class="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
                             ${optionsHtml}
                         </select>
                     `;
@@ -140,11 +140,11 @@ class TableEnhancer {
         const rightBox = document.createElement('div');
         rightBox.className = 'flex items-center gap-2 text-xs text-[#a0ac96]';
         rightBox.innerHTML = `
-            <span class="font-medium text-[11px] uppercase tracking-wider">Show</span>
-            <select class="rounded-xl border border-white/10 bg-black/50 px-3 py-2 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+            <span class="font-bold text-[10px] uppercase tracking-wider text-[#a0ac96]">Show</span>
+            <select class="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none cursor-pointer">
                 ${this.options.pageSizeOptions.map(size => `<option value="${size}" ${size === this.pageSize ? 'selected' : ''}>${size}</option>`).join('')}
             </select>
-            <span class="font-medium text-[11px] uppercase tracking-wider">entries</span>
+            <span class="font-bold text-[10px] uppercase tracking-wider text-[#a0ac96]">entries</span>
         `;
         const pageSizeSelect = rightBox.querySelector('select');
         pageSizeSelect.addEventListener('change', (e) => {
@@ -159,7 +159,7 @@ class TableEnhancer {
 
         // Footer Pagination Bar
         this.paginationBar = document.createElement('div');
-        this.paginationBar.className = 'flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs text-[#a0ac96]';
+        this.paginationBar.className = 'flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs text-[#a0ac96] select-none';
         this.container.appendChild(this.paginationBar);
 
         // Enable sorting on headers if enabled
@@ -167,7 +167,7 @@ class TableEnhancer {
             const headers = this.table.querySelectorAll('thead th');
             headers.forEach((th, idx) => {
                 th.classList.add('cursor-pointer', 'select-none', 'hover:text-white', 'transition-colors');
-                th.title = 'Click to sort';
+                th.removeAttribute('title');
                 th.addEventListener('click', () => {
                     this.sortByColumn(idx);
                 });
@@ -308,41 +308,58 @@ class TableEnhancer {
 
     renderPagination(startIndex, endIndex, total, totalPages) {
         const infoHtml = total > 0
-            ? `Showing <span class="font-bold text-stone-200">${startIndex + 1}</span> to <span class="font-bold text-stone-200">${endIndex}</span> of <span class="font-bold text-[#cca43b]">${total}</span> entries`
+            ? `Showing <span class="font-bold text-white">${startIndex + 1}</span> to <span class="font-bold text-white">${endIndex}</span> of <span class="font-bold text-[#cca43b]">${total}</span> entries`
             : `Showing 0 entries`;
 
         let paginationButtonsHtml = '';
         if (totalPages > 1) {
             paginationButtonsHtml = `
-                <div class="flex items-center gap-1.5">
-                    <button type="button" class="btn-prev px-3 py-1.5 rounded-xl border border-white/10 bg-black/40 text-xs font-bold text-stone-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all" ${this.currentPage === 1 ? 'disabled' : ''}>
-                        ← Prev
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <!-- Previous -->
+                    <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs transition-colors cursor-pointer ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed' : 'text-[#a0ac96] hover:text-white'}" ${this.currentPage === 1 ? 'disabled' : ''}>
+                        <span>&larr;</span>
+                        <span>PREV</span>
                     </button>
+
+                    <!-- Page Numbers -->
+                    <div class="flex items-center gap-2 sm:gap-2.5">
             `;
 
             for (let p = 1; p <= totalPages; p++) {
                 if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
                     const isActive = p === this.currentPage;
-                    paginationButtonsHtml += `
-                        <button type="button" data-page="${p}" class="btn-page w-8 h-8 rounded-xl text-xs font-black transition-all ${isActive ? 'bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20' : 'border border-white/10 bg-black/40 text-stone-300 hover:text-white hover:bg-white/10'}">
-                            ${p}
-                        </button>
-                    `;
+                    if (isActive) {
+                        paginationButtonsHtml += `
+                            <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md">
+                                ${p}
+                            </span>
+                        `;
+                    } else {
+                        paginationButtonsHtml += `
+                            <button type="button" data-page="${p}" class="btn-page h-7 w-7 sm:h-8 sm:w-8 flex items-center justify-center rounded-full font-bold text-xs text-[#a0ac96] hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+                                ${p}
+                            </button>
+                        `;
+                    }
                 } else if (p === this.currentPage - 2 || p === this.currentPage + 2) {
-                    paginationButtonsHtml += `<span class="px-1 text-stone-500">...</span>`;
+                    paginationButtonsHtml += `<span class="px-1 text-[#a0ac96]/40 font-bold">...</span>`;
                 }
             }
 
             paginationButtonsHtml += `
-                    <button type="button" class="btn-next px-3 py-1.5 rounded-xl border border-white/10 bg-black/40 text-xs font-bold text-stone-300 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all" ${this.currentPage === totalPages ? 'disabled' : ''}>
-                        Next →
+                    </div>
+
+                    <!-- Next -->
+                    <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.2em] text-xs transition-colors cursor-pointer ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed' : 'text-[#a0ac96] hover:text-white'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
+                        <span>NEXT</span>
+                        <span>&rarr;</span>
                     </button>
                 </div>
             `;
         }
 
         this.paginationBar.innerHTML = `
-            <div class="text-[11px]">${infoHtml}</div>
+            <div class="text-[11px] font-mono">${infoHtml}</div>
             <div>${paginationButtonsHtml}</div>
         `;
 
