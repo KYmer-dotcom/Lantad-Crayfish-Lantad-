@@ -10,12 +10,6 @@
         background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-card:hover {
-        border-color: rgba(204, 164, 59, 0.35);
-        box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.55), 
-                    0 0 20px rgba(204, 164, 59, 0.08);
     }
 </style>
 
@@ -30,10 +24,9 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-3.5">
 
         <!-- Stat Card 1: Active Stocks -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Active Stocks</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ stats.total_fish|default:"0" }}</p>
@@ -45,10 +38,9 @@
         </div>
 
         <!-- Stat Card 2: Daily Sales -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Daily Sales</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight truncate">₱{{ stats.daily_sales_total|floatformat:2|default:"0.00" }}</p>
@@ -60,10 +52,9 @@
         </div>
 
         <!-- Stat Card 3: 30D Revenue -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Revenue (30D)</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">₱{{ stats.revenue_30d|floatformat:2|default:"0.00" }}</p>
@@ -75,10 +66,9 @@
         </div>
 
         <!-- Stat Card 4: Pending Orders -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Pending Orders</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight truncate">{{ stats.pending_orders|default:"0" }}</p>
@@ -90,10 +80,9 @@
         </div>
 
         <!-- Stat Card 5: Upcoming Harvests -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Upcoming Harvests</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ stats.upcoming_harvests|default:"0" }}</p>
@@ -105,10 +94,9 @@
         </div>
 
         <!-- Stat Card 6: Total Products -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between group">
-            <div class="flex items-center justify-between gap-1">
+        <div class="glass-card rounded-2xl p-4 flex flex-col justify-between">
+            <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Total Products</p>
-                <span class="text-[#a0ac96]/30 group-hover:text-[#cca43b] text-xs font-black cursor-pointer shrink-0">&bull;&bull;&bull;</span>
             </div>
             <div class="mt-2">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ stats.total_products|default:"0" }}</p>
