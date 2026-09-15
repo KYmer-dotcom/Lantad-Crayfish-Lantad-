@@ -97,11 +97,11 @@ class TableEnhancer {
 
         // Left side: Search and Filters
         const leftBox = document.createElement('div');
-        leftBox.className = 'flex flex-wrap items-center gap-3 flex-1 min-w-[240px]';
+        leftBox.className = 'flex items-center gap-3';
 
         if (this.options.searchable) {
             const searchContainer = document.createElement('div');
-            searchContainer.className = 'relative flex-1 max-w-xs min-w-[200px]';
+            searchContainer.className = 'relative max-w-xs min-w-[200px]';
             searchContainer.innerHTML = `
                 <input type="search" placeholder="${this.options.searchPlaceholder}" 
                     class="w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2 pl-9 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] transition-all">
@@ -151,6 +151,11 @@ class TableEnhancer {
 
         this.controlsBar.appendChild(leftBox);
 
+        // Center: Info text (Showing X to Y of Z entries)
+        this.infoBox = document.createElement('div');
+        this.infoBox.className = 'text-xs text-[#a0ac96] font-mono text-center flex-1 px-2 select-none';
+        this.controlsBar.appendChild(this.infoBox);
+
         // Right side: Page size selector
         const rightBox = document.createElement('div');
         rightBox.className = 'flex items-center gap-2 text-xs text-[#a0ac96] shrink-0';
@@ -171,7 +176,7 @@ class TableEnhancer {
 
         // Footer Pagination Bar with proper padding and styling
         this.paginationBar = document.createElement('div');
-        this.paginationBar.className = 'flex flex-col items-center justify-center gap-3 px-6 py-4 border-t border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] select-none text-center';
+        this.paginationBar.className = 'flex flex-wrap items-center justify-center gap-4 px-6 py-4 border-t border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] select-none';
 
         // Mount table and pagination cleanly
         if (isCard) {
@@ -347,75 +352,88 @@ class TableEnhancer {
     }
 
     renderPagination(startIndex, endIndex, total, totalPages) {
+        const infoHtml = total > 0
+            ? `Showing <span class="font-bold text-white">${startIndex + 1}</span> to <span class="font-bold text-white">${endIndex}</span> of <span class="font-bold text-[#cca43b]">${total}</span> entries`
+            : `Showing 0 entries`;
+
+        if (this.infoBox) {
+            this.infoBox.innerHTML = infoHtml;
+        }
+
         let pagesHtml = '';
-        for (let p = 1; p <= totalPages; p++) {
-            if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
-                const isActive = p === this.currentPage;
-                if (isActive) {
-                    pagesHtml += `
-                        <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md select-none">
-                            ${p}
-                        </span>
-                    `;
-                } else {
-                    pagesHtml += `
-                        <button type="button" data-page="${p}" class="btn-page text-xs font-black text-[#a0ac96] hover:text-white transition-colors cursor-pointer px-2 py-1 select-none">
-                            ${p}
-                        </button>
-                    `;
+        if (totalPages > 1) {
+            for (let p = 1; p <= totalPages; p++) {
+                if (p === 1 || p === totalPages || (p >= this.currentPage - 1 && p <= this.currentPage + 1)) {
+                    const isActive = p === this.currentPage;
+                    if (isActive) {
+                        pagesHtml += `
+                            <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md select-none">
+                                ${p}
+                            </span>
+                        `;
+                    } else {
+                        pagesHtml += `
+                            <button type="button" data-page="${p}" class="btn-page text-xs font-black text-[#a0ac96] hover:text-white transition-colors cursor-pointer px-2 py-1 select-none">
+                                ${p}
+                            </button>
+                        `;
+                    }
+                } else if (p === this.currentPage - 2 || p === this.currentPage + 2) {
+                    pagesHtml += `<span class="px-1 text-[#a0ac96]/40 font-bold select-none">...</span>`;
                 }
-            } else if (p === this.currentPage - 2 || p === this.currentPage + 2) {
-                pagesHtml += `<span class="px-1 text-[#a0ac96]/40 font-bold select-none">...</span>`;
             }
-        }
 
-        const paginationHtml = `
-            <div class="flex items-center justify-center gap-6 sm:gap-8 w-full select-none py-1">
-                <!-- Previous -->
-                <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === 1 ? 'disabled' : ''}>
-                    <span>&larr;</span>
-                    <span>PREV</span>
-                </button>
+            const paginationHtml = `
+                <div class="flex items-center justify-center gap-6 sm:gap-8 w-full select-none py-1">
+                    <!-- Previous -->
+                    <button type="button" class="btn-prev inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === 1 ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === 1 ? 'disabled' : ''}>
+                        <span>&larr;</span>
+                        <span>PREV</span>
+                    </button>
 
-                <!-- Page Numbers -->
-                <div class="flex items-center gap-4 sm:gap-6">
-                    ${pagesHtml}
+                    <!-- Page Numbers -->
+                    <div class="flex items-center gap-4 sm:gap-6">
+                        ${pagesHtml}
+                    </div>
+
+                    <!-- Next -->
+                    <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
+                        <span>NEXT</span>
+                        <span>&rarr;</span>
+                    </button>
                 </div>
+            `;
 
-                <!-- Next -->
-                <button type="button" class="btn-next inline-flex items-center gap-2 font-black uppercase tracking-[0.25em] text-xs transition-colors ${this.currentPage === totalPages ? 'text-white/20 cursor-not-allowed opacity-40' : 'text-[#a0ac96] hover:text-white cursor-pointer'}" ${this.currentPage === totalPages ? 'disabled' : ''}>
-                    <span>NEXT</span>
-                    <span>&rarr;</span>
-                </button>
-            </div>
-        `;
+            this.paginationBar.style.display = 'flex';
+            this.paginationBar.innerHTML = paginationHtml;
 
-        this.paginationBar.style.display = 'flex';
-        this.paginationBar.innerHTML = paginationHtml;
+            // Wire pagination clicks
+            const prevBtn = this.paginationBar.querySelector('.btn-prev');
+            if (prevBtn && this.currentPage > 1) {
+                prevBtn.addEventListener('click', () => {
+                    this.currentPage--;
+                    this.render();
+                });
+            }
 
-        // Wire pagination clicks
-        const prevBtn = this.paginationBar.querySelector('.btn-prev');
-        if (prevBtn && this.currentPage > 1) {
-            prevBtn.addEventListener('click', () => {
-                this.currentPage--;
-                this.render();
+            const nextBtn = this.paginationBar.querySelector('.btn-next');
+            if (nextBtn && this.currentPage < totalPages) {
+                nextBtn.addEventListener('click', () => {
+                    this.currentPage++;
+                    this.render();
+                });
+            }
+
+            this.paginationBar.querySelectorAll('.btn-page').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    this.currentPage = parseInt(btn.getAttribute('data-page'));
+                    this.render();
+                });
             });
+        } else {
+            this.paginationBar.style.display = 'none';
+            this.paginationBar.innerHTML = '';
         }
-
-        const nextBtn = this.paginationBar.querySelector('.btn-next');
-        if (nextBtn && this.currentPage < totalPages) {
-            nextBtn.addEventListener('click', () => {
-                this.currentPage++;
-                this.render();
-            });
-        }
-
-        this.paginationBar.querySelectorAll('.btn-page').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.currentPage = parseInt(btn.getAttribute('data-page'));
-                this.render();
-            });
-        });
     }
 }
 
