@@ -79,16 +79,14 @@
                 </a>
 
                 <!-- Operations Dropdown -->
-                <div class="relative">
+                <div class="relative w-full">
                     <button type="button" onclick="toggleOperationsMenu()" 
-                        class="sidebar-nav-item w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'operations:' in current_url or '/operations' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                        class="sidebar-nav-item w-full group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if 'operations:' in current_url or '/operations' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Operations">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Operations</span>
-                        </div>
+                        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <span class="sidebar-text-label flex-1 text-left whitespace-nowrap overflow-hidden">Operations</span>
                         <svg id="op-chevron" class="sidebar-text-label h-3.5 w-3.5 shrink-0 transition-transform duration-200 {% if 'operations:' in current_url or '/operations' in request.path %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -135,17 +133,15 @@
                 </a>
 
                 <!-- Delivery Dropdown -->
-                <div class="relative">
+                <div class="relative w-full">
                     <button type="button" onclick="toggleDeliveryMenu()" 
-                        class="sidebar-nav-item w-full group relative flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                        class="sidebar-nav-item w-full group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shadow-sm {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                         title="Delivery">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                            </svg>
-                            <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Delivery</span>
-                        </div>
+                        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                        </svg>
+                        <span class="sidebar-text-label flex-1 text-left whitespace-nowrap overflow-hidden">Delivery</span>
                         <svg id="deliv-chevron" class="sidebar-text-label h-3.5 w-3.5 shrink-0 transition-transform duration-200 {% if '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' or current_url == 'delivery' or current_url == 'track_order_root' %}rotate-180{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
