@@ -71,18 +71,18 @@
         display: none !important;
     }
 </style>
-<div class="min-h-screen app-shell text-stone-100 bg-[#021f15]">
+<div class="min-h-screen app-shell text-stone-100 bg-[#01140e]">
     <div class="flex min-h-screen">
         {% include 'components/sidebar.html' %}
 
         <div class="flex min-h-[100dvh] flex-1 flex-col min-w-0">
-            <header class="sticky top-0 z-30 border-b border-[#cca43b]/20 bg-[#021f15]/80 backdrop-blur-md">
+            <header class="sticky top-0 z-30 border-b border-[#cca43b]/15 bg-[#01140e]/90 backdrop-blur-md">
                 <div class="flex items-center justify-between gap-4 px-6 py-4">
                     <!-- Left Section: Mobile Toggle & Logo, Desktop Title -->
                     <div class="flex items-center gap-4">
                         <button
                             type="button"
-                            class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 text-slate-100"
+                            class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 text-white"
                             onclick="toggleMobileMenu()"
                             aria-label="Toggle menu"
                         >
@@ -102,13 +102,13 @@
                         <!-- Page Title (Desktop) -->
                         <div class="hidden md:flex items-center gap-3">
                             {% block header_icon %}
-                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/20 text-[#cca43b]">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b]">
                                 {% with request.resolver_match.view_name as current_url %}
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     {% if 'stock:' in current_url or '/products' in request.path %}
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     {% elif 'operations:' in current_url or '/operations' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     {% elif 'harvest:' in current_url or '/harvest' in request.path %}
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     {% elif current_url == 'inventory' or '/inventory' in request.path %}
@@ -131,7 +131,7 @@
                                 {% endwith %}
                             </div>
                             {% endblock %}
-                            <h1 class="text-xl font-bold text-stone-50 tracking-tight">{% block header_title %}Overview{% endblock %}</h1>
+                            <h1 class="text-xl font-black text-white tracking-tight">{% block header_title %}Overview{% endblock %}</h1>
                         </div>
                     </div>
 
@@ -140,29 +140,27 @@
                         <!-- User Profile -->
                         <div class="flex items-center gap-3">
                             <div class="relative">
-                                <button onclick="toggleUserMenu()" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-sm font-medium text-stone-100 hover:border-[#cca43b]/50 transition-colors">
-                                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#cca43b]/20 text-[#cca43b] font-bold">
+                                <button onclick="toggleUserMenu()" class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
+                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                                         {{ user.get_role_display.0|upper|default:"A" }}
                                     </span>
-                                    <span class="hidden md:inline">{{ user.get_role_display|default:user.username|default:"Admin" }}</span>
-                                    <svg class="h-4 w-4 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <span class="hidden md:inline text-xs font-bold text-white">{{ user.get_role_display|default:user.username|default:"Admin" }}</span>
+                                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
                                 
                                 <!-- User Dropdown -->
-                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#021f15] shadow-lg hidden z-50">
-                                    <div class="py-1">
-                                        <form method="post" action="{% url 'logout' %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="flex w-full items-center gap-3 px-4 py-2 text-sm font-medium text-stone-100 hover:bg-white/5 hover:text-[#cca43b] transition-colors">
-                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                                </svg>
-                                                Logout
-                                            </button>
-                                        </form>
-                                    </div>
+                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] shadow-2xl hidden z-50 p-1">
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="flex w-full items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold text-white hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
+                                            Logout
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -57,7 +57,7 @@
             </div>
             <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ stats.total_fish|default:"0" }}</p>
             <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                <span class="inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] shadow-[0_0_8px_rgba(204,164,59,0.6)]"></span>
                 Across {{ stats.active_ponds|default:"0" }} active ponds/tanks
             </div>
         </div>
@@ -85,7 +85,7 @@
             <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#cca43b]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Revenue (30d)</p>
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 border border-blue-500/25 text-blue-400 shadow-sm">
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
@@ -93,36 +93,36 @@
             </div>
             <p class="mt-4 text-4xl font-black text-white tracking-tight">₱{{ stats.revenue_30d|floatformat:2|default:"0.00" }}</p>
             <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                <span class="inline-block h-2 w-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></span>
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] shadow-[0_0_8px_rgba(204,164,59,0.6)]"></span>
                 {{ stats.order_count|default:"0" }} completed orders
             </div>
         </div>
 
         <!-- Stat Card 4: Pending -->
         <div class="glass-card rounded-[2rem] p-6 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#cca43b]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Pending Orders</p>
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-400 shadow-sm">
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-sm">
                     <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#cca43b] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#cca43b]"></span>
                     </span>
                 </div>
             </div>
-            <p class="mt-4 text-4xl font-black text-amber-400 tracking-tight">{{ stats.pending_orders|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-2 text-xs text-amber-400/90 font-mono font-bold">
-                <span class="inline-block h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
+            <p class="mt-4 text-4xl font-black text-[#cca43b] tracking-tight">{{ stats.pending_orders|default:"0" }}</p>
+            <div class="mt-4 flex items-center gap-2 text-xs text-[#cca43b] font-mono font-bold">
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] shadow-[0_0_8px_rgba(204,164,59,0.6)]"></span>
                 Action required in queue
             </div>
         </div>
 
         <!-- Stat Card 5: Harvest Forecast -->
         <div class="glass-card rounded-[2rem] p-6 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#cca43b]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Upcoming Harvests</p>
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 shadow-sm">
+                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -130,7 +130,7 @@
             </div>
             <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ stats.upcoming_harvests|default:"0" }}</p>
             <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                <span class="inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] shadow-[0_0_8px_rgba(204,164,59,0.6)]"></span>
                 Next 30 days projection
             </div>
         </div>
@@ -148,7 +148,7 @@
             </div>
             <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ stats.total_products|default:"0" }}</p>
             <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
-                <span class="inline-block h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></span>
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] shadow-[0_0_8px_rgba(204,164,59,0.6)]"></span>
                 Active catalog items
             </div>
         </div>
@@ -174,7 +174,7 @@
         <div class="glass-card rounded-[2.5rem] shadow-xl lg:col-span-2 overflow-hidden">
             <div class="flex items-center justify-between border-b border-white/10 px-8 py-5 bg-white/[0.02]">
                 <div>
-                    <h2 class="text-base font-black text-stone-50 tracking-tight">Recent Activity</h2>
+                    <h2 class="text-base font-black text-white tracking-tight">Recent Activity</h2>
                     <p class="text-xs text-[#a0ac96]">Sales metrics by date</p>
                 </div>
             </div>
@@ -191,7 +191,7 @@
                         {% for row in sales_by_date %}
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             <td class="px-8 py-4 font-mono font-bold">{{ row.day|date:"Y-m-d" }}</td>
-                            <td class="px-8 py-4 font-bold">{{ row.total_orders }}</td>
+                            <td class="px-8 py-4 font-bold text-white">{{ row.total_orders }}</td>
                             <td class="px-8 py-4 font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
@@ -206,63 +206,63 @@
 
         <!-- Key Notifications -->
         <div class="glass-card rounded-[2.5rem] p-6 shadow-xl">
-            <h2 class="text-base font-black text-stone-50 tracking-tight">Key Alerts</h2>
+            <h2 class="text-base font-black text-white tracking-tight">Key Alerts</h2>
             <p class="text-xs text-[#a0ac96] mb-5">Crucial items for immediate attention</p>
             <div class="space-y-4">
                 {% if azula_alerts %}
                 {% with alert=azula_alerts.0 %}
-                <div class="rounded-2xl border {{ alert.box_class }} p-4 flex items-start gap-3">
-                    <span class="flex h-2 w-2 mt-1.5 rounded-full {{ alert.dot_class }} flex-shrink-0"></span>
+                <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-4 flex items-start gap-3">
+                    <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] flex-shrink-0"></span>
                     <div class="w-full">
                         <div class="flex items-center justify-between gap-2 mb-1">
-                            <p class="text-xs font-black uppercase tracking-wider {{ alert.text_class }}">Pond Sanitization</p>
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {{ alert.badge_class }}">{{ alert.status_text }}</span>
+                            <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Pond Sanitization</p>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ alert.status_text }}</span>
                         </div>
                         <p class="text-xs font-bold text-white mb-1">{{ alert.pond.name|default:"Azula Sector 1" }}</p>
-                        <p class="text-xs text-stone-300 leading-relaxed font-mono">Scheduled sanitization cycle 15 days post-transfer. Ensure water treatment protocols are executed.</p>
+                        <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Scheduled sanitization cycle 15 days post-transfer. Ensure water treatment protocols are executed.</p>
                     </div>
                 </div>
                 {% endwith %}
                 {% endif %}
 
                 {% if harvest1 %}
-                <div class="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 flex items-start gap-3">
-                    <span class="flex h-2 w-2 mt-1.5 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
+                <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-4 flex items-start gap-3">
+                    <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] animate-pulse flex-shrink-0"></span>
                     <div class="w-full">
                         <div class="flex items-center justify-between gap-2 mb-1">
-                            <p class="text-xs font-black uppercase tracking-wider text-cyan-400">Upcoming Harvest</p>
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">{{ harvest1.get_status_display }}</span>
+                            <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Upcoming Harvest</p>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ harvest1.get_status_display }}</span>
                         </div>
                         <p class="text-xs font-bold text-white mb-1">{{ harvest1.stock_batch.batch_code }}</p>
-                        <p class="text-xs text-stone-300 leading-relaxed font-mono">Harvest of estimated {{ harvest1.estimated_quantity }} fish (est. yield {{ harvest1.estimated_total_weight }}) of {{ harvest1.stock_batch.species.name }} in {{ harvest1.stock_batch.pond.name }}.</p>
+                        <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Harvest of estimated {{ harvest1.estimated_quantity }} fish (est. yield {{ harvest1.estimated_total_weight }}) of {{ harvest1.stock_batch.species.name }} in {{ harvest1.stock_batch.pond.name }}.</p>
                     </div>
                 </div>
                 {% endif %}
 
                 {% if order1 %}
-                <div class="rounded-2xl border {% if order1.status == 'pending' or order1.status == 'processing' %}border-amber-500/20 bg-amber-500/5{% else %}border-emerald-500/20 bg-emerald-50/5{% endif %} p-4 flex items-start gap-3">
-                    <span class="flex h-2 w-2 mt-1.5 rounded-full {% if order1.status == 'pending' or order1.status == 'processing' %}bg-amber-400 animate-pulse{% else %}bg-emerald-400{% endif %} flex-shrink-0"></span>
+                <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-4 flex items-start gap-3">
+                    <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] animate-pulse flex-shrink-0"></span>
                     <div class="w-full">
                         <div class="flex items-center justify-between gap-2 mb-1">
-                            <p class="text-xs font-black uppercase tracking-wider {% if order1.status == 'pending' or order1.status == 'processing' %}text-amber-400{% else %}text-emerald-400{% endif %}">{{ order1.get_status_display }} Order</p>
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if order1.status == 'pending' or order1.status == 'processing' %}bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse{% else %}bg-emerald-500/10 text-emerald-300 border-emerald-500/20{% endif %}">{% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
+                            <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ order1.get_status_display }} Order</p>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
                         </div>
                         <p class="text-xs font-bold text-white mb-1">{{ order1.order_number }}</p>
-                        <p class="text-xs text-stone-300 leading-relaxed font-mono">{{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }} is {{ order1.get_status_display|lower }}.</p>
+                        <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">{{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }} is {{ order1.get_status_display|lower }}.</p>
                     </div>
                 </div>
                 {% endif %}
 
                 {% if order2 %}
-                <div class="rounded-2xl border {% if order2.status == 'pending' or order2.status == 'processing' %}border-amber-500/20 bg-amber-500/5{% else %}border-emerald-500/20 bg-emerald-500/5{% endif %} p-4 flex items-start gap-3">
-                    <span class="flex h-2 w-2 mt-1.5 rounded-full {% if order2.status == 'pending' or order2.status == 'processing' %}bg-amber-400 animate-pulse{% else %}bg-emerald-400{% endif %} flex-shrink-0"></span>
+                <div class="rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 p-4 flex items-start gap-3">
+                    <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] animate-pulse flex-shrink-0"></span>
                     <div class="w-full">
                         <div class="flex items-center justify-between gap-2 mb-1">
-                            <p class="text-xs font-black uppercase tracking-wider {% if order2.status == 'pending' or order2.status == 'processing' %}text-amber-400{% else %}text-emerald-400{% endif %}">{{ order2.get_status_display }} Order</p>
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if order2.status == 'pending' or order2.status == 'processing' %}bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse{% else %}bg-emerald-500/10 text-emerald-300 border-emerald-500/20{% endif %}">{% if order2.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
+                            <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ order2.get_status_display }} Order</p>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order2.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
                         </div>
                         <p class="text-xs font-bold text-white mb-1">{{ order2.order_number }}</p>
-                        <p class="text-xs text-stone-300 leading-relaxed font-mono">{{ order2.get_order_type_display }} order of {{ order2.quantity_kg }} {{ order2.product.name }} by {{ order2.customer.name }} is {{ order2.get_status_display|lower }}.</p>
+                        <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">{{ order2.get_order_type_display }} order of {{ order2.quantity_kg }} {{ order2.product.name }} by {{ order2.customer.name }} is {{ order2.get_status_display|lower }}.</p>
                     </div>
                 </div>
                 {% endif %}
@@ -270,16 +270,14 @@
         </div>
     </div>
 
-
-
     <!-- Order Queue -->
     <div class="glass-card rounded-[2.5rem] shadow-xl w-full overflow-hidden">
         <div class="flex items-center justify-between border-b border-white/10 px-8 py-5 bg-white/[0.02]">
             <div>
-                <h2 class="text-base font-black text-stone-50 tracking-tight">Recent Orders</h2>
+                <h2 class="text-base font-black text-white tracking-tight">Recent Orders</h2>
                 <p class="text-xs text-[#a0ac96]">Processing queue overview</p>
             </div>
-            <a href="{% url 'sales:list' %}" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-stone-300 hover:bg-white/10 transition-all cursor-pointer">
+            <a href="{% url 'sales:list' %}" class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
                 Manage Portal
             </a>
         </div>
@@ -296,13 +294,13 @@
                 <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
                     {% for order in recent_orders %}
                     <tr class="hover:bg-white/[0.02] transition-colors">
-                        <td class="px-8 py-4 font-mono font-bold">{{ order.order_number }}</td>
-                        <td class="px-8 py-4 font-bold">{{ order.customer.name }}</td>
+                        <td class="px-8 py-4 font-mono font-bold text-white">{{ order.order_number }}</td>
+                        <td class="px-8 py-4 font-bold text-stone-200">{{ order.customer.name }}</td>
                         <td class="px-8 py-4">
                             <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border
-                                {% if order.status == 'pending' %}bg-amber-500/10 text-amber-400 border-amber-500/20
-                                {% elif order.status == 'completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                {% else %}bg-blue-500/10 text-blue-400 border-blue-500/20{% endif %}">
+                                {% if order.status == 'pending' %}bg-[#cca43b]/20 text-[#cca43b] border-[#cca43b]/40
+                                {% elif order.status == 'completed' %}bg-white/10 text-white border-white/20
+                                {% else %}bg-[#cca43b]/10 text-[#cca43b] border-[#cca43b]/20{% endif %}">
                                 {{ order.get_status_display }}
                             </span>
                         </td>
@@ -316,7 +314,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>  </div>
 </div>
 {% endblock %}
 
