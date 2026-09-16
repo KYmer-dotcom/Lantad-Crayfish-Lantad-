@@ -1758,8 +1758,28 @@ def delivery_track_page(request):
     deliveries_data = []
     for d in all_deliveries:
         cust = d.order.customer if d.order else None
-        lat = float(cust.map_latitude) if (cust and cust.map_latitude) else 10.7950
-        lng = float(cust.map_longitude) if (cust and cust.map_longitude) else 122.9650
+        addr_lower = (d.delivery_location or (cust.address if cust else '')).lower()
+        if cust and cust.map_latitude and cust.map_longitude and float(cust.map_longitude) > 122.9680:
+            lat = float(cust.map_latitude)
+            lng = float(cust.map_longitude)
+        elif 'bagtic' in addr_lower:
+            lat = 10.7930
+            lng = 122.9830
+        elif 'malihong' in addr_lower or 'lantad' in addr_lower:
+            lat = 10.8015
+            lng = 122.9725
+        elif 'mambulac' in addr_lower:
+            lat = 10.7995
+            lng = 122.9710
+        elif 'chmsu' in addr_lower or 'carlos hilado' in addr_lower:
+            lat = 10.7978
+            lng = 122.9775
+        elif 'guimbala' in addr_lower:
+            lat = 10.7910
+            lng = 122.9790
+        else:
+            lat = 10.7970
+            lng = 122.9755
         approver = d.created_by.get_full_name() or d.created_by.username if d.created_by else 'Admin'
         rider_name = d.rider.name if d.rider else 'No rider assigned yet'
         rider_phone = d.rider.phone if (d.rider and d.rider.phone) else ''
