@@ -8,6 +8,18 @@ class TableEnhancer {
         this.table = typeof tableElement === 'string' ? document.querySelector(tableElement) : tableElement;
         if (!this.table) return;
 
+        // Prevent duplicate instances on the same table
+        if (this.table.__tableEnhancer) {
+            try {
+                this.table.__tableEnhancer.destroy();
+            } catch (e) {
+                console.error('Error destroying previous TableEnhancer instance:', e);
+            }
+        }
+
+        this.table.__tableEnhancer = this;
+        this.table.dataset.enhanced = 'true';
+
         this.options = Object.assign({
             pageSize: 10,
             pageSizeOptions: [5, 10, 25, 50, 100],
@@ -36,6 +48,25 @@ class TableEnhancer {
 
         this.initDOM();
         this.render();
+    }
+
+    destroy() {
+        if (this.controlsBar && this.controlsBar.parentNode) {
+            this.controlsBar.remove();
+        }
+        if (this.paginationBar && this.paginationBar.parentNode) {
+            this.paginationBar.remove();
+        }
+        if (this.container && this.container.parentNode) {
+            // Unwrap table from container
+            const containerParent = this.container.parentNode;
+            containerParent.insertBefore(this.originalParentNode || this.table, this.container);
+            this.container.remove();
+        }
+        if (this.table) {
+            delete this.table.dataset.enhanced;
+            delete this.table.__tableEnhancer;
+        }
     }
 
     extractRowGroups() {
@@ -97,7 +128,7 @@ class TableEnhancer {
 
         // Left side: Search and Filters
         const leftBox = document.createElement('div');
-        leftBox.className = 'flex items-center gap-3';
+        leftBox.className = 'flex flex-wrap items-center gap-3';
 
         if (this.options.searchable) {
             const searchContainer = document.createElement('div');
@@ -180,11 +211,13 @@ class TableEnhancer {
 
         // Mount table and pagination cleanly
         if (isCard) {
+            this.originalParentNode = cardContainer;
             cardContainer.parentNode.insertBefore(this.container, cardContainer);
             this.container.appendChild(this.controlsBar);
             this.container.appendChild(cardContainer);
             cardContainer.appendChild(this.paginationBar);
         } else if (isParentOverflow) {
+            this.originalParentNode = parent;
             parent.parentNode.insertBefore(this.container, parent);
             this.container.appendChild(this.controlsBar);
 
@@ -194,6 +227,7 @@ class TableEnhancer {
             card.appendChild(this.paginationBar);
             this.container.appendChild(card);
         } else {
+            this.originalParentNode = this.table;
             this.table.parentNode.insertBefore(this.container, this.table);
             this.container.appendChild(this.controlsBar);
 
@@ -442,14 +476,15 @@ window.TableEnhancer = TableEnhancer;
 window.initTableEnhancer = function (selector, options) {
     const tables = document.querySelectorAll(selector);
     tables.forEach(table => {
-        if (!table.dataset.enhanced) {
-            table.dataset.enhanced = 'true';
+        if (!table.__tableEnhancer && !table.dataset.enhanced) {
             new TableEnhancer(table, options);
         }
     });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Auto-initialize any table with class .enhanced-table
-    window.initTableEnhancer('.enhanced-table');
+    // Auto-initialize any unenhanced table with class .enhanced-table
+    setTimeout(() => {
+        window.initTableEnhancer('.enhanced-table');
+    }, 0);
 });
