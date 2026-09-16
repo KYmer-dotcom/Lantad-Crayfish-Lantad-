@@ -42,65 +42,6 @@
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <!-- Stat Card 1: Total Shipments -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Shipments</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ all_deliveries.count|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>All delivery dispatches</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat Card 2: In Transit -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">In Transit</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ in_transit_count|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Live couriers en route</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat Card 3: Scheduled -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Scheduled</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ scheduled_count|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Pending dispatch</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat Card 4: Delivered -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ delivered_count|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Successfully fulfilled</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- 2-Column Master-Detail Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
@@ -406,10 +347,9 @@ function initLiveTrackingMap() {
         attributionControl: false
     }).setView([FARM_ORIGIN.lat, FARM_ORIGIN.lng], 13);
 
-    // Dark theme CartoDB / OSM tiles for seamless obsidian aesthetic
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd'
+    // Reliable high-detail Esri World Street Map tiles (No API key, No watermark)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18
     }).addTo(trackMap);
 
     setTimeout(() => {
