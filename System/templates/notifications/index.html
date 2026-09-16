@@ -352,67 +352,91 @@
             </div>
         </div>
 
-        <div class="divide-y divide-white/5">
+        <div class="divide-y divide-white/10">
             <!-- Azula Feed Alerts -->
             {% for alert in azula_alerts %}
-            <div class="flex items-start gap-4 px-6 py-4.5 hover:bg-white/[0.02] transition-colors group">
+            <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors group">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-lg">
+                    🧪
+                </div>
                 <div class="flex-grow min-w-0">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-                        <p class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pond Sanitization: {{ alert.pond.name|default:"Azula Sector 1" }}</p>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pond Sanitization: {{ alert.pond.name|default:"Azula Sector 1" }}</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ alert.badge_class }} font-mono">{{ alert.status_text }}</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-2">Azula pond requires sanitization 15 days after transfer (Transfer: {{ alert.pond.transfer_date|default:"Recent" }}). Target: {{ alert.sanitization_date|date:"b. d, Y" }}.</p>
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Azula pond requires sanitization 15 days after transfer (Transfer: {{ alert.pond.transfer_date|default:"Recent" }}). Target: {{ alert.sanitization_date|date:"M. d, Y" }}.</p>
                     <div class="flex items-center gap-4">
-                        <a href="{% url 'operations:list' %}" class="text-xs font-black text-[#cca43b] hover:underline uppercase tracking-wider">Sanitization Protocol →</a>
+                        <a href="{% url 'operations:list' %}" class="inline-flex items-center gap-1.5 text-xs font-black text-[#cca43b] hover:text-[#cca43b]/80 uppercase tracking-wider">
+                            Sanitization Protocol
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="h-2 w-2 rounded-full {{ alert.dot_class }} mt-2 shrink-0"></div>
+                <div class="h-2.5 w-2.5 rounded-full {{ alert.dot_class }} mt-2 shrink-0"></div>
             </div>
             {% endfor %}
 
-            <!-- Feed Item 1 -->
-            <div class="flex items-start gap-4 px-6 py-4.5 hover:bg-white/[0.02] transition-colors group">
+            <!-- Feed Item 1: Pending Orders -->
+            <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors group">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/20 text-[#cca43b] text-lg">
+                    📦
+                </div>
                 <div class="flex-grow min-w-0">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-                        <p class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pending orders require confirmation</p>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pending orders require confirmation</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">10m ago</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-2">3 customer orders require approval before delivery dispatch.</p>
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Customer orders require staff approval and verification before delivery dispatch.</p>
                     <div class="flex items-center gap-4">
-                        <a href="{% url 'sales:list' %}" class="text-xs font-black text-[#cca43b] hover:underline uppercase tracking-wider">Review Orders →</a>
+                        <a href="{% url 'sales:list' %}" class="inline-flex items-center gap-1.5 text-xs font-black text-[#cca43b] hover:text-[#cca43b]/80 uppercase tracking-wider">
+                            Review Orders
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse mt-2 shrink-0"></div>
+                <div class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse mt-2 shrink-0"></div>
             </div>
 
-            <!-- Feed Item 2 -->
-            <div class="flex items-start gap-4 px-6 py-4.5 hover:bg-white/[0.02] transition-colors group">
+            <!-- Feed Item 2: Substrate Replenishment -->
+            <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors group">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-lg">
+                    🐛
+                </div>
                 <div class="flex-grow min-w-0">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-                        <p class="text-sm sm:text-base font-bold text-white group-hover:text-cyan-400 transition-colors truncate">Superworm Substrate Replenishment</p>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-cyan-400 transition-colors truncate">Superworm Substrate Replenishment</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-mono">2h ago</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-2">Breeding tubs in Cabin sector require fresh wheat bran substrate.</p>
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Breeding tubs in Cabin sector require fresh wheat bran substrate and hydration check.</p>
                     <div class="flex items-center gap-4">
-                        <span class="text-xs font-black text-cyan-400 hover:underline uppercase tracking-wider cursor-pointer">Acknowledge ✓</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-black text-cyan-400 hover:text-cyan-300 uppercase tracking-wider cursor-pointer">
+                            Acknowledge Task
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </span>
                     </div>
                 </div>
-                <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse mt-2 shrink-0"></div>
+                <div class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse mt-2 shrink-0"></div>
             </div>
 
-            <!-- Feed Item 3 -->
-            <div class="flex items-start gap-4 px-6 py-4.5 hover:bg-white/[0.02] transition-colors group">
+            <!-- Feed Item 3: Analytics Report -->
+            <div class="flex items-start gap-4 px-6 py-5 hover:bg-white/[0.02] transition-colors group">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-lg">
+                    📊
+                </div>
                 <div class="flex-grow min-w-0">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
-                        <p class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-400 transition-colors truncate">Monthly Sales & Analytics Report</p>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-400 transition-colors truncate">Monthly Sales & Analytics Report</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">Yesterday</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-2">Comprehensive monthly revenue, biomass yield summary ready.</p>
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Comprehensive monthly revenue, harvest yield metrics, and delivery audit summaries ready.</p>
                     <div class="flex items-center gap-4">
-                        <a href="{% url 'analytics:reports' %}" class="text-xs font-black text-emerald-400 hover:underline uppercase tracking-wider">Download CSV ↓</a>
+                        <a href="{% url 'analytics:reports' %}" class="inline-flex items-center gap-1.5 text-xs font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-wider">
+                            Download CSV
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="h-2 w-2 rounded-full bg-emerald-400 mt-2 opacity-40 shrink-0"></div>
+                <div class="h-2.5 w-2.5 rounded-full bg-emerald-400 mt-2 opacity-60 shrink-0"></div>
             </div>
         </div>
     </div>
