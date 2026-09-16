@@ -21,14 +21,10 @@
         <tbody class="divide-y divide-white/5 bg-transparent">
             {% for order in all_orders %}
             <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-100">{{ order.order_number
-                    }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-100">{{ order.order_number }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.customer.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{
-                    order.customer.product_types_count }} Product Type{{ order.customer.product_types_count|pluralize }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{
-                    order.total_amount|floatformat:2 }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ order.customer.product_types_count }} Product Type{{ order.customer.product_types_count|pluralize }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-400">{{ order.order_date }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border

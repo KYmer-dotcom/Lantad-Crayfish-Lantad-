@@ -281,9 +281,7 @@
                         </td>
                         <td class="px-8 py-5 whitespace-nowrap text-sm font-semibold text-stone-400">
                             {% if log.feed_type %}
-                            {% if log.feed_type.icon == 'wheat' %}🌾{% elif log.feed_type.icon == 'bug' %}🐛{% elif
-                            log.feed_type.icon == 'corn' %}🌽{% elif log.feed_type.icon == 'leaf' %}🥬{% elif
-                            log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ log.feed_type.name }}
+                            {% if log.feed_type.icon == 'wheat' %}🌾{% elif log.feed_type.icon == 'bug' %}🐛{% elif log.feed_type.icon == 'corn' %}🌽{% elif log.feed_type.icon == 'leaf' %}🥬{% elif log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ log.feed_type.name }}
                             {% else %}
                             <span class="text-stone-500">—</span>
                             {% endif %}

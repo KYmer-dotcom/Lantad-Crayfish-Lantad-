@@ -145,8 +145,7 @@
                 <p class="text-xs text-[#a0ac96]">Live shipment logs, real-time rider tracking, and dispatch schedules
                 </p>
             </div>
-            <span class="text-xs font-bold text-[#a0ac96]">{{ deliveries|length }} shipment{{
-                deliveries|length|pluralize }}</span>
+            <span class="text-xs font-bold text-[#a0ac96]">{{ deliveries|length }} shipment{{ deliveries|length|pluralize }}</span>
         </div>
 
         <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
@@ -169,8 +168,7 @@
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             <!-- Order # -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number
-                                    }}</span>
+                                <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
                                 <p class="text-[11px] text-[#a0ac96]">{{ delivery.order.order_date|date:"M d, Y" }}</p>
                             </td>
 
@@ -189,8 +187,7 @@
 
                             <!-- Product & Quantity -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="text-sm font-bold text-stone-200">{{
-                                    delivery.order.product.name|default:"Standard Order" }}</div>
+                                <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
                                 <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg
                                 </div>
                             </td>
@@ -209,9 +206,7 @@
                                 {% else %}
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs text-stone-300 max-w-[200px] truncate"
-                                        title="{{ delivery.delivery_location }}">{{
-                                        delivery.delivery_location|default:delivery.order.customer.address|default:"Location
-                                        specified in order" }}</span>
+                                        title="{{ delivery.delivery_location }}">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</span>
                                     <button type="button"
                                         onclick="openLocationModal('{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')"
                                         class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-[#cca43b]/10 text-[#cca43b] hover:bg-[#cca43b]/20 border border-[#cca43b]/20 transition-all flex-shrink-0 cursor-pointer"
@@ -229,8 +224,7 @@
 
                             <!-- Schedule Date -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="text-sm font-mono text-stone-300">{{
-                                    delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
+                                <div class="text-sm font-mono text-stone-300">{{ delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
                                 {% if delivery.delivered_date %}
                                 <div class="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5 font-bold">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
