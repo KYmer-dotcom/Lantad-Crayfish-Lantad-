@@ -3,43 +3,53 @@
 {% block header_title %}Printable Reports{% endblock %}
 
 {% block page_content %}
-<div class="space-y-8 p-2">
+<style>
+    /* Elevated Glass Card Effect */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
     <!-- Page Header -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Reports & Analytics</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Reports & Analytics</p>
             </div>
-            <h1 class="text-2xl font-semibold text-stone-100 tracking-tight">Printable Reports</h1>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Printable Reports</h1>
         </div>
-
     </div>
 
     <!-- Filter Controls Grid -->
-    <div id="filter-controls-grid" class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+    <div id="filter-controls-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Date Range Card -->
         <div id="date-range-card"
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
-            <div class="flex items-center gap-2 mb-3">
+            class="glass-card rounded-lg p-5 flex flex-col justify-between">
+            <div class="flex items-center gap-2 mb-2">
                 <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Date Range</p>
             </div>
-            <div class="flex items-center gap-1.5 min-w-0">
+            <div class="flex items-center gap-1.5 min-w-0 mt-2">
                 <input type="date" id="start-date-input" value="{{ start_date }}"
-                    class="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-2 py-2 text-[10px] font-black text-white focus:border-[#cca43b] focus:outline-none transition-colors" />
-                <span class="text-[#a0ac96] text-[10px] font-black uppercase tracking-wider shrink-0">to</span>
+                    class="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-xs font-mono text-white focus:border-[#cca43b] focus:outline-none transition-colors [color-scheme:dark]" />
+                <span class="text-[#a0ac96] text-[10px] font-bold uppercase tracking-wider shrink-0">to</span>
                 <input type="date" id="end-date-input" value="{{ end_date }}"
-                    class="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-2 py-2 text-[10px] font-black text-white focus:border-[#cca43b] focus:outline-none transition-colors" />
+                    class="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-xs font-mono text-white focus:border-[#cca43b] focus:outline-none transition-colors [color-scheme:dark]" />
             </div>
         </div>
-        <div
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
-            <div class="flex items-center gap-2 mb-3">
+
+        <!-- Report Type Card -->
+        <div class="glass-card rounded-lg p-5 flex flex-col justify-between">
+            <div class="flex items-center gap-2 mb-2">
                 <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Report Type</p>
             </div>
             <select id="report-type-select"
-                class="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer">
+                class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer mt-2">
                 <option value="all" class="bg-[#01140e] text-white">Comprehensive Summary</option>
                 <option value="sales" class="bg-[#01140e] text-white">Sales Only</option>
                 <option value="operations" class="bg-[#01140e] text-white">Operations Only</option>
@@ -49,65 +59,66 @@
                 <option value="input_logs" class="bg-[#01140e] text-white">Input Modification Logs</option>
             </select>
         </div>
-        <div
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 shadow-2xl hover:border-white/20 transition-all duration-300 group">
-            <div class="flex items-center gap-2 mb-3">
+
+        <!-- Output Format Card -->
+        <div class="glass-card rounded-lg p-5 flex flex-col justify-between">
+            <div class="flex items-center gap-2 mb-2">
                 <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Output Format</p>
             </div>
             <select
-                class="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer">
+                class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer mt-2">
                 <option class="bg-[#01140e] text-white">Printable PDF</option>
                 <option class="bg-[#01140e] text-white">Dashboard View</option>
             </select>
         </div>
+
+        <!-- Execution Card -->
         <div id="execution-card"
-            class="rounded-3xl border border-[#cca43b]/20 bg-[#cca43b]/5 backdrop-blur-xl p-6 shadow-2xl hover:border-[#cca43b]/40 transition-all duration-300 flex flex-col justify-between">
-            <div class="flex items-center gap-2 mb-3">
+            class="glass-card rounded-lg p-5 flex flex-col justify-between border-[#cca43b]/30">
+            <div class="flex items-center gap-2 mb-2">
                 <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Execution</p>
             </div>
-            <button id="generate-report-btn" class="btn-gold w-full py-3 text-xs font-bold shadow-lg cursor-pointer">
+            <button id="generate-report-btn" class="w-full rounded-lg bg-[#cca43b] py-2 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-md shadow-[#cca43b]/20 cursor-pointer uppercase tracking-wider mt-2">
                 Generate Report
             </button>
         </div>
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div data-report-group="sales"
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 shadow-2xl hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group relative overflow-hidden">
-            <div
-                class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#cca43b]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            </div>
+            class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ sales_label|default:"Total Sales (This Month)" }}</p>
-            <p id="total-sales-val" class="mt-4 text-4xl font-black text-[#cca43b] font-mono tracking-tight">₱{{ monthly_sales_total|floatformat:2 }}</p>
-            <div class="mt-4 flex items-center gap-2 text-[11px] text-[#a0ac96]">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <span>Gross monthly revenue inflow</span>
+            <div class="mt-2">
+                <p id="total-sales-val" class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ monthly_sales_total|floatformat:2 }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Gross monthly revenue inflow</span>
+                </div>
             </div>
         </div>
         <div data-report-group="sales harvest"
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 shadow-2xl hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group relative overflow-hidden">
-            <div
-                class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#cca43b]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            </div>
+            class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ qty_label|default:"Quantity Sold (This Month)" }}</p>
-            <p id="total-qty-val" class="mt-4 text-4xl font-black text-white font-mono tracking-tight">{{ monthly_sales_qty|floatformat:2 }}</p>
-            <div class="mt-4 flex items-center gap-2 text-[11px] text-[#a0ac96]">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <span>Aggregate product volume dispatched</span>
+            <div class="mt-2">
+                <p id="total-qty-val" class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ monthly_sales_qty|floatformat:2 }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Aggregate product volume dispatched</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Sales by Date -->
     <div data-report-group="receipts"
-        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-        <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+        class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Sales by Date</h3>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Sales by Date</h3>
             </div>
             <span
                 class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Last
@@ -117,23 +128,23 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="bg-white/[0.03]">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Date</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] order-num-col">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] order-num-col">
                             Order Number</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Customer</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Product</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             City</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Quantity</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Paid Date / Status</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Total Amount</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] no-print receipt-action-col">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] no-print receipt-action-col">
                             Show</th>
                     </tr>
                 </thead>
@@ -160,13 +171,13 @@
                         data-payment-status="{{ order.get_payment_status_display }}"
                         data-is-paid="{% if order.payment_status == 'paid' %}true{% else %}false{% endif %}"
                         data-receipt-image="{% if delivery and delivery.proof_of_delivery %}{{ delivery.proof_of_delivery.url }}{% elif order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:20 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:20 }}{% else %}N/A{% endif %}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ order.quantity_kg|default:0|floatformat:2 }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:20 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:20 }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ order.quantity_kg|default:0|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if order.payment_status == 'paid' %}
                             <span class="text-emerald-400">Paid on {{ order.updated_at|date:"M d, Y" }}</span>
                             {% elif order.payment_status == 'partial' %}
@@ -175,22 +186,16 @@
                             <span class="text-rose-400">Unpaid</span>
                             {% endif %}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|default:0|floatformat:2 }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
-                            <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-xl text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|default:0|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
+                            <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-lg text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
                         </td>
                     </tr>
                     {% endwith %}
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="px-8 py-16 text-center text-[#a0ac96]">
-                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected
-                                range</p>
+                        <td colspan="9" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected range</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -201,12 +206,12 @@
 
     <!-- Recent Operations Log -->
     <div id="ops-log-card" data-report-group="operations"
-        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
+        class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
         <div
-            class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex flex-wrap items-center justify-between gap-4">
+            class="px-6 py-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Pond Operations Log</h3>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Pond Operations Log</h3>
             </div>
             <div
                 class="flex items-center gap-2 text-xs font-bold text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">
@@ -219,29 +224,29 @@
         </div>
 
         <!-- Premium Interactive Calendar Grid -->
-        <div class="px-8 py-8 border-b border-white/10 bg-black/30 backdrop-blur-sm">
+        <div class="px-6 py-6 border-b border-white/10 bg-black/30 backdrop-blur-sm">
             <div class="max-w-3xl mx-auto">
                 <!-- Calendar Header -->
-                <div class="flex items-center justify-between mb-8 max-w-md mx-auto">
+                <div class="flex items-center justify-between mb-6 max-w-md mx-auto">
                     <button type="button" id="prev-month-btn"
-                        class="p-2.5 rounded-xl hover:bg-white/10 text-white transition-all cursor-pointer select-none">
-                        <svg class="h-5 w-5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="p-2 rounded-lg hover:bg-white/10 text-white transition-all cursor-pointer select-none">
+                        <svg class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
                     <h4 id="calendar-month-year"
-                        class="text-base md:text-lg font-black text-white uppercase tracking-widest font-mono">May 2026
+                        class="text-sm md:text-base font-black text-white uppercase tracking-widest font-mono">May 2026
                     </h4>
                     <button type="button" id="next-month-btn"
-                        class="p-2.5 rounded-xl hover:bg-white/10 text-white transition-all cursor-pointer select-none">
-                        <svg class="h-5 w-5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="p-2 rounded-lg hover:bg-white/10 text-white transition-all cursor-pointer select-none">
+                        <svg class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
                 <!-- Weekdays Header -->
                 <div
-                    class="grid grid-cols-7 gap-3 text-center text-xs font-black text-[#a0ac96] uppercase tracking-[0.2em] mb-4">
+                    class="grid grid-cols-7 gap-2 text-center text-[10px] font-black text-[#a0ac96] uppercase tracking-[0.2em] mb-3">
                     <div>Su</div>
                     <div>Mo</div>
                     <div>Tu</div>
@@ -251,7 +256,7 @@
                     <div>Sa</div>
                 </div>
                 <!-- Days Grid -->
-                <div id="calendar-days-grid" class="grid grid-cols-7 gap-3">
+                <div id="calendar-days-grid" class="grid grid-cols-7 gap-2">
                     <!-- JavaScript will dynamically render days here -->
                 </div>
             </div>
@@ -260,15 +265,15 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="bg-white/[0.03]">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Date & Time</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Pond / Shelf</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Feed Type Used</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Status</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Recorded By</th>
                     </tr>
                 </thead>
@@ -276,17 +281,17 @@
                     {% for log in operations_logs %}
                     <tr class="ops-log-row hover:bg-white/[0.03] transition-colors duration-200"
                         data-date="{{ log.recorded_at|date:'Y-m-d' }}">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.recorded_at|date:"M d, Y H:i" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-300">{{ log.pond.name }}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.recorded_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-300">{{ log.pond.name }}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-semibold text-stone-400">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-stone-400">
                             {% if log.feed_type %}
                             {% if log.feed_type.icon == 'wheat' %}🌾{% elif log.feed_type.icon == 'bug' %}🐛{% elif log.feed_type.icon == 'corn' %}🌽{% elif log.feed_type.icon == 'leaf' %}🥬{% elif log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ log.feed_type.name }}
                             {% else %}
                             <span class="text-stone-500">—</span>
                             {% endif %}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if log.fed %}
                             <span
                                 class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-400">
@@ -301,27 +306,17 @@
                             </span>
                             {% endif %}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm text-[#a0ac96] font-bold">{{ log.recorded_by.get_full_name|default:log.recorded_by.username }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-bold">{{ log.recorded_by.get_full_name|default:log.recorded_by.username }}</td>
                     </tr>
                     {% empty %}
                     <tr id="ops-log-initial-empty-row">
-                        <td colspan="5" class="px-8 py-16 text-center text-[#a0ac96]">
-                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                        <td colspan="5" class="px-6 py-12 text-center text-[#a0ac96]">
                             <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded yet</p>
                         </td>
                     </tr>
                     {% endfor %}
                     <tr id="ops-log-empty-row" class="hidden">
-                        <td colspan="5" class="px-8 py-16 text-center text-[#a0ac96]">
-                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                        <td colspan="5" class="px-6 py-12 text-center text-[#a0ac96]">
                             <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded on <span
                                     id="ops-log-selected-date-str" class="text-[#cca43b] font-mono"></span></p>
                         </td>
@@ -332,13 +327,13 @@
     </div>
 
     <!-- Weekly and Monthly Sales Grid -->
-    <div data-report-group="sales" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div data-report-group="sales" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-            <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+            class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Weekly Sales Summary</h3>
+                    <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <h3 class="text-base font-black text-white tracking-wide uppercase">Weekly Sales Summary</h3>
                 </div>
                 <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Periodic Aggregation</span>
             </div>
@@ -347,31 +342,26 @@
                     <thead class="bg-white/[0.03]">
                         <tr>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Week</th>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Quantity</th>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Total Sales (₱)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 bg-transparent">
                         {% for row in sales_weekly %}
                         <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.week|date:"M d, Y" }}</td>
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.week|date:"M d, Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" class="px-8 py-16 text-center text-[#a0ac96]">
-                                <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                            <td colspan="3" class="px-6 py-12 text-center text-[#a0ac96]">
                                 <p class="text-sm font-bold uppercase tracking-wider">No weekly sales data active</p>
                             </td>
                         </tr>
@@ -382,11 +372,11 @@
         </div>
 
         <div
-            class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-            <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+            class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Monthly Sales Summary</h3>
+                    <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                    <h3 class="text-base font-black text-white tracking-wide uppercase">Monthly Sales Summary</h3>
                 </div>
                 <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Macro Aggregation</span>
             </div>
@@ -395,31 +385,26 @@
                     <thead class="bg-white/[0.03]">
                         <tr>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Month</th>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Quantity</th>
                             <th
-                                class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                                class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                                 Total Sales (₱)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 bg-transparent">
                         {% for row in sales_monthly %}
                         <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.month|date:"M Y" }}</td>
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
-                            <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.month|date:"M Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ row.total_qty|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" class="px-8 py-16 text-center text-[#a0ac96]">
-                                <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                            <td colspan="3" class="px-6 py-12 text-center text-[#a0ac96]">
                                 <p class="text-sm font-bold uppercase tracking-wider">No monthly sales data active</p>
                             </td>
                         </tr>
@@ -432,11 +417,11 @@
 
     <!-- Product Delivery Logs Section -->
     <div data-report-group="product_logs logs"
-        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-        <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+        class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Product Delivery Logs</h3>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Product Delivery Logs</h3>
             </div>
             <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Logistics Audit</span>
         </div>
@@ -444,36 +429,36 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="bg-white/[0.03]">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order No.</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product & Qty</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer & Destination</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Approved By</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Courier / Rider</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Amount</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order No.</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product & Qty</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer & Destination</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Approved By</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Courier / Rider</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Amount</th>
                     </tr>
                 </thead>
                 <tbody id="source-product-logs-tbody" class="divide-y divide-white/5 bg-transparent">
                     {% for d in product_logs %}
                     <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_at|date:"M d, Y" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ d.order.order_number }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.product.name|default:"Stock" }} • <span class="text-[#cca43b]">{{ d.quantity_kg }} kg</span></td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.customer.name }}<br><span class="text-xs text-[#a0ac96] font-normal">📍 {{ d.delivery_location|default:d.order.customer.address|truncatechars:25 }}</span></td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_by.get_full_name|default:d.created_by.username|default:"System Admin" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-cyan-300">{% if d.rider %}{{ d.rider.name }}{% else %}Unassigned{% endif %}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_at|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ d.order.order_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.product.name|default:"Stock" }} • <span class="text-[#cca43b]">{{ d.quantity_kg }} kg</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.customer.name }}<br><span class="text-xs text-[#a0ac96] font-normal">📍 {{ d.delivery_location|default:d.order.customer.address|truncatechars:25 }}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_by.get_full_name|default:d.created_by.username|default:"System Admin" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-cyan-300">{% if d.rider %}{{ d.rider.name }}{% else %}Unassigned{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if d.status == 'delivered' %}<span class="text-emerald-400">Delivered</span>
                             {% elif d.status == 'in_transit' %}<span class="text-cyan-400">In Transit</span>
                             {% elif d.status == 'scheduled' %}<span class="text-amber-400">Scheduled</span>
                             {% else %}<span class="text-rose-400">{{ d.get_status_display }}</span>{% endif %}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ d.order.total_amount|default:0|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ d.order.total_amount|default:0|floatformat:2 }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="px-8 py-12 text-center text-[#a0ac96]">No product delivery logs found.</td>
+                        <td colspan="8" class="px-6 py-12 text-center text-[#a0ac96]">No product delivery logs found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -483,11 +468,11 @@
 
     <!-- Activity Audit Logs Section -->
     <div data-report-group="activity_logs logs"
-        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-        <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+        class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Activity Audit Logs</h3>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Activity Audit Logs</h3>
             </div>
             <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">System Operations</span>
         </div>
@@ -495,29 +480,29 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="bg-white/[0.03]">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Entity</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Details</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Entity</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Details</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
                     </tr>
                 </thead>
                 <tbody id="source-activity-logs-tbody" class="divide-y divide-white/5 bg-transparent">
                     {% for a in activity_logs %}
                     <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.timestamp|date:"M d, Y • h:i A" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-white">{{ a.icon }} {{ a.action }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.actor }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-xs text-[#cca43b]">{{ a.role }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ a.entity }}</td>
-                        <td class="px-8 py-5 text-sm text-stone-300 max-w-xs">{{ a.details }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-xs font-bold text-emerald-400">{{ a.status }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.timestamp|date:"M d, Y • h:i A" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-white">{{ a.icon }} {{ a.action }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.actor }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#cca43b]">{{ a.role }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ a.entity }}</td>
+                        <td class="px-6 py-4 text-sm text-stone-300 max-w-xs">{{ a.details }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-emerald-400">{{ a.status }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="px-8 py-12 text-center text-[#a0ac96]">No activity audit logs found.</td>
+                        <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">No activity audit logs found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -527,11 +512,11 @@
 
     <!-- Input & Data Modification Logs Section -->
     <div data-report-group="input_logs logs"
-        class="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all duration-300 overflow-hidden flex flex-col">
-        <div class="px-8 py-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+        class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Input & Data Modification Logs</h3>
+                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Input & Data Modification Logs</h3>
             </div>
             <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Who Added & Deleted Data</span>
         </div>
@@ -539,38 +524,37 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="bg-white/[0.03]">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Module</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Record</th>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Operation Details</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Module</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Record</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Operation Details</th>
                     </tr>
                 </thead>
                 <tbody id="source-input-logs-tbody" class="divide-y divide-white/5 bg-transparent">
                     {% for log in input_logs %}
                     <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.created_at|date:"M d, Y • h:i A" }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.created_at|date:"M d, Y • h:i A" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if log.action == 'added' %}<span class="text-emerald-400">Data Added</span>
                             {% elif log.action == 'deleted' %}<span class="text-rose-400">Data Deleted</span>
                             {% else %}<span class="text-amber-400">Data Updated</span>{% endif %}
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.user_name }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-xs text-[#cca43b]">{{ log.user_role }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-xs text-[#a0ac96]">{{ log.module }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ log.target_entity }}</td>
-                        <td class="px-8 py-5 text-sm text-stone-300 max-w-xs">{{ log.details|default:"—" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.user_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#cca43b]">{{ log.user_role }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#a0ac96]">{{ log.module }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ log.target_entity }}</td>
+                        <td class="px-6 py-4 text-sm text-stone-300 max-w-xs">{{ log.details|default:"—" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="px-8 py-12 text-center text-[#a0ac96]">No input modification logs found.</td>
+                        <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">No input modification logs found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
     </div>
 
 </div>
