@@ -3,37 +3,101 @@
 {% block header_title %}Track Order • Live GPS{% endblock %}
 
 {% block page_content %}
-<!-- Leaflet & Esri Styles -->
+<!-- Leaflet Styles -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
     .leaflet-control-attribution { display: none !important; }
-    .leaflet-bar { border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 1rem !important; overflow: hidden; background: rgba(2,31,21,0.9) !important; }
-    .leaflet-bar a { background-color: rgba(2,31,21,0.9) !important; color: #cca43b !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
-    .leaflet-bar a:hover { background-color: #cca43b !important; color: #021f15 !important; }
+    .leaflet-bar { border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 0.75rem !important; overflow: hidden; background: rgba(1,20,14,0.95) !important; }
+    .leaflet-bar a { background-color: rgba(1,20,14,0.95) !important; color: #cca43b !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
+    .leaflet-bar a:hover { background-color: #cca43b !important; color: #01140e !important; }
     .shipment-card.active-shipment {
         border-color: #cca43b !important;
         background: rgba(204, 164, 59, 0.12) !important;
-        box-shadow: 0 0 25px rgba(204, 164, 59, 0.2) !important;
+        box-shadow: 0 0 20px rgba(204, 164, 59, 0.2) !important;
     }
 </style>
 
-<div class="space-y-6">
-    <!-- Header with Breadcrumb & Action Link -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
+<div class="space-y-6 pb-12">
+    <!-- Top Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Logistics & Fleet Tracking</p>
-            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Live Order Tracking</h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Logistics & Fleet Tracking</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Live Order Tracking</h1>
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{% url 'sales:delivery_list' %}" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 hover:bg-[#cca43b]/10 transition-all">
-                <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <a href="{% url 'sales:delivery_list' %}" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 px-4 py-2 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/25 transition-all">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
                 Delivery Registry
             </a>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Stat Card 1: Total Shipments -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Shipments</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ all_deliveries.count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>All delivery dispatches</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Card 2: In Transit -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">In Transit</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ in_transit_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Live couriers en route</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Card 3: Scheduled -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Scheduled</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ scheduled_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Pending dispatch</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat Card 4: Delivered -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ delivered_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Successfully fulfilled</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -42,43 +106,43 @@
         
         <!-- LEFT COLUMN: Visible Shipments List (Cols 5 on lg, 4 on xl) -->
         <div class="lg:col-span-5 xl:col-span-4 space-y-4">
-            <div class="rounded-[2.5rem] border border-white/10 bg-black/30 p-5 shadow-2xl backdrop-blur-md">
+            <div class="glass-card rounded-xl p-5 shadow-xl">
                 <!-- Panel Header -->
                 <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
                     <div>
-                        <h3 class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Shipments To Track</h3>
-                        <p class="text-[11px] text-[#a0ac96] mt-0.5">Click any shipment to view live GPS</p>
+                        <h3 class="text-xs font-black uppercase tracking-[0.15em] text-[#cca43b]">Shipments To Track</h3>
+                        <p class="text-[11px] text-[#a0ac96] mt-0.5">Click any shipment to inspect live GPS</p>
                     </div>
-                    <span id="shipment-counter-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30">
+                    <span id="shipment-counter-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 font-mono">
                         {{ all_deliveries.count }} Total
                     </span>
                 </div>
 
                 <!-- Fast Search Filter -->
                 <div class="relative mb-3">
-                    <input type="text" id="shipment-search-input" oninput="filterShipmentList()" placeholder="Search order #, customer, address..." class="w-full rounded-2xl border border-white/10 bg-black/40 pl-9 pr-4 py-2 text-xs text-stone-100 placeholder:text-stone-500 focus:border-[#cca43b] focus:outline-none">
+                    <input type="text" id="shipment-search-input" oninput="filterShipmentList()" placeholder="Search order #, customer, address..." class="w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-4 py-2 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <svg class="h-4 w-4 text-[#a0ac96] absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
 
                 <!-- Status Filter Pills -->
-                <div class="flex items-center gap-1.5 pb-3 overflow-x-auto text-[10px] font-bold border-b border-white/5 mb-3">
-                    <button type="button" onclick="filterByStatus('all')" id="pill-all" class="filter-pill px-2.5 py-1 rounded-xl bg-[#cca43b] text-[#021f15] font-black cursor-pointer transition-all">All ({{ all_deliveries.count }})</button>
-                    <button type="button" onclick="filterByStatus('in_transit')" id="pill-in_transit" class="filter-pill px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-cyan-400 hover:text-white cursor-pointer transition-all">In Transit ({{ in_transit_count }})</button>
-                    <button type="button" onclick="filterByStatus('scheduled')" id="pill-scheduled" class="filter-pill px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-amber-400 hover:text-white cursor-pointer transition-all">Scheduled ({{ scheduled_count }})</button>
-                    <button type="button" onclick="filterByStatus('delivered')" id="pill-delivered" class="filter-pill px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-emerald-400 hover:text-white cursor-pointer transition-all">Delivered ({{ delivered_count }})</button>
+                <div class="flex items-center gap-1.5 pb-3 overflow-x-auto text-[11px] font-bold border-b border-white/5 mb-3">
+                    <button type="button" onclick="filterByStatus('all')" id="pill-all" class="filter-pill px-3 py-1 rounded-lg bg-[#cca43b] text-[#01140e] font-black cursor-pointer transition-all">All ({{ all_deliveries.count }})</button>
+                    <button type="button" onclick="filterByStatus('in_transit')" id="pill-in_transit" class="filter-pill px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-cyan-400 hover:text-white cursor-pointer transition-all">In Transit ({{ in_transit_count }})</button>
+                    <button type="button" onclick="filterByStatus('scheduled')" id="pill-scheduled" class="filter-pill px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-amber-400 hover:text-white cursor-pointer transition-all">Scheduled ({{ scheduled_count }})</button>
+                    <button type="button" onclick="filterByStatus('delivered')" id="pill-delivered" class="filter-pill px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-emerald-400 hover:text-white cursor-pointer transition-all">Delivered ({{ delivered_count }})</button>
                 </div>
 
                 <!-- Visible Shipments List -->
-                <div class="space-y-2.5 max-h-[700px] overflow-y-auto pr-1" id="shipments-container">
+                <div class="space-y-2.5 max-h-[640px] overflow-y-auto pr-1" id="shipments-container">
                     {% for d in all_deliveries %}
                     <div id="shipment-card-{{ d.id }}" 
                          onclick="selectShipment({{ d.id }})" 
                          data-id="{{ d.id }}"
                          data-status="{{ d.status }}"
                          data-search="{{ d.order.order_number }} {{ d.order.customer.name }} {{ d.delivery_location }} {{ d.rider.name|default:'' }}"
-                         class="shipment-card p-4 rounded-2xl border transition-all duration-200 cursor-pointer {% if selected_delivery.id == d.id %}active-shipment{% else %}border-white/10 bg-black/20 hover:border-[#cca43b]/40 hover:bg-white/[0.03]{% endif %}">
+                         class="shipment-card p-3.5 rounded-xl border transition-all duration-200 cursor-pointer {% if selected_delivery.id == d.id %}active-shipment{% else %}border-white/10 bg-black/25 hover:border-[#cca43b]/40 hover:bg-white/[0.03]{% endif %}">
                         
                         <div class="flex items-center justify-between gap-2">
                             <span class="font-mono font-bold text-xs text-white">{{ d.order.order_number }}</span>
@@ -92,27 +156,33 @@
                         </div>
 
                         <p class="text-xs font-bold text-white mt-1.5 truncate">{{ d.order.customer.name }}</p>
-                        <p class="text-[11px] text-[#a0ac96] truncate">📍 {{ d.delivery_location|default:d.order.customer.address }}</p>
+                        <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-[#a0ac96] truncate">
+                            <svg class="h-3 w-3 text-[#cca43b] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span class="truncate">{{ d.delivery_location|default:d.order.customer.address }}</span>
+                        </div>
 
-                        <div class="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between text-[11px]">
+                        <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[11px]">
                             <span class="text-[#cca43b] font-medium truncate">{{ d.order.product.name|default:"Stock" }} ({{ d.quantity_kg }} kg)</span>
-                            <span class="text-stone-400 text-[10px] font-mono">₱{{ d.order.total_amount|floatformat:2 }}</span>
+                            <span class="text-stone-300 text-[10px] font-mono font-bold">₱{{ d.order.total_amount|floatformat:2 }}</span>
                         </div>
 
                         {% if d.rider %}
                         <div class="mt-1.5 flex items-center justify-between text-[10px] text-cyan-400">
-                            <span>🛵 {{ d.rider.name }}</span>
-                            <span class="text-white/40">Track GPS &rarr;</span>
+                            <span class="flex items-center gap-1 font-semibold">
+                                <svg class="h-3 w-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                {{ d.rider.name }}
+                            </span>
+                            <span class="text-[#cca43b] font-bold">Track GPS &rarr;</span>
                         </div>
                         {% else %}
                         <div class="mt-1.5 flex items-center justify-between text-[10px] text-stone-500">
                             <span>Courier unassigned</span>
-                            <span class="text-white/40">Track GPS &rarr;</span>
+                            <span class="text-white/30">Track GPS &rarr;</span>
                         </div>
                         {% endif %}
                     </div>
                     {% empty %}
-                    <p class="text-xs text-stone-500 italic py-8 text-center">No delivery records found.</p>
+                    <p class="text-xs text-[#a0ac96] italic py-8 text-center">No delivery records found.</p>
                     {% endfor %}
                 </div>
             </div>
@@ -123,23 +193,25 @@
             
             {% if selected_delivery %}
             <!-- Active Shipment Banner & Stepper -->
-            <div id="tracked-order-banner" class="rounded-[2.5rem] border border-[#cca43b]/30 bg-gradient-to-r from-black/40 via-black/20 to-black/40 p-6 shadow-2xl backdrop-blur-md">
+            <div id="tracked-order-banner" class="glass-card rounded-xl p-5 sm:p-6 border border-[#cca43b]/30 shadow-2xl">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 text-2xl font-black shrink-0">
-                            🛵
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shrink-0">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
                         </div>
                         <div>
                             <div class="flex items-center gap-2.5 flex-wrap">
-                                <h2 id="disp-order-number" class="text-xl font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
-                                <span id="disp-status-badge" class="px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border
+                                <h2 id="disp-order-number" class="text-lg sm:text-xl font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
+                                <span id="disp-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border
                                     {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40
                                     {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse
                                     {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40
                                     {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
                                     {{ selected_delivery.get_status_display }}
                                 </span>
-                                <span id="disp-payment-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider 
+                                <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider 
                                     {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
                                     {% if selected_delivery.order.payment_status == 'paid' %}Paid{% else %}COD (Collect on Delivery){% endif %}
                                 </span>
@@ -154,9 +226,9 @@
                 </div>
 
                 <!-- Visual Stepper Progress Bar -->
-                <div class="mt-6 pt-6 border-t border-white/10 relative">
+                <div class="mt-6 pt-5 border-t border-white/10 relative">
                     <!-- Progress Line Track -->
-                    <div class="absolute top-[39px] left-[12%] right-[12%] h-1 bg-white/10 rounded-full z-0 pointer-events-none">
+                    <div class="absolute top-[35px] left-[12%] right-[12%] h-1 bg-white/10 rounded-full z-0 pointer-events-none">
                         <div id="stepper-progress-fill" class="h-full rounded-full bg-gradient-to-r from-emerald-500 
                             {% if selected_delivery.status == 'delivered' %}to-emerald-500 w-full
                             {% elif selected_delivery.status == 'in_transit' %}to-cyan-400 w-2/3
@@ -167,7 +239,7 @@
                         <!-- Step 1: Placed -->
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-center">
-                                <div id="step-1-circle" class="h-8 w-8 rounded-full flex items-center justify-center bg-emerald-500 text-[#021f15] font-black text-xs shadow-lg shadow-emerald-500/30 ring-4 ring-[#021f15]">
+                                <div id="step-1-circle" class="h-7 w-7 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-xs shadow-lg shadow-emerald-500/30 ring-4 ring-[#01140e]">
                                     ✓
                                 </div>
                             </div>
@@ -178,66 +250,66 @@
                         <!-- Step 2: Approved / Dispatched -->
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-center">
-                                <div id="step-2-circle" class="h-8 w-8 rounded-full flex items-center justify-center bg-emerald-500 text-[#021f15] font-black text-xs shadow-lg shadow-emerald-500/30 ring-4 ring-[#021f15]">
+                                <div id="step-2-circle" class="h-7 w-7 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-xs shadow-lg shadow-emerald-500/30 ring-4 ring-[#01140e]">
                                     ✓
                                 </div>
                             </div>
-                            <p class="text-white">Approved & Dispatched</p>
+                            <p class="text-white">Approved</p>
                             <p id="step-2-actor" class="text-[10px] text-[#a0ac96]">{% if selected_delivery.created_by.get_full_name %}{{ selected_delivery.created_by.get_full_name }}{% else %}{{ selected_delivery.created_by.username|default:"Admin" }}{% endif %}</p>
                         </div>
 
                         <!-- Step 3: In Transit -->
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-center">
-                                <div id="step-3-circle" class="h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15]
-                                    {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#021f15] shadow-lg shadow-cyan-400/30 animate-pulse{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-xs">
-                                    {% if selected_delivery.status == 'in_transit' %}🛵{% elif selected_delivery.status == 'delivered' %}✓{% else %}3{% endif %}
+                                <div id="step-3-circle" class="h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e]
+                                    {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#01140e] shadow-lg shadow-cyan-400/30 animate-pulse{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-xs">
+                                    {% if selected_delivery.status == 'delivered' %}✓{% else %}3{% endif %}
                                 </div>
                             </div>
                             <p id="step-3-label" class="{% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}text-white{% else %}text-stone-500{% endif %}">Out for Delivery</p>
-                            <p id="step-3-rider" class="text-[10px] text-cyan-400">{{ selected_delivery.rider.name|default:"Courier Assigned" }}</p>
+                            <p id="step-3-rider" class="text-[10px] text-cyan-400 truncate px-1">{{ selected_delivery.rider.name|default:"Courier Assigned" }}</p>
                         </div>
 
                         <!-- Step 4: Delivered -->
                         <div class="space-y-1.5">
                             <div class="flex items-center justify-center">
-                                <div id="step-4-circle" class="h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15]
-                                    {% if selected_delivery.status == 'delivered' %}bg-emerald-500 text-[#021f15] shadow-lg shadow-emerald-500/30{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-xs">
+                                <div id="step-4-circle" class="h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e]
+                                    {% if selected_delivery.status == 'delivered' %}bg-emerald-500 text-[#01140e] shadow-lg shadow-emerald-500/30{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-xs">
                                     {% if selected_delivery.status == 'delivered' %}✓{% else %}4{% endif %}
                                 </div>
                             </div>
                             <p id="step-4-label" class="{% if selected_delivery.status == 'delivered' %}text-white{% else %}text-stone-500{% endif %}">Delivered</p>
-                            <p id="step-4-date" class="text-[10px] text-emerald-400">{% if selected_delivery.delivered_date %}{{ selected_delivery.delivered_date|date:"M d, Y" }}{% else %}Estimated Today{% endif %}</p>
+                            <p id="step-4-date" class="text-[10px] text-emerald-400">{% if selected_delivery.delivered_date %}{{ selected_delivery.delivered_date|date:"M d, Y" }}{% else %}Pending{% endif %}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Dedicated Spacious GPS Map Canvas -->
-            <div class="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/40 shadow-2xl backdrop-blur-md flex flex-col">
-                <div id="live-tracking-gps-map" class="w-full h-[520px] z-0"></div>
+            <div class="glass-card relative overflow-hidden rounded-xl border border-white/10 shadow-2xl flex flex-col">
+                <div id="live-tracking-gps-map" class="w-full h-[480px] sm:h-[520px] z-0"></div>
 
                 <!-- Floating Route Info Legend on Map -->
-                <div class="absolute bottom-4 left-4 right-4 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-3">
-                    <div class="pointer-events-auto rounded-2xl border border-white/15 bg-[#021f15]/90 px-4 py-2.5 text-xs backdrop-blur-md shadow-xl text-stone-200 flex items-center gap-3">
+                <div class="absolute bottom-3 left-3 right-3 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3.5 py-2 text-xs backdrop-blur-md shadow-xl text-stone-200 flex items-center gap-3">
                         <div class="flex items-center gap-1.5">
-                            <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
-                            <span class="font-bold text-white">Origin:</span> AquaFarm Depot
+                            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>
+                            <span class="font-bold text-white">Origin:</span> <span class="text-stone-300">AquaFarm Depot</span>
                         </div>
                         <span class="text-white/20">•</span>
                         <div class="flex items-center gap-1.5">
-                            <span class="h-3 w-3 rounded-full bg-purple-500"></span>
-                            <span class="font-bold text-purple-300">Turn-by-turn Road Route</span>
+                            <span class="h-2.5 w-2.5 rounded-full bg-indigo-400"></span>
+                            <span class="font-bold text-indigo-300">Road Route</span>
                         </div>
                         <span class="text-white/20">•</span>
                         <div class="flex items-center gap-1.5">
-                            <span class="h-3 w-3 rounded-full bg-rose-500"></span>
-                            <span class="font-bold text-rose-400">Destination Drop-off</span>
+                            <span class="h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-rose-500/30"></span>
+                            <span class="font-bold text-rose-400">Destination</span>
                         </div>
                     </div>
 
-                    <button type="button" onclick="recenterTrackingMap()" class="pointer-events-auto inline-flex items-center gap-1.5 rounded-2xl border border-white/15 bg-[#021f15]/90 px-3.5 py-2.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#021f15] transition-all shadow-xl cursor-pointer">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" onclick="recenterTrackingMap()" class="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#01140e]/95 px-3.5 py-2 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all shadow-xl cursor-pointer">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -247,27 +319,27 @@
             </div>
 
             <!-- Shipment Dispatch & Driver Telemetry Details -->
-            <div id="tracked-dispatch-card" class="rounded-[2.5rem] border border-white/10 bg-black/30 p-6 shadow-xl space-y-5">
-                <h3 class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Shipment Dispatch Details</h3>
+            <div id="tracked-dispatch-card" class="glass-card rounded-xl border border-white/10 p-5 sm:p-6 shadow-xl space-y-4">
+                <h3 class="text-xs font-black uppercase tracking-[0.15em] text-[#cca43b]">Shipment Dispatch Details</h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <!-- Destination -->
                     <div class="space-y-1">
                         <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Delivery Destination</p>
-                        <p id="disp-delivery-location" class="text-xs text-white font-bold leading-snug">📍 {{ selected_delivery.delivery_location|default:selected_delivery.order.customer.address }}</p>
-                        <p id="disp-customer-phone" class="text-[11px] font-mono text-[#cca43b] mt-1">{% if selected_delivery.order.customer.phone %}Customer: {{ selected_delivery.order.customer.phone }}{% endif %}</p>
+                        <p id="disp-delivery-location" class="text-xs text-white font-bold leading-snug">{{ selected_delivery.delivery_location|default:selected_delivery.order.customer.address }}</p>
+                        <p id="disp-customer-phone" class="text-[11px] font-mono text-[#cca43b] mt-1">{% if selected_delivery.order.customer.phone %}Customer Phone: {{ selected_delivery.order.customer.phone }}{% endif %}</p>
                     </div>
 
                     <!-- Rider Info -->
                     <div class="space-y-1">
-                        <p class="text-[10px] uppercase font-black tracking-wider text-cyan-400">Assigned Driver / Rider</p>
-                        <p id="disp-rider-name" class="text-sm font-bold text-white">{{ selected_delivery.rider.name|default:"No rider assigned yet." }}</p>
+                        <p class="text-[10px] uppercase font-black tracking-wider text-cyan-400">Assigned Courier / Rider</p>
+                        <p id="disp-rider-name" class="text-sm font-bold text-white">{{ selected_delivery.rider.name|default:"No rider assigned yet" }}</p>
                         <p id="disp-rider-vehicle" class="text-[11px] text-[#a0ac96]">{% if selected_delivery.rider %}{{ selected_delivery.rider.vehicle_type }} • {{ selected_delivery.rider.plate_number|default:"No plate" }}{% else %}Pending assignment{% endif %}</p>
                     </div>
 
                     <!-- Approver & Timestamps -->
                     <div class="space-y-1 text-xs">
-                        <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Approved By</p>
+                        <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Dispatch Approval</p>
                         <p id="disp-approved-by" class="text-stone-200 font-bold">{{ selected_delivery.created_by.get_full_name|default:selected_delivery.created_by.username|default:"System Admin" }}</p>
                         <p id="disp-created-at" class="text-[10px] text-[#a0ac96] font-mono">{{ selected_delivery.created_at|date:"M d, Y • h:i A" }}</p>
                     </div>
@@ -276,19 +348,22 @@
                 <!-- Driver Remarks -->
                 <div id="disp-notes-wrapper" class="border-t border-white/10 pt-4 space-y-1 text-xs {% if not selected_delivery.notes %}hidden{% endif %}">
                     <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Driver Remarks / Dispatch Notes</p>
-                    <p id="disp-notes-text" class="text-stone-300 italic bg-white/5 p-3 rounded-xl border border-white/5">{{ selected_delivery.notes }}</p>
+                    <p id="disp-notes-text" class="text-stone-300 italic bg-black/30 p-3 rounded-xl border border-white/5">{{ selected_delivery.notes }}</p>
                 </div>
             </div>
             {% else %}
             <!-- No Deliveries State -->
-            <div class="rounded-[2.5rem] border border-white/10 bg-black/30 p-12 text-center shadow-2xl max-w-lg mx-auto">
-                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#cca43b]/15 text-[#cca43b] text-3xl mx-auto mb-4">
-                    🛵
+            <div class="glass-card rounded-xl border border-white/10 p-12 text-center shadow-2xl max-w-lg mx-auto">
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-[#cca43b]/15 text-[#cca43b] mx-auto mb-4">
+                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
                 </div>
                 <h3 class="text-lg font-bold text-white">No Active Deliveries</h3>
                 <p class="text-xs text-[#a0ac96] mt-2">There are currently no orders scheduled or dispatched for delivery.</p>
                 <div class="mt-6">
-                    <a href="{% url 'sales:delivery_list' %}" class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-5 py-2.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all">
+                    <a href="{% url 'sales:delivery_list' %}" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-5 py-2.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all">
                         Create New Dispatch
                     </a>
                 </div>
@@ -331,9 +406,10 @@ function initLiveTrackingMap() {
         attributionControl: false
     }).setView([FARM_ORIGIN.lat, FARM_ORIGIN.lng], 13);
 
-    // Free high-detail Esri World Street Map tiles
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18
+    // Dark theme CartoDB / OSM tiles for seamless obsidian aesthetic
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd'
     }).addTo(trackMap);
 
     setTimeout(() => {
@@ -343,15 +419,15 @@ function initLiveTrackingMap() {
     // Custom Origin Marker (Farm Depot)
     const farmIcon = L.divIcon({
         className: 'farm-origin-marker',
-        html: `<div style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#10b981; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(16,185,129,0.7); font-size:18px;">
-                   🦐
+        html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#10b981; border:2.5px solid #ffffff; box-shadow:0 0 15px rgba(16,185,129,0.8); color:#ffffff; font-weight:900; font-size:11px;">
+                   DEPOT
                </div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
     });
 
     originMarker = L.marker([FARM_ORIGIN.lat, FARM_ORIGIN.lng], { icon: farmIcon }).addTo(trackMap);
-    originMarker.bindPopup('<b>Silay Superworm & Crayfish Farm</b><br>Origin Depot • Brgy Lantad, Silay City');
+    originMarker.bindPopup('<b style="color:#01140e;">Silay Superworm & Crayfish Farm</b><br><span style="font-size:11px; color:#4b5563;">Origin Depot • Brgy Lantad, Silay City</span>');
 
     // Load initial selected delivery
     if (currentSelectedId) {
@@ -374,15 +450,15 @@ function loadDeliveryRoute(deliveryId) {
     // Custom Destination Marker (Customer Drop-off)
     const destIcon = L.divIcon({
         className: 'dest-customer-marker',
-        html: `<div style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#ef4444; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(239,68,68,0.7); font-size:16px;">
-                   📍
+        html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#ef4444; border:2.5px solid #ffffff; box-shadow:0 0 15px rgba(239,68,68,0.8); color:#ffffff; font-weight:900; font-size:11px;">
+                   DROP
                </div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18]
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
     });
 
     destMarker = L.marker([destLat, destLng], { icon: destIcon }).addTo(trackMap);
-    destMarker.bindPopup(`<b>${item.customer_name}</b><br>${item.delivery_location}`);
+    destMarker.bindPopup(`<b style="color:#01140e;">${item.customer_name}</b><br><span style="font-size:11px; color:#4b5563;">${item.delivery_location}</span>`);
 
     // Remove previous polyline
     if (routePolyline && trackMap) {
@@ -403,8 +479,8 @@ function loadDeliveryRoute(deliveryId) {
             }
 
             routePolyline = L.polyline(coords, {
-                color: '#8b5cf6', // Road Purple
-                weight: 6,
+                color: '#6366f1', // Indigo / Road Blue
+                weight: 5,
                 opacity: 0.95,
                 lineCap: 'round',
                 lineJoin: 'round'
@@ -415,8 +491,8 @@ function loadDeliveryRoute(deliveryId) {
         .catch(() => {
             const fallbackCoords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
             routePolyline = L.polyline(fallbackCoords, {
-                color: '#8b5cf6',
-                weight: 6,
+                color: '#6366f1',
+                weight: 5,
                 opacity: 0.95,
                 lineCap: 'round',
                 lineJoin: 'round'
@@ -457,7 +533,7 @@ function selectShipment(deliveryId) {
     const statusBadge = document.getElementById('disp-status-badge');
     if (statusBadge) {
         statusBadge.textContent = item.status_display;
-        statusBadge.className = 'px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border ';
+        statusBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border ';
         if (item.status === 'delivered') {
             statusBadge.className += 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40';
         } else if (item.status === 'in_transit') {
@@ -474,10 +550,10 @@ function selectShipment(deliveryId) {
     if (payBadge) {
         if (item.payment_status === 'paid') {
             payBadge.textContent = 'Paid';
-            payBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+            payBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
         } else {
             payBadge.textContent = 'COD (Collect on Delivery)';
-            payBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30';
+            payBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30';
         }
     }
 
@@ -502,10 +578,10 @@ function selectShipment(deliveryId) {
 
     if (step3Circle) {
         if (item.status === 'in_transit' || item.status === 'delivered') {
-            step3Circle.className = 'h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15] bg-cyan-400 text-[#021f15] shadow-lg shadow-cyan-400/30 font-black text-xs';
-            step3Circle.textContent = item.status === 'delivered' ? '✓' : '🛵';
+            step3Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-cyan-400 text-[#01140e] shadow-lg shadow-cyan-400/30 font-black text-xs';
+            step3Circle.textContent = item.status === 'delivered' ? '✓' : '3';
         } else {
-            step3Circle.className = 'h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';
+            step3Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';
             step3Circle.textContent = '3';
         }
     }
@@ -519,10 +595,10 @@ function selectShipment(deliveryId) {
 
     if (step4Circle) {
         if (item.status === 'delivered') {
-            step4Circle.className = 'h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15] bg-emerald-500 text-[#021f15] shadow-lg shadow-emerald-500/30 font-black text-xs';
+            step4Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-emerald-500 text-[#01140e] shadow-lg shadow-emerald-500/30 font-black text-xs';
             step4Circle.textContent = '✓';
         } else {
-            step4Circle.className = 'h-8 w-8 rounded-full flex items-center justify-center ring-4 ring-[#021f15] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';
+            step4Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';
             step4Circle.textContent = '4';
         }
     }
@@ -531,15 +607,15 @@ function selectShipment(deliveryId) {
         step4Label.className = item.status === 'delivered' ? 'text-white' : 'text-stone-500';
     }
     if (step4Date) {
-        step4Date.textContent = item.delivered_date ? item.delivered_date : 'Estimated Today';
+        step4Date.textContent = item.delivered_date ? item.delivered_date : 'Pending';
     }
 
     // Dispatch Details Card
     const locEl = document.getElementById('disp-delivery-location');
-    if (locEl) locEl.textContent = `📍 ${item.delivery_location}`;
+    if (locEl) locEl.textContent = item.delivery_location;
 
     const phoneEl = document.getElementById('disp-customer-phone');
-    if (phoneEl) phoneEl.textContent = item.customer_phone ? `Customer: ${item.customer_phone}` : '';
+    if (phoneEl) phoneEl.textContent = item.customer_phone ? `Customer Phone: ${item.customer_phone}` : '';
 
     const rNameEl = document.getElementById('disp-rider-name');
     if (rNameEl) rNameEl.textContent = item.rider_name;
@@ -605,14 +681,14 @@ function filterShipmentList() {
 function filterByStatus(status) {
     const pills = document.querySelectorAll('.filter-pill');
     pills.forEach(p => {
-        p.classList.remove('bg-[#cca43b]', 'text-[#021f15]', 'font-black');
+        p.classList.remove('bg-[#cca43b]', 'text-[#01140e]', 'font-black');
         p.classList.add('bg-white/5', 'text-stone-300');
     });
 
     const activePill = document.getElementById(`pill-${status}`);
     if (activePill) {
         activePill.classList.remove('bg-white/5', 'text-stone-300');
-        activePill.classList.add('bg-[#cca43b]', 'text-[#021f15]', 'font-black');
+        activePill.classList.add('bg-[#cca43b]', 'text-[#01140e]', 'font-black');
     }
 
     const cards = document.querySelectorAll('.shipment-card');
@@ -634,3 +710,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
+
