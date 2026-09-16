@@ -642,15 +642,15 @@ class ProductForm(forms.ModelForm):
 class RiderForm(forms.ModelForm):
     class Meta:
         model = Rider
-        fields = ['name', 'phone', 'vehicle_type', 'plate_number', 'notes']
+        fields = ['name', 'phone', 'address', 'vehicle_type', 'plate_number', 'license_evidence', 'notes']
         widgets = {
             'name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]',
                 'placeholder': 'Rider full name',
                 'autocomplete': 'off'
             }),
             'phone': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]',
                 'placeholder': 'e.g. 09123456789',
                 'maxlength': '11',
                 'inputmode': 'numeric',
@@ -658,22 +658,31 @@ class RiderForm(forms.ModelForm):
                 'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);",
                 'autocomplete': 'off'
             }),
+            'address': forms.TextInput(attrs={
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]',
+                'placeholder': 'Home / Residential address',
+                'autocomplete': 'off'
+            }),
             'vehicle_type': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]',
                 'placeholder': 'e.g. Motorcycle, Tricycle, Delivery Van',
                 'autocomplete': 'off'
             }),
             'plate_number': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase',
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] uppercase',
                 'placeholder': 'Plate / Vehicle ID',
                 'style': 'text-transform: uppercase;',
                 'oninput': 'this.value = this.value.toUpperCase();',
                 'autocomplete': 'off'
             }),
+            'license_evidence': forms.FileInput(attrs={
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer',
+                'accept': 'image/*'
+            }),
             'notes': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'class': 'w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]',
                 'rows': 2,
-                'placeholder': 'Additional rider notes...'
+                'placeholder': 'Additional rider notes, assigned coverage areas, or details...'
             }),
         }
 
@@ -1849,7 +1858,7 @@ def rider_create(request):
         return access_response
 
     if request.method == 'POST':
-        form = RiderForm(request.POST)
+        form = RiderForm(request.POST, request.FILES)
         password = request.POST.get('password', '').strip()
 
         if not password:
@@ -1902,7 +1911,7 @@ def rider_edit(request, rider_id):
 
     rider = get_object_or_404(Rider, pk=rider_id)
     if request.method == 'POST':
-        form = RiderForm(request.POST, instance=rider)
+        form = RiderForm(request.POST, request.FILES, instance=rider)
         if form.is_valid():
             form.save()
             messages.success(request, f'Rider "{rider.name}" updated successfully.')

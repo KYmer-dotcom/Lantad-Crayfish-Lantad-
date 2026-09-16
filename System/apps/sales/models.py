@@ -214,6 +214,8 @@ class Rider(models.Model):
     phone = models.CharField(max_length=20)
     vehicle_type = models.CharField(max_length=50, default='Motorcycle')
     plate_number = models.CharField(max_length=50, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    license_evidence = models.ImageField(upload_to='rider_licenses/', null=True, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.AVAILABLE)
     is_active = models.BooleanField(default=True)
     notes = models.TextField(blank=True)

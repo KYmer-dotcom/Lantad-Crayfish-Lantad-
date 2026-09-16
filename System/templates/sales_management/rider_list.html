@@ -140,13 +140,15 @@
                         <tr class="border-b border-white/10 text-left text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
                             <th class="px-5 py-4">Rider</th>
                             <th class="px-5 py-4">Contact</th>
+                            <th class="px-5 py-4">Address</th>
+                            <th class="px-5 py-4">License / ID</th>
                             <th class="px-5 py-4">Status</th>
                             <th class="px-5 py-4">Assigned Tasks</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         {% for rider in riders %}
-                        <tr class="hover:bg-white/[0.02] transition-colors cursor-pointer group" onclick="openRiderDrawer('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.phone|escapejs }}', '{{ rider.vehicle_type|escapejs }}', '{{ rider.plate_number|escapejs }}', '{{ rider.status }}', '{{ rider.get_status_display|escapejs }}', '{{ rider.notes|escapejs }}', '{{ rider.created_at|date:'Y-m-d'|default:'2026-05-01' }}', '{{ rider.active_deliveries_count }}', '{{ rider.user.username|default:rider.phone|escapejs }}')">
+                        <tr class="hover:bg-white/[0.02] transition-colors cursor-pointer group" onclick="openRiderDrawer('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.phone|escapejs }}', '{{ rider.address|default:''|escapejs }}', '{{ rider.vehicle_type|escapejs }}', '{{ rider.plate_number|escapejs }}', '{{ rider.status }}', '{{ rider.get_status_display|escapejs }}', '{{ rider.notes|escapejs }}', '{{ rider.created_at|date:'Y-m-d'|default:'2026-05-01' }}', '{{ rider.active_deliveries_count }}', '{{ rider.user.username|default:rider.phone|escapejs }}', '{% if rider.license_evidence %}{{ rider.license_evidence.url }}{% endif %}');">
                             <!-- Rider Name -->
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
@@ -163,6 +165,27 @@
                             <!-- Contact -->
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <div class="text-sm font-mono text-stone-200">{{ rider.phone }}</div>
+                            </td>
+
+                            <!-- Address -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="text-xs text-stone-300 max-w-[180px] truncate block" title="{{ rider.address|default:'No address specified' }}">
+                                    {{ rider.address|default:"—" }}
+                                </span>
+                            </td>
+
+                            <!-- Driver License Evidence -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                {% if rider.license_evidence %}
+                                <button type="button" onclick="openLicensePreviewModal('{{ rider.license_evidence.url }}', '{{ rider.name|escapejs }}'); event.stopPropagation();" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b]/25 transition-colors cursor-pointer" title="View license evidence">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    <span>Verified ID</span>
+                                </button>
+                                {% else %}
+                                <span class="text-xs text-[#a0ac96]/50 font-mono">No ID</span>
+                                {% endif %}
                             </td>
 
                             <!-- Status Badge -->
@@ -189,7 +212,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center">
+                            <td colspan="6" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -211,37 +234,43 @@
 
 <!-- Add Rider Modal -->
 <div id="add-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6 sticky top-0 bg-[#01140e] z-10">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Register New Rider</h3>
             <button type="button" onclick="closeAddRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
-        <form method="POST" action="{% url 'sales:rider_create' %}" autocomplete="off" class="space-y-4">
+        <form method="POST" action="{% url 'sales:rider_create' %}" enctype="multipart/form-data" autocomplete="off" class="space-y-4">
             {% csrf_token %}
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Rider Full Name *</label>
                 {{ form.name }}
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
-                {{ form.phone }}
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Account Password *</label>
-                <div class="relative flex items-center">
-                    <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Create rider login password" class="w-full rounded-lg border border-white/10 bg-black/40 pl-4 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
-                    <button type="button" onclick="toggleRiderPasswordVisibility()" class="absolute right-3 text-[#a0ac96] hover:text-[#cca43b] transition-colors p-1 cursor-pointer" title="Toggle password visibility">
-                        <svg id="eye-icon-show" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <svg id="eye-icon-hide" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                        </svg>
-                    </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
+                    {{ form.phone }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Account Password *</label>
+                    <div class="relative flex items-center">
+                        <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Rider login password" class="w-full rounded-lg border border-white/10 bg-black/40 pl-4 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                        <button type="button" onclick="toggleRiderPasswordVisibility()" class="absolute right-3 text-[#a0ac96] hover:text-[#cca43b] transition-colors p-1 cursor-pointer" title="Toggle password visibility">
+                            <svg id="eye-icon-show" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg id="eye-icon-hide" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Residential / Home Address</label>
+                {{ form.address }}
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle Type</label>
                     {{ form.vehicle_type }}
@@ -250,6 +279,10 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Plate Number</label>
                     {{ form.plate_number }}
                 </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Driver's License / ID Evidence (Photo Upload)</label>
+                {{ form.license_evidence }}
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Notes / Coverage Area</label>
@@ -265,18 +298,18 @@
 
 <!-- Edit Rider Modal -->
 <div id="edit-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6 sticky top-0 bg-[#01140e] z-10">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Edit Rider Profile</h3>
             <button type="button" onclick="closeEditRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
-        <form id="edit-rider-form" method="POST" class="space-y-4">
+        <form id="edit-rider-form" method="POST" enctype="multipart/form-data" class="space-y-4">
             {% csrf_token %}
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Rider Full Name *</label>
                 <input type="text" name="name" id="edit-rider-name" required class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
                     <input type="text" name="phone" id="edit-rider-phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
@@ -290,7 +323,11 @@
                     </select>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Residential / Home Address</label>
+                <input type="text" name="address" id="edit-rider-address" placeholder="Home / Residential address" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle Type</label>
                     <input type="text" name="vehicle_type" id="edit-rider-vehicle" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
@@ -301,6 +338,17 @@
                 </div>
             </div>
             <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Update Driver's License / ID Photo</label>
+                <input type="file" name="license_evidence" accept="image/*" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
+            </div>
+            <div id="edit-current-license-container" class="hidden rounded-lg border border-white/10 bg-black/30 p-3">
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Current Uploaded License:</span>
+                <a id="edit-current-license-link" href="#" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:underline">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    View Uploaded Evidence
+                </a>
+            </div>
+            <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Notes / Coverage Area</label>
                 <textarea name="notes" id="edit-rider-notes" rows="2" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]"></textarea>
             </div>
@@ -309,6 +357,29 @@
                 <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- License Preview Modal -->
+<div id="license-preview-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-md px-4 py-8">
+    <div class="relative w-full max-w-xl rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-6 shadow-2xl text-stone-100 transform transition-all glass-card">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div>
+                <h3 class="text-base font-black text-[#cca43b] tracking-wider uppercase">Driver's License / ID Evidence</h3>
+                <p id="license-preview-rider-name" class="text-xs text-[#a0ac96] mt-0.5"></p>
+            </div>
+            <button type="button" onclick="closeLicensePreviewModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+        </div>
+        <div class="w-full max-h-[70vh] flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/50 p-2">
+            <img id="license-preview-img" src="" alt="Driver License Evidence" class="max-h-[65vh] w-auto max-w-full object-contain rounded-lg">
+        </div>
+        <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-4">
+            <a id="license-preview-download-btn" href="#" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:underline">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                Open Full Resolution
+            </a>
+            <button type="button" onclick="closeLicensePreviewModal()" class="rounded-lg bg-[#cca43b] px-5 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer">Close</button>
+        </div>
     </div>
 </div>
 
@@ -385,17 +456,28 @@ function closeAddRiderModal() {
     modal.classList.remove('flex');
 }
 
-function openEditRiderModal(riderId, name, phone, vehicle, plate, status, notes) {
+function openEditRiderModal(riderId, name, phone, address, vehicle, plate, status, licenseUrl, notes) {
     const modal = document.getElementById('edit-rider-modal');
     const form = document.getElementById('edit-rider-form');
     
     form.action = `/sales/riders/${riderId}/edit/`;
     document.getElementById('edit-rider-name').value = name || '';
     document.getElementById('edit-rider-phone').value = phone || '';
+    document.getElementById('edit-rider-address').value = address || '';
     document.getElementById('edit-rider-vehicle').value = vehicle || '';
     document.getElementById('edit-rider-plate').value = plate || '';
     document.getElementById('edit-rider-status').value = status || 'available';
     document.getElementById('edit-rider-notes').value = notes || '';
+
+    const licenseContainer = document.getElementById('edit-current-license-container');
+    const licenseLink = document.getElementById('edit-current-license-link');
+    if (licenseUrl && licenseUrl.trim() !== '') {
+        licenseContainer.classList.remove('hidden');
+        licenseLink.href = licenseUrl;
+    } else {
+        licenseContainer.classList.add('hidden');
+        licenseLink.href = '#';
+    }
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -403,6 +485,26 @@ function openEditRiderModal(riderId, name, phone, vehicle, plate, status, notes)
 
 function closeEditRiderModal() {
     const modal = document.getElementById('edit-rider-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function openLicensePreviewModal(url, riderName) {
+    const modal = document.getElementById('license-preview-modal');
+    const img = document.getElementById('license-preview-img');
+    const downloadBtn = document.getElementById('license-preview-download-btn');
+    const nameLabel = document.getElementById('license-preview-rider-name');
+
+    img.src = url;
+    downloadBtn.href = url;
+    nameLabel.textContent = riderName ? `Rider: ${riderName}` : '';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeLicensePreviewModal() {
+    const modal = document.getElementById('license-preview-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
 }
@@ -450,8 +552,8 @@ function closeDeleteRiderModal() {
 // ==========================================
 let currentDrawerRiderData = null;
 
-function openRiderDrawer(id, name, phone, vehicle, plate, status, statusDisplay, notes, dateHired, activeTasks, username) {
-    currentDrawerRiderData = { id, name, phone, vehicle, plate, status, notes };
+function openRiderDrawer(id, name, phone, address, vehicle, plate, status, statusDisplay, notes, dateHired, activeTasks, username, licenseUrl) {
+    currentDrawerRiderData = { id, name, phone, address, vehicle, plate, status, licenseUrl, notes };
 
     // Set Avatar & Name
     document.getElementById('drawer-avatar').textContent = (name || 'R').charAt(0).toUpperCase();
@@ -474,6 +576,7 @@ function openRiderDrawer(id, name, phone, vehicle, plate, status, statusDisplay,
     document.getElementById('drawer-rider-id').textContent = `#RDR-${paddedId}`;
     document.getElementById('drawer-phone').textContent = phone || '—';
     document.getElementById('drawer-call-btn').href = phone ? `tel:${phone}` : '#';
+    document.getElementById('drawer-address').textContent = address && address.trim() !== '' ? address : 'No address provided';
     document.getElementById('drawer-vehicle').textContent = vehicle || 'Motorcycle';
     document.getElementById('drawer-plate').textContent = plate || 'NO PLATE';
     document.getElementById('drawer-date').textContent = dateHired || '—';
@@ -481,10 +584,25 @@ function openRiderDrawer(id, name, phone, vehicle, plate, status, statusDisplay,
     document.getElementById('drawer-notes').textContent = notes && notes.trim() !== '' ? notes : 'No additional notes provided.';
     document.getElementById('drawer-active-tasks').textContent = `${activeTasks || 0} active shipment${activeTasks == 1 ? '' : 's'}`;
 
+    // License Evidence in Drawer
+    const licenseBox = document.getElementById('drawer-license-box');
+    const licenseLink = document.getElementById('drawer-license-link');
+    const licenseEmpty = document.getElementById('drawer-license-empty');
+    if (licenseUrl && licenseUrl.trim() !== '') {
+        licenseBox.classList.remove('hidden');
+        licenseEmpty.classList.add('hidden');
+        licenseLink.onclick = function() {
+            openLicensePreviewModal(licenseUrl, name);
+        };
+    } else {
+        licenseBox.classList.add('hidden');
+        licenseEmpty.classList.remove('hidden');
+    }
+
     // Set Button Handlers
     document.getElementById('drawer-edit-btn').onclick = function() {
         closeRiderDrawer();
-        openEditRiderModal(id, name, phone, vehicle, plate, status, notes);
+        openEditRiderModal(id, name, phone, address, vehicle, plate, status, licenseUrl, notes);
     };
 
     document.getElementById('drawer-status-btn').onclick = function() {
@@ -555,13 +673,7 @@ function closeRiderDrawer() {
             <p id="drawer-rider-id" class="text-sm font-mono font-bold text-[#cca43b]">#RDR-001</p>
         </div>
 
-        <!-- Card 2: Role Type -->
-        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
-            <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Role Type</p>
-            <p class="text-sm font-bold text-white">Delivery Logistics / Courier</p>
-        </div>
-
-        <!-- Card 3: Contact Information -->
+        <!-- Card 2: Contact Information -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4 space-y-2">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Contact Information</p>
             <div class="flex items-center justify-between">
@@ -573,6 +685,12 @@ function closeRiderDrawer() {
             </div>
         </div>
 
+        <!-- Card 3: Residential Address -->
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
+            <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Residential Address</p>
+            <p id="drawer-address" class="text-sm text-stone-200 leading-relaxed">—</p>
+        </div>
+
         <!-- Card 4: Vehicle & Plate -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle & Plate #</p>
@@ -582,7 +700,22 @@ function closeRiderDrawer() {
             </div>
         </div>
 
-        <!-- Card 5: Assigned Tasks -->
+        <!-- Card 5: Driver's License Evidence -->
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
+            <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-2">Driver's License / ID Evidence</p>
+            <div id="drawer-license-box" class="flex items-center justify-between">
+                <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Verified Document Attached
+                </span>
+                <button id="drawer-license-link" type="button" class="inline-flex items-center gap-1 rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1.5 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/25 transition-colors cursor-pointer">
+                    View Photo
+                </button>
+            </div>
+            <p id="drawer-license-empty" class="text-xs text-[#a0ac96]/60">No license document uploaded yet.</p>
+        </div>
+
+        <!-- Card 6: Assigned Tasks -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Assigned Tasks / Workload</p>
             <div class="flex items-center justify-between">
@@ -593,13 +726,13 @@ function closeRiderDrawer() {
             </div>
         </div>
 
-        <!-- Card 6: Date Registered -->
+        <!-- Card 7: Date Registered -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Date Hired / Registered</p>
             <p id="drawer-date" class="text-sm font-mono text-stone-200">2026-05-01</p>
         </div>
 
-        <!-- Card 7: Account Information -->
+        <!-- Card 8: Account Information -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Login Username</p>
             <div class="flex items-center gap-2 text-sm text-stone-200">
@@ -608,7 +741,7 @@ function closeRiderDrawer() {
             </div>
         </div>
 
-        <!-- Card 8: Notes -->
+        <!-- Card 9: Notes -->
         <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Notes & Coverage Area</p>
             <p id="drawer-notes" class="text-xs text-stone-300 leading-relaxed">—</p>
@@ -631,9 +764,9 @@ document.addEventListener('DOMContentLoaded', () => {
     new TableEnhancer('#riders-table', {
         pageSize: 10,
         filterColumns: [
-            { colIndex: 2, label: 'Status' }
+            { colIndex: 4, label: 'Status' }
         ],
-        searchPlaceholder: 'Search riders by name, phone, plate...'
+        searchPlaceholder: 'Search riders by name, phone, address, plate...'
     });
 });
 </script>
