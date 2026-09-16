@@ -10,6 +10,34 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
     }
+
+    .log-tab-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        cursor: pointer;
+        color: #d6d3d1; /* stone-300 */
+        background: transparent;
+        border: 1px solid transparent;
+        user-select: none;
+    }
+    .log-tab-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+    .log-tab-btn.active {
+        background-color: #cca43b !important;
+        color: #01140e !important;
+        font-weight: 900 !important;
+        box-shadow: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
+        border-color: transparent !important;
+    }
 </style>
 
 <div class="space-y-6 pb-12">
@@ -84,17 +112,17 @@
     <div class="glass-card rounded-xl p-4 sm:p-5 space-y-4">
         <!-- Top Row: Tab Switcher & Active Filter State -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
-            <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/40 border border-white/10 overflow-x-auto" id="logs-type-tabs">
+            <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/50 border border-white/10 overflow-x-auto" id="logs-type-tabs">
                 <button type="button" onclick="switchLogView('product')" id="tab-btn-product"
-                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'product' or not tab_filter %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
+                    class="log-tab-btn {% if tab_filter == 'product' or not tab_filter %}active{% endif %}">
                     Product Logs ({{ total_logs }})
                 </button>
                 <button type="button" onclick="switchLogView('activity')" id="tab-btn-activity"
-                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'activity' %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
+                    class="log-tab-btn {% if tab_filter == 'activity' %}active{% endif %}">
                     Activity Logs ({{ activity_logs|length }})
                 </button>
                 <button type="button" onclick="switchLogView('input')" id="tab-btn-input"
-                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'input' %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
+                    class="log-tab-btn {% if tab_filter == 'input' %}active{% endif %}">
                     Input Logs ({{ input_logs_count }})
                 </button>
             </div>
@@ -781,9 +809,6 @@ function switchLogView(type) {
     const inputBtn = document.getElementById('tab-btn-input');
     const searchTabInput = document.getElementById('search-tab-input');
 
-    const activeClasses = ['bg-[#cca43b]', 'text-[#01140e]', 'font-black', 'shadow-md', 'shadow-[#cca43b]/25'];
-    const inactiveClasses = ['text-[#a0ac96]', 'hover:text-white', 'hover:bg-white/5', 'font-bold'];
-
     // Hide all panels
     if (prodPanel) prodPanel.classList.add('hidden');
     if (actPanel) actPanel.classList.add('hidden');
@@ -791,31 +816,20 @@ function switchLogView(type) {
 
     // Reset button states
     [prodBtn, actBtn, inputBtn].forEach(btn => {
-        if (!btn) return;
-        btn.classList.remove(...activeClasses);
-        btn.classList.add(...inactiveClasses);
+        if (btn) btn.classList.remove('active');
     });
 
     if (type === 'product') {
         if (prodPanel) prodPanel.classList.remove('hidden');
-        if (prodBtn) {
-            prodBtn.classList.remove(...inactiveClasses);
-            prodBtn.classList.add(...activeClasses);
-        }
+        if (prodBtn) prodBtn.classList.add('active');
         if (searchTabInput) searchTabInput.value = 'product';
     } else if (type === 'activity') {
         if (actPanel) actPanel.classList.remove('hidden');
-        if (actBtn) {
-            actBtn.classList.remove(...inactiveClasses);
-            actBtn.classList.add(...activeClasses);
-        }
+        if (actBtn) actBtn.classList.add('active');
         if (searchTabInput) searchTabInput.value = 'activity';
     } else if (type === 'input') {
         if (inputPanel) inputPanel.classList.remove('hidden');
-        if (inputBtn) {
-            inputBtn.classList.remove(...inactiveClasses);
-            inputBtn.classList.add(...activeClasses);
-        }
+        if (inputBtn) inputBtn.classList.add('active');
         if (searchTabInput) searchTabInput.value = 'input';
     }
 }
