@@ -3,127 +3,160 @@
 {% block header_title %}Delivery Logs & Audit{% endblock %}
 
 {% block page_content %}
-<div class="space-y-8">
+<style>
+    /* Elevated Glass Card Effect */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
     <!-- Top Header & Navigation -->
-    <div class="flex flex-wrap items-center justify-between gap-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Logistics History & Verification</p>
-            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Delivery Logs & Proof of Delivery</h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Logistics History & Verification</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Delivery Logs & Proof of Delivery</h1>
         </div>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Stat 1: Total Completed/Delivered -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Completed & Delivered</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Completed & Delivered</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-emerald-300 tracking-tight">{{ delivered_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                Confirmed drop-off completed
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-emerald-300 tracking-tight">{{ delivered_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span>Confirmed drop-off completed</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat 2: Total Dispatches Logged -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Total Dispatches</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#cca43b]/10 text-[#cca43b]">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Dispatches</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ total_logs|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#cca43b] font-bold">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
-                Approved delivery requests
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_logs|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Approved delivery requests</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat 3: Delivered Volume (kg) -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Delivered Volume</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered Volume</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-cyan-300 tracking-tight">{{ total_delivered_kg|floatformat:1 }} <span class="text-lg font-bold text-cyan-400/80">kg</span></p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400"></span>
-                Fulfilled stock weight
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_delivered_kg|floatformat:1 }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Fulfilled stock weight</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat 4: Delivered Revenue -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Fulfilled Revenue</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 font-black text-lg">
-                    ₱
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Fulfilled Revenue</p>
             </div>
-            <p class="mt-4 text-3xl font-black text-[#cca43b] tracking-tight">₱{{ total_delivered_revenue|floatformat:2 }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-amber-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"></span>
-                Gross value of delivered orders
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ total_delivered_revenue|floatformat:2 }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Gross value of delivered orders</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Search & Filter Controls -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <!-- Log Switcher Tabs: Product Logs, Activity Logs, Input Logs -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0" id="logs-type-tabs">
-            <button type="button" onclick="switchLogView('product')" id="tab-btn-product"
-                class="px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'product' %}bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20{% else %}border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white{% endif %}">
-                Product Logs ({{ total_logs }})
-            </button>
-            <button type="button" onclick="switchLogView('activity')" id="tab-btn-activity"
-                class="px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'activity' %}bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20{% else %}border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white{% endif %}">
-                Activity Logs ({{ activity_logs|length }})
-            </button>
-            <button type="button" onclick="switchLogView('input')" id="tab-btn-input"
-                class="px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'input' %}bg-[#cca43b] text-[#021f15] shadow-lg shadow-[#cca43b]/20{% else %}border border-white/10 bg-black/20 text-[#a0ac96] hover:text-white{% endif %}">
-                Input Logs ({{ input_logs_count }})
-            </button>
+    <!-- Search, Status & Date Filter Bar -->
+    <div class="glass-card rounded-xl p-4 space-y-4">
+        <!-- Top Row: Tab Switcher & Active Filter State -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+            <div class="flex items-center gap-2 overflow-x-auto" id="logs-type-tabs">
+                <button type="button" onclick="switchLogView('product')" id="tab-btn-product"
+                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'product' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    Product Logs ({{ total_logs }})
+                </button>
+                <button type="button" onclick="switchLogView('activity')" id="tab-btn-activity"
+                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'activity' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    Activity Logs ({{ activity_logs|length }})
+                </button>
+                <button type="button" onclick="switchLogView('input')" id="tab-btn-input"
+                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'input' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    Input Logs ({{ input_logs_count }})
+                </button>
+            </div>
+            
+            {% if start_date or end_date or query %}
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] font-mono text-[#cca43b]">Filters Active</span>
+                <a href="?tab={{ tab_filter }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
+            </div>
+            {% endif %}
         </div>
 
-        <!-- Search Input -->
-        <form method="GET" class="flex items-center gap-2 min-w-[280px]">
+        <!-- Filter Form: Filter by Date & Search -->
+        <form method="GET" class="flex flex-wrap items-center justify-between gap-3">
+            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter }}">
             {% if status_filter != 'all' %}
             <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
-            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter }}">
-            <div class="relative flex-1">
-                <input type="text" name="q" value="{{ query }}" placeholder="Search logs, product, actor, customer..." class="w-full rounded-2xl border border-white/10 bg-black/30 pl-10 pr-4 py-2.5 text-xs text-stone-100 placeholder:text-stone-500 focus:border-[#cca43b] focus:outline-none">
-                <svg class="h-4 w-4 text-[#a0ac96] absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+
+            <!-- Date Range Inputs (Filter by Date) -->
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
+                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider">From:</span>
+                    <input type="date" name="start_date" value="{{ start_date }}"
+                        class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
+                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider">To:</span>
+                    <input type="date" name="end_date" value="{{ end_date }}"
+                        class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
+                </div>
+
+                <button type="submit"
+                    class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-all cursor-pointer shadow-md shadow-[#cca43b]/20">
+                    Filter Date
+                </button>
             </div>
-            <button type="submit" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all cursor-pointer">
-                Search
-            </button>
-            {% if query %}
-            <a href="?tab={{ tab_filter }}" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-[#a0ac96] hover:text-white">Clear</a>
-            {% endif %}
+
+            <!-- Search Bar -->
+            <div class="flex items-center gap-2 flex-grow sm:flex-grow-0 sm:min-w-[280px]">
+                <div class="relative w-full">
+                    <input type="search" name="q" value="{{ query }}" placeholder="Search logs, product, customer..."
+                        class="w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-4 py-2 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none">
+                    <svg class="h-3.5 w-3.5 text-[#a0ac96] absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
         </form>
     </div>
 
     <!-- Product Logs Panel -->
     <div id="product-logs-panel" class="{% if tab_filter == 'activity' %}hidden{% endif %} space-y-6">
         <!-- Audit Logs Table -->
-        <div class="overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-2xl backdrop-blur-md">
+        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -328,12 +361,12 @@
             </p>
             <div class="flex items-center gap-2">
                 {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
+                <a href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
                     Previous
                 </a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
+                <a href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
                     Next
                 </a>
                 {% endif %}
@@ -345,7 +378,7 @@
 
     <!-- Activity Logs Panel -->
     <div id="activity-logs-panel" class="{% if tab_filter != 'activity' %}hidden{% endif %} space-y-6">
-        <div class="overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-2xl backdrop-blur-md">
+        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -404,7 +437,7 @@
                                     📜
                                 </div>
                                 <h3 class="text-base font-bold text-white">No Activity Logs Found</h3>
-                                <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No activity events match your search query.</p>
+                                <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No activity events match your search or date query.</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -428,7 +461,7 @@
             </span>
         </div>
 
-        <div class="overflow-hidden rounded-[2.5rem] border border-white/10 bg-black/30 shadow-2xl backdrop-blur-md">
+        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>

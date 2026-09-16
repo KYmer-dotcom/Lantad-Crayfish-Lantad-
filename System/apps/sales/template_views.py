@@ -1541,6 +1541,24 @@ def delivery_logs_page(request):
             Q(delivery_location__icontains=query)
         )
 
+    # Date range filters
+    start_date = request.GET.get('start_date', '').strip()
+    end_date = request.GET.get('end_date', '').strip()
+
+    if start_date:
+        try:
+            start_d = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            logs_qs = logs_qs.filter(Q(delivered_date__gte=start_d) | (Q(delivered_date__isnull=True) & Q(created_at__date__gte=start_d)))
+        except ValueError:
+            start_date = ''
+
+    if end_date:
+        try:
+            end_d = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+            logs_qs = logs_qs.filter(Q(delivered_date__lte=end_d) | (Q(delivered_date__isnull=True) & Q(created_at__date__lte=end_d)))
+        except ValueError:
+            end_date = ''
+
     # Status filter
     status_filter = request.GET.get('status', 'all').strip().lower()
     if status_filter in [Delivery.Status.DELIVERED, Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED, Delivery.Status.CANCELLED]:
@@ -1563,12 +1581,12 @@ def delivery_logs_page(request):
     )
 
     # Aggregates / Stats
-    total_logs = Delivery.objects.count()
-    delivered_count = Delivery.objects.filter(status=Delivery.Status.DELIVERED).count()
-    in_transit_count = Delivery.objects.filter(status=Delivery.Status.IN_TRANSIT).count()
-    scheduled_count = Delivery.objects.filter(status=Delivery.Status.SCHEDULED).count()
+    total_logs = logs_qs.count()
+    delivered_count = logs_qs.filter(status=Delivery.Status.DELIVERED).count()
+    in_transit_count = logs_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
+    scheduled_count = logs_qs.filter(status=Delivery.Status.SCHEDULED).count()
 
-    delivered_qs = Delivery.objects.filter(status=Delivery.Status.DELIVERED)
+    delivered_qs = logs_qs.filter(status=Delivery.Status.DELIVERED)
     total_delivered_kg = delivered_qs.aggregate(total=Sum('quantity_kg'))['total'] or Decimal('0')
     total_delivered_revenue = delivered_qs.aggregate(total=Sum('order__total_amount'))['total'] or Decimal('0')
 
@@ -1584,6 +1602,18 @@ def delivery_logs_page(request):
 
     # Fetch Input / Deletion Logs (Who added that data and deleted that)
     input_logs_qs = InputLog.objects.all()
+    if start_date:
+        try:
+            start_d = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            input_logs_qs = input_logs_qs.filter(created_at__date__gte=start_d)
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_d = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+            input_logs_qs = input_logs_qs.filter(created_at__date__lte=end_d)
+        except ValueError:
+            pass
     if query:
         input_logs_qs = input_logs_qs.filter(
             Q(user_name__icontains=query) |
@@ -1707,6 +1737,8 @@ def delivery_logs_page(request):
         'status_filter': status_filter,
         'tab_filter': tab_filter,
         'query': query,
+        'start_date': start_date,
+        'end_date': end_date,
     }
     return render(request, 'sales_management/delivery_logs.html', context)
 
