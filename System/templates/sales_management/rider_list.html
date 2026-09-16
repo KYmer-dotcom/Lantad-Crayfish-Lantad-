@@ -3,17 +3,26 @@
 {% block header_title %}Riders Management{% endblock %}
 
 {% block page_content %}
-<div class="space-y-8">
+<style>
+    /* Elevated Glass Card Effect */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
     <!-- Top Header -->
-    <div class="flex flex-wrap items-center justify-between gap-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Delivery Fleet</p>
-            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Riders & Couriers</h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Delivery Fleet</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Riders & Couriers</h1>
         </div>
         <div class="flex items-center gap-3">
-            <button type="button" onclick="openAddRiderModal()" class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-5 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all shadow-lg shadow-[#cca43b]/20 hover:scale-105 active:scale-95">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            <button type="button" onclick="openAddRiderModal()" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">
+                <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
                 Register Rider
             </button>
@@ -21,90 +30,78 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Stat Card 1: Total Riders -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Total Fleet</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Fleet</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ total_riders|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#cca43b] font-bold">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                Registered couriers
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_riders|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Registered couriers</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 2: Available Riders -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-emerald-400/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Available</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Available</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-emerald-400 tracking-tight">{{ available_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                Ready for dispatch
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ available_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Ready for dispatch</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 3: On Delivery -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">On Delivery</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <svg class="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">On Delivery</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-cyan-300 tracking-tight">{{ on_delivery_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                Currently transporting
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ on_delivery_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Currently transporting</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 4: Off Duty -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-stone-400/40">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Off Duty</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-stone-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Off Duty</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-stone-300 tracking-tight">{{ off_duty_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-stone-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-stone-500"></span>
-                Inactive / Break
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ off_duty_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Inactive / Break</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Filter Bar & Search -->
-    <div class="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-4 backdrop-blur-md">
+    <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
         <!-- Status Tabs -->
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{% url 'sales:rider_list' %}" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if not status_filter %}bg-[#cca43b] text-[#021f15] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:rider_list' %}" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 All ({{ total_riders }})
             </a>
-            <a href="{% url 'sales:rider_list' %}?status=available" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'available' %}bg-emerald-400 text-[#021f15] shadow-md shadow-emerald-400/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:rider_list' %}?status=available" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'available' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Available ({{ available_count }})
             </a>
-            <a href="{% url 'sales:rider_list' %}?status=on_delivery" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'on_delivery' %}bg-cyan-400 text-[#021f15] shadow-md shadow-cyan-400/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:rider_list' %}?status=on_delivery" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'on_delivery' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 On Delivery ({{ on_delivery_count }})
             </a>
-            <a href="{% url 'sales:rider_list' %}?status=off_duty" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'off_duty' %}bg-stone-400 text-[#021f15] shadow-md{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:rider_list' %}?status=off_duty" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'off_duty' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Off Duty ({{ off_duty_count }})
             </a>
         </div>
@@ -115,111 +112,109 @@
                 <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
             <div class="relative">
-                <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search rider, phone, vehicle..." class="w-64 rounded-xl border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none">
+                <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search rider, phone, vehicle..." class="w-64 rounded-lg border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 <svg class="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
             {% if query %}
-            <a href="{% url 'sales:rider_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-[#a0ac96] hover:text-white">Clear</a>
+            <a href="{% url 'sales:rider_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-[#a0ac96] hover:text-white">Clear</a>
             {% endif %}
         </form>
     </div>
 
     <!-- Riders Table Container -->
-    <div class="rounded-3xl border border-white/10 bg-black/20 shadow-2xl overflow-hidden backdrop-blur-md">
-        <div class="flex items-center justify-between border-b border-white/10 px-6 py-5 bg-white/[0.02]">
-            <div class="flex items-center gap-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/10 text-[#cca43b]">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                </div>
-                <h2 class="text-lg font-black text-stone-50 tracking-tight">Rider Registry</h2>
+    <div class="glass-card rounded-xl p-6 shadow-xl space-y-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-stone-100">Rider Registry</h2>
+                <p class="text-xs text-[#a0ac96]">Logistics personnel, vehicle assignments, and real-time dispatch availability</p>
             </div>
             <span class="text-xs font-bold text-[#a0ac96]">{{ riders|length }} rider{{ riders|length|pluralize }}</span>
         </div>
 
-        <div class="overflow-x-auto">
-            <table id="riders-table" class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Rider</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Contact</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Assigned Tasks</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5 bg-transparent">
-                    {% for rider in riders %}
-                    <tr class="hover:bg-white/[0.05] transition-colors duration-200 cursor-pointer group" onclick="openRiderDrawer('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.phone|escapejs }}', '{{ rider.vehicle_type|escapejs }}', '{{ rider.plate_number|escapejs }}', '{{ rider.status }}', '{{ rider.get_status_display|escapejs }}', '{{ rider.notes|escapejs }}', '{{ rider.created_at|date:'Y-m-d'|default:'2026-05-01' }}', '{{ rider.active_deliveries_count }}', '{{ rider.user.username|default:rider.phone|escapejs }}')">
-                        <!-- Rider Name -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black text-sm group-hover:bg-[#cca43b]/20 transition-colors">
-                                    {{ rider.name|slice:":1"|upper }}
+        <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+            <div class="overflow-x-auto">
+                <table id="riders-table" class="w-full border-collapse">
+                    <thead class="bg-white/[0.04]">
+                        <tr class="border-b border-white/10 text-left text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
+                            <th class="px-5 py-4">Rider</th>
+                            <th class="px-5 py-4">Contact</th>
+                            <th class="px-5 py-4">Status</th>
+                            <th class="px-5 py-4">Assigned Tasks</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for rider in riders %}
+                        <tr class="hover:bg-white/[0.02] transition-colors cursor-pointer group" onclick="openRiderDrawer('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.phone|escapejs }}', '{{ rider.vehicle_type|escapejs }}', '{{ rider.plate_number|escapejs }}', '{{ rider.status }}', '{{ rider.get_status_display|escapejs }}', '{{ rider.notes|escapejs }}', '{{ rider.created_at|date:'Y-m-d'|default:'2026-05-01' }}', '{{ rider.active_deliveries_count }}', '{{ rider.user.username|default:rider.phone|escapejs }}')">
+                            <!-- Rider Name -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black text-sm group-hover:bg-[#cca43b]/20 transition-colors">
+                                        {{ rider.name|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-white group-hover:text-[#cca43b] transition-colors">{{ rider.name }}</div>
+                                        <p class="text-[11px] text-[#a0ac96]">ID: #RDR-{{ rider.id|stringformat:"03d" }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-sm font-bold text-white group-hover:text-[#cca43b] transition-colors">{{ rider.name }}</div>
-                                    <p class="text-[11px] text-[#a0ac96]">ID: #RDR-{{ rider.id|stringformat:"03d" }}</p>
+                            </td>
+
+                            <!-- Contact -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="text-sm font-mono text-stone-200">{{ rider.phone }}</div>
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <button type="button" onclick="openRiderStatusModal('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.status }}'); event.stopPropagation();" class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-all cursor-pointer items-center gap-1.5
+                                    {% if rider.status == 'available' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                                    {% elif rider.status == 'on_delivery' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20
+                                    {% else %}bg-stone-500/10 text-stone-400 border-stone-500/20{% endif %}">
+                                    <span class="h-1.5 w-1.5 rounded-full
+                                        {% if rider.status == 'available' %}bg-emerald-400
+                                        {% elif rider.status == 'on_delivery' %}bg-cyan-400
+                                        {% else %}bg-stone-500{% endif %}"></span>
+                                    {{ rider.get_status_display }}
+                                    <svg class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                            </td>
+
+                            <!-- Assigned Tasks -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="text-xs font-bold text-stone-300">
+                                    {{ rider.active_deliveries_count }} active shipment{{ rider.active_deliveries_count|pluralize }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-bold text-stone-200">No riders found</p>
+                                    <p class="text-xs text-[#a0ac96] mt-1">Register a new rider or clear search filters.</p>
                                 </div>
-                            </div>
-                        </td>
-
-                        <!-- Contact -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-mono text-stone-200">{{ rider.phone }}</div>
-                        </td>
-
-                        <!-- Status Badge -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <button type="button" onclick="openRiderStatusModal('{{ rider.id }}', '{{ rider.name|escapejs }}', '{{ rider.status }}'); event.stopPropagation();" class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-all cursor-pointer items-center gap-1.5
-                                {% if rider.status == 'available' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                {% elif rider.status == 'on_delivery' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20
-                                {% else %}bg-stone-500/10 text-stone-400 border-stone-500/20{% endif %}">
-                                <span class="h-1.5 w-1.5 rounded-full
-                                    {% if rider.status == 'available' %}bg-emerald-400
-                                    {% elif rider.status == 'on_delivery' %}bg-cyan-400 animate-ping
-                                    {% else %}bg-stone-500{% endif %}"></span>
-                                {{ rider.get_status_display }}
-                                <svg class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                        </td>
-
-                        <!-- Assigned Tasks -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-xs font-bold text-stone-300">
-                                {{ rider.active_deliveries_count }} active shipment{{ rider.active_deliveries_count|pluralize }}
-                            </span>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                </div>
-                                <p class="text-sm font-bold text-stone-200">No riders found</p>
-                                <p class="text-xs text-[#a0ac96] mt-1">Register a new rider or clear search filters.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Add Rider Modal -->
 <div id="add-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Register New Rider</h3>
-            <button type="button" onclick="closeAddRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeAddRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form method="POST" action="{% url 'sales:rider_create' %}" autocomplete="off" class="space-y-4">
             {% csrf_token %}
@@ -234,8 +229,8 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Account Password *</label>
                 <div class="relative flex items-center">
-                    <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Create rider login password" class="w-full rounded-xl border border-white/10 bg-black/40 pl-4 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none">
-                    <button type="button" onclick="toggleRiderPasswordVisibility()" class="absolute right-3 text-[#a0ac96] hover:text-[#cca43b] transition-colors p-1" title="Toggle password visibility">
+                    <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Create rider login password" class="w-full rounded-lg border border-white/10 bg-black/40 pl-4 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                    <button type="button" onclick="toggleRiderPasswordVisibility()" class="absolute right-3 text-[#a0ac96] hover:text-[#cca43b] transition-colors p-1 cursor-pointer" title="Toggle password visibility">
                         <svg id="eye-icon-show" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -261,8 +256,8 @@
                 {{ form.notes }}
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeAddRiderModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Register Rider</button>
+                <button type="button" onclick="closeAddRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Register Rider</button>
             </div>
         </form>
     </div>
@@ -270,25 +265,25 @@
 
 <!-- Edit Rider Modal -->
 <div id="edit-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Edit Rider Profile</h3>
-            <button type="button" onclick="closeEditRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeEditRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="edit-rider-form" method="POST" class="space-y-4">
             {% csrf_token %}
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Rider Full Name *</label>
-                <input type="text" name="name" id="edit-rider-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <input type="text" name="name" id="edit-rider-name" required class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
-                    <input type="text" name="phone" id="edit-rider-phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <input type="text" name="phone" id="edit-rider-phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Status</label>
-                    <select name="status" id="edit-rider-status" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <select name="status" id="edit-rider-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                         <option value="available">Available</option>
                         <option value="on_delivery">On Delivery</option>
                         <option value="off_duty">Off Duty</option>
@@ -298,20 +293,20 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle Type</label>
-                    <input type="text" name="vehicle_type" id="edit-rider-vehicle" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <input type="text" name="vehicle_type" id="edit-rider-vehicle" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Plate Number</label>
-                    <input type="text" name="plate_number" id="edit-rider-plate" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="w-full px-4 py-2 border border-gray-300 rounded-lg uppercase">
+                    <input type="text" name="plate_number" id="edit-rider-plate" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] uppercase">
                 </div>
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Notes / Coverage Area</label>
-                <textarea name="notes" id="edit-rider-notes" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+                <textarea name="notes" id="edit-rider-notes" rows="2" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]"></textarea>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeEditRiderModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Save Changes</button>
+                <button type="button" onclick="closeEditRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
             </div>
         </form>
     </div>
@@ -319,27 +314,27 @@
 
 <!-- Quick Rider Status Modal -->
 <div id="rider-status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Status</h3>
                 <p id="rider-status-modal-name" class="text-xs text-[#a0ac96] mt-1"></p>
             </div>
-            <button type="button" onclick="closeRiderStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeRiderStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="rider-status-form" method="POST" class="space-y-6">
             {% csrf_token %}
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Duty Status</label>
-                <select name="status" id="modal-rider-status" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none">
+                <select name="status" id="modal-rider-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="available">Available (Ready for Dispatch)</option>
                     <option value="on_delivery">On Delivery</option>
                     <option value="off_duty">Off Duty</option>
                 </select>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closeRiderStatusModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Update Status</button>
+                <button type="button" onclick="closeRiderStatusModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Update Status</button>
             </div>
         </form>
     </div>
@@ -347,16 +342,16 @@
 
 <!-- Delete Rider Confirmation Modal -->
 <div id="delete-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Rider</h3>
-            <button type="button" onclick="closeDeleteRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeDeleteRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove <span id="delete-rider-name" class="font-bold text-stone-100"></span> from the registry? This will unassign their tasks and remove their login credentials.</p>
         <form id="delete-rider-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
             {% csrf_token %}
-            <button type="button" onclick="closeDeleteRiderModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-            <button type="submit" class="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40">Remove Rider</button>
+            <button type="button" onclick="closeDeleteRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove Rider</button>
         </form>
     </div>
 </div>
@@ -528,19 +523,19 @@ function closeRiderDrawer() {
 <!-- Rider Info Slide-Over Sidebar / Drawer (Right Side) -->
 <div id="rider-drawer-backdrop" onclick="closeRiderDrawer()" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-<div id="rider-info-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-[#021f15] border-l border-[#cca43b]/30 shadow-[-25px_0_70px_rgba(0,0,0,0.8)] text-stone-100 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto flex flex-col">
+<div id="rider-info-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-[#01140e] border-l border-white/10 shadow-[-25px_0_70px_rgba(0,0,0,0.8)] text-stone-100 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto flex flex-col glass-card">
     <!-- Drawer Top Bar -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-black/30 sticky top-0 z-10 backdrop-blur-md">
         <div class="flex items-center gap-2">
             <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
             <h3 class="text-sm font-black uppercase tracking-wider text-stone-100">Rider Profile</h3>
         </div>
-        <button type="button" onclick="closeRiderDrawer()" class="rounded-xl p-1.5 text-[#a0ac96] hover:text-white hover:bg-white/10 transition-colors text-xl font-bold leading-none">&times;</button>
+        <button type="button" onclick="closeRiderDrawer()" class="rounded-lg p-1.5 text-[#a0ac96] hover:text-white hover:bg-white/10 transition-colors text-xl font-bold leading-none cursor-pointer">&times;</button>
     </div>
 
     <!-- Drawer Profile Hero Header -->
     <div class="relative px-6 pt-8 pb-6 text-center border-b border-white/10 bg-gradient-to-b from-[#cca43b]/10 to-transparent">
-        <div id="drawer-avatar" class="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#cca43b]/20 text-[#cca43b] border-2 border-[#cca43b]/40 font-black text-2xl mx-auto mb-3 shadow-lg shadow-[#cca43b]/10">
+        <div id="drawer-avatar" class="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/40 font-black text-2xl mx-auto mb-3 shadow-lg shadow-[#cca43b]/10">
             R
         </div>
         <h2 id="drawer-name" class="text-xl font-black text-white tracking-tight">Rider Name</h2>
@@ -555,19 +550,19 @@ function closeRiderDrawer() {
     <!-- Drawer Content Cards -->
     <div class="p-6 space-y-4 flex-1">
         <!-- Card 1: Rider ID -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Rider ID</p>
             <p id="drawer-rider-id" class="text-sm font-mono font-bold text-[#cca43b]">#RDR-001</p>
         </div>
 
         <!-- Card 2: Role Type -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Role Type</p>
             <p class="text-sm font-bold text-white">Delivery Logistics / Courier</p>
         </div>
 
         <!-- Card 3: Contact Information -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4 space-y-2">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Contact Information</p>
             <div class="flex items-center justify-between">
                 <span id="drawer-phone" class="text-sm font-mono font-bold text-stone-200">09123456789</span>
@@ -579,7 +574,7 @@ function closeRiderDrawer() {
         </div>
 
         <!-- Card 4: Vehicle & Plate -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle & Plate #</p>
             <div class="flex items-center justify-between">
                 <span id="drawer-vehicle" class="text-sm font-bold text-white">Motorcycle</span>
@@ -588,24 +583,24 @@ function closeRiderDrawer() {
         </div>
 
         <!-- Card 5: Assigned Tasks -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Assigned Tasks / Workload</p>
             <div class="flex items-center justify-between">
                 <span id="drawer-active-tasks" class="text-sm font-bold text-stone-200">0 active shipments</span>
-                <button id="drawer-status-btn" type="button" class="text-xs font-bold text-[#cca43b] hover:underline">
+                <button id="drawer-status-btn" type="button" class="text-xs font-bold text-[#cca43b] hover:underline cursor-pointer">
                     Change Status
                 </button>
             </div>
         </div>
 
         <!-- Card 6: Date Registered -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Date Hired / Registered</p>
             <p id="drawer-date" class="text-sm font-mono text-stone-200">2026-05-01</p>
         </div>
 
         <!-- Card 7: Account Information -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Login Username</p>
             <div class="flex items-center gap-2 text-sm text-stone-200">
                 <svg class="h-4 w-4 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -614,7 +609,7 @@ function closeRiderDrawer() {
         </div>
 
         <!-- Card 8: Notes -->
-        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div class="rounded-xl border border-white/10 bg-black/30 p-4">
             <p class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96] mb-1">Notes & Coverage Area</p>
             <p id="drawer-notes" class="text-xs text-stone-300 leading-relaxed">—</p>
         </div>
@@ -622,10 +617,10 @@ function closeRiderDrawer() {
 
     <!-- Drawer Footer Actions -->
     <div class="p-6 border-t border-white/10 bg-black/30 sticky bottom-0 z-10 backdrop-blur-md flex items-center gap-3">
-        <button id="drawer-edit-btn" type="button" class="flex-1 rounded-xl bg-[#cca43b] px-4 py-2.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all text-center shadow-lg shadow-[#cca43b]/20">
+        <button id="drawer-edit-btn" type="button" class="flex-1 rounded-lg bg-[#cca43b] px-4 py-2.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all text-center shadow-lg shadow-[#cca43b]/20 cursor-pointer">
             Edit Rider
         </button>
-        <button id="drawer-delete-btn" type="button" class="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all text-center">
+        <button id="drawer-delete-btn" type="button" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all text-center cursor-pointer">
             Remove
         </button>
     </div>

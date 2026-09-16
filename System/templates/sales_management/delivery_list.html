@@ -3,8 +3,10 @@
 {% block header_title %}Delivery Management{% endblock %}
 
 {% block page_content %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
     /* Elevated Glass Card Effect */
@@ -32,7 +34,8 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Shipments</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_deliveries|default:"0" }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_deliveries|default:"0" }}
+                </p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>All recorded delivery dispatches</span>
@@ -46,7 +49,8 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">In Transit</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ in_transit_count|default:"0" }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ in_transit_count|default:"0" }}
+                </p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Currently on the road</span>
@@ -60,7 +64,8 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Scheduled</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ scheduled_count|default:"0" }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ scheduled_count|default:"0" }}
+                </p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Pending departure</span>
@@ -74,7 +79,8 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ delivered_count|default:"0" }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ delivered_count|default:"0" }}
+                </p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Successfully completed</span>
@@ -87,19 +93,24 @@
     <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
         <!-- Status Tabs -->
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{% url 'sales:delivery_list' %}" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}"
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Active ({{ active_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=scheduled" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'scheduled' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=scheduled"
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'scheduled' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Scheduled ({{ scheduled_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=in_transit" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'in_transit' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=in_transit"
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'in_transit' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 In Transit ({{ in_transit_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=delivered" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'delivered' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=delivered"
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'delivered' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Delivered ({{ delivered_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=all" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'all' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=all"
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'all' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 All History ({{ total_deliveries }})
             </a>
         </div>
@@ -107,16 +118,21 @@
         <!-- Search Form -->
         <form method="GET" action="{% url 'sales:delivery_list' %}" class="flex items-center gap-2">
             {% if status_filter %}
-                <input type="hidden" name="status" value="{{ status_filter }}">
+            <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
             <div class="relative">
-                <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search order, customer, location..." class="w-64 rounded-lg border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
-                <svg class="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <input type="search" name="q" value="{{ query|default:'' }}"
+                    placeholder="Search order, customer, location..."
+                    class="w-64 rounded-lg border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                <svg class="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
             {% if query %}
-            <a href="{% url 'sales:delivery_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-[#a0ac96] hover:text-white">Clear</a>
+            <a href="{% url 'sales:delivery_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}"
+                class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-[#a0ac96] hover:text-white">Clear</a>
             {% endif %}
         </form>
     </div>
@@ -126,16 +142,19 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-bold text-stone-100">Delivery Dispatch Registry</h2>
-                <p class="text-xs text-[#a0ac96]">Live shipment logs, real-time rider tracking, and dispatch schedules</p>
+                <p class="text-xs text-[#a0ac96]">Live shipment logs, real-time rider tracking, and dispatch schedules
+                </p>
             </div>
-            <span class="text-xs font-bold text-[#a0ac96]">{{ deliveries|length }} shipment{{ deliveries|length|pluralize }}</span>
+            <span class="text-xs font-bold text-[#a0ac96]">{{ deliveries|length }} shipment{{
+                deliveries|length|pluralize }}</span>
         </div>
 
         <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
             <div class="overflow-x-auto">
                 <table id="deliveries-registry-table" class="w-full border-collapse enhanced-table">
                     <thead class="bg-white/[0.04]">
-                        <tr class="border-b border-white/10 text-left text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
+                        <tr
+                            class="border-b border-white/10 text-left text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
                             <th class="px-5 py-4">Order #</th>
                             <th class="px-5 py-4">Customer</th>
                             <th class="px-5 py-4">Product & Volume</th>
@@ -150,7 +169,8 @@
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             <!-- Order # -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
+                                <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number
+                                    }}</span>
                                 <p class="text-[11px] text-[#a0ac96]">{{ delivery.order.order_date|date:"M d, Y" }}</p>
                             </td>
 
@@ -158,43 +178,65 @@
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <div class="text-sm font-bold text-white">{{ delivery.order.customer.name }}</div>
                                 <div class="text-xs text-[#a0ac96] flex items-center gap-1 mt-0.5">
-                                    <svg class="h-3 w-3 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    <svg class="h-3 w-3 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
                                     {{ delivery.order.customer.phone|default:"No phone" }}
                                 </div>
                             </td>
 
                             <!-- Product & Quantity -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
-                                <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg</div>
+                                <div class="text-sm font-bold text-stone-200">{{
+                                    delivery.order.product.name|default:"Standard Order" }}</div>
+                                <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg
+                                </div>
                             </td>
 
                             <!-- Destination / Map Pin -->
                             <td class="px-5 py-4">
                                 {% if delivery.delivery_location|lower == 'pickup' %}
-                                    <span class="font-black text-[#cca43b] uppercase tracking-wider text-[11px] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1">
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                        Pickup at Farm
-                                    </span>
+                                <span
+                                    class="font-black text-[#cca43b] uppercase tracking-wider text-[11px] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    Pickup at Farm
+                                </span>
                                 {% else %}
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs text-stone-300 max-w-[200px] truncate" title="{{ delivery.delivery_location }}">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</span>
-                                        <button type="button" onclick="openLocationModal('{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')" class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-[#cca43b]/10 text-[#cca43b] hover:bg-[#cca43b]/20 border border-[#cca43b]/20 transition-all flex-shrink-0 cursor-pointer" title="View on map">
-                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-stone-300 max-w-[200px] truncate"
+                                        title="{{ delivery.delivery_location }}">{{
+                                        delivery.delivery_location|default:delivery.order.customer.address|default:"Location
+                                        specified in order" }}</span>
+                                    <button type="button"
+                                        onclick="openLocationModal('{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')"
+                                        class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-[#cca43b]/10 text-[#cca43b] hover:bg-[#cca43b]/20 border border-[#cca43b]/20 transition-all flex-shrink-0 cursor-pointer"
+                                        title="View on map">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
                                 {% endif %}
                             </td>
 
                             <!-- Schedule Date -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="text-sm font-mono text-stone-300">{{ delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
+                                <div class="text-sm font-mono text-stone-300">{{
+                                    delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
                                 {% if delivery.delivered_date %}
                                 <div class="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5 font-bold">
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     Delivered: {{ delivery.delivered_date|date:"M d" }}
                                 </div>
                                 {% endif %}
@@ -218,7 +260,9 @@
 
                             <!-- Payment Status -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <button type="button" onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}');" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                                <button type="button"
+                                    onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}');"
+                                    class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
                                     {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
                                     {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
                                     {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
@@ -230,13 +274,16 @@
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center justify-center">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
+                                    <div
+                                        class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                         </svg>
                                     </div>
                                     <p class="text-sm font-bold text-stone-200">No delivery records found</p>
-                                    <p class="text-xs text-[#a0ac96] mt-1">Try changing filter parameters or schedule a new delivery dispatch.</p>
+                                    <p class="text-xs text-[#a0ac96] mt-1">Try changing filter parameters or schedule a
+                                        new delivery dispatch.</p>
                                 </div>
                             </td>
                         </tr>
@@ -249,278 +296,320 @@
 </div>
 
 <!-- Schedule Delivery Modal -->
-<div id="schedule-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+<div id="schedule-delivery-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Schedule Delivery Dispatch</h3>
-            <button type="button" onclick="closeScheduleDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeScheduleDeliveryModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form method="POST" action="{% url 'sales:delivery_create' %}" class="space-y-4">
             {% csrf_token %}
             {% include 'sales_management/partials/delivery_form.html' %}
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeScheduleDeliveryModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Dispatch</button>
+                <button type="button" onclick="closeScheduleDeliveryModal()"
+                    class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit"
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save
+                    Dispatch</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Assign Dispatch Rider Modal -->
-<div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+<div id="status-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Assign Dispatch Rider</h3>
                 <p id="status-modal-order" class="text-xs text-[#a0ac96] mt-1"></p>
             </div>
-            <button type="button" onclick="closeStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeStatusModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="status-form" method="POST" class="space-y-6">
             {% csrf_token %}
             <input type="hidden" name="next" value="{% url 'sales:delivery_list' %}">
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Select Delivery Personnel</label>
-                <select name="rider" id="modal-delivery-rider" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Select Delivery
+                    Personnel</label>
+                <select name="rider" id="modal-delivery-rider"
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="">-- Unassigned (No Rider) --</option>
                     {% for r in riders %}
                     <option value="{{ r.id }}">{{ r.name }} ({{ r.vehicle_type }} - {{ r.get_status_display }})</option>
                     {% endfor %}
                 </select>
-                <p class="mt-2 text-[11px] text-[#a0ac96]">Assigned rider accepts and manages the delivery from the <strong class="text-stone-200">Driver Portal</strong>.</p>
+                <p class="mt-2 text-[11px] text-[#a0ac96]">Assigned rider accepts and manages the delivery from the
+                    <strong class="text-stone-200">Driver Portal</strong>.</p>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closeStatusModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Assign Rider</button>
+                <button type="button" onclick="closeStatusModal()"
+                    class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit"
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Assign
+                    Rider</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Payment & Receipt Modal -->
-<div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+<div id="payment-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Payment & Receipt</h3>
-            <button type="button" onclick="closePaymentModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closePaymentModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="payment-form" method="POST" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Payment Status</label>
-                <select name="payment_status" id="modal-payment-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Payment
+                    Status</label>
+                <select name="payment_status" id="modal-payment-status"
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="unpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Receipt Image</label>
-                <input type="file" name="receipt_image" accept="image/*" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Receipt
+                    Image</label>
+                <input type="file" name="receipt_image" accept="image/*"
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
             </div>
-            <div id="current-receipt-container" class="hidden rounded-lg border border-white/5 bg-black/20 p-4 text-left">
+            <div id="current-receipt-container"
+                class="hidden rounded-lg border border-white/5 bg-black/20 p-4 text-left">
                 <p class="text-xs font-bold text-[#a0ac96] mb-2 uppercase tracking-wider">Current Receipt</p>
-                <a id="current-receipt-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-[#cca43b] hover:underline">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <a id="current-receipt-link" href="#" target="_blank"
+                    class="inline-flex items-center gap-2 text-xs font-bold text-[#cca43b] hover:underline">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
                     View Uploaded Receipt
                 </a>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closePaymentModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
+                <button type="button" onclick="closePaymentModal()"
+                    class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit"
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save
+                    Changes</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Pinned Location Map Modal -->
-<div id="location-map-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+<div id="location-map-modal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Destination Map Pin</h3>
                 <p id="location-modal-address" class="text-xs text-[#a0ac96] mt-1"></p>
             </div>
-            <button type="button" onclick="closeLocationModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeLocationModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <div id="modal-delivery-map" class="w-full h-[350px] rounded-xl border border-white/10 z-0"></div>
         <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-            <button type="button" onclick="closeLocationModal()" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Close</button>
+            <button type="button" onclick="closeLocationModal()"
+                class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Close</button>
         </div>
     </div>
 </div>
 
 <!-- Delete Delivery Confirmation Modal -->
-<div id="delete-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+<div id="delete-delivery-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Delivery</h3>
-            <button type="button" onclick="closeDeleteDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeDeleteDeliveryModal()"
+                class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
-        <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove the delivery dispatch record for order <span id="delete-delivery-order" class="font-mono font-bold text-[#cca43b]"></span>?</p>
-        <form id="delete-delivery-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+        <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove the delivery dispatch
+            record for order <span id="delete-delivery-order" class="font-mono font-bold text-[#cca43b]"></span>?</p>
+        <form id="delete-delivery-form" method="POST"
+            class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
             {% csrf_token %}
-            <button type="button" onclick="closeDeleteDeliveryModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-            <button type="submit" class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove Record</button>
+            <button type="button" onclick="closeDeleteDeliveryModal()"
+                class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+            <button type="submit"
+                class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove
+                Record</button>
         </form>
     </div>
 </div>
 
 <script>
-function openScheduleDeliveryModal() {
-    const modal = document.getElementById('schedule-delivery-modal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function closeScheduleDeliveryModal() {
-    const modal = document.getElementById('schedule-delivery-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-function openAssignRiderModal(deliveryId, orderNumber, currentRiderId) {
-    const modal = document.getElementById('status-modal');
-    const form = document.getElementById('status-form');
-    const riderSelect = document.getElementById('modal-delivery-rider');
-    const orderLabel = document.getElementById('status-modal-order');
-
-    form.action = `/sales/deliveries/${deliveryId}/status/`;
-    orderLabel.textContent = `Order: #${orderNumber}`;
-    if (riderSelect) {
-        riderSelect.value = currentRiderId || '';
+    function openScheduleDeliveryModal() {
+        const modal = document.getElementById('schedule-delivery-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function openStatusModal(deliveryId, orderNumber, currentStatus, currentRiderId) {
-    openAssignRiderModal(deliveryId, orderNumber, currentRiderId);
-}
-
-function closeStatusModal() {
-    const modal = document.getElementById('status-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-function openPaymentModal(orderId, currentStatus, receiptUrl) {
-    const modal = document.getElementById('payment-modal');
-    const form = document.getElementById('payment-form');
-    const statusSelect = document.getElementById('modal-payment-status');
-    const receiptContainer = document.getElementById('current-receipt-container');
-    const receiptLink = document.getElementById('current-receipt-link');
-
-    form.action = `/sales/order/${orderId}/payment/`;
-    statusSelect.value = currentStatus || 'unpaid';
-
-    if (receiptUrl && receiptUrl.trim() !== '') {
-        receiptContainer.classList.remove('hidden');
-        receiptLink.href = receiptUrl;
-    } else {
-        receiptContainer.classList.add('hidden');
-        receiptLink.href = '#';
+    function closeScheduleDeliveryModal() {
+        const modal = document.getElementById('schedule-delivery-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
+    function openAssignRiderModal(deliveryId, orderNumber, currentRiderId) {
+        const modal = document.getElementById('status-modal');
+        const form = document.getElementById('status-form');
+        const riderSelect = document.getElementById('modal-delivery-rider');
+        const orderLabel = document.getElementById('status-modal-order');
 
-function closePaymentModal() {
-    const modal = document.getElementById('payment-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-let locationMap = null;
-let locationMarker = null;
-
-function openLocationModal(address, lat, lng) {
-    const modal = document.getElementById('location-map-modal');
-    document.getElementById('location-modal-address').textContent = address || 'Silay City, Negros Occidental';
-    
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-
-    const latitude = parseFloat(lat);
-    const longitude = parseFloat(lng);
-    const hasCoords = !isNaN(latitude) && !isNaN(longitude);
-
-    setTimeout(() => {
-        if (!locationMap) {
-            locationMap = L.map('modal-delivery-map', {
-                attributionControl: false
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19
-            }).addTo(locationMap);
-
-            locationMarker = L.marker([0, 0]).addTo(locationMap);
+        form.action = `/sales/deliveries/${deliveryId}/status/`;
+        orderLabel.textContent = `Order: #${orderNumber}`;
+        if (riderSelect) {
+            riderSelect.value = currentRiderId || '';
         }
 
-        if (hasCoords) {
-            locationMap.setView([latitude, longitude], 17);
-            locationMarker.setLatLng([latitude, longitude]);
-            locationMap.invalidateSize();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function openStatusModal(deliveryId, orderNumber, currentStatus, currentRiderId) {
+        openAssignRiderModal(deliveryId, orderNumber, currentRiderId);
+    }
+
+    function closeStatusModal() {
+        const modal = document.getElementById('status-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function openPaymentModal(orderId, currentStatus, receiptUrl) {
+        const modal = document.getElementById('payment-modal');
+        const form = document.getElementById('payment-form');
+        const statusSelect = document.getElementById('modal-payment-status');
+        const receiptContainer = document.getElementById('current-receipt-container');
+        const receiptLink = document.getElementById('current-receipt-link');
+
+        form.action = `/sales/order/${orderId}/payment/`;
+        statusSelect.value = currentStatus || 'unpaid';
+
+        if (receiptUrl && receiptUrl.trim() !== '') {
+            receiptContainer.classList.remove('hidden');
+            receiptLink.href = receiptUrl;
         } else {
-            const query = `${address || 'Silay City'}, Philippines`;
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.length > 0) {
-                        const newLat = parseFloat(data[0].lat);
-                        const newLng = parseFloat(data[0].lon);
-                        locationMap.setView([newLat, newLng], 17);
-                        locationMarker.setLatLng([newLat, newLng]);
-                    } else {
+            receiptContainer.classList.add('hidden');
+            receiptLink.href = '#';
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closePaymentModal() {
+        const modal = document.getElementById('payment-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    let locationMap = null;
+    let locationMarker = null;
+
+    function openLocationModal(address, lat, lng) {
+        const modal = document.getElementById('location-map-modal');
+        document.getElementById('location-modal-address').textContent = address || 'Silay City, Negros Occidental';
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lng);
+        const hasCoords = !isNaN(latitude) && !isNaN(longitude);
+
+        setTimeout(() => {
+            if (!locationMap) {
+                locationMap = L.map('modal-delivery-map', {
+                    attributionControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                }).addTo(locationMap);
+
+                locationMarker = L.marker([0, 0]).addTo(locationMap);
+            }
+
+            if (hasCoords) {
+                locationMap.setView([latitude, longitude], 17);
+                locationMarker.setLatLng([latitude, longitude]);
+                locationMap.invalidateSize();
+            } else {
+                const query = `${address || 'Silay City'}, Philippines`;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const newLat = parseFloat(data[0].lat);
+                            const newLng = parseFloat(data[0].lon);
+                            locationMap.setView([newLat, newLng], 17);
+                            locationMarker.setLatLng([newLat, newLng]);
+                        } else {
+                            locationMap.setView([10.8000, 122.9700], 16);
+                            locationMarker.setLatLng([10.8000, 122.9700]);
+                        }
+                        locationMap.invalidateSize();
+                    })
+                    .catch(err => {
                         locationMap.setView([10.8000, 122.9700], 16);
                         locationMarker.setLatLng([10.8000, 122.9700]);
-                    }
-                    locationMap.invalidateSize();
-                })
-                .catch(err => {
-                    locationMap.setView([10.8000, 122.9700], 16);
-                    locationMarker.setLatLng([10.8000, 122.9700]);
-                    locationMap.invalidateSize();
-                });
-        }
-    }, 200);
-}
+                        locationMap.invalidateSize();
+                    });
+            }
+        }, 200);
+    }
 
-function openDeleteDeliveryModal(deliveryId, orderNumber) {
-    const modal = document.getElementById('delete-delivery-modal');
-    const form = document.getElementById('delete-delivery-form');
-    const orderSpan = document.getElementById('delete-delivery-order');
+    function openDeleteDeliveryModal(deliveryId, orderNumber) {
+        const modal = document.getElementById('delete-delivery-modal');
+        const form = document.getElementById('delete-delivery-form');
+        const orderSpan = document.getElementById('delete-delivery-order');
 
-    form.action = `/sales/deliveries/${deliveryId}/delete/`;
-    orderSpan.textContent = `#${orderNumber}`;
+        form.action = `/sales/deliveries/${deliveryId}/delete/`;
+        orderSpan.textContent = `#${orderNumber}`;
 
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 
-function closeDeleteDeliveryModal() {
-    const modal = document.getElementById('delete-delivery-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+    function closeDeleteDeliveryModal() {
+        const modal = document.getElementById('delete-delivery-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 
-function closeLocationModal() {
-    const modal = document.getElementById('location-map-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+    function closeLocationModal() {
+        const modal = document.getElementById('location-map-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new TableEnhancer('#deliveries-registry-table', {
-        pageSize: 10,
-        filterColumns: [
-            { colIndex: 5, label: 'Status' },
-            { colIndex: 6, label: 'Payment' }
-        ],
-        searchPlaceholder: 'Search deliveries by order, rider, destination...'
+    document.addEventListener('DOMContentLoaded', () => {
+        new TableEnhancer('#deliveries-registry-table', {
+            pageSize: 10,
+            filterColumns: [
+                { colIndex: 5, label: 'Status' },
+                { colIndex: 6, label: 'Payment' }
+            ],
+            searchPlaceholder: 'Search deliveries by order, rider, destination...'
+        });
     });
-});
 </script>
 {% endblock %}

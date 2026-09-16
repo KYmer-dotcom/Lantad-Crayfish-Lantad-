@@ -13,61 +13,77 @@
         </thead>
         <tbody class="divide-y divide-white/5 bg-transparent">
             {% for customer in customers %}
-            <tr class="hover:bg-white/5 transition-colors cursor-pointer group" onclick="toggleCustomerOrders('customer-orders-{{ customer.id }}')">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-white group-hover:text-[#cca43b] transition-colors flex items-center gap-2">
-                    <svg id="chevron-{{ customer.id }}" class="h-4 w-4 text-[#a0ac96] transition-transform duration-200 group-hover:text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <tr class="hover:bg-white/5 transition-colors cursor-pointer group"
+                onclick="toggleCustomerOrders('customer-orders-{{ customer.id }}')">
+                <td
+                    class="px-6 py-4 whitespace-nowrap text-sm font-bold text-white group-hover:text-[#cca43b] transition-colors flex items-center gap-2">
+                    <svg id="chevron-{{ customer.id }}"
+                        class="h-4 w-4 text-[#a0ac96] transition-transform duration-200 group-hover:text-[#cca43b]"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                     {{ customer.name }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-stone-300">{{ customer.phone }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ customer.product_types_count }} Product Type{% if customer.product_types_count != 1 %}s{% endif %}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ customer.active_total|default:"0.00"|floatformat:2 }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ customer.product_types_count
+                    }} Product Type{% if customer.product_types_count != 1 %}s{% endif %}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{
+                    customer.active_total|default:"0.00"|floatformat:2 }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     {% with latest_order=customer.orders.first %}
-                        {% if latest_order %}
-                            {% if latest_order.delivery_address|upper == 'PICKUP' %}
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 uppercase tracking-wider">Pickup</span>
-                            {% else %}
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">Delivery</span>
-                            {% endif %}
-                        {% else %}
-                            <span class="text-stone-500 text-xs font-mono">-</span>
-                        {% endif %}
+                    {% if latest_order %}
+                    {% if latest_order.delivery_address|upper == 'PICKUP' %}
+                    <span
+                        class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 uppercase tracking-wider">Pickup</span>
+                    {% else %}
+                    <span
+                        class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">Delivery</span>
+                    {% endif %}
+                    {% else %}
+                    <span class="text-stone-500 text-xs font-mono">-</span>
+                    {% endif %}
                     {% endwith %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {% with latest_order=customer.orders.first %}
-                        {% if latest_order %}
-                            <button type="button" onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                    {% if latest_order %}
+                    <button type="button"
+                        onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();"
+                        class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
                                 {% if latest_order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
                                 {% elif latest_order.payment_status == 'partial' %}bg-amber-500/15 text-amber-400 border-amber-500/30
                                 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
-                                {{ latest_order.get_payment_status_display }}
-                            </button>
-                        {% else %}
-                            <span class="text-stone-500 text-xs font-mono">-</span>
-                        {% endif %}
+                        {{ latest_order.get_payment_status_display }}
+                    </button>
+                    {% else %}
+                    <span class="text-stone-500 text-xs font-mono">-</span>
+                    {% endif %}
                     {% endwith %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                     <div class="flex items-center gap-2">
                         {% with latest_order=customer.orders.first %}
-                            {% if latest_order %}
-                                {% if latest_order.status == 'pending' %}
-                                <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}" class="inline" onclick="event.stopPropagation();">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="status" value="confirmed">
-                                    <button type="submit" class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
-                                </form>
-                                {% else %}
-                                <span class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Approved</span>
-                                {% endif %}
-                            {% endif %}
-                        {% endwith %}
-                        <form method="POST" action="{% url 'sales:customer_delete' customer.id %}" class="inline" onclick="event.stopPropagation();">
+                        {% if latest_order %}
+                        {% if latest_order.status == 'pending' %}
+                        <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}"
+                            class="inline" onclick="event.stopPropagation();">
                             {% csrf_token %}
-                            <button type="button" onclick="confirmDelete(event, 'Are you sure you want to delete customer {{ customer.name|escapejs }} and all associated records?', 'Delete Customer Record?')" class="text-xs px-2 py-1 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer font-bold">Delete</button>
+                            <input type="hidden" name="status" value="confirmed">
+                            <button type="submit"
+                                class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
+                        </form>
+                        {% else %}
+                        <span
+                            class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Approved</span>
+                        {% endif %}
+                        {% endif %}
+                        {% endwith %}
+                        <form method="POST" action="{% url 'sales:customer_delete' customer.id %}" class="inline"
+                            onclick="event.stopPropagation();">
+                            {% csrf_token %}
+                            <button type="button"
+                                onclick="confirmDelete(event, 'Are you sure you want to delete customer {{ customer.name|escapejs }} and all associated records?', 'Delete Customer Record?')"
+                                class="text-xs px-2 py-1 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer font-bold">Delete</button>
                         </form>
                     </div>
                 </td>
@@ -78,11 +94,13 @@
                     <div class="rounded-xl border border-white/10 bg-black/40 p-5">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
-                            <h4 class="text-xs font-black uppercase tracking-[0.2em] text-[#cca43b]">Order & Purchased Products History</h4>
+                            <h4 class="text-xs font-black uppercase tracking-[0.2em] text-[#cca43b]">Order & Purchased
+                                Products History</h4>
                         </div>
                         <div class="overflow-x-auto rounded-lg border border-white/10">
                             <table class="w-full divide-y divide-white/5 bg-black/20 text-xs text-[#a0ac96]">
-                                <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] tracking-wider border-b border-white/10">
+                                <thead
+                                    class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] tracking-wider border-b border-white/10">
                                     <tr>
                                         <th class="px-4 py-3 text-left font-bold text-white">Order ID</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Product</th>
@@ -97,24 +115,29 @@
                                 <tbody class="divide-y divide-white/5 text-xs text-stone-300">
                                     {% for order in customer.orders.all %}
                                     <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-3 font-mono font-bold text-white">{{ order.order_number }}</td>
-                                        <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}</td>
+                                        <td class="px-4 py-3 font-mono font-bold text-white">{{ order.order_number }}
+                                        </td>
+                                        <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}
+                                        </td>
                                         <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg }}</td>
-                                        <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
+                                        <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{
+                                            order.total_amount|floatformat:2 }}</td>
                                         <td class="px-4 py-3 font-mono text-[#a0ac96]">{{ order.order_date }}</td>
                                         <td class="px-4 py-3 text-stone-300">
                                             {% if order.delivery_address|upper == 'PICKUP' %}
-                                                <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 py-0.5 rounded-full">Pickup</span>
+                                            <span
+                                                class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 py-0.5 rounded-full">Pickup</span>
                                             {% else %}
-                                                <button type="button" 
-                                                    onclick="openLocationModal('{{ order.delivery_address|escapejs }}', '{{ customer.map_latitude|default:'' }}', '{{ customer.map_longitude|default:'' }}'); event.stopPropagation();" 
-                                                    class="underline text-[#cca43b] hover:text-[#cca43b]/80 transition-colors font-bold text-left focus:outline-none cursor-pointer">
-                                                    {{ order.delivery_address|default:"-" }}
-                                                </button>
+                                            <button type="button"
+                                                onclick="openLocationModal('{{ order.delivery_address|escapejs }}', '{{ customer.map_latitude|default:'' }}', '{{ customer.map_longitude|default:'' }}'); event.stopPropagation();"
+                                                class="underline text-[#cca43b] hover:text-[#cca43b]/80 transition-colors font-bold text-left focus:outline-none cursor-pointer">
+                                                {{ order.delivery_address|default:"-" }}
+                                            </button>
                                             {% endif %}
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
-                                            <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1
+                                            <span
+                                                class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1
                                                 {% if order.status == 'delivered' or order.status == 'completed' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
                                                 {% elif order.status == 'shipped' or order.status == 'processing' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30
                                                 {% elif order.status == 'confirmed' %}bg-blue-500/15 text-blue-400 border-blue-500/30
@@ -123,11 +146,13 @@
                                                 {{ order.get_status_display }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-stone-300 font-mono">{{ order.notes|default:"-" }}</td>
+                                        <td class="px-4 py-3 text-stone-300 font-mono">{{ order.notes|default:"-" }}
+                                        </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="8" class="px-4 py-6 text-center text-[#a0ac96]">No orders registered for this customer.</td>
+                                        <td colspan="8" class="px-4 py-6 text-center text-[#a0ac96]">No orders
+                                            registered for this customer.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -146,44 +171,44 @@
 </div>
 
 <script>
-if (typeof toggleCustomerOrders === 'undefined') {
-    window.toggleCustomerOrders = function(id) {
-        const row = document.getElementById(id);
-        if (!row) return;
-        const isHidden = row.classList.toggle('hidden');
-        row.style.display = isHidden ? 'none' : '';
-        const chevronId = 'chevron-' + id.replace('customer-orders-', '');
-        const chevron = document.getElementById(chevronId);
-        if (chevron) {
-            chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
-        }
-    };
-}
+    if (typeof toggleCustomerOrders === 'undefined') {
+        window.toggleCustomerOrders = function (id) {
+            const row = document.getElementById(id);
+            if (!row) return;
+            const isHidden = row.classList.toggle('hidden');
+            row.style.display = isHidden ? 'none' : '';
+            const chevronId = 'chevron-' + id.replace('customer-orders-', '');
+            const chevron = document.getElementById(chevronId);
+            if (chevron) {
+                chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        };
+    }
 
-if (typeof openLocationModal === 'undefined') {
-    window.openLocationModal = function(address, lat, lng) {
-        const modal = document.getElementById('location-map-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            return;
-        }
-        if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-            window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
-        } else if (address) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-        }
-    };
-}
+    if (typeof openLocationModal === 'undefined') {
+        window.openLocationModal = function (address, lat, lng) {
+            const modal = document.getElementById('location-map-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                return;
+            }
+            if (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
+                window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+            } else if (address) {
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+            }
+        };
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new TableEnhancer('#orders-customer-table', {
-        pageSize: 10,
-        filterColumns: [
-            { colIndex: 4, label: 'Method' },
-            { colIndex: 5, label: 'Payment' }
-        ],
-        searchPlaceholder: 'Search customer, phone, delivery method...'
+    document.addEventListener('DOMContentLoaded', () => {
+        new TableEnhancer('#orders-customer-table', {
+            pageSize: 10,
+            filterColumns: [
+                { colIndex: 4, label: 'Method' },
+                { colIndex: 5, label: 'Payment' }
+            ],
+            searchPlaceholder: 'Search customer, phone, delivery method...'
+        });
     });
-});
 </script>

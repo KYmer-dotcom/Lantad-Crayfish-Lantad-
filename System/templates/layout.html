@@ -4,26 +4,46 @@
 {% block content %}
 <style>
     /* Dark Mode Global Form Overrides */
-    input[type="text"], input[type="password"], input[type="tel"], input[type="email"], input[type="search"], input[type="number"], input[type="date"], select, textarea {
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="search"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
         background-color: rgba(0, 0, 0, 0.2) !important;
         border-color: rgba(255, 255, 255, 0.1) !important;
-        color: #f5f5f4 !important; /* stone-100 */
+        color: #f5f5f4 !important;
+        /* stone-100 */
     }
-    input[type="text"]:focus, input[type="password"]:focus, input[type="tel"]:focus, input[type="email"]:focus, input[type="search"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    input[type="search"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
         border-color: #cca43b !important;
         outline: none !important;
         box-shadow: 0 0 0 2px rgba(204, 164, 59, 0.3) !important;
     }
+
     /* Prevent browser autofill white/blue background */
     input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
         -webkit-box-shadow: 0 0 0 1000px #021f15 inset !important;
         -webkit-text-fill-color: #f5f5f4 !important;
         transition: background-color 5000s ease-in-out 0s;
         caret-color: #cca43b !important;
     }
+
     /* Hide native Edge/Chrome password reveal & autofill icons */
     input[type="password"]::-ms-reveal,
     input[type="password"]::-ms-clear,
@@ -34,11 +54,13 @@
         visibility: hidden !important;
         pointer-events: none !important;
     }
+
     /* Change the dropdown options background */
     select option {
         background-color: #021f15 !important;
         color: #f5f5f4 !important;
     }
+
     /* Global Gold Button Styling */
     .btn-gold {
         display: inline-flex;
@@ -57,15 +79,18 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         text-decoration: none;
     }
+
     .btn-gold:hover {
         background-color: #b89235;
         transform: translateY(-1px);
         box-shadow: 0 20px 25px -5px rgba(204, 164, 59, 0.3), 0 8px 10px -6px rgba(204, 164, 59, 0.2);
         color: #000000 !important;
     }
+
     .btn-gold:active {
         transform: translateY(0);
     }
+
     /* Hide Leaflet map attribution watermark globally */
     .leaflet-control-attribution {
         display: none !important;
@@ -80,20 +105,19 @@
                 <div class="flex items-center justify-between gap-4 px-6 py-4">
                     <!-- Left Section: Mobile Toggle & Logo, Desktop Title -->
                     <div class="flex items-center gap-4">
-                        <button
-                            type="button"
+                        <button type="button"
                             class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 text-white"
-                            onclick="toggleMobileMenu()"
-                            aria-label="Toggle menu"
-                        >
+                            onclick="toggleMobileMenu()" aria-label="Toggle menu">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
 
                         <!-- Brand (Mobile Only) -->
                         <div class="flex items-center gap-3 md:hidden">
-                            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="h-10 w-10 rounded-xl bg-white/90 p-1 object-contain">
+                            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish"
+                                class="h-10 w-10 rounded-xl bg-white/90 p-1 object-contain">
                             <div class="leading-tight">
                                 <p class="text-sm font-semibold text-white">AquaFarm</p>
                             </div>
@@ -102,36 +126,53 @@
                         <!-- Page Title (Desktop) -->
                         <div class="hidden md:flex items-center gap-3">
                             {% block header_icon %}
-                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b]">
+                            <div
+                                class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b]">
                                 {% with request.resolver_match.view_name as current_url %}
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     {% if 'stock:' in current_url or '/products' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     {% elif 'operations:' in current_url or '/operations' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     {% elif 'harvest:' in current_url or '/harvest' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     {% elif current_url == 'inventory' or '/inventory' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                    {% elif '/sales/orders' in request.path or 'orders_admin' in current_url or current_url == 'sales:order_create' or current_url == 'sales:order_edit_admin' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    {% elif '/sales/deliveries' in request.path and '/logs' not in request.path or '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in request.path or '/track-order' in request.path or current_url == 'sales:delivery_list' or current_url == 'sales:rider_list' or current_url == 'sales:delivery_track' %}
-                                        <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    {% elif '/sales/orders' in request.path or 'orders_admin' in current_url or
+                                    current_url == 'sales:order_create' or current_url == 'sales:order_edit_admin' %}
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    {% elif '/sales/deliveries' in request.path and '/logs' not in request.path or
+                                    '/sales/riders' in request.path or '/delivery' in request.path and '/logs' not in
+                                    request.path or '/track-order' in request.path or current_url ==
+                                    'sales:delivery_list' or current_url == 'sales:rider_list' or current_url ==
+                                    'sales:delivery_track' %}
+                                    <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                                     {% elif current_url == 'sales:list' or request.path == '/sales/' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     {% elif 'analytics:' in current_url or '/analytics' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     {% elif current_url == 'notifications' or '/notifications' in request.path %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5" />
                                     {% else %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                     {% endif %}
                                 </svg>
                                 {% endwith %}
                             </div>
                             {% endblock %}
-                            <h1 class="text-xl font-black text-white tracking-tight">{% block header_title %}Overview{% endblock %}</h1>
+                            <h1 class="text-xl font-black text-white tracking-tight">{% block header_title %}Overview{%
+                                endblock %}</h1>
                         </div>
                     </div>
 
@@ -140,23 +181,31 @@
                         <!-- User Profile -->
                         <div class="flex items-center gap-3">
                             <div class="relative">
-                                <button onclick="toggleUserMenu()" class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
-                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
+                                <button onclick="toggleUserMenu()"
+                                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
+                                    <span
+                                        class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                                         {{ user.get_role_display.0|upper|default:"A" }}
                                     </span>
-                                    <span class="hidden md:inline text-xs font-bold text-white">{{ user.get_role_display|default:user.username|default:"Admin" }}</span>
-                                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <span class="hidden md:inline text-xs font-bold text-white">{{
+                                        user.get_role_display|default:user.username|default:"Admin" }}</span>
+                                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                
+
                                 <!-- User Dropdown -->
-                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] shadow-2xl hidden z-50 p-1">
+                                <div id="user-menu-dropdown"
+                                    class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] shadow-2xl hidden z-50 p-1">
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="flex w-full items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold text-white hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer">
+                                        <button type="submit"
+                                            class="flex w-full items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold text-white hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                             </svg>
                                             Logout
                                         </button>
@@ -170,22 +219,42 @@
                 <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 px-6 pb-4">
                     <div class="grid gap-2 pt-4 text-sm">
                         {% if user.is_rider %}
-                        <a href="{% url 'sales:rider_portal' %}" class="rounded-xl border border-[#cca43b]/40 bg-[#cca43b]/10 px-4 py-2.5 text-[#cca43b] font-bold">My Deliveries (Driver Portal)</a>
-                        <a href="{% url 'notifications' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Notifications</a>
+                        <a href="{% url 'sales:rider_portal' %}"
+                            class="rounded-xl border border-[#cca43b]/40 bg-[#cca43b]/10 px-4 py-2.5 text-[#cca43b] font-bold">My
+                            Deliveries (Driver Portal)</a>
+                        <a href="{% url 'notifications' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Notifications</a>
                         {% else %}
-                        <a href="{% url 'dashboard' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Dashboard</a>
-                        <a href="{% url 'stock:list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Stock Monitoring</a>
-                        <a href="{% url 'operations:list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Pond/Tank Monitoring</a>
-                        <a href="{% url 'harvest:list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Harvest Management</a>
-                        <a href="{% url 'sales:orders_admin' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Orders</a>
-                        <a href="{% url 'sales:delivery_list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Deliveries</a>
-                        <a href="{% url 'sales:rider_list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Riders</a>
+                        <a href="{% url 'dashboard' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Dashboard</a>
+                        <a href="{% url 'stock:list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Stock
+                            Monitoring</a>
+                        <a href="{% url 'operations:list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Pond/Tank
+                            Monitoring</a>
+                        <a href="{% url 'harvest:list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Harvest
+                            Management</a>
+                        <a href="{% url 'sales:orders_admin' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Orders</a>
+                        <a href="{% url 'sales:delivery_list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Deliveries</a>
+                        <a href="{% url 'sales:rider_list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Riders</a>
                         {% if user.is_owner %}
-                        <a href="{% url 'sales:list' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Sales Management</a>
+                        <a href="{% url 'sales:list' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Sales
+                            Management</a>
                         {% endif %}
-                        <a href="{% url 'inventory' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Inventory Management</a>
-                        <a href="{% url 'analytics:dashboard' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Reports & Analytics</a>
-                        <a href="{% url 'notifications' %}" class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Notifications</a>
+                        <a href="{% url 'inventory' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Inventory
+                            Management</a>
+                        <a href="{% url 'analytics:dashboard' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Reports
+                            & Analytics</a>
+                        <a href="{% url 'notifications' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Notifications</a>
                         {% endif %}
                     </div>
                 </div>
@@ -201,18 +270,30 @@
                             {% elif message.tags == 'error' %}bg-rose-950/80 border-rose-500/40 text-rose-100 shadow-rose-950/30
                             {% else %}bg-[#021f15]/90 border-[#cca43b]/40 text-[#cca43b] shadow-black/40{% endif %}">
                             <div class="flex items-center gap-3">
-                                <div class="flex h-7 w-7 items-center justify-center rounded-xl {% if message.tags == 'success' %}bg-emerald-500/20 text-emerald-400{% elif message.tags == 'error' %}bg-rose-500/20 text-rose-400{% else %}bg-[#cca43b]/20 text-[#cca43b]{% endif %} flex-shrink-0">
+                                <div
+                                    class="flex h-7 w-7 items-center justify-center rounded-xl {% if message.tags == 'success' %}bg-emerald-500/20 text-emerald-400{% elif message.tags == 'error' %}bg-rose-500/20 text-rose-400{% else %}bg-[#cca43b]/20 text-[#cca43b]{% endif %} flex-shrink-0">
                                     {% if message.tags == 'success' %}
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                     {% elif message.tags == 'error' %}
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
                                     {% else %}
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                     {% endif %}
                                 </div>
                                 <span class="text-sm font-medium leading-relaxed">{{ message }}</span>
                             </div>
-                            <button type="button" onclick="this.parentElement.remove()" class="text-sm font-bold text-white/50 hover:text-stone-100 transition-colors p-1.5 rounded-lg hover:bg-white/10" title="Dismiss">&times;</button>
+                            <button type="button" onclick="this.parentElement.remove()"
+                                class="text-sm font-bold text-white/50 hover:text-stone-100 transition-colors p-1.5 rounded-lg hover:bg-white/10"
+                                title="Dismiss">&times;</button>
                         </div>
                         {% endfor %}
                     </div>
@@ -234,7 +315,7 @@
             menu.classList.add('hidden');
         }
     }
-    
+
     function toggleUserMenu() {
         const menu = document.getElementById('user-menu-dropdown');
         if (menu.classList.contains('hidden')) {
@@ -271,12 +352,12 @@
             chevron.classList.toggle('rotate-180');
         }
     }
-    
+
     // Close dropdowns when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         const userBtn = event.target.closest('button[onclick="toggleUserMenu()"]');
         const userMenu = document.getElementById('user-menu-dropdown');
-        
+
         if (!userBtn && userMenu && !userMenu.contains(event.target)) {
             userMenu.classList.add('hidden');
         }
