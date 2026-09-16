@@ -186,8 +186,7 @@
                                         class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                                         {{ user.get_role_display.0|upper|default:"A" }}
                                     </span>
-                                    <span class="hidden md:inline text-xs font-bold text-white">{{
-                                        user.get_role_display|default:user.username|default:"Admin" }}</span>
+                                    <span class="hidden md:inline text-xs font-bold text-white">{{ user.get_role_display|default:user.username|default:"Admin" }}</span>
                                     <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -362,5 +361,5 @@
         }
     });
 </script>
-<script src="{% static 'js/table_enhancer.js' %}?v=20260916_10"></script>
+<script src="{% static 'js/table_enhancer.js' %}?v=20260917_1"></script>
 {% endblock %}
