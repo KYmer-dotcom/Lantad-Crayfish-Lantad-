@@ -6,104 +6,100 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-<div class="space-y-8">
+<style>
+    /* Elevated Glass Card Effect */
+    .glass-card {
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+    }
+</style>
+
+<div class="space-y-6 pb-12">
     <!-- Top Header -->
-    <div class="flex flex-wrap items-center justify-between gap-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca43b]">Logistics & Dispatch</p>
-            <h1 class="mt-2 text-2xl font-semibold text-stone-100">Delivery Management</h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Logistics & Dispatch</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Delivery Management</h1>
         </div>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Stat Card 1: Total Deliveries -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-[#cca43b]/40 hover:shadow-[0_0_30px_rgba(204,164,59,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Total Shipments</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/10 group-hover:text-[#cca43b] transition-colors">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                    </svg>
-                </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Stat Card 1: Total Shipments -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Shipments</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-white tracking-tight">{{ total_deliveries|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-[#cca43b] font-bold">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] animate-pulse"></span>
-                All recorded delivery dispatches
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_deliveries|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>All recorded delivery dispatches</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 2: In Transit -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">In Transit</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-                    <svg class="h-5 w-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">In Transit</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-cyan-300 tracking-tight">{{ in_transit_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                Currently on the road
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ in_transit_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Currently on the road</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 3: Scheduled -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-amber-400/40 hover:shadow-[0_0_30px_rgba(251,191,36,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Scheduled</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Scheduled</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-amber-300 tracking-tight">{{ scheduled_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-amber-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-400"></span>
-                Pending departure
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ scheduled_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Pending departure</span>
+                </div>
             </div>
         </div>
 
         <!-- Stat Card 4: Delivered -->
-        <div class="group relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.02] p-6 shadow-xl transition-all duration-300 hover:border-emerald-400/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]">
-            <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Delivered</p>
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered</p>
             </div>
-            <p class="mt-4 text-4xl font-black text-emerald-400 tracking-tight">{{ delivered_count|default:"0" }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                Successfully completed
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ delivered_count|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Successfully completed</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Filter Bar & Search -->
-    <div class="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-black/20 p-4 backdrop-blur-md">
+    <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
         <!-- Status Tabs -->
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{% url 'sales:delivery_list' %}" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#021f15] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Active ({{ active_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=scheduled" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'scheduled' %}bg-amber-400 text-[#021f15] shadow-md shadow-amber-400/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=scheduled" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'scheduled' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Scheduled ({{ scheduled_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=in_transit" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'in_transit' %}bg-cyan-400 text-[#021f15] shadow-md shadow-cyan-400/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=in_transit" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'in_transit' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 In Transit ({{ in_transit_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=delivered" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'delivered' %}bg-emerald-400 text-[#021f15] shadow-md shadow-emerald-400/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=delivered" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'delivered' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Delivered ({{ delivered_count }})
             </a>
-            <a href="{% url 'sales:delivery_list' %}?status=all" class="rounded-xl px-4 py-2 text-xs font-bold transition-all {% if status_filter == 'all' %}bg-stone-200 text-[#021f15] shadow-md shadow-white/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+            <a href="{% url 'sales:delivery_list' %}?status=all" class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'all' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 All History ({{ total_deliveries }})
             </a>
         </div>
@@ -114,160 +110,157 @@
                 <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
             <div class="relative">
-                <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search order, customer, location..." class="w-64 rounded-xl border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none">
+                <input type="search" name="q" value="{{ query|default:'' }}" placeholder="Search order, customer, location..." class="w-64 rounded-lg border border-white/10 bg-black/40 px-4 py-2 pl-9 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 <svg class="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#a0ac96]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
             {% if query %}
-            <a href="{% url 'sales:delivery_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-[#a0ac96] hover:text-white">Clear</a>
+            <a href="{% url 'sales:delivery_list' %}{% if status_filter %}?status={{ status_filter }}{% endif %}" class="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-[#a0ac96] hover:text-white">Clear</a>
             {% endif %}
         </form>
     </div>
 
     <!-- Deliveries Table Container -->
-    <div class="rounded-3xl border border-white/10 bg-black/20 shadow-2xl overflow-hidden backdrop-blur-md">
-        <div class="flex items-center justify-between border-b border-white/10 px-6 py-5 bg-white/[0.02]">
-            <div class="flex items-center gap-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/10 text-[#cca43b]">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                    </svg>
-                </div>
-                <h2 class="text-lg font-black text-stone-50 tracking-tight">Delivery Dispatch Registry</h2>
+    <div class="glass-card rounded-xl p-6 shadow-xl space-y-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-stone-100">Delivery Dispatch Registry</h2>
+                <p class="text-xs text-[#a0ac96]">Live shipment logs, real-time rider tracking, and dispatch schedules</p>
             </div>
             <span class="text-xs font-bold text-[#a0ac96]">{{ deliveries|length }} shipment{{ deliveries|length|pluralize }}</span>
         </div>
 
-        <div class="overflow-x-auto">
-            <table id="deliveries-registry-table" class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order #</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product & Volume</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Destination</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Schedule / Date</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Payment</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5 bg-transparent">
-                    {% for delivery in deliveries %}
-                    <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <!-- Order # -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
-                            <p class="text-[11px] text-[#a0ac96]">{{ delivery.order.order_date|date:"M d, Y" }}</p>
-                        </td>
+        <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+            <div class="overflow-x-auto">
+                <table id="deliveries-registry-table" class="w-full border-collapse enhanced-table">
+                    <thead class="bg-white/[0.04]">
+                        <tr class="border-b border-white/10 text-left text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
+                            <th class="px-5 py-4">Order #</th>
+                            <th class="px-5 py-4">Customer</th>
+                            <th class="px-5 py-4">Product & Volume</th>
+                            <th class="px-5 py-4">Destination</th>
+                            <th class="px-5 py-4">Schedule / Date</th>
+                            <th class="px-5 py-4">Status</th>
+                            <th class="px-5 py-4">Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for delivery in deliveries %}
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <!-- Order # -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
+                                <p class="text-[11px] text-[#a0ac96]">{{ delivery.order.order_date|date:"M d, Y" }}</p>
+                            </td>
 
-                        <!-- Customer -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-bold text-white">{{ delivery.order.customer.name }}</div>
-                            <div class="text-xs text-[#a0ac96] flex items-center gap-1 mt-0.5">
-                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                {{ delivery.order.customer.phone|default:"No phone" }}
-                            </div>
-                        </td>
+                            <!-- Customer -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-white">{{ delivery.order.customer.name }}</div>
+                                <div class="text-xs text-[#a0ac96] flex items-center gap-1 mt-0.5">
+                                    <svg class="h-3 w-3 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    {{ delivery.order.customer.phone|default:"No phone" }}
+                                </div>
+                            </td>
 
+                            <!-- Product & Quantity -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
+                                <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg</div>
+                            </td>
 
-                        <!-- Product & Quantity -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
-                            <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg</div>
-                        </td>
+                            <!-- Destination / Map Pin -->
+                            <td class="px-5 py-4">
+                                {% if delivery.delivery_location|lower == 'pickup' %}
+                                    <span class="font-black text-[#cca43b] uppercase tracking-wider text-[11px] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                        Pickup at Farm
+                                    </span>
+                                {% else %}
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-stone-300 max-w-[200px] truncate" title="{{ delivery.delivery_location }}">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</span>
+                                        <button type="button" onclick="openLocationModal('{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')" class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-[#cca43b]/10 text-[#cca43b] hover:bg-[#cca43b]/20 border border-[#cca43b]/20 transition-all flex-shrink-0 cursor-pointer" title="View on map">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </td>
 
-                        <!-- Destination / Map Pin -->
-                        <td class="px-6 py-4">
-                            {% if delivery.delivery_location|lower == 'pickup' %}
-                                <span class="font-black text-[#cca43b] uppercase tracking-wider text-[11px] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1 rounded-lg inline-flex items-center gap-1">
-                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                    Pickup at Farm
+                            <!-- Schedule Date -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <div class="text-sm font-mono text-stone-300">{{ delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
+                                {% if delivery.delivered_date %}
+                                <div class="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5 font-bold">
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Delivered: {{ delivery.delivered_date|date:"M d" }}
+                                </div>
+                                {% endif %}
+                            </td>
+
+                            <!-- Delivery Status (Read-Only: Updated by Rider) -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border items-center gap-1.5
+                                    {% if delivery.status == 'delivered' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                                    {% elif delivery.status == 'in_transit' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20
+                                    {% elif delivery.status == 'cancelled' %}bg-rose-500/10 text-rose-400 border-rose-500/20
+                                    {% else %}bg-amber-500/10 text-amber-400 border-amber-500/20{% endif %}">
+                                    <span class="h-1.5 w-1.5 rounded-full
+                                        {% if delivery.status == 'delivered' %}bg-emerald-400
+                                        {% elif delivery.status == 'in_transit' %}bg-cyan-400
+                                        {% elif delivery.status == 'cancelled' %}bg-rose-400
+                                        {% else %}bg-amber-400{% endif %}"></span>
+                                    {{ delivery.get_status_display }}
                                 </span>
-                            {% else %}
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-stone-300 max-w-[200px] truncate" title="{{ delivery.delivery_location }}">{{ delivery.delivery_location|default:delivery.order.customer.address|default:"Location specified in order" }}</span>
-                                    <button type="button" onclick="openLocationModal('{{ delivery.delivery_location|escapejs }}', '{{ delivery.order.customer.map_latitude|default:'' }}', '{{ delivery.order.customer.map_longitude|default:'' }}')" class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-[#cca43b]/10 text-[#cca43b] hover:bg-[#cca43b]/20 border border-[#cca43b]/20 transition-all flex-shrink-0" title="View on map">
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </td>
+
+                            <!-- Payment Status -->
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <button type="button" onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}');" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
+                                    {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
+                                    {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
+                                    {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                                    {{ delivery.order.get_payment_status_display }}
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                         </svg>
-                                    </button>
+                                    </div>
+                                    <p class="text-sm font-bold text-stone-200">No delivery records found</p>
+                                    <p class="text-xs text-[#a0ac96] mt-1">Try changing filter parameters or schedule a new delivery dispatch.</p>
                                 </div>
-                            {% endif %}
-                        </td>
-
-                        <!-- Schedule Date -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-mono text-stone-300">{{ delivery.scheduled_date|date:"Y-m-d"|default:"TBD" }}</div>
-                            {% if delivery.delivered_date %}
-                            <div class="text-[11px] text-emerald-400 flex items-center gap-1 mt-0.5">
-                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                Delivered: {{ delivery.delivered_date|date:"M d" }}
-                            </div>
-                            {% endif %}
-                        </td>
-
-                        <!-- Delivery Status (Read-Only: Updated by Rider) -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border items-center gap-1.5
-                                {% if delivery.status == 'delivered' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                {% elif delivery.status == 'in_transit' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20
-                                {% elif delivery.status == 'cancelled' %}bg-rose-500/10 text-rose-400 border-rose-500/20
-                                {% else %}bg-amber-500/10 text-amber-400 border-amber-500/20{% endif %}">
-                                <span class="h-1.5 w-1.5 rounded-full
-                                    {% if delivery.status == 'delivered' %}bg-emerald-400
-                                    {% elif delivery.status == 'in_transit' %}bg-cyan-400 animate-ping
-                                    {% elif delivery.status == 'cancelled' %}bg-rose-400
-                                    {% else %}bg-amber-400 animate-pulse{% endif %}"></span>
-                                {{ delivery.get_status_display }}
-                            </span>
-                        </td>
-
-                        <!-- Payment Status -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <button type="button" onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}');" class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
-                                {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
-                                {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
-                                {{ delivery.order.get_payment_status_display }}
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#a0ac96] mb-3">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                    </svg>
-                                </div>
-                                <p class="text-sm font-bold text-stone-200">No delivery records found</p>
-                                <p class="text-xs text-[#a0ac96] mt-1">Try changing filter parameters or schedule a new delivery dispatch.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Schedule Delivery Modal -->
 <div id="schedule-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Schedule Delivery Dispatch</h3>
-            <button type="button" onclick="closeScheduleDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeScheduleDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form method="POST" action="{% url 'sales:delivery_create' %}" class="space-y-4">
             {% csrf_token %}
             {% include 'sales_management/partials/delivery_form.html' %}
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeScheduleDeliveryModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Save Dispatch</button>
+                <button type="button" onclick="closeScheduleDeliveryModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Dispatch</button>
             </div>
         </form>
     </div>
@@ -275,20 +268,20 @@
 
 <!-- Assign Dispatch Rider Modal -->
 <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Assign Dispatch Rider</h3>
                 <p id="status-modal-order" class="text-xs text-[#a0ac96] mt-1"></p>
             </div>
-            <button type="button" onclick="closeStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="status-form" method="POST" class="space-y-6">
             {% csrf_token %}
             <input type="hidden" name="next" value="{% url 'sales:delivery_list' %}">
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Select Delivery Personnel</label>
-                <select name="rider" id="modal-delivery-rider" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none">
+                <select name="rider" id="modal-delivery-rider" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="">-- Unassigned (No Rider) --</option>
                     {% for r in riders %}
                     <option value="{{ r.id }}">{{ r.name }} ({{ r.vehicle_type }} - {{ r.get_status_display }})</option>
@@ -297,8 +290,8 @@
                 <p class="mt-2 text-[11px] text-[#a0ac96]">Assigned rider accepts and manages the delivery from the <strong class="text-stone-200">Driver Portal</strong>.</p>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closeStatusModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Assign Rider</button>
+                <button type="button" onclick="closeStatusModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Assign Rider</button>
             </div>
         </form>
     </div>
@@ -306,25 +299,25 @@
 
 <!-- Payment & Receipt Modal -->
 <div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Payment & Receipt</h3>
-            <button type="button" onclick="closePaymentModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closePaymentModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
         <form id="payment-form" method="POST" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Payment Status</label>
-                <select name="payment_status" id="modal-payment-status" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                <select name="payment_status" id="modal-payment-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="unpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                 </select>
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2 text-left">Receipt Image</label>
-                <input type="file" name="receipt_image" accept="image/*" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
+                <input type="file" name="receipt_image" accept="image/*" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
             </div>
-            <div id="current-receipt-container" class="hidden rounded-xl border border-white/5 bg-black/20 p-4 text-left">
+            <div id="current-receipt-container" class="hidden rounded-lg border border-white/5 bg-black/20 p-4 text-left">
                 <p class="text-xs font-bold text-[#a0ac96] mb-2 uppercase tracking-wider">Current Receipt</p>
                 <a id="current-receipt-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-[#cca43b] hover:underline">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -332,8 +325,8 @@
                 </a>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closePaymentModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Save Changes</button>
+                <button type="button" onclick="closePaymentModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
             </div>
         </form>
     </div>
@@ -341,18 +334,34 @@
 
 <!-- Pinned Location Map Modal -->
 <div id="location-map-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
+    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Destination Map Pin</h3>
                 <p id="location-modal-address" class="text-xs text-[#a0ac96] mt-1"></p>
             </div>
-            <button type="button" onclick="closeLocationModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
+            <button type="button" onclick="closeLocationModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
         </div>
-        <div id="modal-delivery-map" class="w-full h-[350px] rounded-2xl border border-white/10 z-0"></div>
+        <div id="modal-delivery-map" class="w-full h-[350px] rounded-xl border border-white/10 z-0"></div>
         <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-            <button type="button" onclick="closeLocationModal()" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">Close</button>
+            <button type="button" onclick="closeLocationModal()" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Close</button>
         </div>
+    </div>
+</div>
+
+<!-- Delete Delivery Confirmation Modal -->
+<div id="delete-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Delivery</h3>
+            <button type="button" onclick="closeDeleteDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+        </div>
+        <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove the delivery dispatch record for order <span id="delete-delivery-order" class="font-mono font-bold text-[#cca43b]"></span>?</p>
+        <form id="delete-delivery-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+            {% csrf_token %}
+            <button type="button" onclick="closeDeleteDeliveryModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove Record</button>
+        </form>
     </div>
 </div>
 
@@ -479,23 +488,6 @@ function openLocationModal(address, lat, lng) {
     }, 200);
 }
 
-<!-- Delete Delivery Confirmation Modal -->
-<div id="delete-delivery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Delivery</h3>
-            <button type="button" onclick="closeDeleteDeliveryModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors">&times;</button>
-        </div>
-        <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove the delivery dispatch record for order <span id="delete-delivery-order" class="font-mono font-bold text-[#cca43b]"></span>?</p>
-        <form id="delete-delivery-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
-            {% csrf_token %}
-            <button type="button" onclick="closeDeleteDeliveryModal()" class="rounded-xl border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-            <button type="submit" class="rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40">Remove Record</button>
-        </form>
-    </div>
-</div>
-
-<script>
 function openDeleteDeliveryModal(deliveryId, orderNumber) {
     const modal = document.getElementById('delete-delivery-modal');
     const form = document.getElementById('delete-delivery-form');
