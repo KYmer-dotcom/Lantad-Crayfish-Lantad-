@@ -234,26 +234,34 @@
 
 <!-- Add Rider Modal -->
 <div id="add-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6 sticky top-0 bg-[#01140e] z-10">
-            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Register New Rider</h3>
-            <button type="button" onclick="closeAddRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+    <div class="relative w-full max-w-2xl rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5 sticky top-0 bg-[#01140e] z-10">
+            <div>
+                <h3 class="text-base sm:text-lg font-black text-[#cca43b] tracking-wider uppercase">Register New Rider</h3>
+                <p class="text-xs text-[#a0ac96] mt-0.5">Create courier login credentials and delivery profile</p>
+            </div>
+            <button type="button" onclick="closeAddRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
         <form method="POST" action="{% url 'sales:rider_create' %}" enctype="multipart/form-data" autocomplete="off" class="space-y-4">
             {% csrf_token %}
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Rider Full Name *</label>
-                {{ form.name }}
-            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Rider Full Name -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
-                    {{ form.phone }}
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Rider Full Name *</label>
+                    <input type="text" name="name" required placeholder="e.g. Juan Dela Cruz" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
+
+                <!-- Phone Number -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Account Password *</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Phone Number *</label>
+                    <input type="text" name="phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" placeholder="e.g. 09123456789" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                </div>
+
+                <!-- Account Password -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Account Password *</label>
                     <div class="relative flex items-center">
-                        <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Rider login password" class="w-full rounded-lg border border-white/10 bg-black/40 pl-4 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                        <input type="password" id="rider-register-password" name="password" required autocomplete="new-password" placeholder="Create rider login password" class="w-full rounded-xl border border-white/10 bg-black/40 pl-3.5 pr-11 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                         <button type="button" onclick="toggleRiderPasswordVisibility()" class="absolute right-3 text-[#a0ac96] hover:text-[#cca43b] transition-colors p-1 cursor-pointer" title="Toggle password visibility">
                             <svg id="eye-icon-show" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -265,32 +273,64 @@
                         </button>
                     </div>
                 </div>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Residential / Home Address</label>
-                {{ form.address }}
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <!-- Residential / Home Address -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle Type</label>
-                    {{ form.vehicle_type }}
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Residential / Home Address</label>
+                    <input type="text" name="address" placeholder="e.g. Purok 3, Brgy. Lantad, Silay" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
+
+                <!-- Vehicle Type -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Plate Number</label>
-                    {{ form.plate_number }}
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Vehicle Type</label>
+                    <input type="text" name="vehicle_type" placeholder="e.g. Motorcycle, Tricycle, Van" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                </div>
+
+                <!-- Plate Number -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Plate Number</label>
+                    <input type="text" name="plate_number" placeholder="PLATE / VEHICLE ID" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] uppercase">
+                </div>
+
+                <!-- License Photo Upload Box -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Driver's License / ID Photo</label>
+                    <input type="file" id="add-license-input" name="license_evidence" accept="image/*" class="hidden" onchange="handleAddLicenseSelect(this)">
+                    
+                    <div id="add-license-dropzone" onclick="document.getElementById('add-license-input').click()" class="rounded-xl border border-dashed border-[#cca43b]/40 bg-black/30 hover:bg-[#cca43b]/5 hover:border-[#cca43b] p-3 text-center transition-all cursor-pointer min-h-[92px] flex flex-col items-center justify-center">
+                        <div id="add-license-prompt" class="space-y-1">
+                            <div class="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-[#cca43b]/15 text-[#cca43b]">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-bold text-stone-200">Upload License Photo</p>
+                            <p class="text-[10px] text-[#a0ac96]">JPG, PNG image evidence</p>
+                        </div>
+                        
+                        <div id="add-license-preview-wrap" class="hidden w-full flex items-center justify-between gap-2 p-1 text-left">
+                            <div class="flex items-center gap-2.5 overflow-hidden">
+                                <img id="add-license-preview-img" src="" alt="License Preview" class="h-11 w-11 object-cover rounded-lg border border-emerald-500/40 shrink-0">
+                                <div class="overflow-hidden">
+                                    <p id="add-license-filename" class="text-xs font-bold text-white truncate max-w-[140px]">license.jpg</p>
+                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Ready ✓</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="removeAddLicense(event)" class="h-7 w-7 rounded-lg bg-white/10 hover:bg-rose-600/80 text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer shrink-0" title="Remove">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes / Coverage Area -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Notes / Coverage Area</label>
+                    <textarea name="notes" placeholder="Delivery routes, assigned zones, or notes..." class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 placeholder-[#a0ac96]/50 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] min-h-[92px]"></textarea>
                 </div>
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Driver's License / ID Evidence (Photo Upload)</label>
-                {{ form.license_evidence }}
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Notes / Coverage Area</label>
-                {{ form.notes }}
-            </div>
-            <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeAddRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Register Rider</button>
+
+            <div class="flex items-center justify-end gap-3 border-t border-white/10 pt-5 mt-5">
+                <button type="button" onclick="closeAddRiderModal()" class="rounded-xl border border-white/10 bg-black/30 px-5 py-2.5 text-xs font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all shadow-lg shadow-[#cca43b]/20 cursor-pointer">Register Rider</button>
             </div>
         </form>
     </div>
@@ -298,63 +338,102 @@
 
 <!-- Edit Rider Modal -->
 <div id="edit-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6 sticky top-0 bg-[#01140e] z-10">
-            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Edit Rider Profile</h3>
-            <button type="button" onclick="closeEditRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+    <div class="relative w-full max-w-2xl rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5 sticky top-0 bg-[#01140e] z-10">
+            <div>
+                <h3 class="text-base sm:text-lg font-black text-[#cca43b] tracking-wider uppercase">Edit Rider Profile</h3>
+                <p class="text-xs text-[#a0ac96] mt-0.5">Update rider details, vehicle credentials, and status</p>
+            </div>
+            <button type="button" onclick="closeEditRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
         <form id="edit-rider-form" method="POST" enctype="multipart/form-data" class="space-y-4">
             {% csrf_token %}
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Rider Full Name *</label>
-                <input type="text" name="name" id="edit-rider-name" required class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
-            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Rider Full Name -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Phone Number *</label>
-                    <input type="text" name="phone" id="edit-rider-phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Rider Full Name *</label>
+                    <input type="text" name="name" id="edit-rider-name" required class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
+
+                <!-- Phone Number -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Status</label>
-                    <select name="status" id="edit-rider-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
-                        <option value="available">Available</option>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Phone Number *</label>
+                    <input type="text" name="phone" id="edit-rider-phone" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Status</label>
+                    <select name="status" id="edit-rider-status" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                        <option value="available">Available (Ready for Dispatch)</option>
                         <option value="on_delivery">On Delivery</option>
                         <option value="off_duty">Off Duty</option>
                     </select>
                 </div>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Residential / Home Address</label>
-                <input type="text" name="address" id="edit-rider-address" placeholder="Home / Residential address" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <!-- Residential / Home Address -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Vehicle Type</label>
-                    <input type="text" name="vehicle_type" id="edit-rider-vehicle" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Residential / Home Address</label>
+                    <input type="text" name="address" id="edit-rider-address" placeholder="Home / Residential address" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                 </div>
+
+                <!-- Vehicle Type -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Plate Number</label>
-                    <input type="text" name="plate_number" id="edit-rider-plate" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] uppercase">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Vehicle Type</label>
+                    <input type="text" name="vehicle_type" id="edit-rider-vehicle" placeholder="e.g. Motorcycle" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                </div>
+
+                <!-- Plate Number -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Plate Number</label>
+                    <input type="text" name="plate_number" id="edit-rider-plate" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] uppercase">
+                </div>
+
+                <!-- License Photo Upload Box -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Driver's License Photo</label>
+                        <a id="edit-current-license-link" href="#" target="_blank" class="hidden text-[11px] font-bold text-[#cca43b] hover:underline inline-flex items-center gap-1">
+                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            View Current
+                        </a>
+                    </div>
+                    <input type="file" id="edit-license-input" name="license_evidence" accept="image/*" class="hidden" onchange="handleEditLicenseSelect(this)">
+                    
+                    <div id="edit-license-dropzone" onclick="document.getElementById('edit-license-input').click()" class="rounded-xl border border-dashed border-[#cca43b]/40 bg-black/30 hover:bg-[#cca43b]/5 hover:border-[#cca43b] p-3 text-center transition-all cursor-pointer min-h-[92px] flex flex-col items-center justify-center">
+                        <div id="edit-license-prompt" class="space-y-1">
+                            <div class="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-[#cca43b]/15 text-[#cca43b]">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-bold text-stone-200">Replace / Upload License</p>
+                            <p class="text-[10px] text-[#a0ac96]">JPG, PNG image file</p>
+                        </div>
+                        
+                        <div id="edit-license-preview-wrap" class="hidden w-full flex items-center justify-between gap-2 p-1 text-left">
+                            <div class="flex items-center gap-2.5 overflow-hidden">
+                                <img id="edit-license-preview-img" src="" alt="License Preview" class="h-11 w-11 object-cover rounded-lg border border-emerald-500/40 shrink-0">
+                                <div class="overflow-hidden">
+                                    <p id="edit-license-filename" class="text-xs font-bold text-white truncate max-w-[140px]">license.jpg</p>
+                                    <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">New Photo Attached ✓</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="removeEditLicense(event)" class="h-7 w-7 rounded-lg bg-white/10 hover:bg-rose-600/80 text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer shrink-0" title="Remove">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes / Coverage Area -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Notes / Coverage Area</label>
+                    <textarea name="notes" id="edit-rider-notes" rows="3" placeholder="Delivery routes, assigned zones, or notes..." class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b] min-h-[92px]"></textarea>
                 </div>
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Update Driver's License / ID Photo</label>
-                <input type="file" name="license_evidence" accept="image/*" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
-            </div>
-            <div id="edit-current-license-container" class="hidden rounded-lg border border-white/10 bg-black/30 p-3">
-                <span class="block text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Current Uploaded License:</span>
-                <a id="edit-current-license-link" href="#" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:underline">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    View Uploaded Evidence
-                </a>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1">Notes / Coverage Area</label>
-                <textarea name="notes" id="edit-rider-notes" rows="2" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]"></textarea>
-            </div>
-            <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
-                <button type="button" onclick="closeEditRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
+
+            <div class="flex items-center justify-end gap-3 border-t border-white/10 pt-5 mt-5">
+                <button type="button" onclick="closeEditRiderModal()" class="rounded-xl border border-white/10 bg-black/30 px-5 py-2.5 text-xs font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save Changes</button>
             </div>
         </form>
     </div>
@@ -368,7 +447,7 @@
                 <h3 class="text-base font-black text-[#cca43b] tracking-wider uppercase">Driver's License / ID Evidence</h3>
                 <p id="license-preview-rider-name" class="text-xs text-[#a0ac96] mt-0.5"></p>
             </div>
-            <button type="button" onclick="closeLicensePreviewModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeLicensePreviewModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
         <div class="w-full max-h-[70vh] flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/50 p-2">
             <img id="license-preview-img" src="" alt="Driver License Evidence" class="max-h-[65vh] w-auto max-w-full object-contain rounded-lg">
@@ -378,34 +457,34 @@
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Open Full Resolution
             </a>
-            <button type="button" onclick="closeLicensePreviewModal()" class="rounded-lg bg-[#cca43b] px-5 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer">Close</button>
+            <button type="button" onclick="closeLicensePreviewModal()" class="rounded-xl bg-[#cca43b] px-5 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer">Close</button>
         </div>
     </div>
 </div>
 
 <!-- Quick Rider Status Modal -->
 <div id="rider-status-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
             <div>
-                <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Status</h3>
-                <p id="rider-status-modal-name" class="text-xs text-[#a0ac96] mt-1"></p>
+                <h3 class="text-base sm:text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Duty Status</h3>
+                <p id="rider-status-modal-name" class="text-xs text-[#a0ac96] mt-0.5"></p>
             </div>
-            <button type="button" onclick="closeRiderStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeRiderStatusModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
-        <form id="rider-status-form" method="POST" class="space-y-6">
+        <form id="rider-status-form" method="POST" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-2">Duty Status</label>
-                <select name="status" id="modal-rider-status" class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">Duty Status</label>
+                <select name="status" id="modal-rider-status" class="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-sm font-bold text-stone-100 focus:border-[#cca43b] focus:outline-none focus:ring-1 focus:ring-[#cca43b]">
                     <option value="available">Available (Ready for Dispatch)</option>
                     <option value="on_delivery">On Delivery</option>
                     <option value="off_duty">Off Duty</option>
                 </select>
             </div>
-            <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
-                <button type="button" onclick="closeRiderStatusModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-                <button type="submit" class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Update Status</button>
+            <div class="flex items-center justify-end gap-3 border-t border-white/10 pt-5 mt-5">
+                <button type="button" onclick="closeRiderStatusModal()" class="rounded-xl border border-white/10 bg-black/30 px-5 py-2.5 text-xs font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-xl bg-[#cca43b] px-6 py-2.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all shadow-lg shadow-[#cca43b]/20 cursor-pointer">Update Status</button>
             </div>
         </form>
     </div>
@@ -413,16 +492,16 @@
 
 <!-- Delete Rider Confirmation Modal -->
 <div id="delete-rider-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
-        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-            <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Rider</h3>
-            <button type="button" onclick="closeDeleteRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+    <div class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <h3 class="text-base sm:text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Rider</h3>
+            <button type="button" onclick="closeDeleteRiderModal()" class="text-[#a0ac96] hover:text-stone-100 text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
-        <p class="text-sm text-stone-300 leading-relaxed mb-6">Are you sure you want to remove <span id="delete-rider-name" class="font-bold text-stone-100"></span> from the registry? This will unassign their tasks and remove their login credentials.</p>
-        <form id="delete-rider-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+        <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-5">Are you sure you want to remove <span id="delete-rider-name" class="font-bold text-stone-100"></span> from the registry? This will unassign their tasks and remove their login credentials.</p>
+        <form id="delete-rider-form" method="POST" class="flex items-center justify-end gap-3 border-t border-white/10 pt-5">
             {% csrf_token %}
-            <button type="button" onclick="closeDeleteRiderModal()" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
-            <button type="submit" class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove Rider</button>
+            <button type="button" onclick="closeDeleteRiderModal()" class="rounded-xl border border-white/10 bg-black/30 px-5 py-2.5 text-xs font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" class="rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove Rider</button>
         </form>
     </div>
 </div>
@@ -444,6 +523,58 @@ function toggleRiderPasswordVisibility() {
     }
 }
 
+function handleAddLicenseSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('add-license-preview-img').src = e.target.result;
+            document.getElementById('add-license-filename').textContent = file.name;
+            document.getElementById('add-license-prompt').classList.add('hidden');
+            document.getElementById('add-license-preview-wrap').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeAddLicense(event) {
+    if (event) event.stopPropagation();
+    const input = document.getElementById('add-license-input');
+    if (input) input.value = '';
+    const previewImg = document.getElementById('add-license-preview-img');
+    if (previewImg) previewImg.src = '';
+    const previewWrap = document.getElementById('add-license-preview-wrap');
+    if (previewWrap) previewWrap.classList.add('hidden');
+    const prompt = document.getElementById('add-license-prompt');
+    if (prompt) prompt.classList.remove('hidden');
+}
+
+function handleEditLicenseSelect(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('edit-license-preview-img').src = e.target.result;
+            document.getElementById('edit-license-filename').textContent = file.name;
+            document.getElementById('edit-license-prompt').classList.add('hidden');
+            document.getElementById('edit-license-preview-wrap').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeEditLicense(event) {
+    if (event) event.stopPropagation();
+    const input = document.getElementById('edit-license-input');
+    if (input) input.value = '';
+    const previewImg = document.getElementById('edit-license-preview-img');
+    if (previewImg) previewImg.src = '';
+    const previewWrap = document.getElementById('edit-license-preview-wrap');
+    if (previewWrap) previewWrap.classList.add('hidden');
+    const prompt = document.getElementById('edit-license-prompt');
+    if (prompt) prompt.classList.remove('hidden');
+}
+
 function openAddRiderModal() {
     const modal = document.getElementById('add-rider-modal');
     modal.classList.remove('hidden');
@@ -454,6 +585,7 @@ function closeAddRiderModal() {
     const modal = document.getElementById('add-rider-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    removeAddLicense();
 }
 
 function openEditRiderModal(riderId, name, phone, address, vehicle, plate, status, licenseUrl, notes) {
@@ -469,14 +601,18 @@ function openEditRiderModal(riderId, name, phone, address, vehicle, plate, statu
     document.getElementById('edit-rider-status').value = status || 'available';
     document.getElementById('edit-rider-notes').value = notes || '';
 
-    const licenseContainer = document.getElementById('edit-current-license-container');
+    removeEditLicense();
+
     const licenseLink = document.getElementById('edit-current-license-link');
     if (licenseUrl && licenseUrl.trim() !== '') {
-        licenseContainer.classList.remove('hidden');
-        licenseLink.href = licenseUrl;
+        licenseLink.classList.remove('hidden');
+        licenseLink.onclick = function(e) {
+            e.preventDefault();
+            openLicensePreviewModal(licenseUrl, name);
+        };
     } else {
-        licenseContainer.classList.add('hidden');
-        licenseLink.href = '#';
+        licenseLink.classList.add('hidden');
+        licenseLink.onclick = null;
     }
 
     modal.classList.remove('hidden');
@@ -487,6 +623,7 @@ function closeEditRiderModal() {
     const modal = document.getElementById('edit-rider-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    removeEditLicense();
 }
 
 function openLicensePreviewModal(url, riderName) {
