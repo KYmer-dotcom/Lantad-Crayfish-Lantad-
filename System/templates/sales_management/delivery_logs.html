@@ -4,16 +4,16 @@
 
 {% block page_content %}
 <style>
-    /* Elevated Glass Card Effect */
+    /* Standardized Obsidian Emerald Glass Card */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
+        background: linear-gradient(145deg, rgba(3, 38, 28, 0.85) 0%, rgba(1, 20, 14, 0.95) 100%);
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
     }
 </style>
 
 <div class="space-y-6 pb-12">
-    <!-- Top Header & Navigation -->
+    <!-- Top Header & Breadcrumb -->
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Logistics History & Verification</p>
@@ -24,12 +24,12 @@
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Stat 1: Total Completed/Delivered -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Completed & Delivered</p>
             </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-emerald-300 tracking-tight">{{ delivered_count|default:"0" }}</p>
+            <div class="mt-3">
+                <p class="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">{{ delivered_count|default:"0" }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
                     <span>Confirmed drop-off completed</span>
@@ -38,11 +38,11 @@
         </div>
 
         <!-- Stat 2: Total Dispatches Logged -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Dispatches</p>
             </div>
-            <div class="mt-2">
+            <div class="mt-3">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_logs|default:"0" }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
@@ -52,11 +52,11 @@
         </div>
 
         <!-- Stat 3: Delivered Volume (kg) -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered Volume</p>
             </div>
-            <div class="mt-2">
+            <div class="mt-3">
                 <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_delivered_kg|floatformat:1 }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
@@ -66,11 +66,11 @@
         </div>
 
         <!-- Stat 4: Delivered Revenue -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Fulfilled Revenue</p>
             </div>
-            <div class="mt-2">
+            <div class="mt-3">
                 <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ total_delivered_revenue|floatformat:2 }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
@@ -81,20 +81,20 @@
     </div>
 
     <!-- Search, Status & Date Filter Bar -->
-    <div class="glass-card rounded-xl p-4 space-y-4">
+    <div class="glass-card rounded-xl p-4 sm:p-5 space-y-4">
         <!-- Top Row: Tab Switcher & Active Filter State -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
-            <div class="flex items-center gap-2 overflow-x-auto" id="logs-type-tabs">
+            <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/40 border border-white/10 overflow-x-auto" id="logs-type-tabs">
                 <button type="button" onclick="switchLogView('product')" id="tab-btn-product"
-                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'product' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'product' or not tab_filter %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
                     Product Logs ({{ total_logs }})
                 </button>
                 <button type="button" onclick="switchLogView('activity')" id="tab-btn-activity"
-                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'activity' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'activity' %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
                     Activity Logs ({{ activity_logs|length }})
                 </button>
                 <button type="button" onclick="switchLogView('input')" id="tab-btn-input"
-                    class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'input' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                    class="px-4 py-2 rounded-lg text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer {% if tab_filter == 'input' %}bg-[#cca43b] text-[#01140e] font-black shadow-md shadow-[#cca43b]/25{% else %}text-[#a0ac96] hover:text-white hover:bg-white/5 font-bold{% endif %}">
                     Input Logs ({{ input_logs_count }})
                 </button>
             </div>
@@ -102,46 +102,46 @@
             {% if start_date or end_date or query %}
             <div class="flex items-center gap-2">
                 <span class="text-[11px] font-mono text-[#cca43b]">Filters Active</span>
-                <a href="?tab={{ tab_filter }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
+                <a href="?tab={{ tab_filter|default:'product' }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
             </div>
             {% endif %}
         </div>
 
         <!-- Filter Form: Filter by Date & Search -->
         <form method="GET" class="flex flex-wrap items-center justify-between gap-3">
-            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter }}">
-            {% if status_filter != 'all' %}
+            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter|default:'product' }}">
+            {% if status_filter != 'all' and status_filter %}
             <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
 
             <!-- Date Range Inputs (Filter by Date) -->
             <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
+                <div class="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
                     <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider">From:</span>
+                    <span class="text-[10px] font-black text-[#a0ac96] uppercase tracking-wider">From:</span>
                     <input type="date" name="start_date" value="{{ start_date }}"
                         class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
                 </div>
 
-                <div class="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
+                <div class="flex items-center gap-2 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5">
                     <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider">To:</span>
+                    <span class="text-[10px] font-black text-[#a0ac96] uppercase tracking-wider">To:</span>
                     <input type="date" name="end_date" value="{{ end_date }}"
                         class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
                 </div>
 
                 <button type="submit"
-                    class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-all cursor-pointer shadow-md shadow-[#cca43b]/20">
+                    class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all cursor-pointer shadow-md shadow-[#cca43b]/20">
                     Filter Date
                 </button>
             </div>
 
             <!-- Search Bar -->
-            <div class="flex items-center gap-2 flex-grow sm:flex-grow-0 sm:min-w-[280px]">
+            <div class="flex items-center gap-2 flex-grow sm:flex-grow-0 sm:min-w-[300px]">
                 <div class="relative w-full">
                     <input type="search" name="q" value="{{ query }}" placeholder="Search logs, product, customer..."
                         class="w-full rounded-lg border border-white/10 bg-black/40 pl-9 pr-4 py-2 text-xs text-stone-100 placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none">
@@ -154,226 +154,226 @@
     </div>
 
     <!-- Product Logs Panel -->
-    <div id="product-logs-panel" class="{% if tab_filter == 'activity' %}hidden{% endif %} space-y-6">
+    <div id="product-logs-panel" class="{% if tab_filter == 'activity' or tab_filter == 'input' %}hidden{% endif %} space-y-6">
         <!-- Audit Logs Table -->
         <div class="glass-card rounded-xl shadow-xl overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-wider text-[#a0ac96]">
-                        <th class="py-4 px-6">Order & Product</th>
-                        <th class="py-4 px-6">Customer & Drop-off</th>
-                        <th class="py-4 px-6">Approved By</th>
-                        <th class="py-4 px-6">Rider / Courier</th>
-                        <th class="py-4 px-6">Completion Date</th>
-                        <th class="py-4 px-6">Proof of Delivery</th>
-                        <th class="py-4 px-6 text-right">Generated Receipt</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5 text-xs text-stone-200">
-                    {% for d in deliveries %}
-                    <tr class="hover:bg-white/[0.02] transition-colors group">
-                        <!-- Order & Product -->
-                        <td class="py-4 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black text-sm shrink-0">
-                                    🦐
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-mono font-bold text-white text-sm tracking-tight">{{ d.order.order_number }}</span>
-                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border
-                                            {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
-                                            {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30
-                                            {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30
-                                            {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
-                                            {{ d.get_status_display }}
-                                        </span>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-[0.15em] text-[#a0ac96]">
+                            <th class="py-4 px-6">Order & Product</th>
+                            <th class="py-4 px-6">Customer & Drop-off</th>
+                            <th class="py-4 px-6">Approved By</th>
+                            <th class="py-4 px-6">Rider / Courier</th>
+                            <th class="py-4 px-6">Completion Date</th>
+                            <th class="py-4 px-6">Proof of Delivery</th>
+                            <th class="py-4 px-6 text-right">Generated Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-xs text-stone-200">
+                        {% for d in deliveries %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <!-- Order & Product -->
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black text-sm shrink-0">
+                                        🦐
                                     </div>
-                                    <p class="text-[11px] text-[#a0ac96] mt-0.5">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg }} kg</strong></p>
-                                    <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.order.total_amount|floatformat:2 }}</p>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono font-bold text-white text-sm tracking-tight">{{ d.order.order_number }}</span>
+                                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border
+                                                {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
+                                                {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30
+                                                {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30
+                                                {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
+                                                {{ d.get_status_display }}
+                                            </span>
+                                        </div>
+                                        <p class="text-[11px] text-[#a0ac96] mt-0.5">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg }} kg</strong></p>
+                                        <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.order.total_amount|floatformat:2 }}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
 
-                        <!-- Customer & Drop-off -->
-                        <td class="py-4 px-6 max-w-xs">
-                            <h4 class="font-bold text-white leading-tight">{{ d.order.customer.name }}</h4>
-                            <p class="text-[11px] text-stone-400 mt-0.5 leading-snug line-clamp-2">📍 {{ d.delivery_location|default:d.order.customer.address }}</p>
-                            {% if d.order.customer.phone %}
-                            <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">📞 {{ d.order.customer.phone }}</p>
-                            {% endif %}
-                        </td>
-
-                        <!-- Who Approved Delivery Request -->
-                        <td class="py-4 px-6 whitespace-nowrap">
-                            <div class="flex items-center gap-2.5">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b] font-black text-xs shrink-0">
-                                    {{ d.created_by.get_role_display.0|upper|default:d.created_by.username.0|upper|default:"A" }}
-                                </div>
-                                <div>
-                                    <p class="font-bold text-white leading-tight">
-                                        {{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin" }}
-                                    </p>
-                                    <span class="inline-block mt-0.5 text-[9px] uppercase font-black px-1.5 py-0.2 rounded bg-white/10 text-stone-300">
-                                        {{ d.created_by.get_role_display|default:"Admin Approved" }}
-                                    </span>
-                                    <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">
-                                        {{ d.created_at|date:"M d, Y • h:i A" }}
-                                    </p>
-                                </div>
-                            </div>
-                        </td>
-
-                        <!-- Rider / Courier -->
-                        <td class="py-4 px-6 whitespace-nowrap">
-                            {% if d.rider %}
-                            <div class="flex items-center gap-2.5">
-                                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-bold text-xs shrink-0">
-                                    🛵
-                                </div>
-                                <div>
-                                    <p class="font-bold text-white leading-tight">{{ d.rider.name }}</p>
-                                    <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">{{ d.rider.phone }}</p>
-                                    <p class="text-[10px] text-cyan-400 font-medium mt-0.5">{{ d.rider.vehicle_type }}{% if d.rider.plate_number %} ({{ d.rider.plate_number }}){% endif %}</p>
-                                </div>
-                            </div>
-                            {% else %}
-                            <span class="text-xs text-stone-500 italic">Unassigned Courier</span>
-                            {% endif %}
-                        </td>
-
-                        <!-- Completion Date / Delivered Date -->
-                        <td class="py-4 px-6 whitespace-nowrap">
-                            {% if d.delivered_date %}
-                            <div class="flex items-center gap-2">
-                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-emerald-300">{{ d.delivered_date|date:"M d, Y" }}</p>
-                                    <span class="text-[10px] text-emerald-400/80 font-semibold uppercase">Fulfillment Completed</span>
-                                </div>
-                            </div>
-                            {% elif d.status == 'in_transit' %}
-                            <div class="flex items-center gap-2">
-                                <span class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-                                <div>
-                                    <p class="font-bold text-cyan-300">In Transit</p>
-                                    <span class="text-[10px] text-[#a0ac96]">Est: Today</span>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div>
-                                <p class="font-bold text-amber-300">Scheduled: {{ d.scheduled_date|date:"M d, Y" }}</p>
-                                <span class="text-[10px] text-[#a0ac96]">Pending Dispatch</span>
-                            </div>
-                            {% endif %}
-                        </td>
-
-                        <!-- Proof of Delivery (P.O.D.) -->
-                        <td class="py-4 px-6">
-                            <div class="space-y-1.5">
-                                {% if d.status == 'delivered' %}
-                                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
-                                    <svg class="h-3 w-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                    Verified Drop-off
-                                </div>
-                                {% if d.notes %}
-                                <p class="text-[11px] text-stone-300 italic max-w-xs truncate" title="{{ d.notes }}">{{ d.notes }}</p>
+                            <!-- Customer & Drop-off -->
+                            <td class="py-4 px-6 max-w-xs">
+                                <h4 class="font-bold text-white leading-tight">{{ d.order.customer.name }}</h4>
+                                <p class="text-[11px] text-stone-400 mt-0.5 leading-snug line-clamp-2">📍 {{ d.delivery_location|default:d.order.customer.address }}</p>
+                                {% if d.order.customer.phone %}
+                                <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">📞 {{ d.order.customer.phone }}</p>
                                 {% endif %}
+                            </td>
+
+                            <!-- Who Approved Delivery Request -->
+                            <td class="py-4 px-6 whitespace-nowrap">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b] font-black text-xs shrink-0">
+                                        {{ d.created_by.get_role_display.0|upper|default:d.created_by.username.0|upper|default:"A" }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white leading-tight">
+                                            {{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin" }}
+                                        </p>
+                                        <span class="inline-block mt-0.5 text-[9px] uppercase font-black px-1.5 py-0.2 rounded bg-white/10 text-stone-300">
+                                            {{ d.created_by.get_role_display|default:"Admin Approved" }}
+                                        </span>
+                                        <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">
+                                            {{ d.created_at|date:"M d, Y • h:i A" }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Rider / Courier -->
+                            <td class="py-4 px-6 whitespace-nowrap">
+                                {% if d.rider %}
+                                <div class="flex items-center gap-2.5">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-bold text-xs shrink-0">
+                                        🛵
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white leading-tight">{{ d.rider.name }}</p>
+                                        <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">{{ d.rider.phone }}</p>
+                                        <p class="text-[10px] text-cyan-400 font-medium mt-0.5">{{ d.rider.vehicle_type }}{% if d.rider.plate_number %} ({{ d.rider.plate_number }}){% endif %}</p>
+                                    </div>
+                                </div>
                                 {% else %}
-                                <span class="text-[11px] text-stone-500 italic">Pending delivery sign-off</span>
+                                <span class="text-xs text-stone-500 italic">Unassigned Courier</span>
                                 {% endif %}
+                            </td>
 
-                                <!-- Rider Uploaded Delivery Proof / Customer Payment Attachment -->
-                                {% if d.proof_of_delivery %}
-                                <div>
-                                    <button type="button" onclick="openReceiptImageModal('{{ d.proof_of_delivery.url }}', '{{ d.order.order_number|escapejs }} (Proof of Delivery)')" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 hover:text-emerald-300 underline cursor-pointer">
-                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        Delivery Photo
-                                    </button>
+                            <!-- Completion Date / Delivered Date -->
+                            <td class="py-4 px-6 whitespace-nowrap">
+                                {% if d.delivered_date %}
+                                <div class="flex items-center gap-2">
+                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-emerald-300">{{ d.delivered_date|date:"M d, Y" }}</p>
+                                        <span class="text-[10px] text-emerald-400/80 font-semibold uppercase">Fulfillment Completed</span>
+                                    </div>
                                 </div>
-                                {% elif d.order.receipt_image %}
+                                {% elif d.status == 'in_transit' %}
+                                <div class="flex items-center gap-2">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                    <div>
+                                        <p class="font-bold text-cyan-300">In Transit</p>
+                                        <span class="text-[10px] text-[#a0ac96]">Est: Today</span>
+                                    </div>
+                                </div>
+                                {% else %}
                                 <div>
-                                    <button type="button" onclick="openReceiptImageModal('{% url 'sales:order_receipt_view' d.order.id %}', '{{ d.order.order_number|escapejs }}')" class="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-400 hover:text-cyan-300 underline cursor-pointer">
-                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        Payment Attachment
-                                    </button>
+                                    <p class="font-bold text-amber-300">Scheduled: {{ d.scheduled_date|date:"M d, Y" }}</p>
+                                    <span class="text-[10px] text-[#a0ac96]">Pending Dispatch</span>
                                 </div>
                                 {% endif %}
-                            </div>
-                        </td>
+                            </td>
 
-                        <!-- Generated Official Receipt Button -->
-                        <td class="py-4 px-6 text-right whitespace-nowrap">
-                            <button type="button" onclick="openGeneratedReceiptModal({
-                                orderNumber: '{{ d.order.order_number|escapejs }}',
-                                deliveryId: '{{ d.id }}',
-                                orderDate: '{{ d.order.order_date|date:"F d, Y"|escapejs }}',
-                                deliveredDate: '{% if d.delivered_date %}{{ d.delivered_date|date:"F d, Y"|escapejs }}{% else %}In Transit / Scheduled{% endif %}',
-                                customerName: '{{ d.order.customer.name|escapejs }}',
-                                customerPhone: '{{ d.order.customer.phone|escapejs }}',
-                                customerAddress: '{{ d.delivery_location|default:d.order.customer.address|escapejs }}',
-                                approverName: '{{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin"|escapejs }}',
-                                approverRole: '{{ d.created_by.get_role_display|default:"Admin Dispatched"|escapejs }}',
-                                riderName: '{% if d.rider %}{{ d.rider.name|escapejs }}{% else %}Unassigned{% endif %}',
-                                riderPhone: '{% if d.rider %}{{ d.rider.phone|escapejs }}{% else %}N/A{% endif %}',
-                                riderVehicle: '{% if d.rider %}{{ d.rider.vehicle_type|escapejs }} ({{ d.rider.plate_number|escapejs }}){% else %}N/A{% endif %}',
-                                productName: '{{ d.order.product.name|default:"Aquaculture Stock"|escapejs }}',
-                                quantityKg: '{{ d.quantity_kg }}',
-                                pricePerKg: '{{ d.order.price_per_kg|floatformat:2 }}',
-                                totalAmount: '{{ d.order.total_amount|floatformat:2 }}',
-                                discount: '{{ d.order.discount|floatformat:2|default:"0.00" }}',
-                                paymentStatus: '{{ d.order.get_payment_status_display|escapejs }}',
-                                isPaid: {% if d.order.payment_status == 'paid' %}true{% else %}false{% endif %},
-                                status: '{{ d.get_status_display|escapejs }}'
-                            })" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] px-3.5 py-2 text-xs font-black text-[#021f15] hover:opacity-95 shadow-md shadow-[#cca43b]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                View Receipt
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="py-12 text-center text-[#a0ac96]">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-2xl">
-                                📋
-                            </div>
-                            <h3 class="text-base font-bold text-white">No Delivery Logs Found</h3>
-                            <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No delivery records match your filter criteria or no deliveries have been dispatched yet.</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            <!-- Proof of Delivery (P.O.D.) -->
+                            <td class="py-4 px-6">
+                                <div class="space-y-1.5">
+                                    {% if d.status == 'delivered' %}
+                                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
+                                        <svg class="h-3 w-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        Verified Drop-off
+                                    </div>
+                                    {% if d.notes %}
+                                    <p class="text-[11px] text-stone-300 italic max-w-xs truncate" title="{{ d.notes }}">{{ d.notes }}</p>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-[11px] text-stone-500 italic">Pending delivery sign-off</span>
+                                    {% endif %}
 
-        <!-- Pagination -->
-        {% if page_obj.has_other_pages %}
-        <div class="flex items-center justify-between border-t border-white/10 px-6 py-4 bg-black/20">
-            <p class="text-xs text-[#a0ac96]">
-                Showing page <strong class="text-white">{{ page_obj.number }}</strong> of <strong class="text-white">{{ page_obj.paginator.num_pages }}</strong>
-            </p>
-            <div class="flex items-center gap-2">
-                {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
-                    Previous
-                </a>
-                {% endif %}
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
-                    Next
-                </a>
-                {% endif %}
+                                    <!-- Rider Uploaded Delivery Proof / Customer Payment Attachment -->
+                                    {% if d.proof_of_delivery %}
+                                    <div>
+                                        <button type="button" onclick="openReceiptImageModal('{{ d.proof_of_delivery.url }}', '{{ d.order.order_number|escapejs }} (Proof of Delivery)')" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 hover:text-emerald-300 underline cursor-pointer">
+                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            Delivery Photo
+                                        </button>
+                                    </div>
+                                    {% elif d.order.receipt_image %}
+                                    <div>
+                                        <button type="button" onclick="openReceiptImageModal('{% url 'sales:order_receipt_view' d.order.id %}', '{{ d.order.order_number|escapejs }}')" class="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-400 hover:text-cyan-300 underline cursor-pointer">
+                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            Payment Attachment
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- Generated Official Receipt Button -->
+                            <td class="py-4 px-6 text-right whitespace-nowrap">
+                                <button type="button" onclick="openGeneratedReceiptModal({
+                                    orderNumber: '{{ d.order.order_number|escapejs }}',
+                                    deliveryId: '{{ d.id }}',
+                                    orderDate: '{{ d.order.order_date|date:"F d, Y"|escapejs }}',
+                                    deliveredDate: '{% if d.delivered_date %}{{ d.delivered_date|date:"F d, Y"|escapejs }}{% else %}In Transit / Scheduled{% endif %}',
+                                    customerName: '{{ d.order.customer.name|escapejs }}',
+                                    customerPhone: '{{ d.order.customer.phone|escapejs }}',
+                                    customerAddress: '{{ d.delivery_location|default:d.order.customer.address|escapejs }}',
+                                    approverName: '{{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin"|escapejs }}',
+                                    approverRole: '{{ d.created_by.get_role_display|default:"Admin Dispatched"|escapejs }}',
+                                    riderName: '{% if d.rider %}{{ d.rider.name|escapejs }}{% else %}Unassigned{% endif %}',
+                                    riderPhone: '{% if d.rider %}{{ d.rider.phone|escapejs }}{% else %}N/A{% endif %}',
+                                    riderVehicle: '{% if d.rider %}{{ d.rider.vehicle_type|escapejs }} ({{ d.rider.plate_number|escapejs }}){% else %}N/A{% endif %}',
+                                    productName: '{{ d.order.product.name|default:"Aquaculture Stock"|escapejs }}',
+                                    quantityKg: '{{ d.quantity_kg }}',
+                                    pricePerKg: '{{ d.order.price_per_kg|floatformat:2 }}',
+                                    totalAmount: '{{ d.order.total_amount|floatformat:2 }}',
+                                    discount: '{{ d.order.discount|floatformat:2|default:"0.00" }}',
+                                    paymentStatus: '{{ d.order.get_payment_status_display|escapejs }}',
+                                    isPaid: {% if d.order.payment_status == 'paid' %}true{% else %}false{% endif %},
+                                    status: '{{ d.get_status_display|escapejs }}'
+                                })" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 shadow-md shadow-[#cca43b]/20 transition-all cursor-pointer">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    View Receipt
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-[#a0ac96]">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-xl">
+                                    📋
+                                </div>
+                                <h3 class="text-sm font-bold text-white">No Delivery Logs Found</h3>
+                                <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No delivery records match your filter criteria or no deliveries have been dispatched yet.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="flex items-center justify-between border-t border-white/10 px-6 py-4 bg-black/20">
+                <p class="text-xs text-[#a0ac96]">
+                    Showing page <strong class="text-white">{{ page_obj.number }}</strong> of <strong class="text-white">{{ page_obj.paginator.num_pages }}</strong>
+                </p>
+                <div class="flex items-center gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
+                        Previous
+                    </a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if tab_filter %}&tab={{ tab_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold text-stone-200 hover:text-white hover:border-[#cca43b]/40 transition-all">
+                        Next
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
     </div>
 
     <!-- Activity Logs Panel -->
@@ -382,7 +382,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-wider text-[#a0ac96]">
+                        <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-[0.15em] text-[#a0ac96]">
                             <th class="py-4 px-6">Timestamp</th>
                             <th class="py-4 px-6">Activity / Action</th>
                             <th class="py-4 px-6">User / Actor</th>
@@ -433,10 +433,10 @@
                         {% empty %}
                         <tr>
                             <td colspan="6" class="py-12 text-center text-[#a0ac96]">
-                                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-2xl">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-xl">
                                     📜
                                 </div>
-                                <h3 class="text-base font-bold text-white">No Activity Logs Found</h3>
+                                <h3 class="text-sm font-bold text-white">No Activity Logs Found</h3>
                                 <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No activity events match your search or date query.</p>
                             </td>
                         </tr>
@@ -451,11 +451,11 @@
     <div id="input-logs-panel" class="{% if tab_filter != 'input' %}hidden{% endif %} space-y-6">
         <!-- Input Logs Metric Chips -->
         <div class="flex flex-wrap items-center gap-3">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-xs font-bold text-emerald-400">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-xs font-bold text-emerald-400">
                 <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
                 Added Records: {{ input_logs_added_count }}
             </span>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 text-xs font-bold text-rose-400">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 text-xs font-bold text-rose-400">
                 <span class="h-2 w-2 rounded-full bg-rose-400"></span>
                 Deleted Records: {{ input_logs_deleted_count }}
             </span>
@@ -465,7 +465,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-wider text-[#a0ac96]">
+                        <tr class="border-b border-white/10 bg-white/[0.03] text-[11px] font-black uppercase tracking-[0.15em] text-[#a0ac96]">
                             <th class="py-4 px-6">Timestamp</th>
                             <th class="py-4 px-6">Action / Event</th>
                             <th class="py-4 px-6">User / Actor</th>
@@ -485,17 +485,17 @@
                             <!-- Action / Event -->
                             <td class="py-4 px-6 whitespace-nowrap">
                                 {% if log.action == 'added' %}
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 bg-emerald-500/15 text-emerald-300">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 bg-emerald-500/15 text-emerald-300">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     Data Added
                                 </span>
                                 {% elif log.action == 'deleted' %}
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-rose-500/30 bg-rose-500/15 text-rose-300">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-rose-500/30 bg-rose-500/15 text-rose-300">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     Data Deleted
                                 </span>
                                 {% else %}
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-amber-500/30 bg-amber-500/15 text-amber-300">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-amber-500/30 bg-amber-500/15 text-amber-300">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     Data Updated
                                 </span>
@@ -524,10 +524,10 @@
                         {% empty %}
                         <tr>
                             <td colspan="6" class="py-12 text-center text-[#a0ac96]">
-                                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-2xl">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-[#cca43b] mx-auto mb-3 text-xl">
                                     🗑️
                                 </div>
-                                <h3 class="text-base font-bold text-white">No Input Logs Found</h3>
+                                <h3 class="text-sm font-bold text-white">No Input Logs Found</h3>
                                 <p class="text-xs text-[#a0ac96] mt-1 max-w-sm mx-auto">No input or deletion logs recorded yet.</p>
                             </td>
                         </tr>
@@ -543,16 +543,22 @@
 <!-- OFFICIAL GENERATED RECEIPT MODAL -->
 <!-- ============================================================ -->
 <div id="receipt-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-    <div class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#021f15] shadow-[0_25px_80px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all my-auto overflow-hidden">
+    <div class="relative w-full max-w-2xl rounded-2xl border border-[#cca43b]/40 bg-[#021f15] shadow-[0_25px_80px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all my-auto overflow-hidden">
         
-        <!-- Action Header (Close) -->
+        <!-- Action Header (Close & Print) -->
         <div class="flex items-center justify-between border-b border-white/10 bg-black/40 px-6 py-4">
             <div class="flex items-center gap-2">
                 <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#cca43b]/20 text-[#cca43b] font-bold text-xs">🧾</span>
                 <h3 class="text-sm font-bold text-white">Official Sales & Delivery Receipt</h3>
             </div>
-            <div>
-                <button type="button" onclick="closeGeneratedReceiptModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="printReceiptDoc()" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all shadow-md shadow-[#cca43b]/20 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Voucher
+                </button>
+                <button type="button" onclick="closeGeneratedReceiptModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
             </div>
         </div>
 
@@ -577,7 +583,7 @@
             </div>
 
             <!-- Meta Grid: Customer, Dates, Approver, Courier -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-2xl border border-white/10 bg-black/40 p-5 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xl border border-white/10 bg-black/40 p-5 text-xs">
                 <!-- Customer Details -->
                 <div class="space-y-1">
                     <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96]">Billed & Delivered To:</p>
@@ -614,7 +620,7 @@
             </div>
 
             <!-- Items Table -->
-            <div class="overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+            <div class="overflow-hidden rounded-xl border border-white/10 bg-black/20">
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.03] text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">
@@ -639,8 +645,8 @@
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-white/15 pt-5">
                 <!-- Seal / Watermark -->
                 <div class="flex items-center gap-3">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-emerald-400/50 bg-emerald-500/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-400/50 bg-emerald-500/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
@@ -680,16 +686,16 @@
 <!-- PAYMENT RECEIPT IMAGE PREVIEW MODAL -->
 <!-- ============================================================ -->
 <div id="receipt-image-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-3xl border border-white/10 bg-[#021f15] p-6 shadow-2xl text-center">
+    <div class="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#021f15] p-6 shadow-2xl text-center">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
             <h3 class="text-sm font-bold text-white">Attached Customer Payment Proof</h3>
-            <button type="button" onclick="closeReceiptImageModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeReceiptImageModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>
         </div>
-        <div class="overflow-hidden rounded-2xl border border-white/10 bg-black/40 max-h-[70vh] flex items-center justify-center p-2">
-            <img id="receipt-image-view" src="" alt="Payment Attachment" class="max-h-[65vh] w-auto object-contain rounded-xl">
+        <div class="overflow-hidden rounded-xl border border-white/10 bg-black/40 max-h-[70vh] flex items-center justify-center p-2">
+            <img id="receipt-image-view" src="" alt="Payment Attachment" class="max-h-[65vh] w-auto object-contain rounded-lg">
         </div>
         <div class="mt-4 flex justify-end">
-            <button type="button" onclick="closeReceiptImageModal()" class="rounded-xl border border-white/15 bg-white/5 px-5 py-2 text-xs font-bold text-stone-200 hover:text-white">Close</button>
+            <button type="button" onclick="closeReceiptImageModal()" class="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-stone-200 hover:text-white transition-colors cursor-pointer">Close</button>
         </div>
     </div>
 </div>
@@ -775,8 +781,8 @@ function switchLogView(type) {
     const inputBtn = document.getElementById('tab-btn-input');
     const searchTabInput = document.getElementById('search-tab-input');
 
-    const activeClasses = ['bg-[#cca43b]', 'text-[#021f15]', 'shadow-lg', 'shadow-[#cca43b]/20'];
-    const inactiveClasses = ['border', 'border-white/10', 'bg-black/20', 'text-[#a0ac96]', 'hover:text-white'];
+    const activeClasses = ['bg-[#cca43b]', 'text-[#01140e]', 'font-black', 'shadow-md', 'shadow-[#cca43b]/25'];
+    const inactiveClasses = ['text-[#a0ac96]', 'hover:text-white', 'hover:bg-white/5', 'font-bold'];
 
     // Hide all panels
     if (prodPanel) prodPanel.classList.add('hidden');
