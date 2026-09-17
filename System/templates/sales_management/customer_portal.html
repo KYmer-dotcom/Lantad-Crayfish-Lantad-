@@ -50,18 +50,25 @@
         <nav
             class="w-full md:w-auto md:flex-1 flex justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide order-last md:order-none py-1 md:py-0 select-none">
             <a href="{% url 'sales:customer_portal' %}"
-                class="{% if active_page == 'market' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase">Market</a>
-            <a href="{% url 'sales:customer_cart_page' %}"
-                class="{% if active_page == 'cart' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase flex items-center gap-2">
-                <span>Cart</span>
-                {% if cart_orders_count %}
-                <span class="bg-[#cca43b] text-[#01140e] text-[10px] font-black rounded-full px-1.5 py-0.5">{{ cart_orders_count }}</span>
-                {% endif %}
-            </a>
+                class="{% if active_page == 'market' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase font-bold tracking-wider">Market</a>
         </nav>
 
-        <!-- Right side tools: Customer Profile & Dropdown -->
-        <div class="w-auto md:w-[30%] flex-shrink-0 flex justify-end items-center gap-3 sm:gap-4">
+        <!-- Right side tools: Cart Icon + Customer Profile & Dropdown -->
+        <div class="w-auto md:w-[30%] flex-shrink-0 flex justify-end items-center gap-2.5 sm:gap-3.5">
+            <!-- Cart Icon Button -->
+            <a href="{% url 'sales:customer_cart_page' %}"
+                class="relative inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm group"
+                title="View Cart">
+                <svg class="w-5 h-5 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {% if cart_orders_count %}
+                <span class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] shadow-md shadow-[#cca43b]/40 ring-2 ring-[#01140e]">
+                    {{ cart_orders_count }}
+                </span>
+                {% endif %}
+            </a>
             {% if user.is_authenticated %}
             <div class="relative">
                 <button type="button" onclick="toggleCustomerMenu(event)"
