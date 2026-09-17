@@ -703,7 +703,17 @@
 </div>
 
 <style>
+    /* Clean Minimalist Report Styles */
+    #report-sidebar {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
     @media print {
+        @page {
+            margin: 12mm 15mm;
+            size: auto;
+        }
 
         /* Hide everything except sidebar */
         body * {
@@ -721,11 +731,13 @@
             top: 0 !important;
             width: 100% !important;
             height: auto !important;
-            background: white !important;
-            color: black !important;
+            background: #ffffff !important;
+            color: #1e293b !important;
             box-shadow: none !important;
             border: none !important;
             transform: none !important;
+            padding: 0 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
 
         .no-print {
@@ -735,36 +747,42 @@
         .print-report-table {
             border-collapse: collapse !important;
             width: 100% !important;
-            color: black !important;
-            margin-top: 15px !important;
-        }
-
-        .print-report-table th,
-        .print-report-table td {
-            border: 1px solid #ddd !important;
-            padding: 8px !important;
-            color: black !important;
-            background: transparent !important;
+            color: #1e293b !important;
+            margin-top: 8px !important;
+            font-size: 11px !important;
         }
 
         .print-report-table th {
-            background-color: #f2f2f2 !important;
-            font-weight: bold !important;
+            border: none !important;
+            border-bottom: 1.5px solid #0f172a !important;
+            padding: 8px 10px !important;
+            color: #475569 !important;
+            background: transparent !important;
+            font-size: 10px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            font-weight: 700 !important;
         }
 
-        .text-emerald-400 {
+        .print-report-table td {
+            border: none !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding: 8px 10px !important;
+            color: #1e293b !important;
+            background: transparent !important;
+            font-size: 11px !important;
+        }
+
+        .text-emerald-400, .text-emerald-600 {
             color: #047857 !important;
-            /* dark emerald for print readability */
         }
 
-        .text-amber-400 {
+        .text-amber-400, .text-amber-600 {
             color: #b45309 !important;
-            /* dark amber for print */
         }
 
-        .text-rose-400 {
+        .text-rose-400, .text-rose-600 {
             color: #be123c !important;
-            /* dark rose for print */
         }
     }
 </style>
@@ -797,172 +815,164 @@
 
     <!-- Printable Area -->
     <div class="flex-1 overflow-y-auto p-8 bg-[#021f15] text-stone-100 print:bg-white print:text-black font-sans">
-        <div class="max-w-3xl mx-auto space-y-8">
+        <div class="max-w-3xl mx-auto space-y-6">
             <!-- Report Branding Header -->
-            <div id="report-branding-header" class="border-b-2 border-[#cca43b] pb-6 flex justify-between items-end print:border-black">
+            <div id="report-branding-header" class="border-b border-white/15 pb-5 flex justify-between items-start print:border-stone-800 print:pb-4">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-white print:text-black uppercase">Silay Superworm
-                        & Crayfish</h1>
-                    <p
-                        class="text-xs font-semibold tracking-[0.2em] text-[#cca43b] uppercase mt-1 print:text-stone-800">
-                        Operational & Sales Performance Report</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-black uppercase">Silay Superworm & Crayfish</h1>
+                    <p class="text-[10px] sm:text-[11px] font-semibold tracking-[0.2em] text-[#cca43b] print:text-stone-600 uppercase mt-0.5">
+                        Operational & Sales Performance Report
+                    </p>
                 </div>
-                <div class="text-right font-mono text-xs text-[#a0ac96] print:text-black">
-                    <p>Generated: <span id="report-gen-date"></span></p>
-                    <p>Period: <span id="report-period"></span></p>
+                <div class="text-right text-xs text-[#a0ac96] print:text-stone-700 leading-relaxed">
+                    <p><span class="text-stone-400 print:text-stone-500 font-medium">Generated:</span> <span id="report-gen-date" class="font-semibold text-stone-200 print:text-stone-900"></span></p>
+                    <p><span class="text-stone-400 print:text-stone-500 font-medium">Period:</span> <span id="report-period" class="font-semibold text-stone-200 print:text-stone-900"></span></p>
                 </div>
             </div>
 
-
             <!-- Summary KPI Block -->
-            <div id="report-kpi-block" class="grid grid-cols-2 gap-6">
-                <div class="bg-white/[0.02] border border-white/10 rounded-2xl p-6 print:border-black">
-                    <p class="text-xs font-black uppercase text-[#a0ac96] tracking-wider print:text-stone-800">Total
-                        Sales Revenue</p>
-                    <p id="report-kpi-sales" class="text-2xl font-black text-[#cca43b] print:text-black mt-2 font-mono">
+            <div id="report-kpi-block" class="grid grid-cols-2 gap-4 print:gap-4 print:my-2">
+                <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Total Sales Revenue</p>
+                    <p id="report-kpi-sales" class="text-2xl sm:text-3xl font-bold tracking-tight text-[#cca43b] print:text-stone-900 mt-1">
                         ₱0.00</p>
                 </div>
-                <div class="bg-white/[0.02] border border-white/10 rounded-2xl p-6 print:border-black">
-                    <p class="text-xs font-black uppercase text-[#a0ac96] tracking-wider print:text-stone-800">Biomass
-                        Volume Dispatched</p>
-                    <p id="report-kpi-qty" class="text-2xl font-black text-white print:text-black mt-2 font-mono">0.00
-                        kg</p>
+                <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Biomass Volume Dispatched</p>
+                    <p id="report-kpi-qty" class="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-stone-900 mt-1">0.00 kg</p>
                 </div>
             </div>
 
             <!-- Section: Sales Details -->
-            <div id="report-sales-section" class="space-y-4">
-                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Sales Ledger
-                    </h3>
+            <div id="report-sales-section" class="space-y-3">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Sales Ledger</h3>
                 </div>
-                <table class="w-full text-left text-sm print-report-table">
-                    <thead>
-                        <tr
-                            class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
-                            <th class="py-3 px-4 font-black">Date</th>
-                            <th class="py-3 px-4 font-black">Order No.</th>
-                            <th class="py-3 px-4 font-black">Customer</th>
-                            <th class="py-3 px-4 font-black">Product</th>
-                            <th class="py-3 px-4 font-black">City</th>
-                            <th class="py-3 px-4 font-black">Quantity</th>
-                            <th class="py-3 px-4 font-black">Paid Status</th>
-                            <th class="py-3 px-4 font-black text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-sales-tbody"
-                        class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs print-report-table">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                <th class="py-2.5 px-3 font-bold">Date</th>
+                                <th class="py-2.5 px-3 font-bold">Order No.</th>
+                                <th class="py-2.5 px-3 font-bold">Customer</th>
+                                <th class="py-2.5 px-3 font-bold">Product</th>
+                                <th class="py-2.5 px-3 font-bold">City</th>
+                                <th class="py-2.5 px-3 font-bold">Quantity</th>
+                                <th class="py-2.5 px-3 font-bold">Paid Status</th>
+                                <th class="py-2.5 px-3 font-bold text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-sales-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Section: Operations Details -->
-            <div id="report-ops-section" class="space-y-4">
-                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Operations Log
-                    </h3>
+            <div id="report-ops-section" class="space-y-3">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Operations Log</h3>
                 </div>
-                <table class="w-full text-left text-sm print-report-table">
-                    <thead>
-                        <tr
-                            class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
-                            <th class="py-3 px-4 font-black">Date & Time</th>
-                            <th class="py-3 px-4 font-black">Pond / Shelf</th>
-                            <th class="py-3 px-4 font-black">Feed Type</th>
-                            <th class="py-3 px-4 font-black">Status</th>
-                            <th class="py-3 px-4 font-black">Recorded By</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-ops-tbody"
-                        class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs print-report-table">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                <th class="py-2.5 px-3 font-bold">Date & Time</th>
+                                <th class="py-2.5 px-3 font-bold">Pond / Shelf</th>
+                                <th class="py-2.5 px-3 font-bold">Feed Type</th>
+                                <th class="py-2.5 px-3 font-bold">Status</th>
+                                <th class="py-2.5 px-3 font-bold">Recorded By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-ops-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Section: Product Delivery Logs -->
-            <div id="report-product-logs-section" class="space-y-4 print:break-inside-avoid">
-                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Product Delivery Logs Ledger</h3>
+            <div id="report-product-logs-section" class="space-y-3 print:break-inside-avoid">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Product Delivery Logs Ledger</h3>
                 </div>
-                <table class="w-full text-left text-sm print-report-table">
-                    <thead>
-                        <tr class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
-                            <th class="py-3 px-3 font-black">Date</th>
-                            <th class="py-3 px-3 font-black">Order No.</th>
-                            <th class="py-3 px-3 font-black">Product & Qty</th>
-                            <th class="py-3 px-3 font-black">Customer & Destination</th>
-                            <th class="py-3 px-3 font-black">Approved By</th>
-                            <th class="py-3 px-3 font-black">Courier / Rider</th>
-                            <th class="py-3 px-3 font-black">Status</th>
-                            <th class="py-3 px-3 font-black text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-product-logs-tbody" class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs print-report-table">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                <th class="py-2.5 px-3 font-bold">Date</th>
+                                <th class="py-2.5 px-3 font-bold">Order No.</th>
+                                <th class="py-2.5 px-3 font-bold">Product & Qty</th>
+                                <th class="py-2.5 px-3 font-bold">Customer & Destination</th>
+                                <th class="py-2.5 px-3 font-bold">Approved By</th>
+                                <th class="py-2.5 px-3 font-bold">Courier / Rider</th>
+                                <th class="py-2.5 px-3 font-bold">Status</th>
+                                <th class="py-2.5 px-3 font-bold text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-product-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Section: Activity Audit Logs -->
-            <div id="report-activity-logs-section" class="space-y-4 print:break-inside-avoid">
-                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Activity Audit Logs Ledger</h3>
+            <div id="report-activity-logs-section" class="space-y-3 print:break-inside-avoid">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Activity Audit Logs Ledger</h3>
                 </div>
-                <table class="w-full text-left text-sm print-report-table">
-                    <thead>
-                        <tr class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
-                            <th class="py-3 px-3 font-black">Timestamp</th>
-                            <th class="py-3 px-3 font-black">Action</th>
-                            <th class="py-3 px-3 font-black">User / Actor</th>
-                            <th class="py-3 px-3 font-black">Role</th>
-                            <th class="py-3 px-3 font-black">Target Entity</th>
-                            <th class="py-3 px-3 font-black">Activity Details</th>
-                            <th class="py-3 px-3 font-black">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-activity-logs-tbody" class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs print-report-table">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                <th class="py-2.5 px-3 font-bold">Timestamp</th>
+                                <th class="py-2.5 px-3 font-bold">Action</th>
+                                <th class="py-2.5 px-3 font-bold">User / Actor</th>
+                                <th class="py-2.5 px-3 font-bold">Role</th>
+                                <th class="py-2.5 px-3 font-bold">Target Entity</th>
+                                <th class="py-2.5 px-3 font-bold">Activity Details</th>
+                                <th class="py-2.5 px-3 font-bold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-activity-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Section: Input & Data Modification Logs -->
-            <div id="report-input-logs-section" class="space-y-4 print:break-inside-avoid">
-                <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                    <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Input & Data Modification Logs Ledger</h3>
+            <div id="report-input-logs-section" class="space-y-3 print:break-inside-avoid">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Input & Data Modification Logs Ledger</h3>
                 </div>
-                <table class="w-full text-left text-sm print-report-table">
-                    <thead>
-                        <tr class="border-b border-white/10 text-xs uppercase text-[#a0ac96] print:border-black print:text-black">
-                            <th class="py-3 px-3 font-black">Timestamp</th>
-                            <th class="py-3 px-3 font-black">Action</th>
-                            <th class="py-3 px-3 font-black">User / Actor</th>
-                            <th class="py-3 px-3 font-black">Role</th>
-                            <th class="py-3 px-3 font-black">Module</th>
-                            <th class="py-3 px-3 font-black">Target Record</th>
-                            <th class="py-3 px-3 font-black">Operation Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-input-logs-tbody" class="divide-y divide-white/5 print:divide-black text-stone-300 print:text-black">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs print-report-table">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                <th class="py-2.5 px-3 font-bold">Timestamp</th>
+                                <th class="py-2.5 px-3 font-bold">Action</th>
+                                <th class="py-2.5 px-3 font-bold">User / Actor</th>
+                                <th class="py-2.5 px-3 font-bold">Role</th>
+                                <th class="py-2.5 px-3 font-bold">Module</th>
+                                <th class="py-2.5 px-3 font-bold">Target Record</th>
+                                <th class="py-2.5 px-3 font-bold">Operation Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-input-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Section: Receipts -->
             <div id="report-receipts-section" class="space-y-6">
-                <div class="pt-8">
-                    <div class="flex items-center gap-2 border-b border-white/10 pb-2 print:border-black mb-6 no-print">
-                        <span class="h-2 w-2 rounded-full bg-[#cca43b] print:bg-black"></span>
-                        <h3 class="text-lg font-black uppercase text-white print:text-black tracking-wider">Receipt
-                            Slips</h3>
+                <div class="pt-6">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800 mb-6 no-print">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Receipt Slips</h3>
                     </div>
                     <div id="receipts-slips-container" class="space-y-6">
                         <!-- Populated dynamically -->
@@ -971,14 +981,14 @@
             </div>
 
             <!-- Report Footer Signature Block -->
-            <div class="pt-16 grid grid-cols-2 gap-12 text-xs font-mono text-[#a0ac96] print:text-black">
-                <div class="border-t border-white/20 pt-4 text-center print:border-black">
-                    <p class="font-bold text-white print:text-black">Prepared By</p>
-                    <p class="mt-4">{{ request.user.get_full_name|default:request.user.username }}</p>
+            <div class="pt-12 grid grid-cols-2 gap-12 text-xs text-[#a0ac96] print:text-stone-700 print:break-inside-avoid">
+                <div class="border-t border-white/20 pt-3 text-center print:border-stone-400">
+                    <p class="font-bold text-white print:text-stone-900 uppercase tracking-wider text-[11px]">Prepared By</p>
+                    <p class="mt-3 font-medium text-stone-200 print:text-stone-800">{{ request.user.get_full_name|default:request.user.username }}</p>
                 </div>
-                <div class="border-t border-white/20 pt-4 text-center print:border-black">
-                    <p class="font-bold text-white print:text-black">Authorized Signature</p>
-                    <p class="mt-4">Date: ________________________</p>
+                <div class="border-t border-white/20 pt-3 text-center print:border-stone-400">
+                    <p class="font-bold text-white print:text-stone-900 uppercase tracking-wider text-[11px]">Authorized Signature</p>
+                    <p class="mt-3 font-medium text-stone-300 print:text-stone-700">Date: ________________________</p>
                 </div>
             </div>
         </div>
@@ -1268,16 +1278,16 @@
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 8) {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-3 px-4">${cells[0].textContent}</td>
-                            <td class="py-3 px-4 font-mono font-bold">${cells[1].textContent}</td>
-                            <td class="py-3 px-4">${cells[2].textContent}</td>
-                            <td class="py-3 px-4">${cells[3].textContent}</td>
-                            <td class="py-3 px-4">${cells[4].textContent}</td>
-                            <td class="py-3 px-4 font-mono">${cells[5].textContent}</td>
-                            <td class="py-3 px-4">${cells[6].innerHTML}</td>
-                            <td class="py-3 px-4 text-right font-mono font-bold text-[#cca43b] print:text-black">${cells[7].textContent}</td>
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[3].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-medium">${cells[5].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[6].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3 text-right font-bold text-[#cca43b] print:text-stone-900">${cells[7].textContent.trim()}</td>
                         `;
                         salesTbody.appendChild(tr);
                     }
@@ -1297,13 +1307,13 @@
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 5) {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-3 px-4">${cells[0].textContent}</td>
-                            <td class="py-3 px-4">${cells[1].textContent}</td>
-                            <td class="py-3 px-4">${cells[2].textContent}</td>
-                            <td class="py-3 px-4">${cells[3].innerHTML}</td>
-                            <td class="py-3 px-4">${cells[4].textContent}</td>
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[3].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[4].textContent.trim()}</td>
                         `;
                         opsTbody.appendChild(tr);
                     }
@@ -1323,16 +1333,16 @@
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 8) {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-3 px-3 font-bold">${cells[0].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-mono font-bold">${cells[1].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[2].innerHTML.trim()}</td>
-                            <td class="py-3 px-3">${cells[3].innerHTML.trim()}</td>
-                            <td class="py-3 px-3">${cells[4].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-bold text-cyan-300 print:text-black">${cells[5].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[6].innerHTML.trim()}</td>
-                            <td class="py-3 px-3 text-right font-mono font-bold text-[#cca43b] print:text-black">${cells[7].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[3].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-cyan-300 print:text-stone-800">${cells[5].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[6].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3 text-right font-bold text-[#cca43b] print:text-stone-900">${cells[7].textContent.trim()}</td>
                         `;
                         productLogsTbody.appendChild(tr);
                     }
@@ -1352,15 +1362,15 @@
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 7) {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-3 px-3 font-bold">${cells[0].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-bold">${cells[1].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-bold">${cells[2].textContent.trim()}</td>
-                            <td class="py-3 px-3 text-[#cca43b] print:text-black font-semibold">${cells[3].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-mono font-bold">${cells[4].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[5].textContent.trim()}</td>
-                            <td class="py-3 px-3 text-emerald-400 print:text-black font-bold">${cells[6].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-[#cca43b] print:text-stone-800 font-medium">${cells[3].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-stone-300 print:text-stone-700">${cells[5].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-emerald-400 print:text-emerald-700 font-semibold">${cells[6].textContent.trim()}</td>
                         `;
                         activityLogsTbody.appendChild(tr);
                     }
@@ -1380,15 +1390,15 @@
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 7) {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-black';
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-3 px-3 font-bold">${cells[0].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[1].innerHTML.trim()}</td>
-                            <td class="py-3 px-3 font-bold">${cells[2].textContent.trim()}</td>
-                            <td class="py-3 px-3 text-[#cca43b] print:text-black font-semibold">${cells[3].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[4].textContent.trim()}</td>
-                            <td class="py-3 px-3 font-mono font-bold">${cells[5].textContent.trim()}</td>
-                            <td class="py-3 px-3">${cells[6].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[1].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-[#cca43b] print:text-stone-800 font-medium">${cells[3].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[5].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 text-stone-300 print:text-stone-700">${cells[6].textContent.trim()}</td>
                         `;
                         inputLogsTbody.appendChild(tr);
                     }
