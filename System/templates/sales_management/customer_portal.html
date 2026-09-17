@@ -143,6 +143,12 @@
                         style="font-family: 'Georgia', serif;">
                         <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span id="featured-stock-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span id="featured-stock-dot" class="w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b] animate-pulse{% else %}bg-rose-400{% endif %}"></span>
+                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        </span>
+                    </div>
                 </div>
 
                 <p id="featured-notes"
@@ -290,9 +296,14 @@
                             {% else %}🐟{% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p
-                                class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
-                                {{ prod.name }}</p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p
+                                    class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
+                                    {{ prod.name }}</p>
+                                <span class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
+                                </span>
+                            </div>
                             <p class="text-xs text-[#a0ac96] mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
@@ -1991,7 +2002,24 @@
         const btnText = document.getElementById('featured-order-text');
         btn.setAttribute('onclick', `openCustomerOrderWithProduct('${id}')`);
 
-        if (parseFloat(quantity) > 0) {
+        const stockBadge = document.getElementById('featured-stock-badge');
+        const stockDot = document.getElementById('featured-stock-dot');
+        const stockText = document.getElementById('featured-stock-text');
+        const stockQty = parseFloat(quantity) || 0;
+
+        if (stockBadge && stockDot && stockText) {
+            if (stockQty > 0) {
+                stockBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]";
+                stockDot.className = "w-2 h-2 rounded-full bg-[#cca43b] animate-pulse";
+                stockText.textContent = `${Math.round(stockQty)} stock available`;
+            } else {
+                stockBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all bg-rose-500/15 border-rose-500/40 text-rose-400";
+                stockDot.className = "w-2 h-2 rounded-full bg-rose-400";
+                stockText.textContent = "Out of Stock";
+            }
+        }
+
+        if (stockQty > 0) {
             btn.removeAttribute('disabled');
             btnText.textContent = 'Add to Cart';
         } else {
