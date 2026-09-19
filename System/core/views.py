@@ -308,22 +308,56 @@ def dashboard(request):
         if lookup_key in fixed_location_overrides:
             farm['location'] = fixed_location_overrides[lookup_key]
 
-    # Embedded analytics + reports sections for dashboard
+    # Embedded analytics + reports sections for dashboard (Full Month Timeline)
+    import calendar
+    from datetime import date
     sales_statuses = [SalesOrder.Status.DELIVERED, SalesOrder.Status.COMPLETED]
     sales_qs = SalesOrder.objects.filter(status__in=sales_statuses)
     latest_order = sales_qs.order_by('-order_date').first()
     ref_date = latest_order.order_date if latest_order else datetime.now().date()
-    month_start = ref_date.replace(day=1)
-    monthly_sales = sales_qs.filter(order_date__gte=month_start).aggregate(
+    
+    current_year = ref_date.year
+    current_month = ref_date.month
+    _, num_days = calendar.monthrange(current_year, current_month)
+    month_start = date(current_year, current_month, 1)
+    month_end = date(current_year, current_month, num_days)
+    month_name = month_start.strftime('%B %Y')
+    
+    monthly_sales = sales_qs.filter(order_date__gte=month_start, order_date__lte=month_end).aggregate(
         total_sales=Sum('total_amount'),
         total_qty=Sum('quantity_kg')
     )
 
-    sales_by_date = sales_qs.annotate(day=TruncDate('order_date')).values('day').annotate(
+    monthly_sales_records = sales_qs.filter(
+        order_date__gte=month_start,
+        order_date__lte=month_end
+    ).annotate(day=TruncDate('order_date')).values('day').annotate(
         total_sales=Sum('total_amount'),
         total_qty=Sum('quantity_kg'),
         total_orders=Count('id')
-    ).order_by('-day')[:10]
+    )
+    
+    sales_map = {item['day']: item for item in monthly_sales_records}
+    
+    # Generate all days for this month (e.g. Day 01 to Day 30)
+    monthly_chart_labels = []
+    monthly_chart_values = []
+    for d in range(1, num_days + 1):
+        day_date = date(current_year, current_month, d)
+        monthly_chart_labels.append(day_date.strftime('%b %d'))
+        if day_date in sales_map:
+            monthly_chart_values.append(float(sales_map[day_date]['total_sales'] or 0))
+        else:
+            monthly_chart_values.append(0.0)
+
+    # For the recent activity table, list all days in the month that had activity
+    sales_by_date = list(monthly_sales_records.order_by('-day'))
+    if not sales_by_date:
+        sales_by_date = list(sales_qs.annotate(day=TruncDate('order_date')).values('day').annotate(
+            total_sales=Sum('total_amount'),
+            total_qty=Sum('quantity_kg'),
+            total_orders=Count('id')
+        ).order_by('-day')[:30])
 
     harvest_forecasts = filter_by_pond(
         request.user,
@@ -448,6 +482,10 @@ def dashboard(request):
         'monthly_sales_qty': monthly_sales['total_qty'] or 0,
         'monthly_expenses_total': 0,
         'sales_by_date': sales_by_date,
+        'chart_labels': json.dumps(monthly_chart_labels),
+        'chart_values': json.dumps(monthly_chart_values),
+        'chart_month_name': month_name,
+        'chart_days_count': f"{num_days} Days",
         'expenses_monthly': [],
         'recent_orders': recent_orders,
         'azula_alerts': azula_alerts,

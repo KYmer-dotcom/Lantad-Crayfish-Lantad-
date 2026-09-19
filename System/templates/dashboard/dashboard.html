@@ -117,9 +117,9 @@
             <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-4">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-white">Sales History</h2>
-                    <p class="text-xs text-[#a0ac96] font-medium">Gross sales revenue tracking</p>
+                    <p class="text-xs text-[#a0ac96] font-medium">Daily gross sales breakdown for {{ chart_month_name }}</p>
                 </div>
-                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">Last 10 Days</span>
+                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ chart_month_name }} ({{ chart_days_count }})</span>
             </div>
             <div class="h-72 w-full">
                 <canvas id="salesAnalyticsChart"></canvas>
@@ -271,12 +271,8 @@
 {% block extra_js %}
 <!-- Dynamic dark theme Chart.js configuration -->
 <script>
-    const salesLabels = [
-        {% for row in sales_by_date %}'{{ row.day|date:"M d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}
-    ].reverse();
-    const salesValues = [
-        {% for row in sales_by_date %}{{ row.total_sales|default:0|floatformat:2 }}{% if not forloop.last %}, {% endif %}{% endfor %}
-    ].reverse();
+    const salesLabels = {{ chart_labels|safe }};
+    const salesValues = {{ chart_values|safe }};
 
     const salesCanvas = document.getElementById('salesAnalyticsChart');
     if (salesCanvas) {
@@ -292,14 +288,14 @@
                     borderWidth: 2.5,
                     tension: 0.35,
                     fill: true,
-                    pointRadius: 4.5,
+                    pointRadius: 3,
                     pointBackgroundColor: '#cca43b',
                     pointBorderColor: '#011610',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 7,
+                    pointBorderWidth: 1.5,
+                    pointHoverRadius: 6,
                     pointHoverBackgroundColor: '#e5b945',
                     pointHoverBorderColor: '#ffffff',
-                    pointHoverBorderWidth: 2.5
+                    pointHoverBorderWidth: 2
                 }]
             },
             options: {
@@ -348,6 +344,8 @@
                     x: { 
                         grid: { display: false, drawBorder: false },
                         ticks: { 
+                            maxTicksLimit: 15,
+                            autoSkip: true,
                             padding: 8,
                             color: '#a0ac96',
                             font: { size: 10, weight: '600' }
