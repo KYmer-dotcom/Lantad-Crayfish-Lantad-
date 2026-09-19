@@ -7,9 +7,9 @@
 <style>
     /* Standardized Obsidian Emerald Glass Card */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.85) 0%, rgba(1, 20, 14, 0.95) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 </style>
 
@@ -30,7 +30,7 @@
     <!-- Rider Priority Alert Cards Grid (2x2 on Mobile, 4-cols on Desktop) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Available Dispatches Card -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-1.5">
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Active in Transit Card -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-1.5">
@@ -82,7 +82,7 @@
         </div>
 
         <!-- Completed Deliveries Card -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-1.5">
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Rider Profile / Status Card -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-1.5">
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Rider Notification Feed Section -->
-    <div class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+    <div class="glass-card rounded-xl overflow-hidden flex flex-col">
         <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.01]">
             <div class="flex items-center gap-2.5">
                 <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
@@ -181,7 +181,7 @@
         <!-- Azula Sanitization Card -->
         {% if azula_alerts %}
         {% with alert=azula_alerts.0 %}
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-1.5">
@@ -207,7 +207,7 @@
         {% endif %}
 
         <!-- Upcoming Harvest Card -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             {% if harvest1 %}
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
@@ -250,7 +250,7 @@
         </div>
 
         <!-- Pending Order Card 1 -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             {% if order1 %}
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
@@ -295,7 +295,7 @@
         </div>
 
         <!-- Pending Order Card 2 -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all shadow-lg">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             {% if order2 %}
             <div>
                 <div class="flex items-center justify-between gap-2 mb-3">
@@ -341,7 +341,7 @@
     </div>
 
     <!-- Notification Feed Section -->
-    <div class="glass-card rounded-xl shadow-xl overflow-hidden flex flex-col">
+    <div class="glass-card rounded-xl overflow-hidden flex flex-col">
         <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.01]">
             <div class="flex items-center gap-2.5">
                 <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>

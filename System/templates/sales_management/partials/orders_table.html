@@ -15,10 +15,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#cca43b]">{{ order.quantity_kg }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">{{ order.total_amount|floatformat:2 }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border
-                        {% if order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                        {% elif order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
-                        {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                    <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border {% if order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20 {% elif order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20 {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
                         {{ order.get_payment_status_display }}
                     </span>
                 </td>

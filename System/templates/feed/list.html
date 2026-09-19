@@ -15,7 +15,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-8">
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-lg font-semibold text-stone-100">Feed Types</h2>
                 <button onclick="openModal('type-modal')" class="rounded-2xl border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-semibold text-[#a0ac96] hover:bg-white/5 transition-colors">Add Type</button>
@@ -23,7 +23,7 @@
             <div id="feed-types-container">{% include 'feed/partials/feed_types_table.html' %}</div>
         </div>
 
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-lg font-semibold text-stone-100">Feed Inventory Stock Movements</h2>
                 <button onclick="openModal('stock-modal')" class="btn-gold px-3 py-1.5 text-xs font-bold">Add Stock</button>
@@ -31,7 +31,7 @@
             <div id="feed-stock-container">{% include 'feed/partials/feed_stock_table.html' %}</div>
         </div>
 
-        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6 shadow-sm">
+        <div class="rounded-3xl border border-white/10 bg-[#021f15]/60 backdrop-blur-sm p-6">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-lg font-semibold text-stone-100">Feeding Logs</h2>
                 <button onclick="openModal('feeding-modal')" class="rounded-2xl border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-semibold text-[#a0ac96] hover:bg-white/5 transition-colors">Add Log</button>
@@ -43,7 +43,7 @@
 
 <!-- Stock In Modal -->
 <div id="stock-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 text-stone-100">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
             <h3 class="text-lg font-semibold text-stone-100">Add Feed Stock</h3>
             <button type="button" onclick="closeModal('stock-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>
@@ -68,7 +68,7 @@
 
 <!-- Feeding Log Modal -->
 <div id="feeding-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 text-stone-100">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
             <h3 class="text-lg font-semibold text-stone-100">Record Feeding Log</h3>
             <button type="button" onclick="closeModal('feeding-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>
@@ -102,7 +102,7 @@
 
 <!-- Add Feed Type Modal -->
 <div id="type-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl text-stone-100">
+    <div class="w-full max-w-lg rounded-3xl bg-[#021f15] border border-white/10 p-6 text-stone-100">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
             <h3 class="text-lg font-semibold text-stone-100">Add Feed Type</h3>
             <button type="button" onclick="closeModal('type-modal')" class="text-white/40 hover:text-white text-2xl">&times;</button>

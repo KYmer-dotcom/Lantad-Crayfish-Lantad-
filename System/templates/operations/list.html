@@ -6,9 +6,9 @@
 <style>
     /* Elevated Glass Card Effect */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 </style>
 
@@ -31,7 +31,7 @@
                     <span>Active outdoor ponds</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-inner">
+            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b]">
                 <svg class="h-8 w-8 sm:h-9 sm:w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4c-5.5 0-10 3.5-10 8s4.5 8 10 8 10-3.5 10-8-4.5-8-10-8z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11c.8.6 1.5 1 2.5 1s1.7-.4 2.5-1 1.7-.4 2.5 1" />
@@ -50,7 +50,7 @@
                     <span>Superworm cabin boxes</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-inner">
+            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b]">
                 <svg class="h-8 w-8 sm:h-9 sm:w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12c-1.5 0-2.5 1.5-4 1.5s-2.5-1.5-4-1.5-2.5 1.5-4 1.5-2.5-1.5-4-1.5" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
@@ -71,7 +71,7 @@
                     <span>Azula indoor tanks</span>
                 </div>
             </div>
-            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b] shadow-inner">
+            <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b]">
                 <svg class="h-8 w-8 sm:h-9 sm:w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l5.5-5.5a8 8 0 1 0 0 11.3L12 14z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14L7 9m5 5H5m7 0l-5 5m5-5v7m0-7l5 5" />
@@ -81,7 +81,7 @@
     </div>
 
     {% if request.GET.type != 'cabin' and request.GET.type != 'azula' %}
-    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
+    <div class="glass-card rounded-xl overflow-hidden mt-6">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Main Pond</h2>
             {% if main_pond_recorded_today %}
@@ -95,7 +95,7 @@
         </div>
     </div>
 
-    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
+    <div class="glass-card rounded-xl overflow-hidden mt-6">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Breeding Pond</h2>
             {% if breeding_pond_recorded_today %}
@@ -111,7 +111,7 @@
     {% endif %}
 
     {% if not request.GET.type or request.GET.type == 'cabin' %}
-    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
+    <div class="glass-card rounded-xl overflow-hidden mt-6">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Superworm Cabin</h2>
             {% if superworm_cabin_recorded_today %}
@@ -127,7 +127,7 @@
     {% endif %}
 
     {% if request.GET.type == 'azula' %}
-    <div class="glass-card rounded-xl overflow-hidden mt-6 shadow-xl">
+    <div class="glass-card rounded-xl overflow-hidden mt-6">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
         </div>
@@ -136,7 +136,7 @@
                 <!-- Box 1 -->
                 {% with pond=azula_ponds.1 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-lg border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-black/30 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 1 / 4;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-lg border flex flex-col items-center justify-center p-4 hover:-translate-y-0.5 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-black/30 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 1 / 4;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -146,7 +146,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '1')" class="rounded-lg border border-[#cca43b]/20 bg-black/30 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-0.5 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 1 / 4;">
+                <button type="button" onclick="openAddPondModal('Azula', '1')" class="rounded-lg border border-[#cca43b]/20 bg-black/30 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-0.5 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 1 / 4;">
                     <span class="text-4xl text-[#a0ac96]/30">1</span>
                 </button>
                 {% endif %}
@@ -154,7 +154,7 @@
                 <!-- Box 7 -->
                 {% with pond=azula_ponds.7 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 1 / 3;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 1 / 3;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -164,7 +164,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '7')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 1 / 3;">
+                <button type="button" onclick="openAddPondModal('Azula', '7')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 1 / 3;">
                     <span class="text-4xl text-[#a0ac96]/30">7</span>
                 </button>
                 {% endif %}
@@ -172,7 +172,7 @@
                 <!-- Box 10 -->
                 {% with pond=azula_ponds.10 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 5 / 6; grid-row: 1 / 11;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 5 / 6; grid-row: 1 / 11;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -182,7 +182,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '10')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 5 / 6; grid-row: 1 / 11;">
+                <button type="button" onclick="openAddPondModal('Azula', '10')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 5 / 6; grid-row: 1 / 11;">
                     <span class="text-4xl text-[#a0ac96]/30">10</span>
                 </button>
                 {% endif %}
@@ -190,7 +190,7 @@
                 <!-- Box 8 -->
                 {% with pond=azula_ponds.8 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 3 / 5;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 3 / 5;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -200,7 +200,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '8')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 3 / 5;">
+                <button type="button" onclick="openAddPondModal('Azula', '8')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 3 / 5;">
                     <span class="text-4xl text-[#a0ac96]/30">8</span>
                 </button>
                 {% endif %}
@@ -208,7 +208,7 @@
                 <!-- Box 3 -->
                 {% with pond=azula_ponds.3 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 2; grid-row: 4 / 9;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 2; grid-row: 4 / 9;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -218,7 +218,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '3')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 2; grid-row: 4 / 9;">
+                <button type="button" onclick="openAddPondModal('Azula', '3')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 2; grid-row: 4 / 9;">
                     <span class="text-4xl text-[#a0ac96]/30">3</span>
                 </button>
                 {% endif %}
@@ -226,7 +226,7 @@
                 <!-- Box 2 -->
                 {% with pond=azula_ponds.2 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 2 / 3; grid-row: 4 / 9;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 2 / 3; grid-row: 4 / 9;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -236,7 +236,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '2')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 2 / 3; grid-row: 4 / 9;">
+                <button type="button" onclick="openAddPondModal('Azula', '2')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 2 / 3; grid-row: 4 / 9;">
                     <span class="text-4xl text-[#a0ac96]/30">2</span>
                 </button>
                 {% endif %}
@@ -244,7 +244,7 @@
                 <!-- Box 9 -->
                 {% with pond=azula_ponds.9 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 5 / 7;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 5 / 7;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -254,7 +254,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '9')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 5 / 7;">
+                <button type="button" onclick="openAddPondModal('Azula', '9')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 5 / 7;">
                     <span class="text-4xl text-[#a0ac96]/30">9</span>
                 </button>
                 {% endif %}
@@ -262,7 +262,7 @@
                 <!-- Box 6 -->
                 {% with pond=azula_ponds.6 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 7 / 9;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 4 / 5; grid-row: 7 / 9;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -272,7 +272,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '6')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 7 / 9;">
+                <button type="button" onclick="openAddPondModal('Azula', '6')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 4 / 5; grid-row: 7 / 9;">
                     <span class="text-4xl text-[#a0ac96]/30">6</span>
                 </button>
                 {% endif %}
@@ -280,7 +280,7 @@
                 <!-- Box 5 -->
                 {% with pond=azula_ponds.5 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 9 / 11;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 1 / 3; grid-row: 9 / 11;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -290,7 +290,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '5')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 9 / 11;">
+                <button type="button" onclick="openAddPondModal('Azula', '5')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 1 / 3; grid-row: 9 / 11;">
                     <span class="text-4xl text-[#a0ac96]/30">5</span>
                 </button>
                 {% endif %}
@@ -298,7 +298,7 @@
                 <!-- Box 4 -->
                 {% with pond=azula_ponds.4 %}
                 {% if pond %}
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 3 / 5; grid-row: 9 / 11;">
+                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-2xl border flex flex-col items-center justify-center p-4 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer {% if pond.status == 'empty' %}border-rose-500/30 bg-rose-950/20 hover:border-rose-500/60{% elif pond.status == 'maintenance' %}border-amber-500/30 bg-amber-950/20 hover:border-amber-500/60{% else %}border-[#cca43b]/20 bg-[#021f15]/80 hover:border-[#cca43b]/50{% endif %}" style="grid-column: 3 / 5; grid-row: 9 / 11;">
                     <span class="text-xl font-bold text-stone-100">{{ pond.name }}</span>
                     <span class="text-xs font-semibold mt-1 {% if pond.status == 'empty' %}text-rose-400{% elif pond.status == 'maintenance' %}text-amber-400{% else %}text-[#cca43b]{% endif %}">{{ pond.capacity|default:"0" }} kg</span>
                     {% if pond.status == 'empty' %}
@@ -308,7 +308,7 @@
                     {% endif %}
                 </a>
                 {% else %}
-                <button type="button" onclick="openAddPondModal('Azula', '4')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 shadow-sm hover:border-[#cca43b]/50 hover:-translate-y-1 hover:shadow-lg transition-all w-full h-full cursor-pointer" style="grid-column: 3 / 5; grid-row: 9 / 11;">
+                <button type="button" onclick="openAddPondModal('Azula', '4')" class="rounded-2xl border border-[#cca43b]/20 bg-[#021f15]/80 flex flex-col items-center justify-center p-4 hover:border-[#cca43b]/50 hover:-translate-y-1 hover: transition-all w-full h-full cursor-pointer" style="grid-column: 3 / 5; grid-row: 9 / 11;">
                     <span class="text-4xl text-[#a0ac96]/30">4</span>
                 </button>
                 {% endif %}
@@ -327,7 +327,7 @@
 
 
 <!-- Operations Sidebar -->
-<div id="operations-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 shadow-2xl flex flex-col">
+<div id="operations-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col">
     <div class="flex items-center justify-between p-6 border-b border-white/10">
         <div>
             <h2 id="operations-sidebar-title" class="text-xl font-bold text-stone-100">Operations Data</h2>
@@ -344,7 +344,7 @@
         <div class="op-table-wrapper hidden" data-category="Main Pond">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Main Pond</h3>
-                <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                     Record
                 </button>
             </div>
@@ -357,7 +357,7 @@
         <div class="op-table-wrapper hidden" data-category="Breeding Pond">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Breeding Pond</h3>
-                <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                     Record
                 </button>
             </div>
@@ -371,7 +371,7 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Left Shelf</h3>
-                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                         Record
                     </button>
                 </div>
@@ -382,7 +382,7 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Right Shelf</h3>
-                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                         Record
                     </button>
                 </div>
@@ -393,7 +393,7 @@
             <div>
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Back Shelf</h3>
-                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer shadow-lg active:scale-95">
+                    <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                         Record
                     </button>
                 </div>
@@ -407,7 +407,7 @@
 
 <!-- Add Pond Modal -->
 <div id="add-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-2xl rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+    <div class="w-full max-w-2xl rounded-xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <h3 id="add-pond-title" class="text-lg font-bold text-stone-100">Add Record</h3>
             <button type="button" onclick="closeAddPondModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
@@ -425,7 +425,7 @@
 
 <!-- Delete Pond Modal -->
 <div id="delete-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-md rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+    <div class="w-full max-w-md rounded-xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold text-stone-100">Remove Record</h3>
             <button type="button" onclick="closeDeleteModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
@@ -434,7 +434,7 @@
         <form id="delete-pond-form" method="post" action="" class="mt-6 flex items-center justify-end gap-3">
             {% csrf_token %}
             <button type="button" onclick="closeDeleteModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-sm font-bold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 shadow-lg shadow-rose-500/20 transition-colors">Remove</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 -rose-500/20 transition-colors">Remove</button>
         </form>
     </div>
 </div>

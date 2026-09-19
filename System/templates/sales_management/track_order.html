@@ -9,9 +9,9 @@
 
 <style>
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
     .leaflet-control-attribution { display: none !important; }
     .leaflet-bar { border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 0.75rem !important; overflow: hidden; background: rgba(1,20,14,0.95) !important; }
@@ -20,7 +20,7 @@
     .shipment-card.active-shipment {
         border-color: #cca43b !important;
         background: rgba(204, 164, 59, 0.12) !important;
-        box-shadow: 0 0 20px rgba(204, 164, 59, 0.2) !important;
+        box-: 0 0 20px rgba(204, 164, 59, 0.2) !important;
     }
 </style>
 
@@ -47,7 +47,7 @@
         
         <!-- LEFT COLUMN: Visible Shipments List -->
         <div class="lg:col-span-5 xl:col-span-4 space-y-3">
-            <div class="glass-card rounded-xl p-4 shadow-xl">
+            <div class="glass-card rounded-xl p-4">
                 <!-- Panel Header -->
                 <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
                     <div>
@@ -87,11 +87,7 @@
                         
                         <div class="flex items-center justify-between gap-2">
                             <span class="font-mono font-bold text-xs text-white">{{ d.order.order_number }}</span>
-                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border
-                                {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
-                                {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 animate-pulse
-                                {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30
-                                {% else %}bg-rose-500/15 text-rose-300 border-rose-500/30{% endif %}">
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 animate-pulse {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-300 border-rose-500/30{% endif %}">
                                 {{ d.get_status_display }}
                             </span>
                         </div>
@@ -134,7 +130,7 @@
             
             {% if selected_delivery %}
             <!-- Active Shipment Banner & Stepper -->
-            <div id="tracked-order-banner" class="glass-card rounded-xl p-4 sm:p-5 border border-[#cca43b]/30 shadow-xl">
+            <div id="tracked-order-banner" class="glass-card rounded-xl p-4 sm:p-5 border border-[#cca43b]/30">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shrink-0">
@@ -145,15 +141,10 @@
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <h2 id="disp-order-number" class="text-base sm:text-lg font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
-                                <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border
-                                    {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40
-                                    {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse
-                                    {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40
-                                    {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
+                                <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40 {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40 {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
                                     {{ selected_delivery.get_status_display }}
                                 </span>
-                                <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider 
-                                    {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
+                                <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
                                     {% if selected_delivery.order.payment_status == 'paid' %}Paid{% else %}COD (Collect on Delivery){% endif %}
                                 </span>
                             </div>
@@ -170,17 +161,14 @@
                 <div class="mt-4 pt-3.5 border-t border-white/10 relative">
                     <!-- Progress Line Track -->
                     <div class="absolute top-[28px] left-[12%] right-[12%] h-1 bg-white/10 rounded-full z-0 pointer-events-none">
-                        <div id="stepper-progress-fill" class="h-full rounded-full bg-gradient-to-r from-emerald-500 
-                            {% if selected_delivery.status == 'delivered' %}to-emerald-500 w-full
-                            {% elif selected_delivery.status == 'in_transit' %}to-cyan-400 w-2/3
-                            {% else %}to-emerald-500 w-1/3{% endif %} transition-all duration-500"></div>
+                        <div id="stepper-progress-fill" class="h-full rounded-full {% if selected_delivery.status == 'delivered' %} w-full {% elif selected_delivery.status == 'in_transit' %} w-2/3 {% else %} w-1/3{% endif %} transition-all duration-500"></div>
                     </div>
 
                     <div class="relative z-10 grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
                         <!-- Step 1: Placed -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-center">
-                                <div id="step-1-circle" class="h-6 w-6 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-[10px] shadow-md shadow-emerald-500/30 ring-3 ring-[#01140e]">
+                                <div id="step-1-circle" class="h-6 w-6 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-[10px] -emerald-500/30 ring-3 ring-[#01140e]">
                                     ✓
                                 </div>
                             </div>
@@ -191,7 +179,7 @@
                         <!-- Step 2: Approved / Dispatched -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-center">
-                                <div id="step-2-circle" class="h-6 w-6 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-[10px] shadow-md shadow-emerald-500/30 ring-3 ring-[#01140e]">
+                                <div id="step-2-circle" class="h-6 w-6 rounded-full flex items-center justify-center bg-emerald-500 text-[#01140e] font-black text-[10px] -emerald-500/30 ring-3 ring-[#01140e]">
                                     ✓
                                 </div>
                             </div>
@@ -202,8 +190,7 @@
                         <!-- Step 3: In Transit -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-center">
-                                <div id="step-3-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e]
-                                    {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#01140e] shadow-md shadow-cyan-400/30 animate-pulse{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
+                                <div id="step-3-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e] {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#01140e] -cyan-400/30 animate-pulse{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
                                     {% if selected_delivery.status == 'delivered' %}✓{% else %}3{% endif %}
                                 </div>
                             </div>
@@ -214,8 +201,7 @@
                         <!-- Step 4: Delivered -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-center">
-                                <div id="step-4-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e]
-                                    {% if selected_delivery.status == 'delivered' %}bg-emerald-500 text-[#01140e] shadow-md shadow-emerald-500/30{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
+                                <div id="step-4-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e] {% if selected_delivery.status == 'delivered' %}bg-emerald-500 text-[#01140e] -emerald-500/30{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
                                     {% if selected_delivery.status == 'delivered' %}✓{% else %}4{% endif %}
                                 </div>
                             </div>
@@ -227,12 +213,12 @@
             </div>
 
             <!-- Dedicated Spacious GPS Map Canvas -->
-            <div class="glass-card relative overflow-hidden rounded-xl border border-white/10 shadow-xl flex flex-col">
+            <div class="glass-card relative overflow-hidden rounded-xl border border-white/10 flex flex-col">
                 <div id="live-tracking-gps-map" class="w-full h-[380px] sm:h-[420px] z-0"></div>
 
                 <!-- Floating Route Info Legend on Map -->
                 <div class="absolute bottom-3 left-3 right-3 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2">
-                    <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] backdrop-blur-md shadow-xl text-stone-200 flex items-center gap-2.5">
+                    <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] backdrop-blur-md text-stone-200 flex items-center gap-2.5">
                         <div class="flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>
                             <span class="font-bold text-white">Origin:</span> <span class="text-stone-300">Depot</span>
@@ -249,7 +235,7 @@
                         </div>
                     </div>
 
-                    <button type="button" onclick="recenterTrackingMap()" class="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all shadow-xl cursor-pointer">
+                    <button type="button" onclick="recenterTrackingMap()" class="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -260,7 +246,7 @@
             </div>
 
             <!-- Shipment Dispatch & Driver Telemetry Details -->
-            <div id="tracked-dispatch-card" class="glass-card rounded-xl border border-white/10 p-4 sm:p-5 shadow-xl space-y-3">
+            <div id="tracked-dispatch-card" class="glass-card rounded-xl border border-white/10 p-4 sm:p-5 space-y-3">
                 <h3 class="text-xs font-black uppercase tracking-[0.15em] text-[#cca43b]">Shipment Dispatch Details</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -294,7 +280,7 @@
             </div>
             {% else %}
             <!-- No Deliveries State -->
-            <div class="glass-card rounded-xl border border-white/10 p-10 text-center shadow-2xl max-w-lg mx-auto">
+            <div class="glass-card rounded-xl border border-white/10 p-10 text-center max-w-lg mx-auto">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#cca43b]/15 text-[#cca43b] mx-auto mb-3">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -360,14 +346,14 @@ function initLiveTrackingMap() {
     const farmIcon = L.divIcon({
         className: 'farm-origin-marker',
         html: `
-            <div style="position:relative; width:34px; height:44px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
+            <div style="position:relative; width:34px; height:44px; filter: drop-(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
                 <svg viewBox="0 0 34 44" width="34" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="#10b981"/>
                     <circle cx="17" cy="17" r="10" fill="#01140e"/>
                     <circle cx="17" cy="17" r="7.5" fill="#10b981"/>
                     <circle cx="17" cy="17" r="3.5" fill="#ffffff"/>
                 </svg>
-                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#34d399; border:1px solid rgba(16,185,129,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">DEPOT</span>
+                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#34d399; border:1px solid rgba(16,185,129,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-:0 2px 4px rgba(0,0,0,0.5);">DEPOT</span>
             </div>
         `,
         iconSize: [34, 44],
@@ -400,14 +386,14 @@ function loadDeliveryRoute(deliveryId) {
     const destIcon = L.divIcon({
         className: 'dest-customer-marker',
         html: `
-            <div style="position:relative; width:34px; height:44px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
+            <div style="position:relative; width:34px; height:44px; filter: drop-(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
                 <svg viewBox="0 0 34 44" width="34" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="#ef4444"/>
                     <circle cx="17" cy="17" r="10" fill="#01140e"/>
                     <circle cx="17" cy="17" r="7.5" fill="#ef4444"/>
                     <circle cx="17" cy="17" r="3.5" fill="#ffffff"/>
                 </svg>
-                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#f87171; border:1px solid rgba(239,68,68,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">DROP-OFF</span>
+                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#f87171; border:1px solid rgba(239,68,68,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-:0 2px 4px rgba(0,0,0,0.5);">DROP-OFF</span>
             </div>
         `,
         iconSize: [34, 44],
@@ -532,17 +518,17 @@ function selectShipment(deliveryId) {
 
     if (stepFill) {
         if (item.status === 'delivered') {
-            stepFill.className = 'h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-500 w-full transition-all duration-500';
+            stepFill.className = 'h-full rounded-full    w-full transition-all duration-500';
         } else if (item.status === 'in_transit') {
-            stepFill.className = 'h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400 w-2/3 transition-all duration-500';
+            stepFill.className = 'h-full rounded-full    w-2/3 transition-all duration-500';
         } else {
-            stepFill.className = 'h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-500 w-1/3 transition-all duration-500';
+            stepFill.className = 'h-full rounded-full    w-1/3 transition-all duration-500';
         }
     }
 
     if (step3Circle) {
         if (item.status === 'in_transit' || item.status === 'delivered') {
-            step3Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-cyan-400 text-[#01140e] shadow-lg shadow-cyan-400/30 font-black text-xs';
+            step3Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-cyan-400 text-[#01140e]  -cyan-400/30 font-black text-xs';
             step3Circle.textContent = item.status === 'delivered' ? '✓' : '3';
         } else {
             step3Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';
@@ -559,7 +545,7 @@ function selectShipment(deliveryId) {
 
     if (step4Circle) {
         if (item.status === 'delivered') {
-            step4Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-emerald-500 text-[#01140e] shadow-lg shadow-emerald-500/30 font-black text-xs';
+            step4Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-emerald-500 text-[#01140e]  -emerald-500/30 font-black text-xs';
             step4Circle.textContent = '✓';
         } else {
             step4Circle.className = 'h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-[#01140e] bg-[#01140e] border border-white/20 text-stone-500 font-black text-xs';

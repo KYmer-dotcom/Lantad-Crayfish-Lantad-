@@ -11,9 +11,9 @@
 <style>
     /* Elevated Glass Card Effect */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 </style>
 
@@ -94,23 +94,23 @@
         <!-- Status Tabs -->
         <div class="flex flex-wrap items-center gap-2">
             <a href="{% url 'sales:delivery_list' %}"
-                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if not status_filter or status_filter == 'active' %}bg-[#cca43b] text-[#01140e] /20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Active ({{ active_count }})
             </a>
             <a href="{% url 'sales:delivery_list' %}?status=scheduled"
-                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'scheduled' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'scheduled' %}bg-[#cca43b] text-[#01140e] /20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Scheduled ({{ scheduled_count }})
             </a>
             <a href="{% url 'sales:delivery_list' %}?status=in_transit"
-                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'in_transit' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'in_transit' %}bg-[#cca43b] text-[#01140e] /20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 In Transit ({{ in_transit_count }})
             </a>
             <a href="{% url 'sales:delivery_list' %}?status=delivered"
-                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'delivered' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'delivered' %}bg-[#cca43b] text-[#01140e] /20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 Delivered ({{ delivered_count }})
             </a>
             <a href="{% url 'sales:delivery_list' %}?status=all"
-                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'all' %}bg-[#cca43b] text-[#01140e] shadow-md shadow-[#cca43b]/20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
+                class="rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all {% if status_filter == 'all' %}bg-[#cca43b] text-[#01140e] /20{% else %}text-[#a0ac96] hover:bg-white/5 hover:text-stone-100{% endif %}">
                 All History ({{ total_deliveries }})
             </a>
         </div>
@@ -138,7 +138,7 @@
     </div>
 
     <!-- Deliveries Table Container -->
-    <div class="glass-card rounded-xl p-6 shadow-xl space-y-5">
+    <div class="glass-card rounded-xl p-6 space-y-5">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-lg font-bold text-stone-100">Delivery Dispatch Registry</h2>
@@ -238,16 +238,8 @@
 
                             <!-- Delivery Status (Read-Only: Updated by Rider) -->
                             <td class="px-5 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border items-center gap-1.5
-                                    {% if delivery.status == 'delivered' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                    {% elif delivery.status == 'in_transit' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20
-                                    {% elif delivery.status == 'cancelled' %}bg-rose-500/10 text-rose-400 border-rose-500/20
-                                    {% else %}bg-amber-500/10 text-amber-400 border-amber-500/20{% endif %}">
-                                    <span class="h-1.5 w-1.5 rounded-full
-                                        {% if delivery.status == 'delivered' %}bg-emerald-400
-                                        {% elif delivery.status == 'in_transit' %}bg-cyan-400
-                                        {% elif delivery.status == 'cancelled' %}bg-rose-400
-                                        {% else %}bg-amber-400{% endif %}"></span>
+                                <span class="px-3 py-1 inline-flex text-[11px] font-black rounded-full uppercase tracking-wider border items-center gap-1.5 {% if delivery.status == 'delivered' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20 {% elif delivery.status == 'in_transit' %}bg-cyan-500/10 text-cyan-300 border-cyan-500/20 {% elif delivery.status == 'cancelled' %}bg-rose-500/10 text-rose-400 border-rose-500/20 {% else %}bg-amber-500/10 text-amber-400 border-amber-500/20{% endif %}">
+                                    <span class="h-1.5 w-1.5 rounded-full {% if delivery.status == 'delivered' %}bg-emerald-400 {% elif delivery.status == 'in_transit' %}bg-cyan-400 {% elif delivery.status == 'cancelled' %}bg-rose-400 {% else %}bg-amber-400{% endif %}"></span>
                                     {{ delivery.get_status_display }}
                                 </span>
                             </td>
@@ -256,10 +248,7 @@
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <button type="button"
                                     onclick="openPaymentModal('{{ delivery.order.id }}', '{{ delivery.order.payment_status }}', '{% if delivery.order.receipt_image %}{% url 'sales:order_receipt_view' delivery.order.id %}{% endif %}');"
-                                    class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
-                                    {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20
-                                    {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20
-                                    {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
+                                    class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer {% if delivery.order.payment_status == 'paid' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20 {% elif delivery.order.payment_status == 'partial' %}bg-amber-500/10 text-amber-400 border-amber-500/20 {% else %}bg-rose-500/10 text-rose-400 border-rose-500/20{% endif %}">
                                     {{ delivery.order.get_payment_status_display }}
                                 </button>
                             </td>
@@ -293,7 +282,7 @@
 <div id="schedule-delivery-modal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div
-        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Schedule Delivery Dispatch</h3>
             <button type="button" onclick="closeScheduleDeliveryModal()"
@@ -306,7 +295,7 @@
                 <button type="button" onclick="closeScheduleDeliveryModal()"
                     class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
                 <button type="submit"
-                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer">Save
                     Dispatch</button>
             </div>
         </form>
@@ -317,7 +306,7 @@
 <div id="status-modal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div
-        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Assign Dispatch Rider</h3>
@@ -346,7 +335,7 @@
                 <button type="button" onclick="closeStatusModal()"
                     class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
                 <button type="submit"
-                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Assign
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer">Assign
                     Rider</button>
             </div>
         </form>
@@ -357,7 +346,7 @@
 <div id="payment-modal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div
-        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Update Payment & Receipt</h3>
             <button type="button" onclick="closePaymentModal()"
@@ -396,7 +385,7 @@
                 <button type="button" onclick="closePaymentModal()"
                     class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
                 <button type="submit"
-                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Save
+                    class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer">Save
                     Changes</button>
             </div>
         </form>
@@ -407,7 +396,7 @@
 <div id="location-map-modal"
     class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div
-        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        class="relative w-full max-w-lg rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <div>
                 <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Destination Map Pin</h3>
@@ -419,7 +408,7 @@
         <div id="modal-delivery-map" class="w-full h-[350px] rounded-xl border border-white/10 z-0"></div>
         <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6 mt-6">
             <button type="button" onclick="closeLocationModal()"
-                class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">Close</button>
+                class="rounded-lg bg-[#cca43b] px-6 py-2.5 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer">Close</button>
         </div>
     </div>
 </div>
@@ -428,7 +417,7 @@
 <div id="delete-delivery-modal"
     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div
-        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-stone-100 transform transition-all glass-card">
+        class="relative w-full max-w-md rounded-2xl border border-[#cca43b]/40 bg-[#01140e] p-8 text-stone-100 transform transition-all glass-card">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
             <h3 class="text-lg font-black text-[#cca43b] tracking-wider uppercase">Remove Delivery</h3>
             <button type="button" onclick="closeDeleteDeliveryModal()"
@@ -442,7 +431,7 @@
             <button type="button" onclick="closeDeleteDeliveryModal()"
                 class="rounded-lg border border-white/10 bg-black/20 px-5 py-2.5 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
             <button type="submit"
-                class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 shadow-lg shadow-rose-950/40 cursor-pointer">Remove
+                class="rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-rose-700 transition-colors border border-rose-500/30 -rose-950/40 cursor-pointer">Remove
                 Record</button>
         </form>
     </div>

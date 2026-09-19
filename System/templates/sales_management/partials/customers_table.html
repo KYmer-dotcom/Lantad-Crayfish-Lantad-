@@ -47,10 +47,7 @@
                     {% if latest_order %}
                     <button type="button"
                         onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();"
-                        class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer
-                                {% if latest_order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
-                                {% elif latest_order.payment_status == 'partial' %}bg-amber-500/15 text-amber-400 border-amber-500/30
-                                {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
+                        class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border hover:opacity-80 transition-opacity cursor-pointer {% if latest_order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif latest_order.payment_status == 'partial' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
                         {{ latest_order.get_payment_status_display }}
                     </button>
                     {% else %}
@@ -134,12 +131,7 @@
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <span
-                                                class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1
-                                                {% if order.status == 'delivered' or order.status == 'completed' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
-                                                {% elif order.status == 'shipped' or order.status == 'processing' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30
-                                                {% elif order.status == 'confirmed' %}bg-blue-500/15 text-blue-400 border-blue-500/30
-                                                {% elif order.status == 'cancelled' %}bg-rose-500/15 text-rose-400 border-rose-500/30
-                                                {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
+                                                class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1 {% if order.status == 'delivered' or order.status == 'completed' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif order.status == 'shipped' or order.status == 'processing' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 {% elif order.status == 'confirmed' %}bg-blue-500/15 text-blue-400 border-blue-500/30 {% elif order.status == 'cancelled' %}bg-rose-500/15 text-rose-400 border-rose-500/30 {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
                                                 {{ order.get_status_display }}
                                             </span>
                                         </td>

@@ -45,10 +45,7 @@
                     {% endif %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border
-                        {% if schedule.status == 'empty' %}bg-rose-500/15 text-rose-400 border-rose-500/30
-                        {% elif schedule.status == 'maintenance' %}bg-amber-500/15 text-amber-400 border-amber-500/30
-                        {% else %}bg-[#cca43b]/15 text-[#cca43b] border-[#cca43b]/30{% endif %}">
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border {% if schedule.status == 'empty' %}bg-rose-500/15 text-rose-400 border-rose-500/30 {% elif schedule.status == 'maintenance' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-[#cca43b]/15 text-[#cca43b] border-[#cca43b]/30{% endif %}">
                         {{ schedule.get_status_display }}
                     </span>
                 </td>

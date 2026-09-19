@@ -6,9 +6,9 @@
 <style>
     /* Standardized Obsidian Emerald Glass Card */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.85) 0%, rgba(1, 20, 14, 0.95) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 
     .log-tab-btn {
@@ -35,7 +35,7 @@
         background-color: #cca43b !important;
         color: #01140e !important;
         font-weight: 900 !important;
-        box-shadow: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
+        box-: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
         border-color: transparent !important;
     }
 </style>
@@ -163,7 +163,7 @@
                 </div>
 
                 <button type="submit"
-                    class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all cursor-pointer shadow-md shadow-[#cca43b]/20">
+                    class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-all cursor-pointer /20">
                     Filter Date
                 </button>
             </div>
@@ -184,7 +184,7 @@
     <!-- Product Logs Panel -->
     <div id="product-logs-panel" class="{% if tab_filter == 'activity' or tab_filter == 'input' %}hidden{% endif %} space-y-6">
         <!-- Audit Logs Table -->
-        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
+        <div class="glass-card rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -210,11 +210,7 @@
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <span class="font-mono font-bold text-white text-sm tracking-tight">{{ d.order.order_number }}</span>
-                                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border
-                                                {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30
-                                                {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30
-                                                {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30
-                                                {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
+                                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30 {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
                                                 {{ d.get_status_display }}
                                             </span>
                                         </div>
@@ -358,7 +354,7 @@
                                     paymentStatus: '{{ d.order.get_payment_status_display|escapejs }}',
                                     isPaid: {% if d.order.payment_status == 'paid' %}true{% else %}false{% endif %},
                                     status: '{{ d.get_status_display|escapejs }}'
-                                })" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 shadow-md shadow-[#cca43b]/20 transition-all cursor-pointer">
+                                })" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 /20 transition-all cursor-pointer">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
@@ -406,7 +402,7 @@
 
     <!-- Activity Logs Panel -->
     <div id="activity-logs-panel" class="{% if tab_filter != 'activity' %}hidden{% endif %} space-y-6">
-        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
+        <div class="glass-card rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -489,7 +485,7 @@
             </span>
         </div>
 
-        <div class="glass-card rounded-xl shadow-xl overflow-hidden">
+        <div class="glass-card rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -571,7 +567,7 @@
 <!-- OFFICIAL GENERATED RECEIPT MODAL -->
 <!-- ============================================================ -->
 <div id="receipt-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-    <div class="relative w-full max-w-2xl rounded-2xl border border-[#cca43b]/40 bg-[#021f15] shadow-[0_25px_80px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all my-auto overflow-hidden">
+    <div class="relative w-full max-w-2xl rounded-2xl border border-[#cca43b]/40 bg-[#021f15] text-stone-100 transform transition-all my-auto overflow-hidden">
         
         <!-- Action Header (Close & Print) -->
         <div class="flex items-center justify-between border-b border-white/10 bg-black/40 px-6 py-4">
@@ -580,7 +576,7 @@
                 <h3 class="text-sm font-bold text-white">Official Sales & Delivery Receipt</h3>
             </div>
             <div class="flex items-center gap-3">
-                <button type="button" onclick="printReceiptDoc()" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all shadow-md shadow-[#cca43b]/20 cursor-pointer">
+                <button type="button" onclick="printReceiptDoc()" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#021f15] hover:bg-[#cca43b]/90 transition-all /20 cursor-pointer">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
@@ -673,7 +669,7 @@
             <div class="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-white/15 pt-5">
                 <!-- Seal / Watermark -->
                 <div class="flex items-center gap-3">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-400/50 bg-emerald-500/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-emerald-400/50 bg-emerald-500/10 text-emerald-400">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -714,7 +710,7 @@
 <!-- PAYMENT RECEIPT IMAGE PREVIEW MODAL -->
 <!-- ============================================================ -->
 <div id="receipt-image-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md px-4 py-8">
-    <div class="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#021f15] p-6 shadow-2xl text-center">
+    <div class="relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#021f15] p-6 text-center">
         <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
             <h3 class="text-sm font-bold text-white">Attached Customer Payment Proof</h3>
             <button type="button" onclick="closeReceiptImageModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold transition-colors cursor-pointer leading-none">&times;</button>

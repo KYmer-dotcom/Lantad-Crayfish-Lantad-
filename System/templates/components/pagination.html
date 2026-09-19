@@ -19,7 +19,7 @@
         {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
                 <!-- Active Page: Solid Circle -->
-                <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center shadow-md">
+                <span class="h-8 w-8 rounded-full bg-[#cca43b] text-[#01140e] font-black text-xs flex items-center justify-center">
                     {{ num }}
                 </span>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}

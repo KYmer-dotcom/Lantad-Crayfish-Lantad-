@@ -11,29 +11,29 @@
         <div class="absolute inset-0 bg-slate-950/70"></div> <!-- Overlay -->
     </div>
 
-    <div class="w-full max-w-[1100px] rounded-[32px] shadow-2xl overflow-hidden flex flex-col md:flex-row md:min-h-[650px] min-h-0 relative z-10 bg-slate-900/40 backdrop-blur-xl border border-white/10">
+    <div class="w-full max-w-[1100px] rounded-[32px] overflow-hidden flex flex-col md:flex-row md:min-h-[650px] min-h-0 relative z-10 bg-slate-900/40 backdrop-blur-xl border border-white/10">
         
         <!-- Left Side (Illustration & Branding) -->
         <div class="hidden md:flex md:w-1/2 relative overflow-hidden flex-col items-center justify-center p-8 lg:p-12 border-r border-white/5">
             <!-- Decorative geometric shapes -->
-            <div class="absolute top-[-5%] left-[-10%] w-64 h-64 rounded-full bg-gradient-to-br from-[#021f15] to-[#cca43b] opacity-20 shadow-lg blur-2xl"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-56 h-56 rounded-full bg-gradient-to-tl from-[#cca43b] to-[#04120a] opacity-20 blur-2xl"></div>
+            <div class="absolute top-[-5%] left-[-10%] w-64 h-64 rounded-full bg-[#021f15] opacity-20"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-56 h-56 rounded-full bg-[#04120a] opacity-20"></div>
             
             <!-- Center piece (Logo filling the area) -->
             <div class="relative z-10 w-full h-full flex flex-col items-center justify-center">
                 <div class="relative flex items-center justify-center w-full max-w-[460px]">
                     <!-- Main Logo -->
-                    <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="w-full h-auto aspect-square rounded-[4rem] object-cover shadow-[0_20px_50px_rgba(204,164,59,0.15)] border-[8px] border-[#021f15]/50 bg-slate-900">
+                    <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="w-full h-auto aspect-square rounded-[4rem] object-cover border-[8px] border-[#021f15]/50 bg-slate-900">
                     
                     <!-- Decorative dialog boxes -->
-                    <div class="absolute top-1/4 -left-6 w-20 h-12 bg-[#cca43b] rounded-xl rounded-br-none shadow-lg z-0">
+                    <div class="absolute top-1/4 -left-6 w-20 h-12 bg-[#cca43b] rounded-xl rounded-br-none z-0">
                         <div class="flex items-center justify-center h-full gap-1.5">
                             <div class="w-2 h-2 bg-slate-900 rounded-full"></div>
                             <div class="w-2 h-2 bg-slate-900 rounded-full"></div>
                             <div class="w-2 h-2 bg-slate-900 rounded-full"></div>
                         </div>
                     </div>
-                    <div class="absolute top-1/3 -right-6 w-24 h-12 bg-[#cca43b] rounded-xl rounded-bl-none shadow-lg z-0">
+                    <div class="absolute top-1/3 -right-6 w-24 h-12 bg-[#cca43b] rounded-xl rounded-bl-none z-0">
                         <div class="flex items-center justify-center h-full gap-2">
                             <div class="w-2 h-2 bg-slate-900 rounded-full"></div>
                             <div class="w-2 h-2 bg-slate-900 rounded-full"></div>
@@ -108,7 +108,7 @@
                     <div class="pt-2">
                         <button 
                             type="submit" 
-                            class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-[0_0_15px_rgba(204,164,59,0.3)] text-sm font-bold text-slate-950 bg-[#cca43b] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#cca43b] transition-all"
+                            class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-slate-950 bg-[#cca43b] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#cca43b] transition-all"
                         >
                             Login
                         </button>

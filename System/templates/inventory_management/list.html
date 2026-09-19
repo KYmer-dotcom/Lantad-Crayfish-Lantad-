@@ -4,9 +4,9 @@
 <style>
     /* Elevated Glass Card Effect */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 </style>
 
@@ -32,13 +32,13 @@
     </div>
 
     <!-- Feed Inventory Section -->
-    <div class="glass-card rounded-xl p-6 shadow-xl space-y-5">
+    <div class="glass-card rounded-xl p-6 space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
                 <h2 class="text-lg font-black tracking-tight text-white">Feed Inventory</h2>
                 <p class="text-xs text-[#a0ac96] font-medium">Manage feed types and stock levels.</p>
             </div>
-            <button type="button" onclick="showFeedModal()" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20">
+            <button type="button" onclick="showFeedModal()" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -61,14 +61,7 @@
                         {% for feed in feed_inventory %}
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-6 py-4">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-xl shadow-sm
-                                    {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400
-                                    {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400
-                                    {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400
-                                    {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400
-                                    {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400
-                                    {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400
-                                    {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-xl {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400 {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400 {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400 {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400 {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400 {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400 {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
                                     {% if feed.icon == 'wheat' %}🌾
                                     {% elif feed.icon == 'bug' %}🐛
                                     {% elif feed.icon == 'corn' %}🌽
@@ -108,7 +101,7 @@
 
 <!-- Feed Modal -->
 <div id="feed-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+    <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <h3 id="feed-modal-title" class="text-lg font-bold text-stone-100">Create Feed Type</h3>
             <button type="button" onclick="closeFeedModal()" class="text-white/40 hover:text-white text-xl font-bold">&times;</button>
@@ -177,7 +170,7 @@
 
 <!-- Delete Feed Modal -->
 <div id="delete-feed-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-    <div class="w-full max-w-md rounded-xl border border-white/10 bg-[#021f15] p-6 shadow-2xl">
+    <div class="w-full max-w-md rounded-xl border border-white/10 bg-[#021f15] p-6">
         <div class="flex items-center gap-4">
             <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-500">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -192,7 +185,7 @@
         <form id="delete-feed-form" method="post" action="" class="mt-6 flex justify-end gap-3">
             {% csrf_token %}
             <button type="button" onclick="closeDeleteFeedModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors">Cancel</button>
-            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 shadow-lg shadow-rose-500/20 transition-colors uppercase tracking-wider">Delete Feed</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 -rose-500/20 transition-colors uppercase tracking-wider">Delete Feed</button>
         </form>
     </div>
 </div>

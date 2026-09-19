@@ -30,7 +30,7 @@
     textarea:focus {
         border-color: #cca43b !important;
         outline: none !important;
-        box-shadow: 0 0 0 2px rgba(204, 164, 59, 0.3) !important;
+        box-: 0 0 0 2px rgba(204, 164, 59, 0.3) !important;
     }
 
     /* Prevent browser autofill white/blue background */
@@ -38,7 +38,7 @@
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 1000px #021f15 inset !important;
+        -webkit-box-: 0 0 0 1000px #021f15 inset !important;
         -webkit-text-fill-color: #f5f5f4 !important;
         transition: background-color 5000s ease-in-out 0s;
         caret-color: #cca43b !important;
@@ -61,7 +61,7 @@
         color: #f5f5f4 !important;
     }
 
-    /* Global Gold Button Styling */
+    /* Global Gold Button Styling - Flat Solid */
     .btn-gold {
         display: inline-flex;
         align-items: center;
@@ -73,8 +73,8 @@
         font-weight: 700;
         font-size: 0.875rem;
         padding: 0.5rem 1.25rem;
-        box-shadow: 0 10px 15px -3px rgba(204, 164, 59, 0.2), 0 4px 6px -4px rgba(204, 164, 59, 0.1);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none !important;
+        transition: all 0.2s ease-in-out;
         cursor: pointer;
         border: 1px solid rgba(255, 255, 255, 0.2);
         text-decoration: none;
@@ -82,13 +82,12 @@
 
     .btn-gold:hover {
         background-color: #b89235;
-        transform: translateY(-1px);
-        box-shadow: 0 20px 25px -5px rgba(204, 164, 59, 0.3), 0 8px 10px -6px rgba(204, 164, 59, 0.2);
+        box-shadow: none !important;
         color: #000000 !important;
     }
 
     .btn-gold:active {
-        transform: translateY(0);
+        background-color: #a68128;
     }
 
     /* Hide Leaflet map attribution watermark globally */
@@ -181,7 +180,7 @@
                         <div class="flex items-center gap-3">
                             <div class="relative">
                                 <button onclick="toggleUserMenu()"
-                                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
+                                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                                     <span
                                         class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                                         {{ user.get_role_display.0|upper|default:"A" }}
@@ -196,7 +195,7 @@
 
                                 <!-- User Dropdown -->
                                 <div id="user-menu-dropdown"
-                                    class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] shadow-2xl hidden z-50 p-1">
+                                    class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] hidden z-50 p-1">
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
                                         <button type="submit"
@@ -258,15 +257,12 @@
                 </div>
             </header>
 
-            <main class="flex-1 bg-gradient-to-br from-[#01140e] via-[#021f15] to-[#01140e] text-stone-100">
+            <main class="flex-1 from-[#01140e] via-[#021f15] to-[#01140e] text-stone-100">
                 <div class="mx-auto w-full px-6 py-8 lg:px-10">
                     {% if messages %}
                     <div id="django-messages-container" class="mb-6 space-y-3">
                         {% for message in messages %}
-                        <div class="flex items-center justify-between gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md shadow-xl transition-all duration-300 transform
-                            {% if message.tags == 'success' %}bg-emerald-950/80 border-emerald-500/40 text-emerald-100 shadow-emerald-950/30
-                            {% elif message.tags == 'error' %}bg-rose-950/80 border-rose-500/40 text-rose-100 shadow-rose-950/30
-                            {% else %}bg-[#021f15]/90 border-[#cca43b]/40 text-[#cca43b] shadow-black/40{% endif %}">
+                        <div class="flex items-center justify-between gap-3 px-5 py-3.5 rounded-2xl border backdrop-blur-md transition-all duration-300 transform {% if message.tags == 'success' %}bg-emerald-950/80 border-emerald-500/40 text-emerald-100 -emerald-950/30 {% elif message.tags == 'error' %}bg-rose-950/80 border-rose-500/40 text-rose-100 -rose-950/30 {% else %}bg-[#021f15]/90 border-[#cca43b]/40 text-[#cca43b] -black/40{% endif %}">
                             <div class="flex items-center gap-3">
                                 <div
                                     class="flex h-7 w-7 items-center justify-center rounded-xl {% if message.tags == 'success' %}bg-emerald-500/20 text-emerald-400{% elif message.tags == 'error' %}bg-rose-500/20 text-rose-400{% else %}bg-[#cca43b]/20 text-[#cca43b]{% endif %} flex-shrink-0">

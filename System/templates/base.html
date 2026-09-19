@@ -50,14 +50,24 @@
         .htmx-indicator { display: none; }
         .htmx-request .htmx-indicator { display: inline-block; }
         .htmx-request.htmx-indicator { display: inline-block; }
-        body { font-family: 'Sora', 'Segoe UI', sans-serif; }
-        .app-shell {
-            background: radial-gradient(900px 520px at 12% -10%, rgba(56, 189, 248, 0.25), transparent 60%),
-                linear-gradient(140deg, #05151d 0%, #061b26 45%, #071522 100%);
+        body { font-family: 'Sora', 'Segoe UI', sans-serif; background-color: #01140e; color: #f5f5f4; }
+        
+        /* Global Shadow Removal - Flat Solid UI */
+        *, *::before, *::after {
+            box-shadow: none !important;
+            text-shadow: none !important;
         }
-        .glass-panel {
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.75));
-            backdrop-filter: blur(12px);
+
+        .app-shell {
+            background-color: #01140e !important;
+            background-image: none !important;
+        }
+        .glass-panel, .glass-card {
+            background-color: #022118 !important;
+            background-image: none !important;
+            backdrop-filter: none !important;
+            border: 1px solid rgba(255, 255, 255, 0.10) !important;
+            box-shadow: none !important;
         }
         .bg-blue-50 { background-color: var(--theme-color-50) !important; }
         .bg-blue-100 { background-color: var(--theme-color-100) !important; }
@@ -75,14 +85,11 @@
         .border-blue-200 { border-color: var(--theme-color-200) !important; }
         .ring-blue-500 { --tw-ring-color: var(--theme-color-500) !important; }
         .focus\:ring-blue-500:focus { --tw-ring-color: var(--theme-color-500) !important; }
-        .from-blue-600 { --tw-gradient-from: var(--theme-color-600) !important; }
-        .via-blue-500 { --tw-gradient-stops: var(--tw-gradient-from), var(--theme-color-500), var(--tw-gradient-to, rgb(0 0 0 / 0)) !important; }
-        .to-blue-500 { --tw-gradient-to: var(--theme-color-500) !important; }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="h-full" style="background-color: {{ theme.color_400|default:'#60a5fa' }}; --theme-color-50: {{ theme.color_50|default:'#eff6ff' }}; --theme-color-100: {{ theme.color_100|default:'#dbeafe' }}; --theme-color-200: {{ theme.color_200|default:'#bfdbfe' }}; --theme-color-400: {{ theme.color_400|default:'#60a5fa' }}; --theme-color-500: {{ theme.color_500|default:'#3b82f6' }}; --theme-color-600: {{ theme.color_600|default:'#2563eb' }}; --theme-color-700: {{ theme.color_700|default:'#1d4ed8' }}; --theme-color-800: {{ theme.color_800|default:'#1e40af' }}; --theme-color-900: {{ theme.color_900|default:'#1e3a8a' }};">
+<body class="h-full bg-[#01140e] text-stone-100" style="--theme-color-50: {{ theme.color_50|default:'#eff6ff' }}; --theme-color-100: {{ theme.color_100|default:'#dbeafe' }}; --theme-color-200: {{ theme.color_200|default:'#bfdbfe' }}; --theme-color-400: {{ theme.color_400|default:'#60a5fa' }}; --theme-color-500: {{ theme.color_500|default:'#3b82f6' }}; --theme-color-600: {{ theme.color_600|default:'#2563eb' }}; --theme-color-700: {{ theme.color_700|default:'#1d4ed8' }}; --theme-color-800: {{ theme.color_800|default:'#1e40af' }}; --theme-color-900: {{ theme.color_900|default:'#1e3a8a' }};">
     <div class="min-h-full">
         {% block content %}{% endblock %}
     </div>
@@ -118,7 +125,7 @@
                 icon = 'ℹ️';
             }
             
-            toast.className = `flex items-center gap-3 border ${borderClass} ${bgClass} ${textClass} px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md transform transition-all duration-500 ease-out translate-y-10 opacity-0 min-w-[280px] font-bold text-xs tracking-wider uppercase z-[9999]`;
+            toast.className = `flex items-center gap-3 border ${borderClass} ${bgClass} ${textClass} px-5 py-3.5 rounded-2xl  backdrop-blur-md transform transition-all duration-500 ease-out translate-y-10 opacity-0 min-w-[280px] font-bold text-xs tracking-wider uppercase z-[9999]`;
             toast.innerHTML = `
                 <span class="flex-1">${message}</span>
             `;

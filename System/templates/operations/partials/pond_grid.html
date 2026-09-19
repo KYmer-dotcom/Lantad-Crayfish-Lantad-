@@ -1,17 +1,17 @@
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
     {% for pond in section_ponds %}
-    <div id="pond-card-{{ pond.id }}" class="relative rounded-lg border {% if pond.today_log and pond.today_log.fed %}border-emerald-500/60 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]{% elif pond.today_log and not pond.today_log.fed %}border-rose-500/60 bg-rose-950/25{% elif pond.status == 'empty' %}border-rose-500/50 bg-rose-950/20{% elif pond.status == 'maintenance' %}border-amber-500/50 bg-amber-950/20{% else %}border-white/10 bg-black/20 hover:border-[#cca43b]/40{% endif %} p-4 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:shadow-lg">
+    <div id="pond-card-{{ pond.id }}" class="relative rounded-lg border {% if pond.today_log and pond.today_log.fed %}border-emerald-500/60 bg-emerald-950/20 {% elif pond.today_log and not pond.today_log.fed %}border-rose-500/60 bg-rose-950/25{% elif pond.status == 'empty' %}border-rose-500/50 bg-rose-950/20{% elif pond.status == 'maintenance' %}border-amber-500/50 bg-amber-950/20{% else %}border-white/10 bg-black/20 hover:border-[#cca43b]/40{% endif %} p-4 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:">
         {% if pond.today_log and pond.today_log.fed %}
-        <span id="fed-badge-{{ pond.id }}" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/40 shadow-sm z-10">Fed</span>
+        <span id="fed-badge-{{ pond.id }}" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/40 z-10">Fed</span>
         {% elif pond.today_log and not pond.today_log.fed %}
-        <span id="fed-badge-{{ pond.id }}" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-400 border border-rose-500/40 shadow-sm z-10">Not Fed</span>
+        <span id="fed-badge-{{ pond.id }}" class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-400 border border-rose-500/40 z-10">Not Fed</span>
         {% elif pond.status == 'empty' %}
-        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-500 border border-rose-500/50 shadow-sm">Unused</span>
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-500 border border-rose-500/50">Unused</span>
         {% elif pond.status == 'maintenance' %}
-        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-500 border border-amber-500/50 shadow-sm">Maintenance</span>
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#021f15] px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-500 border border-amber-500/50">Maintenance</span>
         {% endif %}
         <div class="flex items-center justify-between">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/20 shadow-sm">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/20">
                 {% if section_category == 'Breeding Pond' %}
                 <svg class="h-5 w-5 text-[#cca43b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

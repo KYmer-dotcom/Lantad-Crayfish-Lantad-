@@ -4,9 +4,9 @@
 <style>
     /* Elevated Glass Card Effect */
     .glass-card {
-        background: linear-gradient(145deg, rgba(3, 38, 28, 0.75) 0%, rgba(1, 20, 14, 0.90) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+        background-color: #022118;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-: none;
     }
 </style>
 
@@ -21,7 +21,7 @@
             <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Analytics Dashboard</h1>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{% url 'analytics:reports' %}" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/20 cursor-pointer">
+            <a href="{% url 'analytics:reports' %}" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer">
                 <svg class="w-4 h-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -92,7 +92,7 @@
     <!-- Charts Row -->
     <div class="grid grid-cols-1 gap-6 mb-6">
         <!-- Sales Performance Chart -->
-        <div onclick="document.getElementById('dailySalesModal').showModal()" class="glass-card rounded-xl p-6 shadow-xl flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
+        <div onclick="document.getElementById('dailySalesModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
@@ -109,7 +109,7 @@
     <!-- Secondary Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- City Sales Chart -->
-        <div onclick="document.getElementById('locationOrdersModal').showModal()" class="glass-card rounded-xl p-6 shadow-xl flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
+        <div onclick="document.getElementById('locationOrdersModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
@@ -122,7 +122,7 @@
         </div>
 
         <!-- Product Sales Chart -->
-        <div onclick="document.getElementById('productOrdersModal').showModal()" class="glass-card rounded-xl p-6 shadow-xl flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
+        <div onclick="document.getElementById('productOrdersModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
@@ -138,7 +138,7 @@
     <!-- Predictive Analytics Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Sales Forecast Chart -->
-        <div onclick="document.getElementById('forecastModal').showModal()" class="glass-card rounded-xl p-6 shadow-xl flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
+        <div onclick="document.getElementById('forecastModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
@@ -154,7 +154,7 @@
         </div>
 
         <!-- Sales Trend Prediction Chart -->
-        <div onclick="document.getElementById('trendModal').showModal()" class="glass-card rounded-xl p-6 shadow-xl flex flex-col cursor-pointer group hover:border-cyan-500/40 transition-colors">
+        <div onclick="document.getElementById('trendModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-cyan-500/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></span>
@@ -170,7 +170,7 @@
     <!-- Product Recommendations Section -->
     <div class="grid grid-cols-1 gap-6 mb-6">
         <!-- Product Recommendations -->
-        <div class="glass-card rounded-xl p-6 shadow-xl flex flex-col">
+        <div class="glass-card rounded-xl p-6 flex flex-col">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <span class="h-2.5 w-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
@@ -205,7 +205,7 @@
 
 <!-- Daily Sales Modal -->
 <dialog id="dailySalesModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
@@ -219,7 +219,7 @@
         </div>
         <div class="overflow-y-auto flex-grow p-0">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="sticky top-0 bg-[#01140e] z-10 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5)]">
+                <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Orders</th>
@@ -253,7 +253,7 @@
 
 <!-- Forecast Modal -->
 <dialog id="forecastModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
@@ -267,7 +267,7 @@
         </div>
         <div class="overflow-y-auto flex-grow p-0">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="sticky top-0 bg-[#01140e] z-10 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5)]">
+                <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Forecast Date</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Predicted Revenue</th>
@@ -297,7 +297,7 @@
 
 <!-- Trend Modal -->
 <dialog id="trendModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-cyan-500"></span>
@@ -311,7 +311,7 @@
         </div>
         <div class="overflow-y-auto flex-grow p-0">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="sticky top-0 bg-[#01140e] z-10 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5)]">
+                <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Actual Revenue</th>
@@ -340,7 +340,7 @@
 
 <!-- Location Orders Modal -->
 <dialog id="locationOrdersModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
@@ -354,7 +354,7 @@
         </div>
         <div class="overflow-y-auto flex-grow p-0">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="sticky top-0 bg-[#01140e] z-10 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5)]">
+                <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Location</th>
@@ -388,7 +388,7 @@
 
 <!-- Product Orders Modal -->
 <dialog id="productOrdersModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
@@ -402,7 +402,7 @@
         </div>
         <div class="overflow-y-auto flex-grow p-0">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="sticky top-0 bg-[#01140e] z-10 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5)]">
+                <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Orders</th>

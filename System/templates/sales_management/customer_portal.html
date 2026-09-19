@@ -10,7 +10,7 @@
         </div>
         <!-- Semi-transparent diagonal split over the image -->
         <div class="absolute inset-0"
-            style="background: linear-gradient(105deg, rgba(1,20,14,0.92) 40%, rgba(2,31,21,0.85) 40.1%);"></div>
+            style="background-color: #022118; "></div>
     </div>
 
     <!-- Optional: Subtle noise overlay -->
@@ -33,7 +33,7 @@
         <!-- Logo -->
         <div class="w-auto md:w-[30%] flex-shrink-0 flex items-center gap-3">
             <div
-                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e] shadow-lg">
+                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e]">
                 <img src="{% static 'images/brand-logo.jpg' %}" alt="Logo"
                     class="w-full h-full object-cover rounded-full mix-blend-multiply">
             </div>
@@ -57,14 +57,14 @@
         <div class="w-auto md:w-[30%] flex-shrink-0 flex justify-end items-center gap-2.5 sm:gap-3.5">
             <!-- Cart Icon Button -->
             <a href="{% url 'sales:customer_cart_page' %}"
-                class="relative inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm group"
+                class="relative inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer group"
                 title="View Cart">
                 <svg class="w-5 h-5 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {% if cart_orders_count %}
-                <span class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] shadow-md shadow-[#cca43b]/40 ring-2 ring-[#01140e]">
+                <span class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] /40 ring-2 ring-[#01140e]">
                     {{ cart_orders_count }}
                 </span>
                 {% endif %}
@@ -72,7 +72,7 @@
             {% if user.is_authenticated %}
             <div class="relative">
                 <button type="button" onclick="toggleCustomerMenu(event)"
-                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
+                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                     <span
                         class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                         {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{ user.username.0|upper }}{% else %}C{% endif %}
@@ -85,7 +85,7 @@
 
                 <!-- Customer Dropdown (My Orders & Logout) -->
                 <div id="customer-menu-dropdown"
-                    class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] shadow-2xl hidden z-50 p-1.5 backdrop-blur-md">
+                    class="absolute right-0 mt-2 w-48 rounded-2xl border border-[#cca43b]/30 bg-[#011c14] hidden z-50 p-1.5 backdrop-blur-md">
                     <a href="{% url 'sales:customer_orders_page' %}"
                         class="flex w-full items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-white hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -110,7 +110,7 @@
             </div>
             {% else %}
             <a href="{% url 'customer_login' %}"
-                class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer shadow-sm">
+                class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                 <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
@@ -139,7 +139,7 @@
 
                 <div>
                     <h2 id="featured-name-container"
-                        class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] drop-shadow-lg flex items-center gap-4 flex-wrap"
+                        class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] drop- flex items-center gap-4 flex-wrap"
                         style="font-family: 'Georgia', serif;">
                         <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
@@ -162,7 +162,7 @@
                         <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
                         <div class="flex gap-3">
                             <button type="button" id="btn-pickup" onclick="setDeliveryMethod('pickup')"
-                                class="bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all">Pickup</button>
+                                class="bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Pickup</button>
                             <button type="button" id="btn-delivery" onclick="setDeliveryMethod('delivery')"
                                 class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">Delivery</button>
                         </div>
@@ -177,7 +177,7 @@
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" id="btn-unit-pc" onclick="setPricingUnit('pc')"
-                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all">Per Piece (pc)</button>
+                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Per Piece (pc)</button>
                             <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
                                 class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By KG (kg)</button>
                         </div>
@@ -195,7 +195,7 @@
                         <div class="flex items-center gap-3">
                             <p id="featured-quantity-label" class="text-white font-bold text-sm tracking-wide">Quantity (pcs):</p>
                             <div
-                                class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px] shadow-inner">
+                                class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px]">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
                                     class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">-</button>
                                 <input type="number" id="featured-quantity-input" value="1" oninput="updateTotalPrice()"
@@ -218,7 +218,7 @@
                     <div class="pt-2 max-w-[340px]">
                         <button id="featured-order-btn"
                             onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
-                            class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.4)] group"
+                            class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all hover: group"
                             {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
                             <span id="featured-order-text"
                                 class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
@@ -251,7 +251,7 @@
                     </div>
 
                     <div
-                        class="relative w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[8px] lg:border-[16px] border-[#01140e] shadow-[0_40px_80px_rgba(0,0,0,0.9)] overflow-hidden z-20 group">
+                        class="relative w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[8px] lg:border-[16px] border-[#01140e] overflow-hidden z-20 group">
                         <img id="featured-image"
                             src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                             class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
@@ -263,7 +263,7 @@
 
                     <!-- Circle arrow navigation overlapping bottom of bowl -->
                     <button onclick="nextProduct()"
-                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center shadow-2xl z-30 transition-colors border-4 border-[#01140e] text-[#01140e]">
+                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-4 border-[#01140e] text-[#01140e]">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -285,9 +285,9 @@
                     {% for prod in other_products %}
                     <button
                         onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
-                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shadow-lg shrink-0">
+                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0">
                         <div
-                            class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0 shadow-inner">
+                            class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
                             {% if prod.icon == 'shrimp' %}🦐
                             {% elif prod.icon == 'lab' %}🧪
                             {% elif prod.icon == 'leaf' %}🌿
@@ -351,7 +351,7 @@
                     <!-- Step 1: Cart -->
                     <div class="relative z-10 flex flex-col items-center">
                         <div id="step-cart-circle"
-                            class="w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm shadow-[0_0_15px_rgba(204,164,59,0.4)] transition-all">
+                            class="w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm transition-all">
                             1
                         </div>
                         <span id="step-cart-label"
@@ -422,7 +422,7 @@
                         <div class="space-y-4">
                             {% for order in orders %}
                             <div id="order-card-{{ order.id }}" data-delivery-address="{{ order.delivery_address }}"
-                                class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/85 backdrop-blur-md p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative group hover:border-[#cca43b]/40 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+                                class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/85 backdrop-blur-md p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative group hover:border-[#cca43b]/40 transition-all">
 
                                 <div class="flex items-center gap-4 flex-1 min-w-0 pr-8 sm:pr-0">
                                     <!-- Custom Checkbox -->
@@ -444,7 +444,7 @@
 
                                     <!-- Product Thumbnail Image -->
                                     <div
-                                        class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 relative shadow-inner">
+                                        class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex-shrink-0 relative">
                                         <img src="{% if 'Superworm' in order.product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in order.product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                                             alt="{{ order.product.name }}" class="w-full h-full object-cover">
                                     </div>
@@ -473,7 +473,7 @@
                                         <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-center w-full">Quantity</p>
                                         {% if order.status == 'pending' %}
                                         <div class="flex items-center gap-2">
-                                            <div class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 shadow-inner transition-colors">
+                                            <div class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 transition-colors">
                                                 <button type="button" onclick="changeCardQuantity('{{ order.id }}', -1)"
                                                     class="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#cca43b] hover:text-[#01140e] text-stone-200 flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
                                                     -
@@ -526,7 +526,7 @@
                                 <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Explore our fresh products page to add
                                     items to your cart!</p>
                                 <a href="{% url 'sales:customer_portal' %}"
-                                    class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)]">Browse
+                                    class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-all">Browse
                                     Products</a>
                             </div>
                             {% endfor %}
@@ -549,7 +549,7 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div class="space-y-2">
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Province</label>
-                                            <div class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner text-sm flex items-center justify-between">
+                                            <div class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 text-sm flex items-center justify-between">
                                                 <span class="text-white font-bold">Negros Occidental</span>
                                                 <span class="text-[9px] font-black text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded-md uppercase tracking-wider">Coverage Area</span>
                                             </div>
@@ -559,7 +559,7 @@
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Municipality / City</label>
                                             <div class="relative">
                                                 <select id="checkout-city-select" onchange="updateBarangays(null, null, true)"
-                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="Silay City" class="bg-[#01140e] text-white py-2" selected>Silay City</option>
                                                     <option value="Talisay City" class="bg-[#01140e] text-white py-2">Talisay City</option>
                                                     <option value="Bacolod City" class="bg-[#01140e] text-white py-2">Bacolod City</option>
@@ -577,7 +577,7 @@
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Barangay</label>
                                             <div class="relative">
                                                 <select id="checkout-barangay-select" onchange="updateStreets(null, true)"
-                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="" class="bg-[#01140e] text-white">Select Barangay</option>
                                                 </select>
                                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
@@ -589,7 +589,7 @@
                                             <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Street / Purok / Road</label>
                                             <div class="relative">
                                                 <select id="checkout-street-select" onchange="onStreetSelectChange(true)"
-                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
+                                                    class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
                                                     <option value="" class="bg-[#01140e] text-white">Select Street / Purok</option>
                                                 </select>
                                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
@@ -597,7 +597,7 @@
                                                 </div>
                                             </div>
                                             <input type="text" id="checkout-custom-street-input" oninput="combineAddressFields(true)"
-                                                class="w-full h-[46px] mt-2 rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500 hidden"
+                                                class="w-full h-[46px] mt-2 rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500 hidden"
                                                 placeholder="Type specific street name...">
                                         </div>
                                     </div>
@@ -606,7 +606,7 @@
                                     <div class="space-y-2">
                                         <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Home / House No. / Building / Floor / Landmark</label>
                                         <input type="text" id="checkout-house-input" oninput="combineAddressFields(false)"
-                                            class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 shadow-inner focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500"
+                                            class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500"
                                             placeholder="e.g. House #45, Block 3 Lot 8, Blue Gate near Chapel">
                                     </div>
 
@@ -631,7 +631,7 @@
                                 <div class="flex items-center justify-between">
                                     <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]" id="map-label-text">📍 Pin Your Delivery Location (Drag or Click to Adjust)</label>
                                     <button type="button" onclick="locateCurrentPosition()"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] text-[10px] font-black uppercase tracking-wider transition-all border border-[#cca43b]/30 shadow-sm cursor-pointer">
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] text-[10px] font-black uppercase tracking-wider transition-all border border-[#cca43b]/30 cursor-pointer">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                         Use Current GPS
                                     </button>
@@ -670,7 +670,7 @@
                                     <div>
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg shadow-sm">
+                                                <div class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg">
                                                     💵
                                                 </div>
                                                 <div>
@@ -697,7 +697,7 @@
                                     <div>
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-xl bg-[#007DFE] flex items-center justify-center font-black text-white text-base shadow-md shadow-[#007DFE]/30">
+                                                <div class="w-10 h-10 rounded-xl bg-[#007DFE] flex items-center justify-center font-black text-white text-base /30">
                                                     G
                                                 </div>
                                                 <div>
@@ -719,7 +719,7 @@
                             </div>
 
                             <!-- GCash Transfer Automated Info Panel -->
-                            <div id="gcash-payment-panel" class="hidden rounded-2xl border border-[#007DFE]/30 bg-gradient-to-r from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
+                            <div id="gcash-payment-panel" class="hidden rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
                                 <div class="flex items-center gap-2 text-xs font-black text-white uppercase tracking-wider">
                                     <span class="text-[#007DFE] text-sm">⚡</span>
                                     <span>How Live GCash Payment Works</span>
@@ -780,7 +780,7 @@
                         <!-- Place Order Submit CTA -->
                         <div class="pt-2">
                             <button type="button" id="place-order-cta-btn" onclick="handlePlaceOrderCTA()"
-                                class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/30 disabled:text-white/30 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all shadow-[0_10px_30px_rgba(204,164,59,0.2)] hover:shadow-[0_10px_40px_rgba(255,255,255,0.4)] group">
+                                class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/30 disabled:text-white/30 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all hover: group">
                                 <span class="pl-6 font-black text-sm uppercase tracking-[0.15em]"
                                     id="cta-btn-text">Proceed to Address</span>
                                 <div
@@ -1123,7 +1123,7 @@
                 const line2 = document.getElementById('stepper-line-2');
 
                 // Active vs Inactive classes
-                const activeCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm shadow-[0_0_15px_rgba(204,164,59,0.4)] transition-all';
+                const activeCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-[#cca43b] flex items-center justify-center font-black text-white text-sm  transition-all';
                 const inactiveCircleClass = 'w-10 h-10 rounded-full bg-[#01140e] border-2 border-white/10 flex items-center justify-center font-bold text-white/40 text-sm transition-all';
 
                 const activeLabelClass = 'text-xs font-black uppercase tracking-wider text-[#cca43b] mt-2 transition-colors';
@@ -1196,7 +1196,7 @@
                 const pickupPopupHtml = `
                     <div class="text-center font-sans" style="max-width: 200px;">
                         <b style="font-size: 13px; color: #cca43b;">Silay Superworm & Crayfish</b>
-                        <img src="/static/images/pickup-shop.jpg" alt="Pickup Location" class="w-full h-auto rounded-lg my-2 border border-[#cca43b]/20 shadow-sm" style="max-height: 100px; object-fit: cover;">
+                        <img src="/static/images/pickup-shop.jpg" alt="Pickup Location" class="w-full h-auto rounded-lg my-2 border border-[#cca43b]/20" style="max-height: 100px; object-fit: cover;">
                         <p style="margin: 0; color: #a0ac96; font-size: 11px; font-weight: 500;">Pick up your orders here.</p>
                     </div>
                 `;
@@ -1452,7 +1452,7 @@
                                 window.location.href = data.redirect_url;
                             } else {
                                 const toast = document.createElement('div');
-                                toast.className = 'fixed bottom-8 right-8 z-[500] bg-[#cca43b] text-[#01140e] rounded-2xl px-6 py-4 font-black shadow-2xl flex items-center gap-3 border border-white/20 transition-all duration-500 ease-out translate-y-10 opacity-0';
+                                toast.className = 'fixed bottom-8 right-8 z-[500] bg-[#cca43b] text-[#01140e] rounded-2xl px-6 py-4 font-black  flex items-center gap-3 border border-white/20 transition-all duration-500 ease-out translate-y-10 opacity-0';
                                 toast.innerHTML = `<span>🎉</span> <span>Order & Payment confirmed! Redirecting to orders...</span>`;
                                 document.body.appendChild(toast);
 
@@ -1506,7 +1506,7 @@
                 } else {
                     gcashRadio.checked = true;
 
-                    gcashCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#007DFE] bg-[#007DFE]/10 cursor-pointer transition-all group hover:bg-[#007DFE]/15 shadow-lg shadow-[#007DFE]/10";
+                    gcashCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#007DFE] bg-[#007DFE]/10 cursor-pointer transition-all group hover:bg-[#007DFE]/15  /10";
                     gcashDot.className = "w-6 h-6 rounded-full border-2 border-[#007DFE] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#007DFE] after:rounded-full";
 
                     codCard.className = "relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-white/5 cursor-pointer transition-all group hover:border-[#cca43b]/50 hover:bg-[#cca43b]/5";
@@ -1531,7 +1531,7 @@
 
         {% elif active_page == 'orders' %}
         <div class="flex-1 max-w-4xl mx-auto w-full py-12">
-            <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-10 shadow-2xl">
+            <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-10">
                 <div class="mb-8 border-b border-white/10 pb-6">
                     <h3 class="text-3xl font-black text-white uppercase tracking-wider">My Orders</h3>
                     <p class="text-sm text-[#a0ac96] mt-2">Track and monitor your confirmed transactions.</p>
@@ -1562,7 +1562,7 @@
 
                 <div class="space-y-4">
                     {% for order in orders %}
-                    <div class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all shadow-inner">
+                    <div class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all">
                         <div class="space-y-2">
                             <div class="flex items-center gap-2.5">
                                 <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number }}</span>
@@ -1595,7 +1595,7 @@
                                     paymentStatus: '{{ order.get_payment_status_display }}',
                                     notes: '{{ order.notes|escapejs }}'
                                 })"
-                                class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10 shadow-sm">
+                                class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -1609,7 +1609,7 @@
                         <p class="text-white font-bold text-2xl uppercase tracking-wider">Your cart is empty</p>
                         <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Looks like you haven't added anything yet.</p>
                         <a href="{% url 'sales:customer_portal' %}"
-                            class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-colors shadow-lg">
+                            class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-colors">
                             Browse Market
                         </a>
                     </div>
@@ -1629,7 +1629,7 @@
 
         <!-- Official Printable Order Receipt Modal -->
         <div id="customer-order-receipt-modal" class="fixed inset-0 z-[400] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-            <div class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all space-y-6">
+            <div class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 text-stone-100 transform transition-all space-y-6">
                 <!-- Printable Invoice Area -->
                 <div id="printable-receipt-area" class="space-y-6 bg-[#021f15] p-6 sm:p-8 rounded-2xl border border-white/10">
                     <!-- Receipt Header -->
@@ -1723,7 +1723,7 @@
                         Close
                     </button>
                     <button type="button" onclick="window.print()"
-                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] shadow-lg shadow-[#cca43b]/20 hover:opacity-95 transition-all cursor-pointer">
+                        class="inline-flex items-center gap-2 rounded-xl from-[#cca43b] to-[#e5c05d] px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] /20 hover:opacity-95 transition-all cursor-pointer">
                         <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
@@ -1762,7 +1762,7 @@
                 background: white !important;
                 color: #111827 !important;
                 border: 2px solid #e5e7eb !important;
-                box-shadow: none !important;
+                box-: none !important;
                 padding: 30px !important;
             }
             #printable-receipt-area * {
@@ -1823,7 +1823,7 @@
 <!-- Premium Dark-Gold Custom Notification Overlays -->
 <div id="custom-confirm-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4">
     <div class="fixed inset-0 bg-[#01140e]/95 backdrop-blur-md"></div>
-    <div class="relative bg-[#021f15] border border-[#cca43b]/40 rounded-[2rem] p-8 max-w-md w-full shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-center transform transition-all duration-300 scale-95 opacity-0"
+    <div class="relative bg-[#021f15] border border-[#cca43b]/40 rounded-[2rem] p-8 max-w-md w-full text-center transform transition-all duration-300 scale-95 opacity-0"
         id="confirm-modal-box">
         <div
             class="w-16 h-16 bg-[#cca43b]/10 border border-[#cca43b]/30 text-[#cca43b] rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
@@ -1836,7 +1836,7 @@
             <button id="confirm-cancel-btn"
                 class="flex-1 py-3.5 rounded-xl border border-white/10 text-white font-bold uppercase tracking-wider text-xs hover:bg-white/5 transition-colors">Cancel</button>
             <button id="confirm-yes-btn"
-                class="flex-1 py-3.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-wider text-xs transition-colors shadow-lg shadow-rose-500/20">Remove</button>
+                class="flex-1 py-3.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-wider text-xs transition-colors -rose-500/20">Remove</button>
         </div>
     </div>
 </div>
@@ -1844,7 +1844,7 @@
 
 
 <!-- Direct Add to Cart Hidden Form (Eliminates redundant modal) -->
-<form id="direct-add-to-cart-form" method="post" action="{% url 'sales:customer_order_create' %}" class="hidden">
+<form id="direct-add-" method="post" action="{% url 'sales:customer_order_create' %}" class="hidden">
     {% csrf_token %}
     <input type="hidden" name="product" id="direct-product-id" value="">
     <input type="hidden" name="quantity_kg" id="direct-quantity" value="">
@@ -1868,7 +1868,7 @@
         color: #f5f5f4 !important;
         border: 1px solid rgba(204, 164, 59, 0.4) !important;
         border-radius: 1rem !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+        box-: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     }
 
     .custom-leaflet-popup .leaflet-popup-tip {
@@ -1964,12 +1964,12 @@
         const qtyLabel = document.getElementById('featured-quantity-label');
         
         if (unit === 'kg') {
-            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
             if (pcBtn) pcBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
             if (unitLabel) unitLabel.textContent = '/ kg';
             if (qtyLabel) qtyLabel.textContent = 'Quantity (kg):';
         } else {
-            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
             if (kgBtn) kgBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
             if (unitLabel) unitLabel.textContent = '/ pc';
             if (qtyLabel) qtyLabel.textContent = 'Quantity (pcs):';
@@ -2611,14 +2611,14 @@
         const payDescCod = document.getElementById('pay-desc-cod');
 
         if (method === 'pickup') {
-            pickupBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            pickupBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
             deliveryBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
             input.value = 'pickup';
 
             if (payTitleCod) payTitleCod.textContent = 'Cash';
             if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at our pickup station.';
         } else {
-            deliveryBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-[0_4px_10px_rgba(204,164,59,0.3)] transition-all";
+            deliveryBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
             pickupBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
             input.value = 'delivery';
 
@@ -2698,7 +2698,7 @@
             document.getElementById('direct-delivery-address').value = "{{ customer.address|escapejs }}";
         }
 
-        document.getElementById('direct-add-to-cart-form').submit();
+        document.getElementById('direct-add-').submit();
     }
 
     (function initCustomerAccountMap() {
@@ -2746,11 +2746,11 @@
 
 <!-- Authentic Interactive GCash Checkout Portal Modal -->
 <div id="gcash-checkout-portal-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-    <div class="relative w-full max-w-md rounded-[2.5rem] border border-[#007DFE]/40 bg-[#021f15] p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.95)] text-stone-100 transform transition-all space-y-6">
+    <div class="relative w-full max-w-md rounded-[2.5rem] border border-[#007DFE]/40 bg-[#021f15] p-6 sm:p-8 text-stone-100 transform transition-all space-y-6">
         <!-- GCash Gateway Header -->
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-[#007DFE] flex items-center justify-center font-black text-white text-lg shadow-lg shadow-[#007DFE]/40">
+                <div class="w-10 h-10 rounded-2xl bg-[#007DFE] flex items-center justify-center font-black text-white text-lg /40">
                     G
                 </div>
                 <div>
@@ -2762,7 +2762,7 @@
         </div>
 
         <!-- Merchant & Amount Ribbon -->
-        <div class="rounded-2xl border border-[#007DFE]/30 bg-gradient-to-r from-[#005bb7]/20 to-black/40 p-4 space-y-2">
+        <div class="rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/20 p-4 space-y-2">
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Merchant:</span>
                 <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</span>
@@ -2793,12 +2793,12 @@
             {% if payment_settings.gcash_qr_image %}
             <div class="rounded-xl border border-white/10 bg-black/30 p-3 text-center space-y-2">
                 <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-wider block">Or Scan Merchant QR</span>
-                <img src="{{ payment_settings.gcash_qr_image.url }}" alt="GCash QR" class="w-32 h-32 mx-auto rounded-lg object-contain bg-white p-1 shadow-md">
+                <img src="{{ payment_settings.gcash_qr_image.url }}" alt="GCash QR" class="w-32 h-32 mx-auto rounded-lg object-contain bg-white p-1">
             </div>
             {% endif %}
 
             <button type="button" onclick="submitGcashStep1()"
-                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white /30 transition-all cursor-pointer">
                 Next: Send Authentication Code →
             </button>
         </div>
@@ -2826,7 +2826,7 @@
             </div>
 
             <button type="button" onclick="submitGcashStep2()"
-                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white /30 transition-all cursor-pointer">
                 Submit Code →
             </button>
         </div>
@@ -2847,7 +2847,7 @@
             </div>
 
             <button type="button" onclick="submitGcashStep3()"
-                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#007DFE]/30 transition-all cursor-pointer">
+                class="w-full rounded-xl bg-[#007DFE] hover:bg-[#007DFE]/90 py-3.5 text-xs font-black uppercase tracking-wider text-white /30 transition-all cursor-pointer">
                 Authorize & Pay <span class="gcash-display-amount">₱0.00</span> →
             </button>
         </div>

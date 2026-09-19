@@ -9,7 +9,7 @@
         <h1 class="mt-2 text-2xl font-semibold text-stone-100">Edit Record</h1>
     </div>
 
-    <div class="rounded-3xl border border-white/10 bg-[#021f15]/80 backdrop-blur-sm p-6 shadow-sm">
+    <div class="rounded-3xl border border-white/10 bg-[#021f15]/80 backdrop-blur-sm p-6">
         <form method="post" action="{% url 'operations:pond_edit' pond.id %}" class="space-y-4">
             {% csrf_token %}
             {% include 'operations/partials/pond_form.html' with form=form %}
@@ -29,7 +29,7 @@
 
 <!-- Delete Pond Modal -->
 <div id="delete-pond-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-stone-100">Remove Record</h3>
             <button type="button" onclick="closeDeleteModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
@@ -38,7 +38,7 @@
         <form method="post" action="{% url 'operations:pond_remove' pond.id %}" class="mt-6 flex items-center justify-end gap-3">
             {% csrf_token %}
             <button type="button" onclick="closeDeleteModal()" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-            <button type="submit" class="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 shadow-lg shadow-rose-500/20 transition-colors">Remove</button>
+            <button type="submit" class="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 -rose-500/20 transition-colors">Remove</button>
         </form>
     </div>
 </div>
