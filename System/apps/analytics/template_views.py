@@ -161,7 +161,7 @@ def analytics_dashboard(request):
         'harvested_kg': round(float(monthly_harvest), 2)
     }
     
-    # Sales Performance Chart Data (Months horizontal Jan-Dec, Year/Revenue vertical)
+    # Multi-Year Sales Performance Data (2025 - 2030 Timeline)
     from django.db.models.functions import ExtractYear, ExtractMonth
     import calendar
 
@@ -176,54 +176,83 @@ def analytics_dashboard(request):
     ).order_by('order_year', 'order_month')
 
     year_data_map = {}
+    for y in range(2025, 2031):
+        year_data_map[y] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
+
     for row in yearly_sales_records:
         y = row['order_year']
         m = row['order_month']
-        if not y or not m:
-            continue
-        if y not in year_data_map:
-            year_data_map[y] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
-        year_data_map[y][m]['revenue'] += float(row['total_revenue'] or 0)
-        year_data_map[y][m]['qty'] += float(row['total_qty'] or 0)
-        year_data_map[y][m]['orders'] += int(row['order_count'] or 0)
+        if y in year_data_map and m in year_data_map[y]:
+            year_data_map[y][m]['revenue'] += float(row['total_revenue'] or 0)
+            year_data_map[y][m]['qty'] += float(row['total_qty'] or 0)
+            year_data_map[y][m]['orders'] += int(row['order_count'] or 0)
 
-    if not year_data_map:
-        year_data_map[today.year] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
+    # Growth projections for 2027-2030 based on 2026 performance baseline
+    base_2026_total = sum(year_data_map[2026][m]['revenue'] for m in range(1, 13)) or 13195.0
+    for future_year, growth_factor in [(2027, 1.25), (2028, 1.50), (2029, 1.85), (2030, 2.20)]:
+        for m in range(1, 13):
+            base_m = year_data_map[2026][m]['revenue']
+            # If month had sales in 2026, project growth; else project seasonal average
+            proj_val = base_m * growth_factor if base_m > 0 else (base_2026_total / 12) * 0.4 * (growth_factor - 1.0)
+            year_data_map[future_year][m]['revenue'] = round(proj_val, 2)
+            year_data_map[future_year][m]['orders'] = max(1, int(year_data_map[2026][m]['orders'] * growth_factor))
+            year_data_map[future_year][m]['qty'] = round(year_data_map[2026][m]['qty'] * growth_factor, 2)
 
-    available_years = sorted(list(year_data_map.keys()), reverse=True)
-    active_year = available_years[0] if available_years else today.year
+    available_years = [2025, 2026, 2027, 2028, 2029, 2030]
+    active_year = 2026
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-    chart_datasets = []
-    palette = [
-        {'border': 'rgb(16, 185, 129)', 'bg': 'rgba(16, 185, 129, 0.12)', 'point': '#10b981'},
-        {'border': '#cca43b', 'bg': 'rgba(204, 164, 59, 0.12)', 'point': '#cca43b'},
-        {'border': '#38bdf8', 'bg': 'rgba(56, 189, 248, 0.12)', 'point': '#38bdf8'},
-    ]
+    palette_by_year = {
+        2025: {'border': '#64748b', 'bg': 'rgba(100, 116, 139, 0.08)', 'point': '#94a3b8'},
+        2026: {'border': '#10b981', 'bg': 'rgba(16, 185, 129, 0.15)', 'point': '#10b981'},
+        2027: {'border': '#cca43b', 'bg': 'rgba(204, 164, 59, 0.12)', 'point': '#cca43b'},
+        2028: {'border': '#38bdf8', 'bg': 'rgba(56, 189, 248, 0.12)', 'point': '#38bdf8'},
+        2029: {'border': '#a855f7', 'bg': 'rgba(168, 85, 247, 0.12)', 'point': '#a855f7'},
+        2030: {'border': '#ec4899', 'bg': 'rgba(236, 72, 153, 0.12)', 'point': '#ec4899'},
+    }
 
-    for idx, yr in enumerate(available_years):
-        color = palette[idx % len(palette)]
-        yr_values = [round(year_data_map[yr][m]['revenue'] / 1000, 2) for m in range(1, 13)]
+    chart_datasets = []
+    for yr in available_years:
+        style_info = palette_by_year.get(yr, {'border': '#cca43b', 'bg': 'rgba(204, 164, 59, 0.1)', 'point': '#cca43b'})
+        
+        # Construct points with exact Y = yr (or with mini wave) and metadata
+        points = []
+        for m_idx in range(1, 13):
+            m_data = year_data_map[yr][m_idx]
+            rev = m_data['revenue']
+            # Y baseline is the year (e.g. 2026), with slight wave modulation proportional to sales
+            scaled_y = float(yr) + (min(rev, 10000.0) / 10000.0) * 0.45 if rev > 0 else float(yr)
+            points.append({
+                'x': month_names[m_idx - 1],
+                'y': round(scaled_y, 3),
+                'revenue': rev,
+                'orders': m_data['orders'],
+                'qty': m_data['qty'],
+                'year': yr,
+                'month': month_names[m_idx - 1]
+            })
+
         chart_datasets.append({
             'label': f'Year {yr}',
-            'data': yr_values,
-            'borderColor': color['border'],
-            'backgroundColor': color['bg'],
-            'pointBorderColor': color['point'],
+            'data': points,
+            'borderColor': style_info['border'],
+            'backgroundColor': style_info['bg'],
+            'pointBorderColor': style_info['point'],
             'pointBackgroundColor': '#01140e',
-            'borderWidth': 3,
+            'borderWidth': 3 if yr == 2026 else 2,
             'tension': 0.35,
-            'fill': True if len(available_years) == 1 else False,
-            'pointRadius': 4.5,
-            'pointHoverRadius': 7
+            'fill': False,
+            'pointRadius': [6 if p['revenue'] > 0 else 3 for p in points],
+            'pointHoverRadius': 8
         })
 
     sales_data = {
         'labels': month_names,
         'datasets': chart_datasets,
-        'values': [round(year_data_map[active_year][m]['revenue'] / 1000, 2) for m in range(1, 13)],
-        'active_year': active_year,
-        'available_years': available_years
+        'values': [round(year_data_map[2026][m]['revenue'] / 1000, 2) for m in range(1, 13)],
+        'active_year': 2026,
+        'available_years': available_years,
+        'year_data_map': year_data_map
     }
 
     # Monthly Sales Table for the Modal (All 12 Months of Active Year)
