@@ -98,7 +98,7 @@
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
                     <h3 class="text-base font-black text-white tracking-wide uppercase group-hover:text-[#cca43b] transition-colors">Sales Performance</h3>
                 </div>
-                <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Last 14 Days</span>
+                <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">{% if active_year %}Year {{ active_year }} (12 Months){% else %}Monthly Breakdown{% endif %}</span>
             </div>
             <div class="h-80 w-full flex-grow relative">
                 <canvas id="salesChart"></canvas>
@@ -203,13 +203,16 @@
 
 </div>
 
-<!-- Daily Sales Modal -->
+<!-- Daily & Monthly Sales Modal -->
 <dialog id="dailySalesModal" class="bg-transparent m-auto p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm open:animate-in open:fade-in open:zoom-in-95 w-full max-w-4xl">
-    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[80vh]">
+    <div class="rounded-3xl border border-white/10 bg-[#01140e] overflow-hidden flex flex-col max-h-[85vh]">
         <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#01140e] z-10">
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
-                <h3 class="text-lg font-black text-white tracking-wide uppercase">Daily Sales (Last 30 Days)</h3>
+                <div>
+                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Monthly Sales Breakdown (Year {{ active_year|default:"2026" }})</h3>
+                    <p class="text-xs text-[#a0ac96]">12-Month revenue and volume progression</p>
+                </div>
             </div>
             <button onclick="document.getElementById('dailySalesModal').close()" class="text-[#a0ac96] hover:text-white transition-colors cursor-pointer p-2 rounded-full hover:bg-white/5">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,30 +221,28 @@
             </button>
         </div>
         <div class="overflow-y-auto flex-grow p-0">
+            <!-- Monthly Summary Table -->
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Month</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Orders</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Quantity (kg)</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Revenue</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5 bg-transparent">
-                    {% for day in daily_sales_list %}
+                    {% for m in monthly_sales_list %}
                     <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-bold text-stone-200">{{ day.date }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-white font-bold">{{ day.orders }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono text-[#a0ac96] font-bold">{{ day.qty|floatformat:2 }}</td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ day.revenue|floatformat:2 }}</td>
+                        <td class="px-8 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ m.month }}</td>
+                        <td class="px-8 py-4 whitespace-nowrap text-sm font-mono text-white font-bold">{{ m.orders }}</td>
+                        <td class="px-8 py-4 whitespace-nowrap text-sm font-mono text-[#a0ac96] font-bold">{{ m.qty|floatformat:2 }}</td>
+                        <td class="px-8 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ m.revenue|floatformat:2 }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="px-8 py-16 text-center text-[#a0ac96]">
-                            <svg class="mx-auto h-12 w-12 text-[#a0ac96]/40 mb-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found</p>
+                        <td colspan="4" class="px-8 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No annual sales records found</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -438,35 +439,46 @@
 {% block extra_js %}
 <script>
     
-    // Sales Performance Line Chart
+    // Sales Performance Line Chart (Months horizontal, Year/Revenue vertical)
     const salesData = {{ sales_data|safe }};
     
     const salesCtx = document.getElementById('salesChart').getContext('2d');
     new Chart(salesCtx, {
         type: 'line',
         data: {
-            labels: salesData.labels,
-            datasets: [{
-                label: 'Revenue (₱k)',
-                data: salesData.values,
+            labels: salesData.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: (salesData.datasets && salesData.datasets.length) ? salesData.datasets : [{
+                label: `Year ${salesData.active_year || '2026'}`,
+                data: salesData.values || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 borderColor: 'rgb(16, 185, 129)',
                 borderWidth: 3,
-                tension: 0.4,
+                tension: 0.35,
                 fill: true,
                 pointBackgroundColor: '#01140e',
                 pointBorderColor: 'rgb(16, 185, 129)',
                 pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
+                pointRadius: 4.5,
+                pointHoverRadius: 7
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             plugins: {
                 legend: {
-                    display: false
+                    display: (salesData.datasets && salesData.datasets.length > 1) ? true : false,
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        color: '#a0ac96',
+                        boxWidth: 12,
+                        font: { family: 'monospace', weight: 'bold', size: 11 }
+                    }
                 },
                 tooltip: {
                     backgroundColor: 'rgba(1, 20, 14, 0.95)',
@@ -482,7 +494,8 @@
                     callbacks: {
                         label: function(context) {
                             let value = context.raw || 0;
-                            return `₱${(value * 1000).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            let label = context.dataset.label || 'Gross Sales';
+                            return `${label}: ₱${(value * 1000).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                         }
                     }
                 }
@@ -490,6 +503,12 @@
             scales: {
                 y: {
                     beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Yearly Revenue (₱k)',
+                        color: '#a0ac96',
+                        font: { size: 11, weight: 'bold' }
+                    },
                     grid: {
                         color: 'rgba(255, 255, 255, 0.05)',
                         drawBorder: false
@@ -506,6 +525,12 @@
                     }
                 },
                 x: {
+                    title: {
+                        display: true,
+                        text: 'Month',
+                        color: '#a0ac96',
+                        font: { size: 11, weight: 'bold' }
+                    },
                     grid: {
                         display: false
                     },

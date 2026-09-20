@@ -161,27 +161,82 @@ def analytics_dashboard(request):
         'harvested_kg': round(float(monthly_harvest), 2)
     }
     
-    # Sales Performance Chart Data (Last 14 days trend)
-    sales_trend = sales_qs.filter(order_date__gte=today - timedelta(days=14)).annotate(
-        date=TruncDate('order_date')
-    ).values('date').annotate(
-        total_revenue=Sum('total_amount')
-    ).order_by('date')
-    
-    trend_dict = {item['date']: float(item['total_revenue'] or 0) for item in sales_trend if item['date']}
-    
-    trend_labels = []
-    trend_values = []
-    for i in range(13, -1, -1):
-        d = today - timedelta(days=i)
-        trend_labels.append(d.strftime('%b %d'))
-        trend_values.append(round(trend_dict.get(d, 0.0) / 1000, 2))
-        
+    # Sales Performance Chart Data (Months horizontal Jan-Dec, Year/Revenue vertical)
+    from django.db.models.functions import ExtractYear, ExtractMonth
+    import calendar
+
+    all_user_sales = _get_sales_queryset_for_user(request.user)
+    yearly_sales_records = all_user_sales.annotate(
+        order_year=ExtractYear('order_date'),
+        order_month=ExtractMonth('order_date')
+    ).values('order_year', 'order_month').annotate(
+        total_revenue=Sum('total_amount'),
+        total_qty=Sum('quantity_kg'),
+        order_count=Count('id')
+    ).order_by('order_year', 'order_month')
+
+    year_data_map = {}
+    for row in yearly_sales_records:
+        y = row['order_year']
+        m = row['order_month']
+        if not y or not m:
+            continue
+        if y not in year_data_map:
+            year_data_map[y] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
+        year_data_map[y][m]['revenue'] += float(row['total_revenue'] or 0)
+        year_data_map[y][m]['qty'] += float(row['total_qty'] or 0)
+        year_data_map[y][m]['orders'] += int(row['order_count'] or 0)
+
+    if not year_data_map:
+        year_data_map[today.year] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
+
+    available_years = sorted(list(year_data_map.keys()), reverse=True)
+    active_year = available_years[0] if available_years else today.year
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    chart_datasets = []
+    palette = [
+        {'border': 'rgb(16, 185, 129)', 'bg': 'rgba(16, 185, 129, 0.12)', 'point': '#10b981'},
+        {'border': '#cca43b', 'bg': 'rgba(204, 164, 59, 0.12)', 'point': '#cca43b'},
+        {'border': '#38bdf8', 'bg': 'rgba(56, 189, 248, 0.12)', 'point': '#38bdf8'},
+    ]
+
+    for idx, yr in enumerate(available_years):
+        color = palette[idx % len(palette)]
+        yr_values = [round(year_data_map[yr][m]['revenue'] / 1000, 2) for m in range(1, 13)]
+        chart_datasets.append({
+            'label': f'Year {yr}',
+            'data': yr_values,
+            'borderColor': color['border'],
+            'backgroundColor': color['bg'],
+            'pointBorderColor': color['point'],
+            'pointBackgroundColor': '#01140e',
+            'borderWidth': 3,
+            'tension': 0.35,
+            'fill': True if len(available_years) == 1 else False,
+            'pointRadius': 4.5,
+            'pointHoverRadius': 7
+        })
+
     sales_data = {
-        'labels': trend_labels,
-        'values': trend_values
+        'labels': month_names,
+        'datasets': chart_datasets,
+        'values': [round(year_data_map[active_year][m]['revenue'] / 1000, 2) for m in range(1, 13)],
+        'active_year': active_year,
+        'available_years': available_years
     }
-    
+
+    # Monthly Sales Table for the Modal (All 12 Months of Active Year)
+    monthly_sales_list = []
+    for m in range(1, 13):
+        m_info = year_data_map[active_year][m]
+        monthly_sales_list.append({
+            'month': f"{calendar.month_name[m]} {active_year}",
+            'revenue': m_info['revenue'],
+            'qty': m_info['qty'],
+            'orders': m_info['orders']
+        })
+
     # Daily Sales Table (Last 30 Days)
     daily_sales_30 = sales_qs.filter(order_date__gte=thirty_days_ago).annotate(
         date=TruncDate('order_date')
@@ -190,7 +245,7 @@ def analytics_dashboard(request):
         total_qty=Sum('quantity_kg'),
         order_count=Count('id')
     ).order_by('-date')
-    
+
     daily_sales_list = []
     for ds in daily_sales_30:
         if ds['date']:
@@ -389,6 +444,8 @@ def analytics_dashboard(request):
         'forecast_chart_data': json.dumps(forecast_chart_data),
         'trend_chart_data': json.dumps(trend_chart_data),
         'daily_sales_list': daily_sales_list,
+        'monthly_sales_list': monthly_sales_list,
+        'active_year': active_year,
         'location_orders_list': location_orders_list,
         'product_orders_list': product_orders_list,
         
