@@ -390,7 +390,7 @@ def analytics_dashboard(request):
 
     # 7. Top Products Donut Breakdown (100% from Database)
     top_products_donut = []
-    prod_sales_qs = all_user_sales.values('product__name').annotate(
+    prod_sales_qs = all_user_sales.values('product__name', 'product__unit_type').annotate(
         total_rev=Sum('total_amount'),
         total_qty=Sum('quantity_kg'),
         order_count=Count('id')
@@ -401,13 +401,15 @@ def analytics_dashboard(request):
 
     for idx, p_row in enumerate(prod_sales_qs):
         p_name = p_row['product__name'] or 'Product'
+        p_unit = p_row.get('product__unit_type') or 'pcs'
         p_rev = float(p_row['total_rev'] or 0)
         p_qty = float(p_row['total_qty'] or 0)
         share_pct = round((p_rev / total_prod_rev) * 100)
+        units_label = f"{p_qty:.1f} kg" if p_unit == 'kg' else f"{int(p_qty)} {p_unit}{'s' if p_unit in ['tub', 'pack', 'pair'] and int(p_qty) != 1 else ''}"
         top_products_donut.append({
             'name': p_name,
             'share_pct': share_pct,
-            'units_str': f"{p_qty:.1f} kg / units sold",
+            'units_str': f"{units_label} sold",
             'trend_str': '↑ Active sales' if share_pct > 25 else '→ Steady demand',
             'color': colors_palette[idx % len(colors_palette)]
         })
@@ -415,10 +417,12 @@ def analytics_dashboard(request):
     if not top_products_donut:
         # Fallback to active inventory products
         for idx, p in enumerate(Product.objects.filter(is_active=True)[:4]):
+            p_unit = p.unit_display
+            units_label = f"{p.quantity_kg:.1f} kg" if p_unit == 'kg' else f"{int(p.quantity_kg)} {p_unit}{'s' if p_unit in ['tub', 'pack', 'pair'] and int(p.quantity_kg) != 1 else ''}"
             top_products_donut.append({
                 'name': p.name,
                 'share_pct': 25,
-                'units_str': f"{p.quantity_kg:.1f} kg available",
+                'units_str': f"{units_label} available",
                 'trend_str': '→ In stock',
                 'color': colors_palette[idx % len(colors_palette)]
             })

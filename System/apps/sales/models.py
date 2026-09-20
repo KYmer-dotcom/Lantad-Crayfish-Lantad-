@@ -65,12 +65,21 @@ class Product(models.Model):
         FISH = 'fish', 'Fish'
         SHRIMP = 'shrimp', 'Shrimp'
 
+    class UnitType(models.TextChoices):
+        PCS = 'pcs', 'Pieces (pcs)'
+        KG = 'kg', 'Kilograms (kg)'
+        TUB = 'tub', 'Tubs'
+        PAIR = 'pair', 'Pairs'
+        PACK = 'pack', 'Packs'
+        HEAD = 'head', 'Heads'
+
     name = models.CharField(max_length=200)
     species = models.ForeignKey('stock.Species', on_delete=models.SET_NULL, null=True, blank=True)
     pond = models.ForeignKey('operations.Pond', on_delete=models.SET_NULL, null=True, blank=True)
     category = models.CharField(max_length=20, choices=Category.choices, default=Category.FISH)
     accent_color = models.CharField(max_length=20, default='indigo')
     icon = models.CharField(max_length=20, default='fish')
+    unit_type = models.CharField(max_length=20, choices=UnitType.choices, default=UnitType.PCS, help_text="Measurement unit for this product")
     quantity_kg = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     reorder_level_kg = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -89,6 +98,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def unit_display(self):
+        return self.unit_type or 'pcs'
 
     @property
     def is_low_stock(self):

@@ -588,7 +588,7 @@ def order_receipt_view(request, order_id):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'species', 'pond', 'category', 'accent_color', 'icon', 'quantity_kg', 'reorder_level_kg', 'unit_price', 'price_per_kg', 'pieces_per_kg', 'is_active', 'notes']
+        fields = ['name', 'species', 'pond', 'category', 'accent_color', 'icon', 'unit_type', 'quantity_kg', 'reorder_level_kg', 'unit_price', 'price_per_kg', 'pieces_per_kg', 'is_active', 'notes']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
@@ -601,6 +601,9 @@ class ProductForm(forms.ModelForm):
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
             }),
             'category': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            }),
+            'unit_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
             }),
             'quantity_kg': forms.NumberInput(attrs={
@@ -619,12 +622,12 @@ class ProductForm(forms.ModelForm):
             'price_per_kg': forms.NumberInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
                 'step': '0.01',
-                'placeholder': 'Price per crate'
+                'placeholder': 'Price per unit'
             }),
             'pieces_per_kg': forms.NumberInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
                 'step': '0.01',
-                'placeholder': 'Pieces per crate'
+                'placeholder': 'Pieces / items per unit'
             }),
             'notes': forms.Textarea(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
@@ -818,6 +821,7 @@ def product_create(request):
         data['category'] = data.get('category') or Product.Category.FISH
         data['accent_color'] = data.get('accent') or 'indigo'
         data['icon'] = data.get('icon') or 'fish'
+        data['unit_type'] = data.get('unit_type') or Product.UnitType.PCS
         data['quantity_kg'] = data.get('quantity_kg') or '0'
         data['reorder_level_kg'] = data.get('reorder_level_kg') or '0'
         data['unit_price'] = data.get('unit_price') or '0'
@@ -839,7 +843,7 @@ def product_create(request):
                 action=InputLog.Action.ADDED,
                 module='Product Management',
                 target_entity=f'Product: {product.name}',
-                details=f'Admin added new product "{product.name}" (Stock: {product.quantity_kg} kg • Price: ₱{price_val:,.2f}/kg • Category: {product.get_category_display()})'
+                details=f'Admin added new product "{product.name}" (Stock: {product.quantity_kg} {product.unit_display} • Price: ₱{price_val:,.2f} • Category: {product.get_category_display()})'
             )
             messages.success(request, f'Product "{product.name}" created successfully!')
 
@@ -894,6 +898,7 @@ def product_edit(request, product_id):
         notes = request.POST.get('notes')
         accent = request.POST.get('accent')
         icon = request.POST.get('icon')
+        unit_type = request.POST.get('unit_type')
         unit_price = request.POST.get('unit_price')
         price_per_kg = request.POST.get('price_per_kg')
         pieces_per_kg = request.POST.get('pieces_per_kg')
@@ -907,6 +912,8 @@ def product_edit(request, product_id):
                 product.accent_color = accent
             if icon:
                 product.icon = icon
+            if unit_type:
+                product.unit_type = unit_type
             
             if unit_price:
                 try:
@@ -929,7 +936,7 @@ def product_edit(request, product_id):
                 except ValueError:
                     pass
                     
-            product.save(update_fields=['name', 'notes', 'accent_color', 'icon', 'unit_price', 'price_per_kg', 'pieces_per_kg', 'quantity_kg', 'updated_at'])
+            product.save(update_fields=['name', 'notes', 'accent_color', 'icon', 'unit_type', 'unit_price', 'price_per_kg', 'pieces_per_kg', 'quantity_kg', 'updated_at'])
             messages.success(request, f'Product "{product.name}" updated successfully!')
         else:
             messages.error(request, 'Product name is required.')

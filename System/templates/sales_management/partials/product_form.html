@@ -19,13 +19,17 @@
             {{ form.pond }}
         </div>
     </div>
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Current Stock (kg) *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Unit Type</label>
+            {{ form.unit_type }}
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Current Stock *</label>
             {{ form.quantity_kg }}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Reorder Level (kg)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Reorder Level</label>
             {{ form.reorder_level_kg }}
         </div>
         <div>

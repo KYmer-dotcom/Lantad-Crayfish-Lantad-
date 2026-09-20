@@ -79,17 +79,17 @@
         <div class="grid grid-cols-1 gap-1.5 md:grid-cols-2 xl:grid-cols-4">
             {% for product in products %}
             {% if product.accent_color == 'cyan' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-cyan-800/50 bg-cyan-900/20 p-4 cursor-pointer hover:border-cyan-500 transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-cyan-800/50 bg-cyan-900/20 p-4 cursor-pointer hover:border-cyan-500 transition-colors">
             {% elif product.accent_color == 'emerald' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-emerald-800/50 bg-emerald-900/20 p-4 cursor-pointer hover:border-emerald-500 transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-emerald-800/50 bg-emerald-900/20 p-4 cursor-pointer hover:border-emerald-500 transition-colors">
             {% elif product.accent_color == 'amber' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-amber-800/50 bg-amber-900/20 p-4 cursor-pointer hover:border-amber-500 transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-amber-800/50 bg-amber-900/20 p-4 cursor-pointer hover:border-amber-500 transition-colors">
             {% elif product.accent_color == 'rose' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-rose-800/50 bg-rose-900/20 p-4 cursor-pointer hover:border-rose-500 transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-rose-800/50 bg-rose-900/20 p-4 cursor-pointer hover:border-rose-500 transition-colors">
             {% elif product.accent_color == 'violet' %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-violet-800/50 bg-violet-900/20 p-4 cursor-pointer hover:border-violet-500 transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-violet-800/50 bg-violet-900/20 p-4 cursor-pointer hover:border-violet-500 transition-colors">
             {% else %}
-            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-white/10 bg-black/20 p-4 cursor-pointer hover:border-[#cca43b] transition-colors">
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-white/10 bg-black/20 p-4 cursor-pointer hover:border-[#cca43b] transition-colors">
             {% endif %}
                 <div class="flex items-center justify-between">
                     <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-black/30 border border-white/10 text-2xl">
@@ -122,11 +122,11 @@
                         <p class="mt-0.5 text-xs text-[#a0ac96] line-clamp-2">{{ product.notes|default:"No description provided." }}</p>
                     </div>
                     <div class="text-right flex-shrink-0 ml-3">
-                        <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">stock</span></div>
+                        <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">{{ product.unit_display }}</span></div>
                         <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight">
                             {% if product.unit_price > 0 %}<span>₱{{ product.unit_price|floatformat:"0" }}/pc</span>{% endif %}
-                            {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/crate</span>{% endif %}
-                            {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/crate)</span>{% endif %}
+                            {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/unit</span>{% endif %}
+                            {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/unit)</span>{% endif %}
                         </div>
                     </div>
                 </div>
@@ -267,9 +267,22 @@
             <input type="hidden" name="next" value="{{ request.path }}" />
             <input type="hidden" name="accent" id="product-accent" value="indigo" />
             <input type="hidden" name="icon" id="product-icon" value="fish" />
-            <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Product Name *</label>
-                <input type="text" id="product-name" name="name" placeholder="e.g. Live Tilapia" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                    <label class="text-xs font-semibold text-[#a0ac96]">Product Name *</label>
+                    <input type="text" id="product-name" name="name" placeholder="e.g. Live Crayfish" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" required />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Unit Type</label>
+                    <select id="product-unit-type" name="unit_type" class="mt-2 w-full rounded-lg border border-white/10 bg-[#021f15] px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none">
+                        <option value="pcs">Pieces (pcs)</option>
+                        <option value="tub">Tubs</option>
+                        <option value="pair">Pairs</option>
+                        <option value="pack">Packs</option>
+                        <option value="head">Heads</option>
+                        <option value="kg">Kilograms (kg)</option>
+                    </select>
+                </div>
             </div>
             
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -278,11 +291,11 @@
                     <input type="number" step="0.01" id="product-unit-price" name="unit_price" placeholder="0.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Price/Crate (₱)</label>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Price/Unit (₱)</label>
                     <input type="number" step="0.01" id="product-price-per-kg" name="price_per_kg" placeholder="0.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Pcs / Crate</label>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Items / Unit</label>
                     <input type="number" step="0.01" id="product-pieces-per-kg" name="pieces_per_kg" placeholder="1.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
@@ -336,6 +349,7 @@ function showProductModal() {
     
     document.getElementById('product-name').value = '';
     document.getElementById('product-notes').value = '';
+    document.getElementById('product-unit-type').value = 'pcs';
     document.getElementById('product-unit-price').value = '';
     document.getElementById('product-price-per-kg').value = '';
     document.getElementById('product-pieces-per-kg').value = '1';
@@ -349,13 +363,14 @@ function showProductModal() {
     document.getElementById('product-modal').classList.add('flex');
 }
 
-function openEditProductModal(actionUrl, name, notes, accent, icon, unitPrice, pricePerKg, piecesPerKg, quantityKg) {
+function openEditProductModal(actionUrl, name, notes, accent, icon, unitPrice, pricePerKg, piecesPerKg, quantityKg, unitType) {
     document.getElementById('product-modal-title').textContent = 'Edit Product';
     document.getElementById('product-form').action = actionUrl;
     document.getElementById('product-submit-btn').textContent = 'Save Changes';
     
     document.getElementById('product-name').value = name;
     document.getElementById('product-notes').value = notes;
+    document.getElementById('product-unit-type').value = unitType || 'pcs';
     document.getElementById('product-unit-price').value = unitPrice || 0;
     document.getElementById('product-price-per-kg').value = pricePerKg || 0;
     document.getElementById('product-pieces-per-kg').value = piecesPerKg || 1;

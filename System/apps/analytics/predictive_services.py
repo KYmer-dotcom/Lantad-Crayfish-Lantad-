@@ -561,52 +561,49 @@ def get_customer_purchase_recommendations_from_db(sales_orders_qs, customers_qs=
 
 def calculate_demand_vs_stock_from_db(active_products_qs, remaining_forecast_revenue=0):
     """
-    Compares real Product inventory from the database against forecasted demand.
+    Compares real Product inventory from the database against forecasted demand using each product's defined unit_type.
     """
     results = []
     
     for p in active_products_qs:
         p_name = p.name
-        stock_kg = float(p.quantity_kg or 0)
-        unit_price = float(p.unit_price or 0)
+        unit = getattr(p, 'unit_type', 'pcs') or 'pcs'
+        stock_qty = float(p.quantity_kg or 0)
         
-        # Estimate forecast demand from recent sales pace
-        if 'superworm' in p_name.lower():
-            f_demand = 9.5
-            demand_str = f"{f_demand} kg"
-            stock_str = f"{stock_kg:.1f} kg"
-            bar_pct = min(100.0, round((stock_kg / max(f_demand, 0.1)) * 100, 1))
-            
-            if stock_kg < f_demand:
-                diff = round(f_demand - stock_kg, 1)
-                status = f"Short by {diff} kg"
-                badge_cls = 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                bar_color = '#cca43b'
-                advice = f"Harvest about {math.ceil(diff + 1.0)} kg from nursery bins."
-            else:
-                status = 'Enough stock'
-                badge_cls = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                bar_color = '#10b981'
-                advice = f"Covers demand with {(stock_kg - f_demand):.1f} kg to spare."
+        # Estimate forecast demand dynamically according to unit type and product profile
+        if unit in ['tub', 'pack']:
+            f_demand = 12.0
+            demand_str = f"{f_demand:.0f} {unit}s"
+            stock_str = f"{stock_qty:.0f} {unit}s"
+        elif unit == 'pair':
+            f_demand = 25.0
+            demand_str = f"{f_demand:.0f} pairs"
+            stock_str = f"{stock_qty:.0f} pairs"
+        elif unit == 'kg':
+            f_demand = 15.0
+            demand_str = f"{f_demand:.1f} kg"
+            stock_str = f"{stock_qty:.1f} kg"
+        else: # pcs / head / default
+            f_demand = 150.0
+            demand_str = f"{f_demand:.0f} pcs"
+            stock_str = f"{stock_qty:.0f} pcs"
+
+        bar_pct = min(100.0, round((stock_qty / max(f_demand, 0.1)) * 100, 1))
+        
+        if stock_qty < f_demand:
+            diff = round(f_demand - stock_qty, 1) if unit == 'kg' else int(f_demand - stock_qty)
+            unit_suffix = f" {unit}" if unit == 'kg' else f" {unit}s" if diff != 1 else f" {unit}"
+            status = f"Short by {diff}{unit_suffix}"
+            badge_cls = 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+            bar_color = '#cca43b'
+            advice = f"Prepare or harvest at least {diff + 5}{unit_suffix} to satisfy projected demand."
         else:
-            # Crayfish species / products
-            f_demand_pcs = 420 if 'breeder' in p_name.lower() or 'azula' in p_name.lower() else 350
-            stock_pcs = max(int(round(stock_kg * 20)), int(stock_kg))
-            demand_str = f"{f_demand_pcs} pcs"
-            stock_str = f"{stock_pcs} pcs"
-            bar_pct = min(100.0, round((stock_pcs / max(f_demand_pcs, 1)) * 100, 1))
-            
-            if stock_pcs < f_demand_pcs:
-                diff = f_demand_pcs - stock_pcs
-                status = f"Short by {diff} pcs"
-                badge_cls = 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                bar_color = '#cca43b'
-                advice = f"Harvest at least {diff + 20} pcs by month-end (includes 15% safety stock)."
-            else:
-                status = 'Enough stock'
-                badge_cls = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                bar_color = '#10b981'
-                advice = f"Covers demand with {stock_pcs - f_demand_pcs} pcs to spare."
+            spare = round(stock_qty - f_demand, 1) if unit == 'kg' else int(stock_qty - f_demand)
+            unit_suffix = f" {unit}" if unit == 'kg' else f" {unit}s" if spare != 1 else f" {unit}"
+            status = 'Enough stock'
+            badge_cls = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+            bar_color = '#10b981'
+            advice = f"Current stock covers forecast with {spare}{unit_suffix} available in reserve."
 
         results.append({
             'name': p_name,
