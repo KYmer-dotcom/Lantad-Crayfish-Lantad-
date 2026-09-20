@@ -434,19 +434,13 @@ def analytics_dashboard(request):
         HarvestRecord.objects.all()
     )
 
-    # 9. Customer Purchase Intelligence (100% from Database)
-    customer_intel = get_customer_purchase_recommendations_from_db(
-        all_user_sales,
-        Customer.objects.all()
-    )
-
-    # 10. Demand vs Stock Analysis (100% from Database)
+    # 9. Demand vs Stock Analysis (100% from Database)
     demand_stock_data = calculate_demand_vs_stock_from_db(
         Product.objects.filter(is_active=True),
         remaining_forecast_revenue
     )
 
-    # 11. Model Details Metadata (100% from Database)
+    # 10. Model Details Metadata (100% from Database)
     first_order = all_user_sales.order_by('order_date').first()
     last_order = all_user_sales.order_by('-order_date').first()
     first_date_str = first_order.order_date.strftime('%b %d, %Y') if first_order and first_order.order_date else 'May 01, 2026'
@@ -527,9 +521,6 @@ def analytics_dashboard(request):
             'crawfish': seasonal_data['crawfish_indices'],
             'superworm': seasonal_data['superworm_indices']
         }),
-
-        # Customer Intelligence
-        'customer_intel': customer_intel,
 
         # Demand vs Stock
         'demand_stock_data': demand_stock_data,
