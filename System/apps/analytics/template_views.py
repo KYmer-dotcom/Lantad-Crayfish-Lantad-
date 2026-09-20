@@ -362,64 +362,55 @@ def analytics_dashboard(request):
     all_sales_qs = SalesOrder.objects.exclude(status=SalesOrder.Status.CANCELLED)
     product_recommendations = get_product_recommendations(sales_qs, all_sales_qs)
     
-    # Predictive Analytics: Forecast & Trend
-    # Convert daily_sales_30 to chronological order for math models
-    daily_sales_chrono = list(daily_sales_30)
-    daily_sales_chrono.reverse()
+    # Predictive Analytics: Forecast & Trend for the Current Month (Start to End of Month)
+    import datetime
     
-    predictive_sales = []
-    for ds in daily_sales_chrono:
-        if ds['date']:
-            predictive_sales.append({
-                'date': ds['date'],
-                'revenue': float(ds['total_revenue'] or 0)
-            })
-            
-    sales_forecast = forecast_sales_moving_average(predictive_sales, days_to_predict=7, window_size=5)
-    sales_trend = linear_regression_trend(predictive_sales)
+    curr_day = min(today.day, num_days_in_month) if (today.year == curr_year and today.month == curr_month) else num_days_in_month
     
-    trend_labels = []
-    trend_scatter_data = []
-    trend_line_data = []
-    
-    slope = sales_trend['slope']
-    intercept = sales_trend['intercept']
-    
-    for i, s in enumerate(predictive_sales):
-        trend_labels.append(s['date'].strftime('%b %d'))
-        trend_scatter_data.append(s['revenue'])
-        trend_line_data.append(round(slope * i + intercept, 2))
-        
-    trend_chart_data = {
-        'labels': trend_labels,
-        'scatter': trend_scatter_data,
-        'line': trend_line_data
-    }
-    
-    trend_data_list = []
-    for i, s in enumerate(predictive_sales):
-        trend_data_list.append({
-            'date': s['date'],
-            'actual': s['revenue'],
-            'trend': round(slope * i + intercept, 2)
+    # Chronological series of actual sales for current month up to today
+    month_sales_chrono = []
+    for d in range(1, curr_day + 1):
+        day_dt = datetime.date(curr_year, curr_month, d)
+        info = day_sales_map.get(d, {'revenue': 0.0})
+        month_sales_chrono.append({
+            'date': day_dt,
+            'revenue': float(info['revenue'])
         })
+        
+    days_to_forecast = num_days_in_month - curr_day
     
-    # Build combined labels and datasets for Historical + Forecast
-    historical = predictive_sales[-7:] if len(predictive_sales) >= 7 else predictive_sales
+    # Generate moving average forecast for remaining days of the month
+    if days_to_forecast > 0:
+        sales_forecast = forecast_sales_moving_average(
+            month_sales_chrono,
+            days_to_predict=days_to_forecast,
+            window_size=5
+        )
+    else:
+        sales_forecast = forecast_sales_moving_average(
+            month_sales_chrono,
+            days_to_predict=7,
+            window_size=5
+        )
+        
+    sales_trend = linear_regression_trend(month_sales_chrono)
     
+    # Build complete month labels and datasets from Day 1 to End of Month
     chart_labels = []
     historical_data = []
     forecast_data = []
     
-    for h in historical:
-        chart_labels.append(h['date'].strftime('%b %d'))
-        historical_data.append(h['revenue'])
+    # 1. Historical days from start of the month (1 .. curr_day)
+    for d in range(1, curr_day + 1):
+        chart_labels.append(f"{curr_month_abbr} {d:02d}")
+        historical_data.append(day_sales_map.get(d, {}).get('revenue', 0.0))
         forecast_data.append(None)
         
-    # Connect the historical line to the forecast line
-    if historical:
-        forecast_data[-1] = historical[-1]['revenue']
+    # 2. Connect the historical line to the forecast line at curr_day
+    if curr_day > 0 and days_to_forecast > 0:
+        forecast_data[curr_day - 1] = historical_data[curr_day - 1]
         
+    # 3. Forecast days to the end of the month
     for f in sales_forecast:
         chart_labels.append(f['date'].strftime('%b %d'))
         historical_data.append(None)
@@ -431,22 +422,42 @@ def analytics_dashboard(request):
         'forecast': forecast_data
     }
     
+    # Trend Chart Data for current month
+    trend_labels = []
+    trend_scatter_data = []
+    trend_line_data = []
+    
+    slope = sales_trend['slope']
+    intercept = sales_trend['intercept']
+    
+    for i, s in enumerate(month_sales_chrono):
+        trend_labels.append(s['date'].strftime('%b %d'))
+        trend_scatter_data.append(s['revenue'])
+        trend_line_data.append(round(slope * i + intercept, 2))
+        
+    trend_chart_data = {
+        'labels': trend_labels,
+        'scatter': trend_scatter_data,
+        'line': trend_line_data
+    }
+    
+    trend_data_list = []
+    for i, s in enumerate(month_sales_chrono):
+        trend_data_list.append({
+            'date': s['date'],
+            'actual': s['revenue'],
+            'trend': round(slope * i + intercept, 2)
+        })
+    
     # Harvest Forecasts
     harvest_forecasts = _build_harvest_forecasts(request.user, limit=4)
     
     # Sales Forecasts
     sales_forecasts = _build_sales_forecasts(limit=4)
     
-    # Calculate Total Predicted Revenue
-    if sales_forecast:
-        predicted_revenue = sum(f.get('predicted_revenue', 0) for f in sales_forecast)
-    elif sales_forecasts:
-        predicted_revenue = sum(
-            f['predicted_revenue'] if isinstance(f, dict) else float(f.predicted_revenue or 0)
-            for f in sales_forecasts
-        )
-    else:
-        predicted_revenue = 0
+    # Calculate Total Predicted Revenue for the Month (Actual to Date + Remaining Forecast)
+    remaining_predicted = sum(f.get('predicted_revenue', 0) for f in sales_forecast) if days_to_forecast > 0 else 0
+    predicted_revenue = round(float(monthly_revenue) + remaining_predicted, 2)
     
     context = {
         # KPI Summary
