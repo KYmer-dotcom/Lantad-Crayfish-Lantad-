@@ -108,7 +108,7 @@
     </div>
     
     <!-- Predictive Analytics Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 gap-6 mb-6">
         <!-- Sales Forecast Chart -->
         <div onclick="document.getElementById('forecastModal').showModal()" class="glass-card rounded-xl p-6 flex flex-col cursor-pointer group hover:border-[#cca43b]/40 transition-colors">
             <div class="flex items-center justify-between mb-6">
@@ -120,7 +120,7 @@
                     Trend: <span class="{% if sales_trend.trend == 'increasing' %}text-emerald-400{% elif sales_trend.trend == 'decreasing' %}text-rose-400{% else %}text-amber-400{% endif %} capitalize font-bold">{{ sales_trend.trend }}</span>
                 </span>
             </div>
-            <div class="h-64 w-full flex-grow relative">
+            <div class="h-72 w-full flex-grow relative">
                 <canvas id="forecastChart"></canvas>
             </div>
         </div>
@@ -133,7 +133,7 @@
                     <h3 class="text-base font-black text-white tracking-wide uppercase group-hover:text-cyan-500 transition-colors">Sales Trend Prediction</h3>
                 </div>
             </div>
-            <div class="h-64 w-full flex-grow relative">
+            <div class="h-72 w-full flex-grow relative">
                 <canvas id="trendChart"></canvas>
             </div>
         </div>
