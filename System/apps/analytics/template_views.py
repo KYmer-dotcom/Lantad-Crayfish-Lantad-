@@ -317,6 +317,7 @@ def analytics_dashboard(request):
     sales_trend_type = linear_regression_trend(month_sales_chrono)
 
     trend_scatter = []
+    actual_daily_vals = []
     trend_fit_line = []
     trend_proj_line = []
 
@@ -332,9 +333,11 @@ def analytics_dashboard(request):
         if d <= curr_day:
             rev_val = daily_sales_by_day[d]['revenue']
             trend_scatter.append({'x': lbl, 'y': rev_val, 'is_outlier': (lbl in trend_stats['outliers'])})
+            actual_daily_vals.append(rev_val)
             trend_fit_line.append(fit_val)
             trend_proj_line.append(None)
         else:
+            actual_daily_vals.append(None)
             trend_fit_line.append(None)
             trend_proj_line.append(fit_val)
 
@@ -344,8 +347,10 @@ def analytics_dashboard(request):
     trend_chart_data = {
         'labels': daily_labels,
         'scatter': trend_scatter,
+        'actual': actual_daily_vals,
         'fitted': trend_fit_line,
-        'projection': trend_proj_line
+        'projection': trend_proj_line,
+        'projected': trend_proj_line
     }
 
     # 6. Top Locations Progress Breakdown (100% from Database)

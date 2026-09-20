@@ -662,27 +662,30 @@
                 {
                     label: 'Daily Sales',
                     data: trendData.actual,
-                    type: 'scatter',
+                    showLine: false,
                     backgroundColor: '#cca43b',
                     borderColor: '#cca43b',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointBackgroundColor: '#cca43b',
+                    pointBorderColor: '#01140e',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 },
                 {
                     label: 'Fitted Line',
                     data: trendData.fitted,
                     borderColor: '#06b6d4',
-                    borderWidth: 2,
+                    borderWidth: 2.5,
                     backgroundColor: 'transparent',
                     pointRadius: 0,
                     tension: 0
                 },
                 {
-                    label: 'Projected Trend',
-                    data: trendData.projected,
+                    label: 'Projection',
+                    data: trendData.projected || trendData.projection,
                     borderColor: '#06b6d4',
                     borderDash: [5, 4],
-                    borderWidth: 2,
+                    borderWidth: 2.5,
                     backgroundColor: 'transparent',
                     pointRadius: 0,
                     tension: 0
