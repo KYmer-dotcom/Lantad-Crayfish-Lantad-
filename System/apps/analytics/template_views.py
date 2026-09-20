@@ -3,7 +3,10 @@ Template views for Analytics module
 """
 import csv
 import json
-from datetime import timedelta
+import datetime
+import calendar
+from datetime import timedelta, date
+from collections import defaultdict, Counter
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
