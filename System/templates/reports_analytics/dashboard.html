@@ -31,60 +31,16 @@
     </div>
     
     <!-- KPI Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5">
-        <!-- Active Ponds -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Active Ponds</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ active_ponds }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Operational aquaculture units</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Active Product Types -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Active Product Types</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_fish_stock|floatformat:0|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Distinct product offerings in stock</span>
-                </div>
-            </div>
-        </div>
-        
+    <div class="mb-6">
         <!-- Monthly Revenue -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Monthly Revenue</p>
+                <p class="text-2xl sm:text-4xl font-black text-[#cca43b] tracking-tight mt-1">₱{{ monthly_revenue|floatformat:2|default:"0.00" }}</p>
             </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ monthly_revenue|floatformat:2|default:"0.00" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                    <span>Completed sales transactions</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Available Stock Quantity -->
-        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Available Stock Quantity</p>
-            </div>
-            <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ monthly_harvest|floatformat:0|default:"0" }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Total active product quantity available</span>
-                </div>
+            <div class="flex items-center gap-2 text-xs text-[#a0ac96] font-mono bg-white/5 px-3.5 py-2 rounded-lg border border-white/5 self-start sm:self-center">
+                <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+                <span>Completed sales transactions in {{ active_month|default:"Current Month" }}</span>
             </div>
         </div>
     </div>
