@@ -437,11 +437,23 @@ def analytics_dashboard(request):
     # Sales Forecasts
     sales_forecasts = _build_sales_forecasts(limit=4)
     
+    # Calculate Total Predicted Revenue
+    if sales_forecast:
+        predicted_revenue = sum(f.get('predicted_revenue', 0) for f in sales_forecast)
+    elif sales_forecasts:
+        predicted_revenue = sum(
+            f['predicted_revenue'] if isinstance(f, dict) else float(f.predicted_revenue or 0)
+            for f in sales_forecasts
+        )
+    else:
+        predicted_revenue = 0
+    
     context = {
         # KPI Summary
         'active_ponds': active_ponds,
         'total_fish_stock': total_fish_stock,
         'monthly_revenue': monthly_revenue,
+        'predicted_revenue': predicted_revenue,
         'monthly_harvest': monthly_harvest,
         'total_biomass': total_biomass,
         
