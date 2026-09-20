@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <!-- 2. Sales Performance Full Width Chart -->
+    <!-- 2. Sales Performance Full Width -->
     <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-white/10 pb-4">
             <div>
@@ -147,192 +147,202 @@
         </div>
     </div>
 
-    <!-- 3. Forecast Analysis & Trend Side-by-Side (Row) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-1.5">
-        <!-- 3A. Sales Forecast Analysis (8 cols) -->
-        <div class="glass-card rounded-xl p-6 lg:col-span-8 flex flex-col justify-between">
-            <div>
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-white/10 pb-4">
-                    <div>
-                        <h2 class="text-lg font-black tracking-tight text-white">Sales Forecast Analysis</h2>
-                        <p class="text-xs text-[#a0ac96] font-medium">Holt-Winters 7-day seasonal model with 80% prediction range</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="rounded-md bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 text-[10px] font-mono font-bold text-emerald-400">Trend: {{ sales_trend.trend|title }}</span>
-                        <span class="rounded-md bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] font-mono text-[#a0ac96]">MAE: ₱{{ selected_model_mae|floatformat:2 }}</span>
-                    </div>
+    <!-- 3. Sales Forecast Analysis Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-white/10 pb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Sales Forecast Analysis</h2>
+                    <p class="text-xs text-[#a0ac96] font-medium">Holt-Winters 7-day seasonal model with 80% prediction range</p>
                 </div>
-
-                <div class="flex items-center justify-end gap-4 text-xs font-bold text-[#a0ac96] mb-3 font-mono">
-                    <div class="flex items-center gap-1.5">
-                        <span class="h-2 w-3 rounded-sm bg-emerald-400"></span>
-                        <span>Actual</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="h-0.5 w-3 border-t-2 border-dashed border-[#818cf8]"></span>
-                        <span>Forecast</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="h-2 w-3 rounded-sm bg-[#818cf8]/20 border border-[#818cf8]/40"></span>
-                        <span>Range (80%)</span>
-                    </div>
-                </div>
-
-                <div class="h-64 w-full relative">
-                    <canvas id="forecastAnalysisChart"></canvas>
-                </div>
-
-                <div class="mt-4 p-3.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
-                    <p><span class="font-bold text-white">Expected revenue for {{ remaining_range_str }} is ₱{{ remaining_forecast_revenue|floatformat:2 }}.</span> Busiest projected day is <span class="font-bold text-[#cca43b]">{{ busiest_day_name }}</span>.</p>
+                <div class="flex items-center gap-2">
+                    <span class="rounded-md bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 text-[10px] font-mono font-bold text-emerald-400">Trend: {{ sales_trend.trend|title }}</span>
+                    <span class="rounded-md bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] font-mono text-[#a0ac96]">MAE: ₱{{ selected_model_mae|floatformat:2 }}</span>
                 </div>
             </div>
 
-            <!-- Remaining Days Table -->
-            <div class="mt-5">
-                <p class="text-xs font-black uppercase tracking-wider text-white mb-2">Upcoming Days Forecast</p>
-                <div class="overflow-x-auto rounded-lg border border-white/10 max-h-48 custom-scrollbar">
-                    <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
-                        <thead class="bg-white/[0.03] text-[#a0ac96] sticky top-0">
-                            <tr>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">Predicted</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">80% Range</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5 bg-transparent">
-                            {% for item in remaining_forecast_list %}
-                            <tr class="hover:bg-white/[0.02] transition-colors">
-                                <td class="px-4 py-2 text-stone-200 font-sans font-medium">{{ item.day_name }}</td>
-                                <td class="px-4 py-2 text-right font-bold {% if item.is_sunday %}text-[#a0ac96] font-normal{% else %}text-[#cca43b]{% endif %}">
-                                    {% if item.is_sunday %}No orders{% else %}₱{{ item.predicted_revenue|floatformat:2 }}{% endif %}
-                                </td>
-                                <td class="px-4 py-2 text-right text-[#a0ac96]">
-                                    {% if item.is_sunday %}-{% else %}₱{{ item.lower_80|floatformat:0 }} - ₱{{ item.upper_80|floatformat:0 }}{% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="3" class="px-4 py-4 text-center text-[#a0ac96]">Month-end reached. Model ready for next cycle.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="flex items-center justify-end gap-4 text-xs font-bold text-[#a0ac96] mb-3 font-mono">
+                <div class="flex items-center gap-1.5">
+                    <span class="h-2 w-3 rounded-sm bg-emerald-400"></span>
+                    <span>Actual</span>
                 </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="h-0.5 w-3 border-t-2 border-dashed border-[#818cf8]"></span>
+                    <span>Forecast</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="h-2 w-3 rounded-sm bg-[#818cf8]/20 border border-[#818cf8]/40"></span>
+                    <span>Range (80%)</span>
+                </div>
+            </div>
+
+            <div class="h-72 w-full relative">
+                <canvas id="forecastAnalysisChart"></canvas>
+            </div>
+
+            <div class="mt-4 p-3.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
+                <p><span class="font-bold text-white">Expected revenue for {{ remaining_range_str }} is ₱{{ remaining_forecast_revenue|floatformat:2 }}.</span> Busiest projected day is <span class="font-bold text-[#cca43b]">{{ busiest_day_name }}</span>.</p>
             </div>
         </div>
 
-        <!-- 3B. Sales Trend Prediction (4 cols) -->
-        <div class="glass-card rounded-xl p-6 lg:col-span-4 flex flex-col justify-between">
-            <div>
-                <div class="border-b border-white/10 pb-4 mb-4">
-                    <h2 class="text-base font-black text-white tracking-tight">Linear Trend Diagnostics</h2>
-                    <p class="text-xs text-[#a0ac96]">Least-squares regression line fit</p>
-                </div>
-
-                <div class="h-48 w-full relative">
-                    <canvas id="trendAnalysisChart"></canvas>
-                </div>
-
-                <!-- Trend Statistics -->
-                <div class="mt-4 space-y-2">
-                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
-                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Regression Equation</span>
-                        <span class="text-xs font-mono font-bold text-white">{{ trend_stats.equation }}</span>
-                    </div>
-                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
-                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Trend Slope</span>
-                        <span class="text-xs font-mono font-bold text-cyan-400">{{ trend_stats.slope_str }}</span>
-                    </div>
-                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
-                        <span class="text-xs text-[#a0ac96] font-mono uppercase">R² Fit Quality</span>
-                        <span class="text-xs font-mono font-bold text-white">{{ trend_stats.r_squared }} <span class="text-[10px] text-[#a0ac96] font-normal">({{ trend_stats.fit_quality }})</span></span>
-                    </div>
-                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
-                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Trend Month-End</span>
-                        <span class="text-xs font-mono font-bold text-[#cca43b]">₱{{ trend_stats.projected_month_end_daily|floatformat:2 }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 p-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
-                {{ trend_stats.insight }}
+        <!-- Remaining Days Table -->
+        <div class="mt-5">
+            <p class="text-xs font-black uppercase tracking-wider text-white mb-2">Upcoming Days Forecast</p>
+            <div class="overflow-x-auto rounded-lg border border-white/10 max-h-56 custom-scrollbar">
+                <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
+                    <thead class="bg-white/[0.03] text-[#a0ac96] sticky top-0">
+                        <tr>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider">Date</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">Predicted Revenue</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">80% Prediction Interval</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 bg-transparent">
+                        {% for item in remaining_forecast_list %}
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="px-5 py-2.5 text-stone-200 font-sans font-medium">{{ item.day_name }}</td>
+                            <td class="px-5 py-2.5 text-right font-bold {% if item.is_sunday %}text-[#a0ac96] font-normal{% else %}text-[#cca43b]{% endif %}">
+                                {% if item.is_sunday %}No orders{% else %}₱{{ item.predicted_revenue|floatformat:2 }}{% endif %}
+                            </td>
+                            <td class="px-5 py-2.5 text-right text-[#a0ac96]">
+                                {% if item.is_sunday %}-{% else %}₱{{ item.lower_80|floatformat:0 }} - ₱{{ item.upper_80|floatformat:0 }}{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-5 py-4 text-center text-[#a0ac96]">Month-end reached. Model ready for next cycle.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- 4. Locations & Products Breakdown (Row) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
-        <!-- Top Delivery Locations -->
-        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white tracking-tight">Top Delivery Locations</h2>
-                        <p class="text-xs text-[#a0ac96]">Revenue and distribution by destination</p>
+    <!-- 4. Linear Trend Diagnostics Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Linear Trend Diagnostics</h2>
+                    <p class="text-xs text-[#a0ac96]">Least-squares regression line fit for daily revenue trends</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-bold text-[#a0ac96] font-mono">
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
+                        <span>Daily Sales</span>
                     </div>
-                    <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ active_month }}</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-0.5 w-3 bg-cyan-400"></span>
+                        <span>Fitted Line</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-0.5 w-3 border-t-2 border-dashed border-cyan-400"></span>
+                        <span>Projection</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-64 w-full relative">
+                <canvas id="trendAnalysisChart"></canvas>
+            </div>
+
+            <!-- Trend Statistics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
+                    <span class="text-[10px] text-[#a0ac96] font-mono uppercase">Regression Equation</span>
+                    <p class="text-sm font-mono font-bold text-white mt-1">{{ trend_stats.equation }}</p>
+                </div>
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
+                    <span class="text-[10px] text-[#a0ac96] font-mono uppercase">Trend Slope</span>
+                    <p class="text-sm font-mono font-bold text-cyan-400 mt-1">{{ trend_stats.slope_str }}</p>
+                </div>
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
+                    <span class="text-[10px] text-[#a0ac96] font-mono uppercase">R² Fit Quality</span>
+                    <p class="text-sm font-mono font-bold text-white mt-1">{{ trend_stats.r_squared }} <span class="text-[10px] text-[#a0ac96] font-normal">({{ trend_stats.fit_quality }})</span></p>
+                </div>
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
+                    <span class="text-[10px] text-[#a0ac96] font-mono uppercase">Trend Projected Month-End</span>
+                    <p class="text-sm font-mono font-bold text-[#cca43b] mt-1">₱{{ trend_stats.projected_month_end_daily|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 p-3.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
+            {{ trend_stats.insight }}
+        </div>
+    </div>
+
+    <!-- 5. Top Delivery Locations Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Top Delivery Locations</h2>
+                    <p class="text-xs text-[#a0ac96]">Revenue volume and distribution by delivery destination</p>
+                </div>
+                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ active_month }}</span>
+            </div>
+
+            <div class="space-y-4">
+                {% for loc in top_locations %}
+                <div class="p-3.5 rounded-lg bg-white/[0.02] border border-white/5">
+                    <div class="flex items-center justify-between text-sm font-bold mb-2">
+                        <span class="text-white">{{ loc.name }}</span>
+                        <span class="text-[#cca43b] font-mono">₱{{ loc.revenue|floatformat:2 }}</span>
+                    </div>
+                    <div class="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-[#cca43b] rounded-full transition-all duration-500" style="width: {{ loc.bar_pct }}%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-[#a0ac96] font-mono mt-2">
+                        <span>{{ loc.orders }} orders · {{ loc.pct }}% of revenue share</span>
+                        <span class="{% if '-' in loc.growth %}text-rose-400{% else %}text-emerald-400{% endif %}">{{ loc.growth }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Product Sales Share Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Product Sales Share</h2>
+                    <p class="text-xs text-[#a0ac96]">Revenue and inventory volume distribution across catalog products</p>
+                </div>
+                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">Catalog Share</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-5 h-56 relative flex items-center justify-center">
+                    <canvas id="topProductsDonutChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <p class="text-base font-black text-[#cca43b] font-mono">₱{{ revenue_so_far|floatformat:0 }}</p>
+                        <p class="text-[9px] uppercase tracking-wider text-[#a0ac96] font-mono">Total Sales</p>
+                    </div>
                 </div>
 
-                <div class="space-y-4">
-                    {% for loc in top_locations %}
-                    <div>
-                        <div class="flex items-center justify-between text-xs font-bold mb-1.5">
-                            <span class="text-white">{{ loc.name }}</span>
-                            <span class="text-[#cca43b] font-mono">₱{{ loc.revenue|floatformat:2 }}</span>
+                <div class="md:col-span-7 space-y-3">
+                    {% for p in top_products_donut %}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <span class="h-3 w-3 rounded-sm shrink-0" style="background-color: {{ p.color }}"></span>
+                            <div>
+                                <p class="text-sm font-bold text-white">{{ p.name }}</p>
+                                <p class="text-xs text-[#a0ac96] font-mono">{{ p.units_str }} · <span class="text-emerald-400">{{ p.trend_str }}</span></p>
+                            </div>
                         </div>
-                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-full bg-[#cca43b] rounded-full transition-all duration-500" style="width: {{ loc.bar_pct }}%"></div>
-                        </div>
-                        <div class="flex items-center justify-between text-[11px] text-[#a0ac96] font-mono mt-1">
-                            <span>{{ loc.orders }} orders · {{ loc.pct }}% share</span>
-                            <span class="{% if '-' in loc.growth %}text-rose-400{% else %}text-emerald-400{% endif %}">{{ loc.growth }}</span>
-                        </div>
+                        <span class="text-base font-mono font-bold text-white">{{ p.share_pct }}%</span>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
-
-        <!-- Top Selling Products Breakdown -->
-        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white tracking-tight">Product Sales Share</h2>
-                        <p class="text-xs text-[#a0ac96]">Revenue distribution by product</p>
-                    </div>
-                    <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">By Units</span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                    <div class="sm:col-span-5 h-44 relative flex items-center justify-center">
-                        <canvas id="topProductsDonutChart"></canvas>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <p class="text-sm font-black text-[#cca43b] font-mono">₱{{ revenue_so_far|floatformat:0 }}</p>
-                            <p class="text-[9px] uppercase tracking-wider text-[#a0ac96] font-mono">Revenue</p>
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-7 space-y-2.5">
-                        {% for p in top_products_donut %}
-                        <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-white/[0.02] border border-white/5">
-                            <div class="flex items-center gap-2">
-                                <span class="h-2.5 w-2.5 rounded-sm shrink-0" style="background-color: {{ p.color }}"></span>
-                                <div class="truncate">
-                                    <p class="text-white font-bold truncate">{{ p.name }}</p>
-                                    <p class="text-[#a0ac96] text-[10px] font-mono">{{ p.units_str }}</p>
-                                </div>
-                            </div>
-                            <span class="text-white font-mono font-bold">{{ p.share_pct }}%</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- 5. Seasonal Planning & Production Scheduling -->
+    <!-- 7. Seasonal Planning & Production Scheduling Full Width -->
     <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-white/10 pb-4">
             <div>
@@ -340,12 +350,12 @@
                 <p class="text-xs text-[#a0ac96] font-medium">Historical seasonal indices and 6-month forward production planning</p>
             </div>
             <div class="inline-flex rounded-lg border border-white/10 bg-[#01140e] p-1 gap-1">
-                <button id="btnSeasonCrawfish" onclick="switchSeasonProduct('crawfish')" class="px-3.5 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer">Crawfish</button>
-                <button id="btnSeasonSuperworm" onclick="switchSeasonProduct('superworm')" class="px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Superworm</button>
+                <button id="btnSeasonCrawfish" onclick="switchSeasonProduct('crawfish')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer">Crawfish</button>
+                <button id="btnSeasonSuperworm" onclick="switchSeasonProduct('superworm')" class="px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Superworm</button>
             </div>
         </div>
 
-        <div class="h-56 w-full relative">
+        <div class="h-64 w-full relative">
             <canvas id="seasonalIndexChart"></canvas>
         </div>
 
@@ -383,102 +393,102 @@
         </div>
     </div>
 
-    <!-- 6. Inventory Balance & Model Performance (Row) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
-        <!-- Demand vs Stock Inventory Balance -->
-        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white tracking-tight">Demand vs. Stock Balance</h2>
-                        <p class="text-xs text-[#a0ac96]">Active catalog stock compared with forecast</p>
-                    </div>
-                    <button onclick="sendToNotifications()" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
-                        Alert Operations &rarr;
-                    </button>
+    <!-- 8. Demand vs. Stock Balance Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Demand vs. Stock Balance</h2>
+                    <p class="text-xs text-[#a0ac96]">Forecasted demand for {{ remaining_range_str }} compared with active inventory</p>
                 </div>
+                <button onclick="sendToNotifications()" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
+                    Alert Operations &rarr;
+                </button>
+            </div>
 
-                <div class="space-y-4">
-                    {% for item in demand_stock_data %}
-                    <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <h4 class="text-white font-bold text-xs">{{ item.name }}</h4>
-                            <span class="text-xs text-[#a0ac96] font-mono">Demand: {{ item.forecast_demand }}</span>
-                        </div>
+            <div class="space-y-4">
+                {% for item in demand_stock_data %}
+                <div class="p-4 rounded-lg border border-white/5 bg-white/[0.02]">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-white font-bold text-sm">{{ item.name }}</h4>
+                        <span class="text-xs text-[#a0ac96] font-mono">Forecast Demand: <strong class="text-white">{{ item.forecast_demand }}</strong></span>
+                    </div>
 
-                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-500" style="background-color: {{ item.bar_color }}; width: {{ item.bar_pct }}%"></div>
-                        </div>
+                    <div class="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500" style="background-color: {{ item.bar_color }}; width: {{ item.bar_pct }}%"></div>
+                    </div>
 
-                        <div class="flex items-center justify-between text-[11px] font-mono text-[#a0ac96] mt-1.5">
-                            <span>In Stock: <strong class="text-white">{{ item.stock_qty }}</strong></span>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ item.status_badge_cls }}">{{ item.status }}</span>
+                    <div class="flex flex-wrap items-center justify-between text-xs font-mono text-[#a0ac96] mt-2.5">
+                        <span>Current Stock: <strong class="text-white">{{ item.stock_qty }}</strong></span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full {{ item.status_badge_cls }}">{{ item.status }}</span>
+                            <span class="text-xs text-[#a0ac96] font-sans">{{ item.advice }}</span>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. Model Error Benchmarks & ML Performance Full Width -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h2 class="text-lg font-black tracking-tight text-white">Model Error Benchmarks & ML Performance</h2>
+                    <p class="text-xs text-[#a0ac96]">Comparative evaluation across time-series algorithms</p>
+                </div>
+                <span class="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-[10px] font-mono font-bold text-emerald-400">Auto-Tuned Selection</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-white/10">
+                <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
+                    <thead class="bg-white/[0.03] text-[#a0ac96]">
+                        <tr>
+                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider">Model Algorithm</th>
+                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-right">MAE</th>
+                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-right">RMSE</th>
+                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-right">MAPE</th>
+                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 bg-transparent">
+                        {% for m in model_comparisons %}
+                        <tr class="hover:bg-white/[0.02] transition-colors {% if m.selected %}bg-emerald-500/[0.06]{% endif %}">
+                            <td class="px-5 py-3 text-white font-sans font-bold">{{ m.name }}</td>
+                            <td class="px-5 py-3 text-right text-stone-200 font-bold">₱{{ m.mae|floatformat:2 }}</td>
+                            <td class="px-5 py-3 text-right text-stone-200 font-bold">₱{{ m.rmse|floatformat:2 }}</td>
+                            <td class="px-5 py-3 text-right text-stone-200 font-bold">{{ m.mape|floatformat:1 }}%</td>
+                            <td class="px-5 py-3 text-center">
+                                {% if m.selected %}
+                                <span class="inline-block text-[10px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">Active Selection</span>
+                                {% else %}
+                                <span class="text-[#a0ac96] text-[10px]">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Model Metadata Info Box -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between text-xs">
+                    <span class="text-[#a0ac96] font-mono">Training Dataset Size</span>
+                    <span class="text-white font-bold">{{ model_details.orders_trained }} orders</span>
+                </div>
+                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between text-xs">
+                    <span class="text-[#a0ac96] font-mono">Date Span Trained</span>
+                    <span class="text-white font-bold">{{ model_details.data_range }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Model Comparison & ML Performance -->
-        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white tracking-tight">Model Error Benchmarks</h2>
-                        <p class="text-xs text-[#a0ac96]">Comparative accuracy across algorithms</p>
-                    </div>
-                    <span class="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-[10px] font-mono font-bold text-emerald-400">Auto-Tuned</span>
-                </div>
-
-                <div class="overflow-x-auto rounded-lg border border-white/10">
-                    <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
-                        <thead class="bg-white/[0.03] text-[#a0ac96]">
-                            <tr>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider">Model</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">MAE</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">RMSE</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">MAPE</th>
-                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-center">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5 bg-transparent">
-                            {% for m in model_comparisons %}
-                            <tr class="hover:bg-white/[0.02] transition-colors {% if m.selected %}bg-emerald-500/[0.06]{% endif %}">
-                                <td class="px-4 py-2.5 text-white font-sans font-bold">{{ m.name }}</td>
-                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">₱{{ m.mae|floatformat:2 }}</td>
-                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">₱{{ m.rmse|floatformat:2 }}</td>
-                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">{{ m.mape|floatformat:1 }}%</td>
-                                <td class="px-4 py-2.5 text-center">
-                                    {% if m.selected %}
-                                    <span class="inline-block text-[10px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">Active</span>
-                                    {% else %}
-                                    <span class="text-[#a0ac96] text-[10px]">-</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Model Metadata Footer -->
-                <div class="mt-4 p-3 rounded-lg border border-white/5 bg-white/[0.02] space-y-1.5 text-xs">
-                    <div class="flex items-center justify-between text-[#a0ac96] font-mono text-[11px]">
-                        <span>Training Records</span>
-                        <span class="text-white font-bold">{{ model_details.orders_trained }} orders</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[#a0ac96] font-mono text-[11px]">
-                        <span>Training Range</span>
-                        <span class="text-white font-bold">{{ model_details.data_range }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 flex items-center justify-between pt-2 border-t border-white/10">
-                <span class="text-xs text-[#a0ac96] font-mono">Retrained daily on sales updates</span>
-                <button onclick="retrainModel()" id="btnRetrainModel" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">Retrain Model</button>
-            </div>
+        <div class="mt-4 flex items-center justify-between pt-3 border-t border-white/10">
+            <span class="text-xs text-[#a0ac96] font-mono">Retrained daily on sales order updates</span>
+            <button onclick="retrainModel()" id="btnRetrainModel" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">Retrain Model</button>
         </div>
     </div>
 </div>
@@ -566,8 +576,8 @@
                     pointBackgroundColor: '#01140e',
                     pointBorderColor: '#34d399',
                     pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
+                    pointRadius: 3.5,
+                    pointHoverRadius: 6
                 },
                 {
                     label: 'Forecast (₱)',
@@ -580,8 +590,8 @@
                     pointBackgroundColor: '#01140e',
                     pointBorderColor: '#818cf8',
                     pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
+                    pointRadius: 3.5,
+                    pointHoverRadius: 6
                 },
                 {
                     label: 'Upper 80%',
@@ -652,8 +662,8 @@
                     type: 'scatter',
                     backgroundColor: '#cca43b',
                     borderColor: '#cca43b',
-                    pointRadius: 3.5,
-                    pointHoverRadius: 5.5
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 },
                 {
                     label: 'Fitted Line',
@@ -834,13 +844,13 @@
         const schedBody = document.getElementById('seasonalScheduleBody');
 
         if (product === 'crawfish') {
-            btnCraw.className = 'px-3.5 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
-            btnSup.className = 'px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            btnCraw.className = 'px-4 py-1.5 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
+            btnSup.className = 'px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
             seasonalIndexChart.data.datasets[0].data = seasonalChartData.crawfish;
             schedBody.innerHTML = crawfishScheduleHTML;
         } else {
-            btnSup.className = 'px-3.5 py-1 text-xs font-bold rounded-md bg-[#138a5c] text-white transition-colors cursor-pointer';
-            btnCraw.className = 'px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            btnSup.className = 'px-4 py-1.5 text-xs font-bold rounded-md bg-[#138a5c] text-white transition-colors cursor-pointer';
+            btnCraw.className = 'px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
             seasonalIndexChart.data.datasets[0].data = seasonalChartData.superworm;
             schedBody.innerHTML = superwormScheduleHTML;
         }
@@ -856,7 +866,7 @@
         btn.innerText = 'Retraining...';
         setTimeout(() => {
             btn.innerText = 'Model Retrained Successfully!';
-            btn.className = 'rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-400';
+            btn.className = 'rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-xs font-bold text-emerald-400';
         }, 1200);
     }
 </script>
