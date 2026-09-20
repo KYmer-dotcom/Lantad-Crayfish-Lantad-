@@ -98,7 +98,7 @@
                     <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
                     <h3 class="text-base font-black text-white tracking-wide uppercase group-hover:text-[#cca43b] transition-colors">Sales Performance</h3>
                 </div>
-                <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">2025 - 2030 Timeline</span>
+                <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">{{ active_year|default:"2026" }} Annual Performance</span>
             </div>
             <div class="h-80 w-full flex-grow relative">
                 <canvas id="salesChart"></canvas>
@@ -514,11 +514,10 @@
             },
             scales: {
                 y: {
-                    min: 2024.6,
-                    max: 2030.6,
+                    beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Year (2025 - 2030)',
+                        text: 'Revenue (₱)',
                         color: '#a0ac96',
                         font: { size: 11, weight: 'bold' }
                     },
@@ -527,7 +526,6 @@
                         drawBorder: false
                     },
                     ticks: {
-                        stepSize: 1,
                         color: '#cca43b',
                         font: {
                             family: 'monospace',
@@ -535,11 +533,10 @@
                             size: 11
                         },
                         callback: function(value) {
-                            const rounded = Math.round(value);
-                            if (Math.abs(value - rounded) < 0.05 && rounded >= 2025 && rounded <= 2030) {
-                                return rounded;
+                            if (value >= 1000) {
+                                return '₱' + (value / 1000).toLocaleString() + 'k';
                             }
-                            return '';
+                            return '₱' + Number(value).toLocaleString();
                         }
                     }
                 },
@@ -551,13 +548,15 @@
                         font: { size: 11, weight: 'bold' }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.03)',
-                        display: false
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
                     },
                     ticks: {
                         color: '#a0ac96',
                         font: {
-                            weight: 'bold'
+                            family: 'monospace',
+                            weight: 'bold',
+                            size: 11
                         }
                     }
                 }
