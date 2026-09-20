@@ -125,8 +125,8 @@
                         <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">stock</span></div>
                         <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight">
                             {% if product.unit_price > 0 %}<span>₱{{ product.unit_price|floatformat:"0" }}/pc</span>{% endif %}
-                            {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/kg</span>{% endif %}
-                            {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/kg)</span>{% endif %}
+                            {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/crate</span>{% endif %}
+                            {% if product.pieces_per_kg > 1 %}<span class="text-[9px] text-[#cca43b]/80">({{ product.pieces_per_kg|floatformat:"0" }} pcs/crate)</span>{% endif %}
                         </div>
                     </div>
                 </div>
@@ -278,11 +278,11 @@
                     <input type="number" step="0.01" id="product-unit-price" name="unit_price" placeholder="0.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Price/kg (₱)</label>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Price/Crate (₱)</label>
                     <input type="number" step="0.01" id="product-price-per-kg" name="price_per_kg" placeholder="0.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-[#a0ac96]">Pcs / KG</label>
+                    <label class="text-xs font-semibold text-[#a0ac96]">Pcs / Crate</label>
                     <input type="number" step="0.01" id="product-pieces-per-kg" name="pieces_per_kg" placeholder="1.00" class="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" />
                 </div>
                 <div>
