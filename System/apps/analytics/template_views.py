@@ -167,6 +167,7 @@ def analytics_dashboard(request):
 
     now = timezone.now()
     curr_year = now.year       # 2026
+    active_year = curr_year
     curr_month = now.month     # 9 (September)
     curr_month_name = calendar.month_name[curr_month]
     curr_month_abbr = calendar.month_abbr[curr_month]
@@ -454,6 +455,8 @@ def analytics_dashboard(request):
         'daily_sales_list': daily_sales_list,
         'monthly_sales_list': monthly_sales_list,
         'active_year': active_year,
+        'active_month': curr_month_name,
+        'current_month_title': f"{curr_month_name} {curr_year}",
         'location_orders_list': location_orders_list,
         'product_orders_list': product_orders_list,
         
