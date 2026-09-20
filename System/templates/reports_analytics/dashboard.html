@@ -210,8 +210,8 @@
             <div class="flex items-center gap-3">
                 <span class="h-2.5 w-2.5 rounded-full bg-[#cca43b]"></span>
                 <div>
-                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Monthly Sales Breakdown (Year {{ active_year|default:"2026" }})</h3>
-                    <p class="text-xs text-[#a0ac96]">12-Month revenue and volume progression</p>
+                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Daily Sales Breakdown ({{ current_month_title|default:"September 2026" }})</h3>
+                    <p class="text-xs text-[#a0ac96]">30-Day daily revenue and volume progression</p>
                 </div>
             </div>
             <button onclick="document.getElementById('dailySalesModal').close()" class="text-[#a0ac96] hover:text-white transition-colors cursor-pointer p-2 rounded-full hover:bg-white/5">
@@ -225,7 +225,7 @@
             <table class="min-w-full divide-y divide-white/10">
                 <thead class="sticky top-0 bg-[#01140e] z-10">
                     <tr>
-                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Month</th>
+                        <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Orders</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Quantity (kg)</th>
                         <th class="px-8 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Revenue</th>
@@ -495,13 +495,12 @@
                         title: function(context) {
                             if (!context || !context.length) return '';
                             const raw = context[0].raw;
-                            const yr = raw && raw.year ? raw.year : 2026;
-                            const m = raw && raw.month ? raw.month : context[0].label;
-                            return `Year ${yr} • ${m}`;
+                            if (raw && raw.date_full) return raw.date_full;
+                            return context[0].label || '';
                         },
                         label: function(context) {
                             const raw = context.raw;
-                            const rev = raw && raw.revenue !== undefined ? raw.revenue : 0;
+                            const rev = raw && raw.revenue !== undefined ? raw.revenue : (typeof raw === 'number' ? raw : 0);
                             const ord = raw && raw.orders !== undefined ? raw.orders : 0;
                             const qty = raw && raw.qty !== undefined ? raw.qty : 0;
                             if (rev > 0) {
@@ -543,7 +542,7 @@
                 x: {
                     title: {
                         display: true,
-                        text: 'Month',
+                        text: 'Day of Month',
                         color: '#a0ac96',
                         font: { size: 11, weight: 'bold' }
                     },
@@ -553,10 +552,13 @@
                     },
                     ticks: {
                         color: '#a0ac96',
+                        maxRotation: 45,
+                        autoSkip: true,
+                        maxTicksLimit: 15,
                         font: {
                             family: 'monospace',
                             weight: 'bold',
-                            size: 11
+                            size: 10
                         }
                     }
                 }

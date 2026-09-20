@@ -161,99 +161,89 @@ def analytics_dashboard(request):
         'harvested_kg': round(float(monthly_harvest), 2)
     }
     
-    # Annual Sales Performance Data (Actual Recorded Sales by Year)
-    from django.db.models.functions import ExtractYear, ExtractMonth
+    # Current Month Daily Sales Performance (e.g. September 2026 - 30 Days)
+    from django.db.models.functions import TruncDate
     import calendar
 
-    current_calendar_year = timezone.now().year  # 2026
+    now = timezone.now()
+    curr_year = now.year       # 2026
+    curr_month = now.month     # 9 (September)
+    curr_month_name = calendar.month_name[curr_month]
+    curr_month_abbr = calendar.month_abbr[curr_month]
+    _, num_days_in_month = calendar.monthrange(curr_year, curr_month)
+
     all_user_sales = _get_sales_queryset_for_user(request.user)
-    yearly_sales_records = all_user_sales.annotate(
-        order_year=ExtractYear('order_date'),
-        order_month=ExtractMonth('order_date')
-    ).values('order_year', 'order_month').annotate(
+    current_month_sales = all_user_sales.filter(
+        order_date__year=curr_year,
+        order_date__month=curr_month
+    ).annotate(
+        order_day=TruncDate('order_date')
+    ).values('order_day').annotate(
         total_revenue=Sum('total_amount'),
         total_qty=Sum('quantity_kg'),
         order_count=Count('id')
-    ).order_by('order_year', 'order_month')
+    ).order_by('order_day')
 
-    # Detect all actual recorded years in the database
-    db_years = set(r['order_year'] for r in yearly_sales_records if r['order_year'])
-    db_years.add(current_calendar_year)
-    available_years = sorted(list(db_years))
-    active_year = current_calendar_year if current_calendar_year in available_years else available_years[-1]
+    # Map daily sales by day of the month (1..30)
+    day_sales_map = {}
+    for row in current_month_sales:
+        if row['order_day']:
+            day_sales_map[row['order_day'].day] = {
+                'revenue': float(row['total_revenue'] or 0),
+                'qty': float(row['total_qty'] or 0),
+                'orders': int(row['order_count'] or 0),
+                'date_str': row['order_day'].strftime('%b %d, %Y')
+            }
 
-    year_data_map = {}
-    for y in available_years:
-        year_data_map[y] = {month_num: {'revenue': 0.0, 'qty': 0.0, 'orders': 0} for month_num in range(1, 13)}
+    daily_labels = []
+    daily_points = []
+    monthly_sales_list = []
 
-    for row in yearly_sales_records:
-        y = row['order_year']
-        m = row['order_month']
-        if y in year_data_map and m in year_data_map[y]:
-            year_data_map[y][m]['revenue'] += float(row['total_revenue'] or 0)
-            year_data_map[y][m]['qty'] += float(row['total_qty'] or 0)
-            year_data_map[y][m]['orders'] += int(row['order_count'] or 0)
-
-    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
-    palette_by_year = {
-        2025: {'border': '#64748b', 'bg': 'rgba(100, 116, 139, 0.10)', 'point': '#94a3b8'},
-        2026: {'border': '#10b981', 'bg': 'rgba(16, 185, 129, 0.15)', 'point': '#10b981'},
-        2027: {'border': '#cca43b', 'bg': 'rgba(204, 164, 59, 0.15)', 'point': '#cca43b'},
-    }
-
-    chart_datasets = []
-    for yr in available_years:
-        style_info = palette_by_year.get(yr, {'border': '#10b981', 'bg': 'rgba(16, 185, 129, 0.15)', 'point': '#10b981'})
+    for d in range(1, num_days_in_month + 1):
+        lbl = f"{curr_month_abbr} {d:02d}"
+        daily_labels.append(lbl)
         
-        points = []
-        for m_idx in range(1, 13):
-            m_data = year_data_map[yr][m_idx]
-            rev = m_data['revenue']
-            points.append({
-                'x': month_names[m_idx - 1],
-                'y': round(rev, 2),
-                'revenue': rev,
-                'orders': m_data['orders'],
-                'qty': m_data['qty'],
-                'year': yr,
-                'month': month_names[m_idx - 1]
-            })
+        info = day_sales_map.get(d, {'revenue': 0.0, 'qty': 0.0, 'orders': 0, 'date_str': f"{curr_month_abbr} {d:02d}, {curr_year}"})
+        rev = info['revenue']
+        orders = info['orders']
+        qty = info['qty']
+        
+        daily_points.append({
+            'x': lbl,
+            'y': round(rev, 2),
+            'revenue': rev,
+            'orders': orders,
+            'qty': qty,
+            'day': d,
+            'date_full': info['date_str']
+        })
 
-        is_active = (yr == active_year)
-        chart_datasets.append({
-            'label': f'Year {yr}',
-            'data': points,
-            'borderColor': style_info['border'],
-            'backgroundColor': style_info['bg'] if is_active else 'transparent',
-            'pointBorderColor': style_info['point'],
-            'pointBackgroundColor': '#01140e',
-            'borderWidth': 3 if is_active else 2,
-            'tension': 0.35,
-            'fill': is_active,
-            'pointRadius': [5 if p['y'] > 0 else 2 for p in points],
-            'pointHoverRadius': 7
+        monthly_sales_list.append({
+            'month': f"{curr_month_abbr} {d:02d}, {curr_year}",
+            'revenue': rev,
+            'qty': qty,
+            'orders': orders
         })
 
     sales_data = {
-        'labels': month_names,
-        'datasets': chart_datasets,
-        'values': [round(year_data_map[active_year][m]['revenue'], 2) for m in range(1, 13)],
-        'active_year': active_year,
-        'available_years': available_years,
-        'year_data_map': year_data_map
+        'labels': daily_labels,
+        'datasets': [{
+            'label': f"{curr_month_name} {curr_year} Daily Sales",
+            'data': daily_points,
+            'borderColor': '#10b981',
+            'backgroundColor': 'rgba(16, 185, 129, 0.12)',
+            'pointBorderColor': '#10b981',
+            'pointBackgroundColor': '#01140e',
+            'borderWidth': 3,
+            'tension': 0.35,
+            'fill': True,
+            'pointRadius': [5 if p['y'] > 0 else 2 for p in daily_points],
+            'pointHoverRadius': 7
+        }],
+        'active_year': curr_year,
+        'active_month': curr_month_name,
+        'current_month_title': f"{curr_month_name} {curr_year}"
     }
-
-    # Monthly Sales Table for the Modal (All 12 Months of Active Year)
-    monthly_sales_list = []
-    for m in range(1, 13):
-        m_info = year_data_map[active_year][m]
-        monthly_sales_list.append({
-            'month': f"{calendar.month_name[m]} {active_year}",
-            'revenue': m_info['revenue'],
-            'qty': m_info['qty'],
-            'orders': m_info['orders']
-        })
 
     # Daily Sales Table (Last 30 Days)
     daily_sales_30 = sales_qs.filter(order_date__gte=thirty_days_ago).annotate(
