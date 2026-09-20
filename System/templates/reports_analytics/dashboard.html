@@ -1,11 +1,15 @@
 {% extends 'layout.html' %}
+{% load static %}
+
+{% block header_title %}Reports & Analytics{% endblock %}
 
 {% block page_content %}
 <style>
-    /* Elevated Glass Card Effect */
+    /* Unified Elevated Glass Card Effect */
     .glass-card {
         background-color: #022118;
         border: 1px solid rgba(255, 255, 255, 0.10);
+        box-shadow: none;
     }
     .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
@@ -23,19 +27,16 @@
     }
 </style>
 
-<div class="space-y-6 pb-16 max-w-7xl mx-auto">
-    <!-- Page Header -->
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+<div class="space-y-1.5 pb-12">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-white/10 pb-2">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Reports & Predictive Intelligence</p>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Analytics Dashboard</h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Silay Superworm & Crayfish</p>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Reports & Analytics</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="{% url 'analytics:reports' %}" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-lg shadow-[#cca43b]/10 cursor-pointer">
-                <svg class="w-4 h-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <div class="flex items-center gap-2">
+            <a href="{% url 'analytics:reports' %}" class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+                <svg class="w-3.5 h-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 Printable Reports
@@ -43,305 +44,247 @@
         </div>
     </div>
     
-    <!-- 1. Top 5 KPI Metrics Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        <!-- Revenue so far -->
-        <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+    <!-- 1. Top 5 Metric Cards in a Single Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-1.5">
+        <!-- Stat Card 1: Revenue so far -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-[#a0ac96]">Revenue so far ({{ curr_day_range }})</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Revenue So Far ({{ curr_day_range }})</p>
             </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ revenue_so_far|floatformat:0 }}</p>
-                <p class="mt-2 text-xs text-[#a0ac96] font-mono">Completed sales</p>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight truncate">₱{{ revenue_so_far|floatformat:2|default:"0.00" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">Completed sales</span>
+                </div>
             </div>
         </div>
 
-        <!-- Projected month-end -->
-        <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+        <!-- Stat Card 2: Projected month-end -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-[#a0ac96]">Projected month-end</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Projected Month-End</p>
             </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ projected_month_end|floatformat:0 }}</p>
-                <p class="mt-2 text-xs text-[#a0ac96] font-mono">Actual ₱{{ revenue_so_far|floatformat:0 }} + forecast ₱{{ remaining_forecast_revenue|floatformat:0 }}</p>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">₱{{ projected_month_end|floatformat:2|default:"0.00" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span class="truncate">Actual ₱{{ revenue_so_far|floatformat:0 }} + forecast ₱{{ remaining_forecast_revenue|floatformat:0 }}</span>
+                </div>
             </div>
         </div>
 
-        <!-- Compared with August -->
-        <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+        <!-- Stat Card 3: Growth vs August -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-[#a0ac96]">Compared with August</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Compared with August</p>
             </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">{{ mom_growth_str }}</p>
-                <p class="mt-2 text-xs text-[#a0ac96] font-mono">Projected vs last month</p>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight truncate">{{ mom_growth_str }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span class="truncate">Projected vs last month</span>
+                </div>
             </div>
         </div>
 
-        <!-- Forecast accuracy -->
-        <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+        <!-- Stat Card 4: Forecast accuracy -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-[#a0ac96]">Forecast accuracy</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Forecast Accuracy</p>
             </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">{{ forecast_accuracy_pct }}%</p>
-                <p class="mt-2 text-xs text-[#a0ac96] font-mono">MAPE {{ mape_val }}% (30-day backtest)</p>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight truncate">{{ forecast_accuracy_pct }}%</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">MAPE {{ mape_val }}% (30D backtest)</span>
+                </div>
             </div>
         </div>
 
-        <!-- Days remaining -->
-        <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+        <!-- Stat Card 5: Days remaining -->
+        <div class="glass-card rounded-lg p-4 flex flex-col justify-between">
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-wider text-[#a0ac96]">Days remaining</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Days Remaining</p>
             </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">{{ days_remaining }}</p>
-                <p class="mt-1.5 text-xs text-[#a0ac96] font-mono">{{ remaining_range_str }}</p>
-                <div class="mt-2.5 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ days_remaining }} <span class="text-sm font-normal text-[#a0ac96]">days</span></p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span class="truncate">{{ remaining_range_str }}</span>
+                </div>
+                <div class="mt-2 h-1 w-full bg-white/10 rounded-full overflow-hidden">
                     <div class="h-full bg-[#cca43b] rounded-full transition-all duration-500" style="width: {{ progress_pct }}%"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2. Sales Performance (Stacked Bar Chart by Product) -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+    <!-- 2. Sales Performance Full Width Chart -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-white/10 pb-4">
             <div>
-                <h3 class="text-lg sm:text-xl font-black text-white tracking-wide">Sales performance</h3>
-                <p class="text-xs text-[#a0ac96] mt-1">Actual daily revenue by product, {{ current_month_title }}. Sundays have no orders.</p>
+                <h2 class="text-lg font-black tracking-tight text-white">Sales Performance</h2>
+                <p class="text-xs text-[#a0ac96] font-medium">Actual daily revenue breakdown by product for {{ current_month_title }}</p>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Actual sales only</span>
+                <div class="flex items-center gap-4 text-xs font-bold text-[#a0ac96] font-mono">
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-sm bg-[#cca43b]"></span>
+                        <span>Crawfish</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-sm bg-[#138a5c]"></span>
+                        <span>Superworm</span>
+                    </div>
+                </div>
+                <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ current_month_title }}</span>
             </div>
         </div>
 
-        <!-- Chart Legend -->
-        <div class="flex items-center justify-end gap-5 text-xs font-bold text-[#a0ac96] my-3 font-mono">
-            <div class="flex items-center gap-2">
-                <span class="h-3 w-3 rounded bg-[#cca43b]"></span>
-                <span>Crawfish</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="h-3 w-3 rounded bg-[#138a5c]"></span>
-                <span>Superworm</span>
-            </div>
-        </div>
-
-        <div class="h-80 w-full relative mt-2">
+        <div class="h-72 w-full relative">
             <canvas id="stackedSalesChart"></canvas>
         </div>
     </div>
 
-    <!-- 3. Sales Forecast Analysis (Holt-Winters) -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+    <!-- 3. Forecast Analysis & Trend Side-by-Side (Row) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-1.5">
+        <!-- 3A. Sales Forecast Analysis (8 cols) -->
+        <div class="glass-card rounded-xl p-6 lg:col-span-8 flex flex-col justify-between">
             <div>
-                <h3 class="text-lg sm:text-xl font-black text-white tracking-wide">Sales forecast analysis</h3>
-                <p class="text-xs text-[#a0ac96] mt-1">Solid line is actual. Dashed line is the forecast for the rest of the month, with an 80% range.</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
-                <span class="text-[#a0ac96] bg-white/5 border border-white/10 px-3 py-1 rounded-full">Model: Holt-Winters (7-day season)</span>
-                <span class="text-[#a0ac96] bg-white/5 border border-white/10 px-3 py-1 rounded-full">MAE ₱{{ selected_model_mae|floatformat:2 }}</span>
-                <span class="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full font-bold">Trend: {{ sales_trend.trend|title }}</span>
-            </div>
-        </div>
-
-        <!-- Forecast Legend -->
-        <div class="flex items-center justify-end gap-5 text-xs font-bold text-[#a0ac96] my-3 font-mono">
-            <div class="flex items-center gap-2">
-                <span class="h-2 w-4 rounded-full bg-emerald-400"></span>
-                <span>Actual</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="h-0.5 w-4 border-t-2 border-dashed border-[#818cf8]"></span>
-                <span>Forecast</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="h-3 w-4 rounded bg-[#818cf8]/20 border border-[#818cf8]/40"></span>
-                <span>Range (80%)</span>
-            </div>
-        </div>
-
-        <div class="h-80 w-full relative mt-2">
-            <canvas id="forecastAnalysisChart"></canvas>
-        </div>
-
-        <!-- Forecast Insight Callout -->
-        <div class="mt-6 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
-            <p><span class="font-bold text-white">Expected revenue for {{ remaining_range_str }} is ₱{{ remaining_forecast_revenue|floatformat:0 }}.</span> The busiest day is likely <span class="font-bold text-white">{{ busiest_day_name }}</span>. Range widens toward month-end because predictions get less certain further ahead.</p>
-        </div>
-
-        <!-- Remaining Days Table -->
-        <div class="mt-6">
-            <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Forecast for the remaining days</h4>
-            <div class="overflow-x-auto rounded-xl border border-white/10 max-h-72 custom-scrollbar">
-                <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
-                    <thead class="bg-[#01140e] text-[#a0ac96] sticky top-0">
-                        <tr>
-                            <th class="px-5 py-3 font-bold uppercase tracking-wider">Date</th>
-                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">Predicted</th>
-                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">Range</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5 bg-transparent">
-                        {% for item in remaining_forecast_list %}
-                        <tr class="hover:bg-white/[0.03] transition-colors">
-                            <td class="px-5 py-3.5 text-stone-200 font-sans font-medium">{{ item.day_name }}</td>
-                            <td class="px-5 py-3.5 text-right font-bold {% if item.is_sunday %}text-[#a0ac96] font-normal{% else %}text-[#cca43b]{% endif %}">
-                                {% if item.is_sunday %}No orders{% else %}₱{{ item.predicted_revenue|floatformat:0 }}{% endif %}
-                            </td>
-                            <td class="px-5 py-3.5 text-right text-[#a0ac96]">
-                                {% if item.is_sunday %}-{% else %}₱{{ item.lower_80|floatformat:0 }} - ₱{{ item.upper_80|floatformat:0 }}{% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="px-5 py-6 text-center text-[#a0ac96]">Month-end reached. Model ready for next cycle.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. Sales Trend Prediction & Statistics -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex items-center gap-2 mb-1">
-            <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
-            <h3 class="text-lg sm:text-xl font-black text-white tracking-wide uppercase">Sales Trend Prediction</h3>
-        </div>
-        <p class="text-xs text-[#a0ac96] mt-1">Straight-line fit of daily revenue (Sundays left out, no orders), extended to {{ current_month_title }}.</p>
-
-        <!-- Trend Chart Legend -->
-        <div class="flex items-center justify-end gap-5 text-xs font-bold text-[#a0ac96] my-3 font-mono">
-            <div class="flex items-center gap-2">
-                <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
-                <span>Daily revenue</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="h-0.5 w-4 bg-cyan-400"></span>
-                <span>Fitted line</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="h-0.5 w-4 border-t-2 border-dashed border-cyan-400"></span>
-                <span>Projection</span>
-            </div>
-        </div>
-
-        <div class="h-72 w-full relative mt-2">
-            <canvas id="trendAnalysisChart"></canvas>
-        </div>
-
-        <!-- Trend Statistics Box -->
-        <div class="mt-8 rounded-xl border border-white/10 bg-[#01140e] p-6">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
-                <h4 class="text-sm font-black text-white uppercase tracking-wider">Trend Statistics</h4>
-                <span class="text-xs text-[#a0ac96] font-mono">Linear regression (least squares)</span>
-            </div>
-
-            <div class="space-y-3">
-                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <p class="text-[11px] text-[#a0ac96] font-mono uppercase">Equation</p>
-                    <p class="text-base font-mono font-bold text-white mt-0.5">{{ trend_stats.equation }}</p>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-white/10 pb-4">
+                    <div>
+                        <h2 class="text-lg font-black tracking-tight text-white">Sales Forecast Analysis</h2>
+                        <p class="text-xs text-[#a0ac96] font-medium">Holt-Winters 7-day seasonal model with 80% prediction range</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="rounded-md bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 text-[10px] font-mono font-bold text-emerald-400">Trend: {{ sales_trend.trend|title }}</span>
+                        <span class="rounded-md bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] font-mono text-[#a0ac96]">MAE: ₱{{ selected_model_mae|floatformat:2 }}</span>
+                    </div>
                 </div>
 
-                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <p class="text-[11px] text-[#a0ac96] font-mono uppercase">Slope</p>
-                    <p class="text-base font-mono font-bold text-cyan-400 mt-0.5">{{ trend_stats.slope_str }}</p>
+                <div class="flex items-center justify-end gap-4 text-xs font-bold text-[#a0ac96] mb-3 font-mono">
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-3 rounded-sm bg-emerald-400"></span>
+                        <span>Actual</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-0.5 w-3 border-t-2 border-dashed border-[#818cf8]"></span>
+                        <span>Forecast</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-3 rounded-sm bg-[#818cf8]/20 border border-[#818cf8]/40"></span>
+                        <span>Range (80%)</span>
+                    </div>
                 </div>
 
-                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <p class="text-[11px] text-[#a0ac96] font-mono uppercase">R² (fit quality)</p>
-                    <p class="text-base font-mono font-bold text-white mt-0.5">{{ trend_stats.r_squared }} <span class="text-xs text-[#a0ac96] font-normal">({{ trend_stats.fit_quality }})</span></p>
+                <div class="h-64 w-full relative">
+                    <canvas id="forecastAnalysisChart"></canvas>
                 </div>
 
-                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <p class="text-[11px] text-[#a0ac96] font-mono uppercase">Projected {{ current_month_title }} End</p>
-                    <p class="text-base font-mono font-bold text-[#cca43b] mt-0.5">₱{{ trend_stats.projected_month_end_daily|floatformat:0 }}</p>
-                </div>
-
-                <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <p class="text-[11px] text-[#a0ac96] font-mono uppercase">Outliers</p>
-                    <p class="text-base font-mono font-bold text-[#cca43b] mt-0.5">{{ trend_stats.outliers|join:", " }}</p>
+                <div class="mt-4 p-3.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
+                    <p><span class="font-bold text-white">Expected revenue for {{ remaining_range_str }} is ₱{{ remaining_forecast_revenue|floatformat:2 }}.</span> Busiest projected day is <span class="font-bold text-[#cca43b]">{{ busiest_day_name }}</span>.</p>
                 </div>
             </div>
 
-            <div class="mt-4 p-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed">
+            <!-- Remaining Days Table -->
+            <div class="mt-5">
+                <p class="text-xs font-black uppercase tracking-wider text-white mb-2">Upcoming Days Forecast</p>
+                <div class="overflow-x-auto rounded-lg border border-white/10 max-h-48 custom-scrollbar">
+                    <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
+                        <thead class="bg-white/[0.03] text-[#a0ac96] sticky top-0">
+                            <tr>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">Predicted</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">80% Range</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 bg-transparent">
+                            {% for item in remaining_forecast_list %}
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="px-4 py-2 text-stone-200 font-sans font-medium">{{ item.day_name }}</td>
+                                <td class="px-4 py-2 text-right font-bold {% if item.is_sunday %}text-[#a0ac96] font-normal{% else %}text-[#cca43b]{% endif %}">
+                                    {% if item.is_sunday %}No orders{% else %}₱{{ item.predicted_revenue|floatformat:2 }}{% endif %}
+                                </td>
+                                <td class="px-4 py-2 text-right text-[#a0ac96]">
+                                    {% if item.is_sunday %}-{% else %}₱{{ item.lower_80|floatformat:0 }} - ₱{{ item.upper_80|floatformat:0 }}{% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="px-4 py-4 text-center text-[#a0ac96]">Month-end reached. Model ready for next cycle.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3B. Sales Trend Prediction (4 cols) -->
+        <div class="glass-card rounded-xl p-6 lg:col-span-4 flex flex-col justify-between">
+            <div>
+                <div class="border-b border-white/10 pb-4 mb-4">
+                    <h2 class="text-base font-black text-white tracking-tight">Linear Trend Diagnostics</h2>
+                    <p class="text-xs text-[#a0ac96]">Least-squares regression line fit</p>
+                </div>
+
+                <div class="h-48 w-full relative">
+                    <canvas id="trendAnalysisChart"></canvas>
+                </div>
+
+                <!-- Trend Statistics -->
+                <div class="mt-4 space-y-2">
+                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Regression Equation</span>
+                        <span class="text-xs font-mono font-bold text-white">{{ trend_stats.equation }}</span>
+                    </div>
+                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Trend Slope</span>
+                        <span class="text-xs font-mono font-bold text-cyan-400">{{ trend_stats.slope_str }}</span>
+                    </div>
+                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                        <span class="text-xs text-[#a0ac96] font-mono uppercase">R² Fit Quality</span>
+                        <span class="text-xs font-mono font-bold text-white">{{ trend_stats.r_squared }} <span class="text-[10px] text-[#a0ac96] font-normal">({{ trend_stats.fit_quality }})</span></span>
+                    </div>
+                    <div class="p-3 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                        <span class="text-xs text-[#a0ac96] font-mono uppercase">Trend Month-End</span>
+                        <span class="text-xs font-mono font-bold text-[#cca43b]">₱{{ trend_stats.projected_month_end_daily|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-200 leading-relaxed font-sans">
                 {{ trend_stats.insight }}
             </div>
         </div>
     </div>
 
-    <!-- 5. Model Comparison Table -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+    <!-- 4. Locations & Products Breakdown (Row) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
+        <!-- Top Delivery Locations -->
+        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
             <div>
-                <h3 class="text-lg sm:text-xl font-black text-white tracking-wide">Model comparison</h3>
-                <p class="text-xs text-[#a0ac96] mt-1">Three methods tested on the last 30 days. The one with the lowest error is used for the forecast.</p>
-            </div>
-            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full font-bold">Best model selected automatically</span>
-        </div>
-
-        <div class="mt-6 overflow-x-auto rounded-xl border border-white/10">
-            <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
-                <thead class="bg-[#01140e] text-[#a0ac96]">
-                    <tr>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider">Model</th>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider">Best for</th>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider text-right">MAE</th>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider text-right">RMSE</th>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider text-right">MAPE</th>
-                        <th class="px-6 py-4 font-bold uppercase tracking-wider text-center">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5 bg-transparent">
-                    {% for m in model_comparisons %}
-                    <tr class="hover:bg-white/[0.03] transition-colors {% if m.selected %}bg-emerald-500/[0.04]{% endif %}">
-                        <td class="px-6 py-4 text-white font-sans font-bold">{{ m.name }}</td>
-                        <td class="px-6 py-4 text-[#a0ac96] font-sans">{{ m.best_for }}</td>
-                        <td class="px-6 py-4 text-right text-stone-200 font-bold">₱{{ m.mae|floatformat:2 }}</td>
-                        <td class="px-6 py-4 text-right text-stone-200 font-bold">₱{{ m.rmse|floatformat:2 }}</td>
-                        <td class="px-6 py-4 text-right text-stone-200 font-bold">{{ m.mape|floatformat:1 }}%</td>
-                        <td class="px-6 py-4 text-center">
-                            {% if m.selected %}
-                            <span class="inline-block text-[11px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 rounded-full">Selected</span>
-                            {% else %}
-                            <span class="text-[#a0ac96] text-[11px]">-</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- 6. Top Locations & 7. Top Products Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Top Locations -->
-        <div class="glass-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between">
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
-                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Top Locations</h3>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-base font-black text-white tracking-tight">Top Delivery Locations</h2>
+                        <p class="text-xs text-[#a0ac96]">Revenue and distribution by destination</p>
+                    </div>
+                    <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ active_month }}</span>
                 </div>
-                <p class="text-xs text-[#a0ac96] mt-1">Revenue and orders, {{ active_month }} to date</p>
 
-                <div class="mt-6 space-y-6">
+                <div class="space-y-4">
                     {% for loc in top_locations %}
                     <div>
-                        <div class="flex items-center justify-between text-sm font-bold mb-2">
+                        <div class="flex items-center justify-between text-xs font-bold mb-1.5">
                             <span class="text-white">{{ loc.name }}</span>
-                            <span class="text-white font-mono">₱{{ loc.revenue|floatformat:0 }}</span>
+                            <span class="text-[#cca43b] font-mono">₱{{ loc.revenue|floatformat:2 }}</span>
                         </div>
-                        <div class="h-3 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                             <div class="h-full bg-[#cca43b] rounded-full transition-all duration-500" style="width: {{ loc.bar_pct }}%"></div>
                         </div>
-                        <div class="flex items-center justify-between text-xs text-[#a0ac96] font-mono mt-1.5">
-                            <span>{{ loc.orders }} orders · {{ loc.pct }}% of revenue</span>
+                        <div class="flex items-center justify-between text-[11px] text-[#a0ac96] font-mono mt-1">
+                            <span>{{ loc.orders }} orders · {{ loc.pct }}% share</span>
                             <span class="{% if '-' in loc.growth %}text-rose-400{% else %}text-emerald-400{% endif %}">{{ loc.growth }}</span>
                         </div>
                     </div>
@@ -350,219 +293,192 @@
             </div>
         </div>
 
-        <!-- Top Products -->
-        <div class="glass-card rounded-2xl p-6 sm:p-7 flex flex-col justify-between">
+        <!-- Top Selling Products Breakdown -->
+        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
-                    <h3 class="text-lg font-black text-white tracking-wide uppercase">Top Products</h3>
-                </div>
-                <p class="text-xs text-[#a0ac96] mt-1">Share of revenue by selling unit</p>
-
-                <!-- Donut Chart -->
-                <div class="h-48 w-full relative my-4 flex items-center justify-center">
-                    <canvas id="topProductsDonutChart"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <p class="text-lg font-black text-[#cca43b] font-mono">₱{{ revenue_so_far|floatformat:0 }}</p>
-                        <p class="text-[10px] uppercase tracking-wider text-[#a0ac96] font-mono">total revenue</p>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-base font-black text-white tracking-tight">Product Sales Share</h2>
+                        <p class="text-xs text-[#a0ac96]">Revenue distribution by product</p>
                     </div>
+                    <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">By Units</span>
                 </div>
 
-                <div class="space-y-3 mt-4">
-                    {% for p in top_products_donut %}
-                    <div class="flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2.5">
-                            <span class="h-2.5 w-2.5 rounded-sm shrink-0" style="background-color: {{ p.color }}"></span>
-                            <div>
-                                <p class="text-white font-bold">{{ p.name }}</p>
-                                <p class="text-[#a0ac96] text-[11px] font-mono">{{ p.units_str }} · <span class="text-emerald-400">{{ p.trend_str }}</span></p>
-                            </div>
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                    <div class="sm:col-span-5 h-44 relative flex items-center justify-center">
+                        <canvas id="topProductsDonutChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <p class="text-sm font-black text-[#cca43b] font-mono">₱{{ revenue_so_far|floatformat:0 }}</p>
+                            <p class="text-[9px] uppercase tracking-wider text-[#a0ac96] font-mono">Revenue</p>
                         </div>
-                        <span class="text-white font-mono font-bold text-sm">{{ p.share_pct }}%</span>
                     </div>
-                    {% endfor %}
+
+                    <div class="sm:col-span-7 space-y-2.5">
+                        {% for p in top_products_donut %}
+                        <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                            <div class="flex items-center gap-2">
+                                <span class="h-2.5 w-2.5 rounded-sm shrink-0" style="background-color: {{ p.color }}"></span>
+                                <div class="truncate">
+                                    <p class="text-white font-bold truncate">{{ p.name }}</p>
+                                    <p class="text-[#a0ac96] text-[10px] font-mono">{{ p.units_str }}</p>
+                                </div>
+                            </div>
+                            <span class="text-white font-mono font-bold">{{ p.share_pct }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 8. Seasonal Demand & Production Planning -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+    <!-- 5. Seasonal Planning & Production Scheduling -->
+    <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-white/10 pb-4">
             <div>
-                <h3 class="text-lg sm:text-xl font-black text-white tracking-wide">Seasonal demand & production planning</h3>
-                <p class="text-xs text-[#a0ac96] mt-1">Learned from monthly sales history. Tells you which months are busy, and when to start producing.</p>
+                <h2 class="text-lg font-black tracking-tight text-white">Seasonal Demand & Production Schedule</h2>
+                <p class="text-xs text-[#a0ac96] font-medium">Historical seasonal indices and 6-month forward production planning</p>
             </div>
             <div class="inline-flex rounded-lg border border-white/10 bg-[#01140e] p-1 gap-1">
-                <button id="btnSeasonCrawfish" onclick="switchSeasonProduct('crawfish')" class="px-4 py-1.5 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer">Crawfish</button>
-                <button id="btnSeasonSuperworm" onclick="switchSeasonProduct('superworm')" class="px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Superworm</button>
+                <button id="btnSeasonCrawfish" onclick="switchSeasonProduct('crawfish')" class="px-3.5 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer">Crawfish</button>
+                <button id="btnSeasonSuperworm" onclick="switchSeasonProduct('superworm')" class="px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Superworm</button>
             </div>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-[#a0ac96] font-mono mt-4 mb-2">
-            <span>Seasonal index by month (1.00 = average month)</span>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-1.5">
-                    <span class="h-2.5 w-2.5 rounded-sm bg-[#cca43b]"></span>
-                    <span>Seasonal index</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <span class="h-0.5 w-4 border-t border-dashed border-white/40"></span>
-                    <span>Average month</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="h-64 w-full relative">
+        <div class="h-56 w-full relative">
             <canvas id="seasonalIndexChart"></canvas>
         </div>
 
         <!-- Next 6 Months Schedule -->
-        <div class="mt-8">
-            <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Next 6 months</h4>
-            <div class="overflow-x-auto rounded-xl border border-white/10">
+        <div class="mt-6">
+            <p class="text-xs font-black uppercase tracking-wider text-white mb-2">Next 6 Months Production Targets</p>
+            <div class="overflow-x-auto rounded-lg border border-white/10">
                 <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
-                    <thead class="bg-[#01140e] text-[#a0ac96]">
+                    <thead class="bg-white/[0.03] text-[#a0ac96]">
                         <tr>
-                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider">Month</th>
-                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-right">Forecast</th>
-                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-center">Season</th>
-                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-center">Action</th>
-                            <th class="px-5 py-3.5 font-bold uppercase tracking-wider text-right">Start by</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider">Month</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">Target Production</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-center">Season</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-center">Action</th>
+                            <th class="px-5 py-3 font-bold uppercase tracking-wider text-right">Start Stocking By</th>
                         </tr>
                     </thead>
                     <tbody id="seasonalScheduleBody" class="divide-y divide-white/5 bg-transparent">
                         {% for row in seasonal_data.crawfish_schedule %}
-                        <tr class="hover:bg-white/[0.03] transition-colors">
-                            <td class="px-5 py-3.5 text-white font-sans font-bold">{{ row.month }}</td>
-                            <td class="px-5 py-3.5 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
-                            <td class="px-5 py-3.5 text-center">
-                                <span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span>
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="px-5 py-3 text-white font-sans font-bold">{{ row.month }}</td>
+                            <td class="px-5 py-3 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
+                            <td class="px-5 py-3 text-center">
+                                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span>
                             </td>
-                            <td class="px-5 py-3.5 text-center">
-                                <span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span>
+                            <td class="px-5 py-3 text-center">
+                                <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span>
                             </td>
-                            <td class="px-5 py-3.5 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
+                            <td class="px-5 py-3 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-
-        <!-- Plan for the December Peak Timeline -->
-        <div class="mt-8">
-            <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Plan for the December peak</h4>
-            <div class="h-3 w-full bg-white/10 rounded-full overflow-hidden flex">
-                <div class="h-full bg-[#cca43b]/60" style="width: 15%" title="Prepare ponds"></div>
-                <div class="h-full bg-emerald-500" style="width: 55%" title="Grow-out"></div>
-                <div class="h-full bg-cyan-400" style="width: 10%" title="Harvest window"></div>
-                <div class="h-full bg-[#cca43b]" style="width: 20%" title="Peak demand"></div>
-            </div>
-            <div class="flex flex-wrap items-center gap-4 text-xs font-mono text-[#a0ac96] mt-3">
-                <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-[#cca43b]/60"></span><span>Prepare ponds (Sep 21-29)</span></div>
-                <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-emerald-500"></span><span>Grow-out, 8 weeks (Sep 29 - Nov 24)</span></div>
-                <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-cyan-400"></span><span>Harvest window (Nov 24 - Dec 1)</span></div>
-                <div class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-sm bg-[#cca43b]"></span><span>Peak demand (December)</span></div>
-            </div>
-        </div>
-
-        <div class="mt-6 p-4 rounded-xl border border-white/10 bg-white/[0.02] text-xs text-[#a0ac96] leading-relaxed font-sans">
-            <p><span class="font-bold text-white">Why:</span> {{ seasonal_data.peak_plan.reason }}</p>
-            <details class="mt-3 cursor-pointer text-[#cca43b]">
-                <summary class="font-bold hover:underline">► How is this computed?</summary>
-                <div class="mt-2 text-stone-300 pl-4 border-l border-[#cca43b]/30 space-y-1 text-[11px] font-mono">
-                    <p>1. Multi-year monthly totals are normalized into a baseline Seasonal Index ($\text{Index} = \frac{\text{Monthly Sales}}{\text{Average Month}}$).</p>
-                    <p>2. Values &gt; 1.10 trigger proactive pond preparation lead time ($\text{Lead Time} = \text{Harvest Date} - \text{Stocking Date}$).</p>
-                    <p>3. Suggested stocking schedules account for an 8-week grow-out period to hit maximum harvest availability during holiday demand.</p>
-                </div>
-            </details>
-        </div>
     </div>
 
-    <!-- 10. Demand vs Stock Analysis -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+    <!-- 6. Inventory Balance & Model Performance (Row) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
+        <!-- Demand vs Stock Inventory Balance -->
+        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
             <div>
-                <h3 class="text-lg sm:text-xl font-black text-white tracking-wide">Demand vs stock</h3>
-                <p class="text-xs text-[#a0ac96] mt-1">Forecast demand for {{ remaining_range_str }} compared with what you have in inventory.</p>
-            </div>
-            <button onclick="sendToNotifications()" class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#cca43b] border border-[#cca43b]/40 rounded-lg hover:bg-[#cca43b]/10 transition-colors cursor-pointer">Send to Notifications</button>
-        </div>
-
-        <div class="mt-6 space-y-6">
-            {% for item in demand_stock_data %}
-            <div class="p-5 rounded-xl border border-white/5 bg-white/[0.01]">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="text-white font-bold text-sm">{{ item.name }}</h4>
-                    <span class="text-xs text-[#a0ac96] font-mono">Forecast {{ item.forecast_demand }}</span>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-base font-black text-white tracking-tight">Demand vs. Stock Balance</h2>
+                        <p class="text-xs text-[#a0ac96]">Active catalog stock compared with forecast</p>
+                    </div>
+                    <button onclick="sendToNotifications()" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">
+                        Alert Operations &rarr;
+                    </button>
                 </div>
 
-                <div class="h-2.5 w-full bg-white/10 rounded-full overflow-hidden mt-2">
-                    <div class="h-full rounded-full transition-all duration-500" style="background-color: {{ item.bar_color }}; width: {{ item.bar_pct }}%"></div>
+                <div class="space-y-4">
+                    {% for item in demand_stock_data %}
+                    <div class="p-3.5 rounded-lg border border-white/5 bg-white/[0.02]">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <h4 class="text-white font-bold text-xs">{{ item.name }}</h4>
+                            <span class="text-xs text-[#a0ac96] font-mono">Demand: {{ item.forecast_demand }}</span>
+                        </div>
+
+                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="background-color: {{ item.bar_color }}; width: {{ item.bar_pct }}%"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] font-mono text-[#a0ac96] mt-1.5">
+                            <span>In Stock: <strong class="text-white">{{ item.stock_qty }}</strong></span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ item.status_badge_cls }}">{{ item.status }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-
-                <div class="flex items-center justify-between text-xs font-mono text-[#a0ac96] mt-2">
-                    <span>Stock {{ item.stock_qty }}</span>
-                    <span>Demand {{ item.forecast_demand }}</span>
-                </div>
-
-                <div class="mt-3 flex flex-wrap items-center gap-3">
-                    <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full {{ item.status_badge_cls }}">{{ item.status }}</span>
-                    <span class="text-xs text-[#a0ac96] font-sans">{{ item.advice }}</span>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- 11. Model Details Metadata -->
-    <div class="glass-card rounded-2xl p-6 sm:p-7">
-        <div class="flex items-center gap-2 mb-1">
-            <span class="h-2 w-2 rounded-full bg-[#cca43b]"></span>
-            <h3 class="text-lg font-black text-white tracking-wide uppercase">Model Details</h3>
-        </div>
-        <p class="text-xs text-[#a0ac96] mt-1">What the system used to produce the numbers above.</p>
-
-        <div class="mt-6 space-y-4 text-xs font-sans">
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Daily forecast</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.forecast_model }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Trend</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.trend_model }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Seasonal planning</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.seasonal_model }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Recommendations</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.recommendation_model }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Training data</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.training_data }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Features</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.features }}</p>
-            </div>
-
-            <div>
-                <p class="text-[#a0ac96] font-mono uppercase text-[11px]">Last trained</p>
-                <p class="text-white font-bold mt-0.5">{{ model_details.last_trained }}</p>
             </div>
         </div>
 
-        <div class="mt-6 pt-4 border-t border-white/10">
-            <button onclick="retrainModel()" id="btnRetrainModel" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#cca43b] border border-[#cca43b]/40 rounded-lg hover:bg-[#cca43b]/10 transition-colors cursor-pointer">Retrain Model</button>
+        <!-- Model Comparison & ML Performance -->
+        <div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-base font-black text-white tracking-tight">Model Error Benchmarks</h2>
+                        <p class="text-xs text-[#a0ac96]">Comparative accuracy across algorithms</p>
+                    </div>
+                    <span class="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-[10px] font-mono font-bold text-emerald-400">Auto-Tuned</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-white/10">
+                    <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
+                        <thead class="bg-white/[0.03] text-[#a0ac96]">
+                            <tr>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider">Model</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">MAE</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">RMSE</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-right">MAPE</th>
+                                <th class="px-4 py-2.5 font-bold uppercase tracking-wider text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 bg-transparent">
+                            {% for m in model_comparisons %}
+                            <tr class="hover:bg-white/[0.02] transition-colors {% if m.selected %}bg-emerald-500/[0.06]{% endif %}">
+                                <td class="px-4 py-2.5 text-white font-sans font-bold">{{ m.name }}</td>
+                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">₱{{ m.mae|floatformat:2 }}</td>
+                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">₱{{ m.rmse|floatformat:2 }}</td>
+                                <td class="px-4 py-2.5 text-right text-stone-200 font-bold">{{ m.mape|floatformat:1 }}%</td>
+                                <td class="px-4 py-2.5 text-center">
+                                    {% if m.selected %}
+                                    <span class="inline-block text-[10px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">Active</span>
+                                    {% else %}
+                                    <span class="text-[#a0ac96] text-[10px]">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Model Metadata Footer -->
+                <div class="mt-4 p-3 rounded-lg border border-white/5 bg-white/[0.02] space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between text-[#a0ac96] font-mono text-[11px]">
+                        <span>Training Records</span>
+                        <span class="text-white font-bold">{{ model_details.orders_trained }} orders</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[#a0ac96] font-mono text-[11px]">
+                        <span>Training Range</span>
+                        <span class="text-white font-bold">{{ model_details.data_range }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between pt-2 border-t border-white/10">
+                <span class="text-xs text-[#a0ac96] font-mono">Retrained daily on sales updates</span>
+                <button onclick="retrainModel()" id="btnRetrainModel" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-1.5 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">Retrain Model</button>
+            </div>
         </div>
     </div>
 </div>
@@ -645,42 +561,43 @@
                     data: fcastData.actual,
                     borderColor: '#34d399',
                     backgroundColor: 'transparent',
-                    borderWidth: 3,
+                    borderWidth: 2.5,
                     tension: 0.35,
                     pointBackgroundColor: '#01140e',
                     pointBorderColor: '#34d399',
                     pointBorderWidth: 2,
-                    pointRadius: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+                    pointRadius: 3,
+                    pointHoverRadius: 5
                 },
                 {
                     label: 'Forecast (₱)',
                     data: fcastData.forecast,
                     borderColor: '#818cf8',
+                    borderDash: [5, 4],
                     backgroundColor: 'transparent',
                     borderWidth: 2.5,
-                    borderDash: [5, 5],
                     tension: 0.35,
                     pointBackgroundColor: '#01140e',
                     pointBorderColor: '#818cf8',
                     pointBorderWidth: 2,
-                    pointRadius: 4
+                    pointRadius: 3,
+                    pointHoverRadius: 5
                 },
                 {
-                    label: 'Range Upper',
+                    label: 'Upper 80%',
                     data: fcastData.upper_80,
                     borderColor: 'transparent',
-                    backgroundColor: 'rgba(129, 140, 248, 0.12)',
+                    backgroundColor: 'rgba(129, 140, 248, 0.10)',
                     fill: '+1',
-                    pointRadius: 0,
-                    tension: 0.35
+                    pointRadius: 0
                 },
                 {
-                    label: 'Range Lower',
+                    label: 'Lower 80%',
                     data: fcastData.lower_80,
                     borderColor: 'transparent',
                     backgroundColor: 'transparent',
-                    pointRadius: 0,
-                    tension: 0.35
+                    fill: false,
+                    pointRadius: 0
                 }
             ]
         },
@@ -690,14 +607,14 @@
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#a0ac96', font: { family: 'monospace', size: 10 } }
+                    ticks: { color: '#a0ac96', font: { family: 'monospace', size: 9 }, maxRotation: 45 }
                 },
                 y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
                     ticks: {
                         color: '#a0ac96',
-                        font: { family: 'monospace', weight: 'bold' },
+                        font: { family: 'monospace' },
                         callback: function(v) { return '₱' + v; }
                     }
                 }
@@ -709,11 +626,11 @@
                     titleColor: '#fff',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 1,
-                    padding: 12,
-                    filter: function(item) { return item.datasetIndex < 2; },
+                    padding: 10,
                     callbacks: {
                         label: function(ctx) {
-                            return ctx.dataset.label + ': ₱' + (ctx.parsed.y != null ? ctx.parsed.y.toLocaleString() : '0');
+                            if (ctx.dataset.label.includes('80%')) return null;
+                            return ctx.dataset.label + ': ₱' + (ctx.parsed.y ? ctx.parsed.y.toFixed(2) : '0.00');
                         }
                     }
                 }
@@ -721,49 +638,41 @@
         }
     });
 
-    // 3. Sales Trend Prediction Chart
+    // 3. Linear Regression Trend Chart
     const trendData = {{ trend_chart_data_json|safe }};
     const trendCtx = document.getElementById('trendAnalysisChart').getContext('2d');
     new Chart(trendCtx, {
-        type: 'scatter',
+        type: 'line',
         data: {
+            labels: trendData.labels,
             datasets: [
                 {
-                    type: 'line',
-                    label: 'Fitted line',
-                    data: trendData.fitted.map((v, i) => v !== null ? {x: i, y: v} : null).filter(p => p !== null),
-                    borderColor: '#06b6d4',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0
-                },
-                {
-                    type: 'line',
-                    label: 'Projection',
-                    data: trendData.projection.map((v, i) => v !== null ? {x: i, y: v} : null).filter(p => p !== null),
-                    borderColor: '#06b6d4',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0
-                },
-                {
+                    label: 'Daily Sales',
+                    data: trendData.actual,
                     type: 'scatter',
-                    label: 'Daily revenue',
-                    data: trendData.scatter.map((p, idx) => ({x: idx, y: p.y, is_outlier: p.is_outlier})),
-                    backgroundColor: function(ctx) {
-                        const raw = ctx.raw;
-                        return raw && raw.is_outlier ? '#cca43b' : '#ffffff';
-                    },
-                    borderColor: function(ctx) {
-                        const raw = ctx.raw;
-                        return raw && raw.is_outlier ? '#cca43b' : '#ffffff';
-                    },
-                    borderWidth: 1,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    backgroundColor: '#cca43b',
+                    borderColor: '#cca43b',
+                    pointRadius: 3.5,
+                    pointHoverRadius: 5.5
+                },
+                {
+                    label: 'Fitted Line',
+                    data: trendData.fitted,
+                    borderColor: '#06b6d4',
+                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    pointRadius: 0,
+                    tension: 0
+                },
+                {
+                    label: 'Projected Trend',
+                    data: trendData.projected,
+                    borderColor: '#06b6d4',
+                    borderDash: [5, 4],
+                    borderWidth: 2,
+                    backgroundColor: 'transparent',
+                    pointRadius: 0,
+                    tension: 0
                 }
             ]
         },
@@ -772,25 +681,15 @@
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    type: 'linear',
                     grid: { display: false },
-                    ticks: {
-                        color: '#a0ac96',
-                        font: { family: 'monospace', size: 10 },
-                        callback: function(val) {
-                            return trendData.labels[val] || '';
-                        },
-                        stepSize: 2
-                    },
-                    min: 0,
-                    max: trendData.labels.length - 1
+                    ticks: { color: '#a0ac96', font: { family: 'monospace', size: 9 }, maxRotation: 45 }
                 },
                 y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
                     ticks: {
                         color: '#a0ac96',
-                        font: { family: 'monospace', weight: 'bold' },
+                        font: { family: 'monospace' },
                         callback: function(v) { return '₱' + v; }
                     }
                 }
@@ -802,16 +701,7 @@
                     titleColor: '#fff',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderWidth: 1,
-                    padding: 12,
-                    callbacks: {
-                        title: function(items) {
-                            const idx = Math.round(items[0].parsed.x);
-                            return trendData.labels[idx] || '';
-                        },
-                        label: function(ctx) {
-                            return 'Revenue: ₱' + (ctx.parsed.y != null ? ctx.parsed.y.toLocaleString() : '0');
-                        }
-                    }
+                    padding: 10
                 }
             }
         }
@@ -827,8 +717,9 @@
             datasets: [{
                 data: donutData.values,
                 backgroundColor: donutData.colors,
+                borderWidth: 2,
                 borderColor: '#022118',
-                borderWidth: 3
+                hoverOffset: 4
             }]
         },
         options: {
@@ -853,11 +744,10 @@
         }
     });
 
-    // 5. Seasonal Demand Index Chart
+    // 5. Seasonal Index Chart
     const seasonalChartData = {{ seasonal_chart_data_json|safe }};
-    const seasonalCtx = document.getElementById('seasonalIndexChart').getContext('2d');
     let currentSeasonalProduct = 'crawfish';
-    
+    const seasonalCtx = document.getElementById('seasonalIndexChart').getContext('2d');
     const seasonalIndexChart = new Chart(seasonalCtx, {
         type: 'bar',
         data: {
@@ -866,22 +756,16 @@
                 {
                     label: 'Seasonal Index',
                     data: seasonalChartData.crawfish,
-                    backgroundColor: function(ctx) {
-                        const val = ctx.raw;
-                        if (val >= 1.3) return '#cca43b';
-                        if (val >= 1.05) return '#d4af37';
-                        if (val < 0.9) return '#1b4332';
-                        return '#2d6a4f';
-                    },
+                    backgroundColor: '#cca43b',
                     borderRadius: 4
                 },
                 {
+                    label: 'Baseline (1.00)',
+                    data: Array(12).fill(1.0),
                     type: 'line',
-                    label: 'Average Month (1.00)',
-                    data: Array(12).fill(1.00),
-                    borderColor: 'rgba(255, 255, 255, 0.4)',
-                    borderWidth: 1.5,
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
                     borderDash: [4, 4],
+                    borderWidth: 1.5,
                     pointRadius: 0,
                     fill: false
                 }
@@ -921,24 +805,24 @@
 
     const crawfishScheduleHTML = `
         {% for row in seasonal_data.crawfish_schedule %}
-        <tr class="hover:bg-white/[0.03] transition-colors">
-            <td class="px-5 py-3.5 text-white font-sans font-bold">{{ row.month }}</td>
-            <td class="px-5 py-3.5 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
-            <td class="px-5 py-3.5 text-center"><span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span></td>
-            <td class="px-5 py-3.5 text-center"><span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span></td>
-            <td class="px-5 py-3.5 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
+        <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="px-5 py-3 text-white font-sans font-bold">{{ row.month }}</td>
+            <td class="px-5 py-3 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
+            <td class="px-5 py-3 text-center"><span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span></td>
+            <td class="px-5 py-3 text-center"><span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span></td>
+            <td class="px-5 py-3 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
         </tr>
         {% endfor %}
     `;
 
     const superwormScheduleHTML = `
         {% for row in seasonal_data.superworm_schedule %}
-        <tr class="hover:bg-white/[0.03] transition-colors">
-            <td class="px-5 py-3.5 text-white font-sans font-bold">{{ row.month }}</td>
-            <td class="px-5 py-3.5 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
-            <td class="px-5 py-3.5 text-center"><span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span></td>
-            <td class="px-5 py-3.5 text-center"><span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span></td>
-            <td class="px-5 py-3.5 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
+        <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="px-5 py-3 text-white font-sans font-bold">{{ row.month }}</td>
+            <td class="px-5 py-3 text-right text-stone-200 font-bold">{{ row.forecast }}</td>
+            <td class="px-5 py-3 text-center"><span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full {{ row.season_cls }}">{{ row.season }}</span></td>
+            <td class="px-5 py-3 text-center"><span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md {{ row.action_cls }}">{{ row.action }}</span></td>
+            <td class="px-5 py-3 text-right text-stone-300 font-bold">{{ row.start_by }}</td>
         </tr>
         {% endfor %}
     `;
@@ -950,13 +834,13 @@
         const schedBody = document.getElementById('seasonalScheduleBody');
 
         if (product === 'crawfish') {
-            btnCraw.className = 'px-4 py-1.5 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
-            btnSup.className = 'px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            btnCraw.className = 'px-3.5 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
+            btnSup.className = 'px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
             seasonalIndexChart.data.datasets[0].data = seasonalChartData.crawfish;
             schedBody.innerHTML = crawfishScheduleHTML;
         } else {
-            btnSup.className = 'px-4 py-1.5 text-xs font-bold rounded-md bg-[#138a5c] text-white transition-colors cursor-pointer';
-            btnCraw.className = 'px-4 py-1.5 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            btnSup.className = 'px-3.5 py-1 text-xs font-bold rounded-md bg-[#138a5c] text-white transition-colors cursor-pointer';
+            btnCraw.className = 'px-3.5 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
             seasonalIndexChart.data.datasets[0].data = seasonalChartData.superworm;
             schedBody.innerHTML = superwormScheduleHTML;
         }
@@ -972,7 +856,7 @@
         btn.innerText = 'Retraining...';
         setTimeout(() => {
             btn.innerText = 'Model Retrained Successfully!';
-            btn.className = 'px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/40 rounded-lg bg-emerald-500/10';
+            btn.className = 'rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-400';
         }, 1200);
     }
 </script>
