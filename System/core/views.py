@@ -183,9 +183,13 @@ def customer_register(request):
 
 def app_logout(request):
     """Role-aware logout redirect."""
-    was_customer = request.user.is_authenticated and is_customer(request.user)
+    is_cust = False
+    if request.user.is_authenticated:
+        if not (request.user.is_superuser or request.user.is_staff or getattr(request.user, 'role', '') == 'owner' or getattr(request.user, 'is_owner', False)):
+            if getattr(request.user, 'role', '') == 'customer' or getattr(request.user, 'is_customer', False):
+                is_cust = True
     auth_logout(request)
-    if was_customer:
+    if is_cust:
         return redirect('customer_login')
     return redirect('login')
 
