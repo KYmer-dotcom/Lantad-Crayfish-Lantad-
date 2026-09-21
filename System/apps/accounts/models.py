@@ -51,8 +51,11 @@ class User(AbstractUser):
         return self.role == self.Role.RIDER
 
     def save(self, *args, **kwargs):
-        if self.role == self.Role.OWNER:
+        if self.is_superuser:
+            self.role = self.Role.OWNER
             self.is_staff = True
-        elif not self.is_superuser:
+        elif self.role == self.Role.OWNER:
+            self.is_staff = True
+        else:
             self.is_staff = False
         super().save(*args, **kwargs)
