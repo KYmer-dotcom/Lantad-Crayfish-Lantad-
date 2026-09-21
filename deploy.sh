@@ -28,8 +28,9 @@ After=network.target
 
 [Service]
 User=root
-WorkingDirectory=/var/www/lantad
+WorkingDirectory=/var/www/lantad/System
 Environment="PATH=/var/www/lantad/.venv/bin"
+Environment="PYTHONPATH=/var/www/lantad/System"
 Environment="USE_SQLITE=True"
 ExecStart=/var/www/lantad/.venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 core.wsgi:application
 Restart=always
@@ -39,7 +40,7 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl start lantad
+systemctl restart lantad
 systemctl enable lantad
 
 cat << 'EOF' > /etc/nginx/sites-available/lantad
@@ -48,11 +49,11 @@ server {
     server_name 187.77.150.222 lantadcrayfish.tech www.lantadcrayfish.tech;
 
     location /static/ {
-        alias /var/www/lantad/staticfiles/;
+        alias /var/www/lantad/System/staticfiles/;
     }
 
     location /media/ {
-        alias /var/www/lantad/media/;
+        alias /var/www/lantad/System/media/;
     }
 
     location / {
