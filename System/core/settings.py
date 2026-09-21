@@ -35,6 +35,10 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://lantadcrayfish.tech',
+    'https://www.lantadcrayfish.tech',
+    'http://187.77.150.222',
+    'https://187.77.150.222',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
