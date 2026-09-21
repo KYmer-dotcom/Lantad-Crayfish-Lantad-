@@ -190,7 +190,7 @@ def app_logout(request):
                 is_cust = True
     auth_logout(request)
     if is_cust:
-        return redirect('customer_login')
+        return redirect('sales:customer_portal')
     return redirect('login')
 
 
