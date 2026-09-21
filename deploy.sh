@@ -32,7 +32,7 @@ WorkingDirectory=/var/www/lantad/System
 Environment="PATH=/var/www/lantad/.venv/bin"
 Environment="PYTHONPATH=/var/www/lantad/System"
 Environment="USE_SQLITE=True"
-ExecStart=/var/www/lantad/.venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 core.wsgi:application
+ExecStart=/var/www/lantad/.venv/bin/gunicorn --chdir /var/www/lantad/System --workers 3 --bind 127.0.0.1:8000 core.wsgi:application
 Restart=always
 
 [Install]
