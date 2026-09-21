@@ -28,6 +28,7 @@ urlpatterns = [
     
     # Dashboard
     path('', views.dashboard, name='dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard_alias'),
     path('inventory/', views.inventory_overview, name='inventory'),
     path('delivery/', lambda request: redirect('sales:delivery_list'), name='delivery'),
     path('track-order/', lambda request: redirect('sales:delivery_track'), name='track_order_root'),
