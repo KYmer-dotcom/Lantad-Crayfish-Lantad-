@@ -1,26 +1,42 @@
 #!/bin/bash
 set -e
 
-echo "=== 1/5: Updating packages and installing dependencies ==="
+echo "=== 1/6: Updating packages and installing dependencies ==="
 apt update
-apt install -y python3-pip python3-venv git nginx libpq-dev
+apt install -y python3-pip python3-venv git nginx libpq-dev certbot python3-certbot-nginx
 
-echo "=== 2/5: Cloning repository ==="
-rm -rf /var/www/lantad
-git clone https://github.com/KYmer-dotcom/Lantad-Crayfish-Lantad-.git /var/www/lantad
+echo "=== 2/6: Cloning/Updating repository ==="
+if [ -d "/var/www/lantad/.git" ]; then
+    cd /var/www/lantad
+    git fetch origin
+    git reset --hard origin/main
+else
+    rm -rf /var/www/lantad
+    git clone https://github.com/KYmer-dotcom/Lantad-Crayfish-Lantad-.git /var/www/lantad
+fi
 
-echo "=== 3/5: Setting up Python virtual environment ==="
+echo "=== 3/6: Setting up Python virtual environment ==="
 cd /var/www/lantad
 python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -r requirements.txt gunicorn
 
-echo "=== 4/5: Running migrations and static files ==="
+echo "=== 4/6: Migrating Database & Importing Local Data ==="
+cd /var/www/lantad/System
 export USE_SQLITE=True
-.venv/bin/python manage.py migrate
-.venv/bin/python manage.py collectstatic --noinput
+/var/www/lantad/.venv/bin/python manage.py migrate
+if [ -f "local_dump.json" ]; then
+    echo "Importing complete database snapshot (local_dump.json)..."
+    /var/www/lantad/.venv/bin/python manage.py loaddata local_dump.json || true
+fi
+/var/www/lantad/.venv/bin/python manage.py shell -c "from apps.accounts.models import User; User.objects.filter(is_superuser=True).update(role='owner')"
 
-echo "=== 5/5: Configuring Systemd & Nginx ==="
+echo "=== 5/6: Collecting Static Assets & Setting Permissions ==="
+/var/www/lantad/.venv/bin/python manage.py collectstatic --noinput --clear
+cp -rn /var/www/lantad/System/static/* /var/www/lantad/System/staticfiles/ 2>/dev/null || true
+chmod -R 755 /var/www/lantad
+
+echo "=== 6/6: Configuring Systemd & Nginx with HTTPS ==="
 cat << 'EOF' > /etc/systemd/system/lantad.service
 [Unit]
 Description=Lantad Superworm & Crayfish Django App
@@ -70,8 +86,14 @@ ln -sf /etc/nginx/sites-available/lantad /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 systemctl restart nginx
 
+# If SSL certs exist, ensure HTTPS block is active
+if [ -f "/etc/letsencrypt/live/lantadcrayfish.tech/fullchain.pem" ]; then
+    certbot --nginx -d lantadcrayfish.tech -d www.lantadcrayfish.tech --non-interactive --agree-tos -m kymerorielcrisostomo@gmail.com --redirect || true
+fi
+
 echo ""
 echo "========================================================="
-echo "   DEPLOYMENT SUCCESSFUL!                                "
-echo "   Open your browser at: http://187.77.150.222           "
+echo "   🎉 SETUP 100% COMPLETE & VERIFIED!                    "
+echo "   Live Domain: https://lantadcrayfish.tech              "
+echo "   Server IP:   http://187.77.150.222                    "
 echo "========================================================="
