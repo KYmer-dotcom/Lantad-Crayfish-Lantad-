@@ -291,22 +291,13 @@ def dashboard(request):
         {
             'id': farm.id,
             'name': farm.name,
-            'location': farm.location,
+            'location': farm.location or 'Silay Superworm & Crayfish, Lantad Silay City',
             'pin_color': 'admin',
             'is_current_account': True
         }
         for farm in accessible_farms
-        if farm.location
+        if farm.location or farm.name
     ]
-    fixed_location_overrides = {
-        'admin': 'Silay Superworm & Crayfish, Lantad Silay City',
-        'farm 1': 'Balaring Silay City',
-        'farm 2': 'EB magalona Negros Occidental',
-    }
-    for farm in farm_locations:
-        lookup_key = farm['name'].strip().lower()
-        if lookup_key in fixed_location_overrides:
-            farm['location'] = fixed_location_overrides[lookup_key]
 
     # Embedded analytics + reports sections for dashboard (Full Month Timeline)
     import calendar
