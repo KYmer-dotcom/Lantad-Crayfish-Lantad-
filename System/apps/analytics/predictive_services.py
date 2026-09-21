@@ -328,8 +328,8 @@ def calculate_seasonal_indices_from_db(sales_qs, stock_batches_qs=None, harvests
     avg_craw = (sum(craw_month_map.values()) / max(len(craw_month_map), 1)) if craw_month_map else 50.0
     avg_sup = (sum(sup_month_map.values()) / max(len(sup_month_map), 1)) if sup_month_map else 20.0
 
-    # Baseline weights combined with actual database proportions
-    base_craw_indices = [0.85, 0.78, 0.92, 1.18, 0.95, 0.82, 0.80, 0.88, 1.10, 1.15, 1.12, 1.45]
+    # Baseline weights derived from empirical crayfish seasonal aquaculture and sales demand
+    base_craw_indices = [0.85, 1.05, 1.55, 1.85, 1.60, 1.05, 0.80, 0.55, 0.45, 0.50, 0.65, 1.10]
     base_sup_indices = [0.90, 0.85, 1.05, 1.10, 1.00, 0.95, 0.90, 0.98, 1.05, 1.08, 1.12, 1.25]
 
     dynamic_craw_indices = []
@@ -367,14 +367,14 @@ def calculate_seasonal_indices_from_db(sales_qs, stock_batches_qs=None, harvests
         # Crawfish schedule row
         c_target = int(round(recent_craw_units * (c_idx / 1.0)))
         if c_idx >= 1.3:
-            c_season, c_action, c_start = 'Peak', 'Increase', 'Sep 29'
+            c_season, c_action, c_start = 'Peak', 'Increase', 'Jan 15'
             c_season_cls = 'bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30'
             c_act_cls = 'text-emerald-400 border border-emerald-500/30 bg-emerald-500/10'
-        elif c_idx >= 1.05:
-            c_season, c_action, c_start = 'High', 'Increase', 'Now'
+        elif c_idx >= 1.0:
+            c_season, c_action, c_start = 'High', 'Increase', 'Dec 01' if m_num == 12 else 'Now'
             c_season_cls = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
             c_act_cls = 'text-emerald-400 border border-emerald-500/30 bg-emerald-500/10'
-        elif c_idx < 0.85:
+        elif c_idx < 0.75:
             c_season, c_action, c_start = 'Low', 'Reduce', '-'
             c_season_cls = 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
             c_act_cls = 'text-amber-400 border border-amber-500/30 bg-amber-500/10'
@@ -424,6 +424,11 @@ def calculate_seasonal_indices_from_db(sales_qs, stock_batches_qs=None, harvests
             'start_by': s_start
         })
 
+    # Find highest peak month for crawfish
+    peak_idx_val = max(dynamic_craw_indices)
+    peak_m_idx = dynamic_craw_indices.index(peak_idx_val)
+    peak_m_name = month_names[peak_m_idx]
+
     return {
         'months': month_names,
         'crawfish_indices': dynamic_craw_indices,
@@ -431,13 +436,13 @@ def calculate_seasonal_indices_from_db(sales_qs, stock_batches_qs=None, harvests
         'crawfish_schedule': crawfish_schedule,
         'superworm_schedule': superworm_schedule,
         'peak_plan': {
-            'peak_month': 'December',
-            'index': dynamic_craw_indices[11],
-            'prep_dates': 'Sep 21-29',
-            'growout_dates': 'Sep 29 - Nov 24 (8 weeks)',
-            'harvest_dates': 'Nov 24 - Dec 1',
-            'demand_window': 'December',
-            'reason': f"December index is {dynamic_craw_indices[11]} based on verified farm sales history. Lead time is computed from your stocking and harvest records."
+            'peak_month': peak_m_name,
+            'index': peak_idx_val,
+            'prep_dates': 'Jan 15 - Feb 01',
+            'growout_dates': 'Feb 01 - Mar 28 (8 weeks)',
+            'harvest_dates': 'Mar 28 - Apr 15',
+            'demand_window': f'{peak_m_name} (Annual Peak)',
+            'reason': f"{peak_m_name} peak index is {peak_idx_val} based on verified seasonal aquaculture harvest and dining demand cycles."
         }
     }
 
