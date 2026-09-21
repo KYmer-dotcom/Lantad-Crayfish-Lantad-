@@ -971,6 +971,9 @@ def delivery_create(request):
 
 
 def customer_portal(request):
+    if request.user.is_authenticated and (is_owner(request.user) or request.user.is_superuser or request.user.is_staff or getattr(request.user, 'role', '') == 'owner'):
+        return redirect('dashboard')
+
     guest_mode = not (request.user.is_authenticated and is_customer(request.user))
     customer = None
     if not guest_mode:
