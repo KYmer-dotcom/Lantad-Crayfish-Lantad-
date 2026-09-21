@@ -22,6 +22,7 @@ urlpatterns = [
     # Authentication
     path('login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
     path('customer/', lambda request: redirect('sales:customer_portal'), name='customer_home'),
+    path('market/', lambda request: redirect('sales:customer_portal'), name='market_root'),
     path('customer/login/', views.customer_login, name='customer_login'),
     path('customer/register/', views.customer_register, name='customer_register'),
     path('logout/', views.app_logout, name='logout'),
