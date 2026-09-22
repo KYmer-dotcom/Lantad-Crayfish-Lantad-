@@ -1306,18 +1306,48 @@
                 if (currentStep === 1) {
                     goToStep(2);
                 } else if (currentStep === 2) {
-                    const addressEl = document.getElementById('checkout-delivery-address');
-                    const address = addressEl ? addressEl.value.trim() : '';
-                    if (!address) {
-                        alert("Please enter your complete delivery address.");
-                        return;
+                    const allPickup = checkAllPickup();
+                    if (!allPickup) {
+                        const citySelect = document.getElementById('checkout-city-select');
+                        const brgySelect = document.getElementById('checkout-barangay-select');
+                        const houseInput = document.getElementById('checkout-house-input');
+                        const addressEl = document.getElementById('checkout-delivery-address');
+                        
+                        const brgy = brgySelect ? brgySelect.value.trim() : '';
+                        const address = addressEl ? addressEl.value.trim() : '';
+                        const latVal = document.getElementById('checkout-latitude')?.value || '';
+                        const lngVal = document.getElementById('checkout-longitude')?.value || '';
+
+                        if (!brgy) {
+                            alert("Please select your Barangay to specify your delivery location.");
+                            if (brgySelect) brgySelect.focus();
+                            return;
+                        }
+                        if (!address || address.length < 5 || address.toUpperCase() === 'PICKUP') {
+                            alert("Please enter your complete delivery location (City, Barangay, and Street/House) to proceed.");
+                            if (houseInput) houseInput.focus();
+                            return;
+                        }
+                        if (!latVal || !lngVal || parseFloat(latVal) === 0 || parseFloat(lngVal) === 0) {
+                            alert("Please pin your exact delivery location on the map or click 'Use Current GPS' to proceed.");
+                            return;
+                        }
                     }
                     goToStep(3);
                 } else if (currentStep === 3) {
+                    const allPickup = checkAllPickup();
                     const addressEl = document.getElementById('checkout-delivery-address');
                     const address = addressEl ? addressEl.value.trim() : '';
                     const latVal = document.getElementById('checkout-latitude')?.value || '';
                     const lngVal = document.getElementById('checkout-longitude')?.value || '';
+
+                    if (!allPickup) {
+                        if (!address || address.length < 5 || address.toUpperCase() === 'PICKUP') {
+                            alert("Delivery address is required. Please go back to Step 2 and input your delivery location.");
+                            goToStep(2);
+                            return;
+                        }
+                    }
 
                     if (address) {
                         // Persist text address & GPS coordinates to account
@@ -1425,6 +1455,13 @@
                 const deliveryAddress = addressEl ? addressEl.value.trim() : '';
                 const latVal = document.getElementById('checkout-latitude')?.value || '';
                 const lngVal = document.getElementById('checkout-longitude')?.value || '';
+
+                const allPickup = checkAllPickup();
+                if (!allPickup && (!deliveryAddress || deliveryAddress.length < 5 || deliveryAddress.toUpperCase() === 'PICKUP')) {
+                    alert("Please specify a complete delivery location before submitting your order.");
+                    goToStep(2);
+                    return;
+                }
 
                 const ctaBtn = document.getElementById('place-order-cta-btn');
                 const btnText = document.getElementById('cta-btn-text');

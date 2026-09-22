@@ -184,7 +184,7 @@ def sales_list(request):
             order=ord_obj,
             scheduled_date=ord_obj.order_date,
             delivered_date=deliv_date,
-            delivery_location=ord_obj.delivery_address or "Standard Delivery",
+            delivery_location=ord_obj.delivery_address or ord_obj.customer.address or "Customer Address",
             quantity_kg=ord_obj.quantity_kg,
             status=deliv_status,
             created_by=ord_obj.created_by
@@ -1281,6 +1281,14 @@ def customer_checkout_submit(request):
             from django.http import JsonResponse
             return JsonResponse({'success': False, 'error': 'No items found in cart.'})
 
+        # Ensure that if any order is for delivery, customer must provide a location/address
+        has_delivery = any((order.delivery_address or '').upper() != 'PICKUP' for order in orders_to_place)
+        if has_delivery:
+            final_address = delivery_address or customer.address
+            if not final_address or len(final_address.strip()) < 5:
+                from django.http import JsonResponse
+                return JsonResponse({'success': False, 'error': 'Delivery location and address are required. Please input your delivery address to proceed.'})
+
         # Update delivery address on all placed orders if provided
         for order in orders_to_place:
             if delivery_address and (order.delivery_address or '').upper() != 'PICKUP':
@@ -1379,7 +1387,7 @@ def _sync_order_deliveries():
             order=ord_obj,
             scheduled_date=ord_obj.order_date,
             delivered_date=deliv_date,
-            delivery_location=ord_obj.delivery_address or "Standard Delivery",
+            delivery_location=ord_obj.delivery_address or ord_obj.customer.address or "Customer Address",
             quantity_kg=ord_obj.quantity_kg,
             status=deliv_status,
             created_by=ord_obj.created_by
