@@ -94,7 +94,7 @@
                             <h4 class="text-xs font-black uppercase tracking-[0.2em] text-[#cca43b]">Order & Purchased
                                 Products History</h4>
                         </div>
-                        {% with is_pickup=customer.orders.first.delivery_address|upper == 'PICKUP' %}
+                        {% with latest_order=customer.orders.first %}
                         <div class="overflow-x-auto rounded-lg border border-white/10">
                             <table class="w-full divide-y divide-white/5 bg-black/20 text-xs text-[#a0ac96]">
                                 <thead
@@ -104,7 +104,7 @@
                                         <th class="px-4 py-3 text-left font-bold text-white">Product</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Quantity</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Total Amount</th>
-                                        {% if not is_pickup %}
+                                        {% if latest_order.delivery_address|upper != 'PICKUP' %}
                                         <th class="px-4 py-3 text-left font-bold text-white">Order Date</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Delivery Address</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Status</th>
@@ -119,7 +119,7 @@
                                         <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}</td>
                                         <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg }}</td>
                                         <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
-                                        {% if not is_pickup %}
+                                        {% if latest_order.delivery_address|upper != 'PICKUP' %}
                                         <td class="px-4 py-3 font-mono text-[#a0ac96]">{{ order.order_date }}</td>
                                         <td class="px-4 py-3 text-stone-300">
                                             {% if order.delivery_address|upper == 'PICKUP' %}
@@ -144,7 +144,7 @@
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="{% if is_pickup %}4{% else %}8{% endif %}" class="px-4 py-6 text-center text-[#a0ac96]">No orders
+                                        <td colspan="{% if latest_order.delivery_address|upper == 'PICKUP' %}4{% else %}8{% endif %}" class="px-4 py-6 text-center text-[#a0ac96]">No orders
                                             registered for this customer.</td>
                                     </tr>
                                     {% endfor %}
