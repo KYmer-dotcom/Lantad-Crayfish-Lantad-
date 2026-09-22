@@ -1240,11 +1240,27 @@ def customer_checkout_submit(request):
             payment_method = data.get('payment_method', 'cod')
             payment_reference = data.get('payment_reference', '').strip()
             receipt_base64 = data.get('receipt_image_base64')
+            delivery_address = data.get('delivery_address', '').strip()
+            map_lat = data.get('map_latitude')
+            map_lng = data.get('map_longitude')
         except Exception:
             order_ids = []
             payment_method = 'cod'
             payment_reference = ''
             receipt_base64 = None
+            delivery_address = ''
+            map_lat = None
+            map_lng = None
+
+        if delivery_address:
+            customer.address = delivery_address
+        if map_lat and map_lng:
+            try:
+                customer.map_latitude = Decimal(str(map_lat))
+                customer.map_longitude = Decimal(str(map_lng))
+            except Exception:
+                pass
+        customer.save()
             
         receipt_bytes = None
         if receipt_base64 and ',' in receipt_base64:
@@ -1265,6 +1281,11 @@ def customer_checkout_submit(request):
             from django.http import JsonResponse
             return JsonResponse({'success': False, 'error': 'No items found in cart.'})
 
+        # Update delivery address on all placed orders if provided
+        for order in orders_to_place:
+            if delivery_address and (order.delivery_address or '').upper() != 'PICKUP':
+                order.delivery_address = delivery_address
+
         # Automated GCash Flow via PayMongo
         if payment_method == 'gcash':
             from apps.sales.paymongo_service import create_paymongo_checkout_session
@@ -1279,7 +1300,7 @@ def customer_checkout_submit(request):
                 for order in orders_to_place:
                     unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
                     order.notes = f"{unit_info}Payment: Automated GCash (Session #{session_data['id']})".strip()
-                    order.save(update_fields=['notes'])
+                    order.save(update_fields=['notes', 'delivery_address'])
                 from django.http import JsonResponse
                 return JsonResponse({'success': True, 'redirect_url': session_data['checkout_url'], 'is_gateway': True})
 
