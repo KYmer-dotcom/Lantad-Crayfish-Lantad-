@@ -49,7 +49,7 @@ class Customer(models.Model):
     
     @property
     def total_purchases(self):
-        return self.orders.filter(status='completed').aggregate(
+        return self.orders.exclude(status='cancelled').aggregate(
             total=models.Sum('total_amount')
         )['total'] or 0
 

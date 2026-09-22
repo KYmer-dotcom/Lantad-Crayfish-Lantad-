@@ -209,8 +209,9 @@ def dashboard(request):
     from apps.sales.models import SalesOrder
     from apps.analytics.models import HarvestForecast, SalesForecast
     
-    # Date range for 30-day stats
-    thirty_days_ago = datetime.now().date() - timedelta(days=30)
+    from django.utils import timezone
+    today = timezone.now().date()
+    thirty_days_ago = today - timedelta(days=30)
     
     # Basic stats
     accessible_farms = get_accessible_farms(request.user)
@@ -258,13 +259,12 @@ def dashboard(request):
     harvest_30d = harvest_30d_qs.aggregate(total=Sum('total_weight_kg'))['total'] or 0
     harvest_count = harvest_30d_qs.count()
     
-    orders_30d = SalesOrder.objects.filter(order_date__gte=thirty_days_ago, status='completed')
+    orders_30d = SalesOrder.objects.filter(order_date__gte=thirty_days_ago).exclude(status=SalesOrder.Status.CANCELLED)
     revenue_30d = orders_30d.aggregate(total=Sum('total_amount'))['total'] or 0
     order_count = orders_30d.count()
-    daily_sales_total = SalesOrder.objects.filter(order_date=datetime.now().date()).aggregate(
-        total=Sum('total_amount')
-    )['total'] or 0
-    pending_orders = SalesOrder.objects.exclude(status__in=['completed', 'cancelled']).count()
+    daily_sales_qs = SalesOrder.objects.filter(order_date=today).exclude(status=SalesOrder.Status.CANCELLED)
+    daily_sales_total = daily_sales_qs.aggregate(total=Sum('total_amount'))['total'] or 0
+    pending_orders = SalesOrder.objects.filter(status__in=[SalesOrder.Status.PENDING, SalesOrder.Status.CONFIRMED, SalesOrder.Status.PROCESSING]).count()
     
     # Species distribution for pie chart
     species_data = []
@@ -306,10 +306,9 @@ def dashboard(request):
     # Embedded analytics + reports sections for dashboard (Full Month Timeline)
     import calendar
     from datetime import date
-    sales_statuses = [SalesOrder.Status.DELIVERED, SalesOrder.Status.COMPLETED]
-    sales_qs = SalesOrder.objects.filter(status__in=sales_statuses)
+    sales_qs = SalesOrder.objects.exclude(status=SalesOrder.Status.CANCELLED)
     latest_order = sales_qs.order_by('-order_date').first()
-    ref_date = latest_order.order_date if latest_order else datetime.now().date()
+    ref_date = latest_order.order_date if latest_order else today
     
     current_year = ref_date.year
     current_month = ref_date.month

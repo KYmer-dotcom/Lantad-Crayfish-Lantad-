@@ -398,7 +398,7 @@ def customer_create(request):
             
             if request.htmx:
                 customers = Customer.objects.filter(is_active=True).annotate(
-                    total_purchases_amount=Sum('orders__total_amount', filter=Q(orders__status='completed'))
+                    total_purchases_amount=Sum('orders__total_amount', filter=~Q(orders__status='cancelled'))
                 )
                 return render(request, 'sales_management/partials/customers_table.html', {'customers': customers})
             
