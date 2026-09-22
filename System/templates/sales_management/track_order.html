@@ -11,16 +11,24 @@
     .glass-card {
         background-color: #022118;
         border: 1px solid rgba(255, 255, 255, 0.10);
-        box-: none;
+        box-shadow: none;
     }
     .leaflet-control-attribution { display: none !important; }
     .leaflet-bar { border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 0.75rem !important; overflow: hidden; background: rgba(1,20,14,0.95) !important; }
     .leaflet-bar a { background-color: rgba(1,20,14,0.95) !important; color: #cca43b !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
     .leaflet-bar a:hover { background-color: #cca43b !important; color: #01140e !important; }
+    .shipment-card {
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background-color: rgba(0, 0, 0, 0.25) !important;
+    }
+    .shipment-card:hover {
+        border-color: rgba(204, 164, 59, 0.35) !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
     .shipment-card.active-shipment {
         border-color: #cca43b !important;
-        background: rgba(204, 164, 59, 0.12) !important;
-        box-: 0 0 20px rgba(204, 164, 59, 0.2) !important;
+        background-color: rgba(204, 164, 59, 0.12) !important;
+        box-shadow: none !important;
     }
 </style>
 
@@ -83,7 +91,7 @@
                          data-id="{{ d.id }}"
                          data-status="{{ d.status }}"
                          data-search="{{ d.order.order_number }} {{ d.order.customer.name }} {{ d.delivery_location }} {{ d.rider.name|default:'' }}"
-                         class="shipment-card p-3 rounded-xl border transition-all duration-200 cursor-pointer {% if selected_delivery.id == d.id %}active-shipment{% else %}border-white/10 bg-black/25 hover:border-[#cca43b]/40 hover:bg-white/[0.03]{% endif %}">
+                         class="shipment-card p-3 rounded-xl transition-all duration-200 cursor-pointer {% if selected_delivery.id == d.id %}active-shipment{% endif %}">
                         
                         <div class="flex items-center justify-between gap-2">
                             <span class="font-mono font-bold text-xs text-white">{{ d.order.order_number }}</span>
