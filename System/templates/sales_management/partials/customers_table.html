@@ -124,11 +124,9 @@
                                             <span
                                                 class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 py-0.5 rounded-full">Pickup</span>
                                             {% else %}
-                                            <button type="button"
-                                                onclick="openLocationModal('{{ order.delivery_address|escapejs }}', '{{ customer.map_latitude|default:'' }}', '{{ customer.map_longitude|default:'' }}'); event.stopPropagation();"
-                                                class="underline text-[#cca43b] hover:text-[#cca43b]/80 transition-colors font-bold text-left focus:outline-none cursor-pointer">
+                                            <span class="text-stone-300 font-medium">
                                                 {{ order.delivery_address|default:"-" }}
-                                            </button>
+                                            </span>
                                             {% endif %}
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
