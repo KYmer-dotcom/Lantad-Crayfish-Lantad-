@@ -49,7 +49,9 @@ class Customer(models.Model):
     
     @property
     def total_purchases(self):
-        return self.orders.exclude(status='cancelled').aggregate(
+        return self.orders.filter(
+            status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED]
+        ).aggregate(
             total=models.Sum('total_amount')
         )['total'] or 0
 
@@ -179,17 +181,34 @@ class SalesOrder(models.Model):
         return clean or 'Cash'
     
     def save(self, *args, **kwargs):
+        if not self.order_date:
+            self.order_date = timezone.now().date()
+        if not self.order_number:
+            from datetime import date
+            today = self.order_date or date.today()
+            prefix = f"SO-{today.strftime('%Y%m%d')}"
+            count = SalesOrder.objects.filter(order_number__startswith=prefix).count() + 1
+            self.order_number = f"{prefix}-{count:04d}"
+        if not self.price_per_kg:
+            if self.product:
+                self.price_per_kg = self.product.price_per_kg or self.product.unit_price or 0
+            else:
+                self.price_per_kg = 0
+        if not self.quantity_kg:
+            self.quantity_kg = 1
         if not self.total_amount:
-            self.total_amount = (self.quantity_kg * self.price_per_kg) - self.discount
+            self.total_amount = (self.quantity_kg * self.price_per_kg) - (self.discount or 0)
         super().save(*args, **kwargs)
 
         if self.product and not self.stock_deducted and self.status in [self.Status.DELIVERED, self.Status.COMPLETED]:
+            from decimal import Decimal
             is_kg = '[KG]' in (self.notes or '')
-            deduct_qty = self.quantity_kg
+            deduct_qty = Decimal(str(self.quantity_kg or 0))
             if is_kg and self.product.pieces_per_kg and self.product.pieces_per_kg > 0:
-                deduct_qty = self.quantity_kg * self.product.pieces_per_kg
+                deduct_qty = deduct_qty * Decimal(str(self.product.pieces_per_kg))
 
-            self.product.quantity_kg = max(self.product.quantity_kg - deduct_qty, 0)
+            current_stock = Decimal(str(self.product.quantity_kg or 0))
+            self.product.quantity_kg = max(current_stock - deduct_qty, Decimal('0'))
             self.product.save(update_fields=['quantity_kg', 'updated_at'])
             InventoryTransaction.objects.create(
                 product=self.product,
@@ -199,25 +218,25 @@ class SalesOrder(models.Model):
                 created_by=self.created_by
             )
             SalesOrder.objects.filter(pk=self.pk).update(stock_deducted=True)
+            self.stock_deducted = True
 
 
 class InventoryTransaction(models.Model):
     """Stock movements for products."""
 
     class Type(models.TextChoices):
-        STOCK_IN = 'stock_in', 'Stock In'
-        SALE = 'sale', 'Sale'
-        ADJUSTMENT = 'adjustment', 'Adjustment'
-        TRANSFER = 'transfer', 'Transfer'
-        RESTOCK_REQUEST = 'restock_request', 'Restock Request'
+        HARVEST = 'harvest', 'Harvest Inflow'
+        SALE = 'sale', 'Sales Deduction'
+        ADJUSTMENT = 'adjustment', 'Manual Adjustment'
+        MORTALITY = 'mortality', 'Mortality/Loss'
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='transactions')
     quantity_kg = models.DecimalField(max_digits=12, decimal_places=2)
-    transaction_type = models.CharField(max_length=30, choices=Type.choices)
+    transaction_type = models.CharField(max_length=20, choices=Type.choices)
     related_order = models.ForeignKey('sales.SalesOrder', on_delete=models.SET_NULL, null=True, blank=True)
     related_harvest = models.ForeignKey('harvest.HarvestRecord', on_delete=models.SET_NULL, null=True, blank=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -226,11 +245,11 @@ class InventoryTransaction(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.product.name} ({self.transaction_type})"
+        return f"{self.product.name} ({self.quantity_kg:+} kg) - {self.get_transaction_type_display()}"
 
 
 class Rider(models.Model):
-    """Delivery rider / driver."""
+    """Delivery riders / logistics staff."""
     class Status(models.TextChoices):
         AVAILABLE = 'available', 'Available'
         ON_DELIVERY = 'on_delivery', 'On Delivery'
@@ -294,6 +313,15 @@ class Delivery(models.Model):
     def __str__(self):
         return f"{self.order.order_number} - {self.get_status_display()}"
 
+    def save(self, *args, **kwargs):
+        if not self.scheduled_date:
+            self.scheduled_date = (self.order.order_date if self.order and self.order.order_date else timezone.now().date())
+        if not self.quantity_kg:
+            self.quantity_kg = (self.order.quantity_kg if self.order else 1)
+        if not self.delivery_location:
+            self.delivery_location = (self.order.delivery_address if self.order and self.order.delivery_address else 'Customer Address')
+        super().save(*args, **kwargs)
+
 
 class PaymentSetting(models.Model):
     """Store owner payment destination and gateway settings."""
@@ -325,6 +353,12 @@ class InputLog(models.Model):
         ADDED = 'added', 'Added Data'
         DELETED = 'deleted', 'Deleted Data'
         UPDATED = 'updated', 'Updated Data'
+        CREATE = 'create', 'Created Data'
+
+    class Category(models.TextChoices):
+        SALES = 'Sales Orders', 'Sales'
+        INVENTORY = 'Inventory', 'Inventory'
+        OPERATIONS = 'Operations', 'Operations'
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     user_name = models.CharField(max_length=150)
@@ -343,15 +377,28 @@ class InputLog(models.Model):
     def __str__(self):
         return f"[{self.get_action_display()}] {self.target_entity} by {self.user_name}"
 
+    @property
+    def category(self):
+        return self.module
+
     @classmethod
-    def log(cls, user, action, module, target_entity, details=""):
+    def log(cls, user=None, action=Action.ADDED, module='Sales Orders', target_entity='', details="", **kwargs):
+        if 'category' in kwargs:
+            module = str(kwargs.pop('category'))
+        if 'target' in kwargs:
+            target_entity = kwargs.pop('target')
+
         user_name = 'System Admin'
         user_role = 'Admin'
         if user and hasattr(user, 'is_authenticated') and user.is_authenticated:
             user_name = user.get_full_name() or user.username
-            user_role = user.role.title() if hasattr(user, 'role') else 'Owner'
+            user_role = getattr(user, 'role', 'User').capitalize()
+        elif user and hasattr(user, 'username'):
+            user_name = user.get_full_name() or user.username
+            user_role = getattr(user, 'role', 'User').capitalize()
+
         return cls.objects.create(
-            user=user if user and hasattr(user, 'is_authenticated') and user.is_authenticated else None,
+            user=user if (user and hasattr(user, 'pk') and user.pk) else None,
             user_name=user_name,
             user_role=user_role,
             action=action,

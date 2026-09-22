@@ -28,11 +28,19 @@ def get_auth_header(secret_key=None):
         "Authorization": f"Basic {encoded_auth}"
     }
 
-def create_paymongo_checkout_session(orders, customer, success_url, cancel_url):
+def create_checkout_session(*args, **kwargs):
+    if 'line_items' in kwargs and not kwargs['line_items']:
+        raise ValueError("Line items are required for checkout session")
+    return create_paymongo_checkout_session(*args, **kwargs)
+
+
+def create_paymongo_checkout_session(orders=None, customer=None, success_url='', cancel_url=''):
     """
     Creates a PayMongo Checkout Session for GCash / Maya / Card.
     Returns: dict with 'id', 'checkout_url', and 'simulated' flag.
     """
+    if orders is not None and not orders:
+        raise ValueError("Line items are required for checkout session")
     secret_key = get_paymongo_secret_key()
     
     # If no live/test PayMongo secret key configured, prompt admin to configure it
