@@ -1800,28 +1800,76 @@ def delivery_track_page(request):
     deliveries_data = []
     for d in all_deliveries:
         cust = d.order.customer if d.order else None
-        addr_lower = (d.delivery_location or (cust.address if cust else '')).lower()
-        if cust and cust.map_latitude and cust.map_longitude and float(cust.map_longitude) > 122.9680:
-            lat = float(cust.map_latitude)
-            lng = float(cust.map_longitude)
-        elif 'bagtic' in addr_lower:
-            lat = 10.7930
-            lng = 122.9830
-        elif 'malihong' in addr_lower or 'lantad' in addr_lower:
-            lat = 10.8015
-            lng = 122.9725
-        elif 'mambulac' in addr_lower:
-            lat = 10.7995
-            lng = 122.9710
-        elif 'chmsu' in addr_lower or 'carlos hilado' in addr_lower:
-            lat = 10.7978
-            lng = 122.9775
-        elif 'guimbala' in addr_lower:
-            lat = 10.7910
-            lng = 122.9790
-        else:
-            lat = 10.7970
-            lng = 122.9755
+        cust_addr = d.delivery_location or (cust.address if cust else '')
+        cust_lat = getattr(cust, 'map_latitude', None)
+        cust_lng = getattr(cust, 'map_longitude', None)
+        
+        # Accurate Geocoding
+        def _resolve_coords(addr_text, c_lat, c_lng):
+            try:
+                if c_lat is not None and c_lng is not None:
+                    fl_lat, fl_lng = float(c_lat), float(c_lng)
+                    if 10.0 <= fl_lat <= 11.5 and 122.5 <= fl_lng <= 123.5:
+                        return fl_lat, fl_lng
+            except (ValueError, TypeError):
+                pass
+            
+            a = (addr_text or '').lower()
+            if 'mapalaron' in a or ('talisay' in a and ('12' in a or 'zone 12' in a)):
+                return 10.7390, 122.9675
+            elif 'carmela' in a or 'concepcion' in a:
+                return 10.7320, 122.9710
+            elif 'matab-ang' in a:
+                return 10.7250, 122.9620
+            elif 'dos hermanas' in a:
+                return 10.7450, 123.0100
+            elif 'talisay' in a:
+                return 10.7360, 122.9690
+            elif 'eustaquio lopez' in a or 'e. lopez' in a or 'e.lopez' in a or 'san jose' in a:
+                return 10.8140, 123.0180
+            elif 'balaring' in a:
+                return 10.8250, 122.9600
+            elif 'guinhalaran' in a:
+                return 10.7850, 122.9680
+            elif 'bagtic' in a:
+                return 10.7930, 122.9830
+            elif 'malihong' in a or 'lantad' in a:
+                return 10.8015, 122.9725
+            elif 'mambulac' in a:
+                return 10.7995, 122.9710
+            elif 'chmsu' in a or 'carlos hilado' in a:
+                return 10.7978, 122.9775
+            elif 'guimbala-on' in a or 'guimbalaon' in a or 'guimbala' in a:
+                return 10.7780, 123.0450
+            elif 'kapitan ramon' in a or 'ramon' in a:
+                return 10.7910, 123.0020
+            elif 'patag' in a:
+                return 10.7020, 123.1850
+            elif 'rizal' in a:
+                return 10.7820, 122.9850
+            elif 'barangay i ' in a or 'brgy 1' in a or 'zone 1' in a:
+                return 10.7985, 122.9740
+            elif 'barangay ii' in a or 'brgy 2' in a or 'zone 2' in a:
+                return 10.7965, 122.9760
+            elif 'barangay iii' in a or 'brgy 3' in a or 'zone 3' in a:
+                return 10.7950, 122.9775
+            elif 'barangay iv' in a or 'brgy 4' in a or 'zone 4' in a:
+                return 10.7990, 122.9790
+            elif 'barangay v' in a or 'brgy 5' in a or 'zone 5' in a:
+                return 10.7970, 122.9755
+            elif 'barangay vi' in a or 'brgy 6' in a or 'zone 6' in a:
+                return 10.7940, 122.9735
+            elif 'lacson' in a or 'mandalagan' in a or 'bata' in a:
+                return 10.6950, 122.9550
+            elif 'bacolod' in a:
+                return 10.6765, 122.9510
+            elif 'eb magalona' in a or 'e.b. magalona' in a or 'magalona' in a:
+                return 10.8490, 122.9900
+            elif 'victorias' in a:
+                return 10.8980, 123.0800
+            return 10.7970, 122.9755
+
+        lat, lng = _resolve_coords(cust_addr, cust_lat, cust_lng)
         approver = d.created_by.get_full_name() or d.created_by.username if d.created_by else 'Admin'
         rider_name = d.rider.name if d.rider else 'No rider assigned yet'
         rider_phone = d.rider.phone if (d.rider and d.rider.phone) else ''

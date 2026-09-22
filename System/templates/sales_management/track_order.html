@@ -422,10 +422,9 @@ function loadDeliveryRoute(deliveryId) {
                 coords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
             }
 
-            // Snap destination marker precisely to the route polyline endpoint
-            const routeEnd = coords[coords.length - 1];
-            if (destMarker && routeEnd) {
-                destMarker.setLatLng(routeEnd);
+            // Ensure destination marker is at the exact customer coordinates
+            if (destMarker) {
+                destMarker.setLatLng([destLat, destLng]);
             }
 
             routePolyline = L.polyline(coords, {
