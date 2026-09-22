@@ -160,6 +160,23 @@ class SalesOrder(models.Model):
     
     def __str__(self):
         return f"{self.order_number} - {self.customer.name}"
+
+    @property
+    def payment_method_display(self):
+        notes = (self.notes or '').strip()
+        if not notes:
+            return 'Cash' if (self.delivery_address or '').upper() == 'PICKUP' else 'Cash on Delivery'
+        notes_lower = notes.lower()
+        if 'gcash' in notes_lower:
+            return 'GCash'
+        if 'cash on delivery' in notes_lower or 'cod' in notes_lower:
+            return 'Cash on Delivery'
+        if 'cash' in notes_lower:
+            return 'Cash'
+        clean = notes.replace('[PC]', '').replace('[KG]', '').replace('Payment:', '').strip()
+        if '(Session #' in clean:
+            clean = clean.split('(Session #')[0].strip()
+        return clean or 'Cash'
     
     def save(self, *args, **kwargs):
         if not self.total_amount:
