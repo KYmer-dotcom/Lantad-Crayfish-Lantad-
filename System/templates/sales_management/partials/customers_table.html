@@ -14,6 +14,8 @@
         <tbody class="divide-y divide-white/5 bg-transparent">
             {% for customer in customers %}
             <tr class="hover:bg-white/5 transition-colors cursor-pointer group"
+                data-name="{{ customer.name }}"
+                data-date="{% with latest_order=customer.orders.first %}{% if latest_order %}{{ latest_order.order_date|date:'Y-m-d' }}{% else %}{{ customer.created_at|date:'Y-m-d' }}{% endif %}{% endwith %}"
                 onclick="toggleCustomerOrders('customer-orders-{{ customer.id }}')">
                 <td
                     class="px-6 py-4 whitespace-nowrap text-sm font-bold text-white group-hover:text-[#cca43b] transition-colors flex items-center gap-2">

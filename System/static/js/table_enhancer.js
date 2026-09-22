@@ -180,6 +180,28 @@ class TableEnhancer {
             });
         }
 
+        // Sort By Filter Dropdown (Alphabetical / Date)
+        if (this.options.sortable) {
+            const sortContainer = document.createElement('div');
+            sortContainer.className = 'relative';
+            sortContainer.innerHTML = `
+                <select class="table-sort-filter rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+                    <option value="default">Sort: Default</option>
+                    <option value="name_asc">Alphabetical (A - Z)</option>
+                    <option value="name_desc">Alphabetical (Z - A)</option>
+                    <option value="date_desc">Date (Newest First)</option>
+                    <option value="date_asc">Date (Oldest First)</option>
+                </select>
+            `;
+            const sortSelect = sortContainer.querySelector('select');
+            sortSelect.addEventListener('change', (e) => {
+                this.selectedSortMode = e.target.value;
+                this.applyFilters();
+            });
+            this.sortSelect = sortSelect;
+            leftBox.appendChild(sortContainer);
+        }
+
         this.controlsBar.appendChild(leftBox);
 
         // Center: Info text (Showing X to Y of Z entries)
@@ -293,6 +315,42 @@ class TableEnhancer {
 
             return true;
         });
+
+        // Apply dropdown sort if selected
+        if (this.selectedSortMode && this.selectedSortMode !== 'default') {
+            const mode = this.selectedSortMode;
+            const dateRegex = /\b\d{4}-\d{2}-\d{2}\b/;
+
+            this.filteredGroups.sort((a, b) => {
+                if (mode === 'name_asc' || mode === 'name_desc') {
+                    const nameA = a.parent.dataset.name || (a.parent.children[0] ? a.parent.children[0].textContent.trim() : '');
+                    const nameB = b.parent.dataset.name || (b.parent.children[0] ? b.parent.children[0].textContent.trim() : '');
+                    const comp = nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+                    return mode === 'name_asc' ? comp : -comp;
+                } else if (mode === 'date_desc' || mode === 'date_asc') {
+                    let dateA = a.parent.dataset.date || '';
+                    let dateB = b.parent.dataset.date || '';
+
+                    if (!dateA) {
+                        const matchA = a.text.match(dateRegex);
+                        if (matchA) dateA = matchA[0];
+                    }
+                    if (!dateB) {
+                        const matchB = b.text.match(dateRegex);
+                        if (matchB) dateB = matchB[0];
+                    }
+
+                    const timeA = dateA ? new Date(dateA).getTime() : 0;
+                    const timeB = dateB ? new Date(dateB).getTime() : 0;
+
+                    if (timeA && timeB) {
+                        return mode === 'date_desc' ? (timeB - timeA) : (timeA - timeB);
+                    }
+                    return mode === 'date_desc' ? dateB.localeCompare(dateA) : dateA.localeCompare(dateB);
+                }
+                return 0;
+            });
+        }
 
         this.render();
     }

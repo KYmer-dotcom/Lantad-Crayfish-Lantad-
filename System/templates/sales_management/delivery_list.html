@@ -165,7 +165,9 @@
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         {% for delivery in deliveries %}
-                        <tr class="hover:bg-white/[0.02] transition-colors">
+                        <tr class="hover:bg-white/[0.02] transition-colors"
+                            data-name="{{ delivery.order.customer.name }}"
+                            data-date="{{ delivery.scheduled_date|default:delivery.order.order_date|date:'Y-m-d' }}">
                             <!-- Order # -->
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
