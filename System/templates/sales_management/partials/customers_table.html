@@ -115,7 +115,7 @@
                                     {% for order in customer.orders.all %}
                                     <tr class="hover:bg-white/5 transition-colors">
                                         <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}</td>
-                                        <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg }}</td>
+                                        <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg|floatformat:"-2" }}</td>
                                         <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
                                         {% if latest_order.delivery_address|upper != 'PICKUP' %}
                                         <td class="px-4 py-3 font-mono text-[#a0ac96]">{{ order.order_date }}</td>
