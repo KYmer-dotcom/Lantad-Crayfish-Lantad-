@@ -111,16 +111,16 @@
                 </div>
             </div>
             {% else %}
-            <a href="{% url 'customer_register' %}"
+            <a href="{% url 'customer_login' %}"
                 class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                 <span
                     class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </span>
-                <span class="text-xs font-bold text-white">Register</span>
+                <span class="text-xs font-bold text-white">Login / Register</span>
             </a>
             {% endif %}
         </div>

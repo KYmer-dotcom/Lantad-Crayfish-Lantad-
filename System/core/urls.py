@@ -28,7 +28,7 @@ urlpatterns = [
     path('customer/account/', lambda request: redirect('sales:customer_account_page')),
     path('market/', lambda request: redirect('sales:customer_portal'), name='market_root'),
     path('customer/login/', views.customer_login, name='customer_login'),
-    path('customer/register/', views.customer_register, name='customer_register'),
+    path('customer/register/', lambda request: redirect('customer_login')),
     path('logout/', views.app_logout, name='logout'),
     
     # Dashboard

@@ -15,83 +15,6 @@ from apps.accounts.models import User
 from apps.sales.models import Customer
 
 
-class CustomerRegistrationForm(forms.Form):
-    CLASSIFICATION_CHOICES = [
-        ('', 'Individual (default)'),
-        ('market', 'Market'),
-        ('restaurant', 'Restaurant'),
-    ]
-
-    username = forms.CharField(max_length=150)
-    first_name = forms.CharField(max_length=150)
-    last_name = forms.CharField(max_length=150)
-    email = forms.EmailField(required=False)
-    phone = forms.CharField(max_length=20)
-    classification = forms.ChoiceField(required=False, choices=CLASSIFICATION_CHOICES)
-    address = forms.CharField(widget=forms.Textarea)
-    password1 = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
-
-    def clean_username(self):
-        username = self.cleaned_data['username'].strip()
-        if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError('Username already exists.')
-        return username
-
-    def clean_phone(self):
-        phone = self.cleaned_data['phone'].strip()
-        digits = ''.join(c for c in phone if c.isdigit())
-        if len(digits) != 11:
-            raise forms.ValidationError('Phone number must be exactly 11 digits.')
-        return digits
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password1 = cleaned_data.get('password1')
-        password2 = cleaned_data.get('password2')
-        if password1 and password2 and password1 != password2:
-            self.add_error('password2', 'Passwords do not match.')
-        return cleaned_data
-
-    def save(self):
-        username = self.cleaned_data['username'].strip()
-        first_name = self.cleaned_data['first_name'].strip()
-        last_name = self.cleaned_data['last_name'].strip()
-        email = self.cleaned_data.get('email', '').strip()
-        phone = self.cleaned_data['phone'].strip()
-        classification = (self.cleaned_data.get('classification') or '').strip().lower()
-        address = self.cleaned_data['address'].strip()
-
-        user = User(
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            role=User.Role.CUSTOMER,
-            is_active=True,
-        )
-        user.set_password(self.cleaned_data['password1'])
-        user.save()
-
-        if classification == 'market':
-            customer_type = Customer.Type.RETAILER
-        elif classification == 'restaurant':
-            customer_type = Customer.Type.RESTAURANT
-        else:
-            customer_type = Customer.Type.INDIVIDUAL
-
-        Customer.objects.create(
-            user=user,
-            name=f"{first_name} {last_name}".strip() or username,
-            customer_type=customer_type,
-            contact_person=f"{first_name} {last_name}".strip(),
-            phone=phone,
-            email=email,
-            address=address,
-        )
-        return user
-
-
 def customer_login(request):
     """Dedicated login page for customer accounts using Phone and Name."""
     if request.user.is_authenticated:
@@ -161,24 +84,6 @@ def customer_login(request):
                     return redirect('sales:customer_portal')
 
     return render(request, 'auth/customer_login.html')
-
-
-def customer_register(request):
-    """Dedicated registration page for customer accounts."""
-    if request.user.is_authenticated:
-        if is_customer(request.user):
-            auth_logout(request)
-        else:
-            return redirect('dashboard')
-
-    form = CustomerRegistrationForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        auth_login(request, user)
-        messages.success(request, 'Customer account created successfully.')
-        return redirect('sales:customer_portal')
-
-    return render(request, 'auth/customer_register.html', {'form': form})
 
 
 def app_logout(request):
