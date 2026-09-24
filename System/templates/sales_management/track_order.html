@@ -226,10 +226,15 @@
 
                 <!-- Floating Route Info Legend on Map -->
                 <div class="absolute bottom-3 left-3 right-3 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2">
-                    <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] backdrop-blur-md text-stone-200 flex items-center gap-2.5">
+                    <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] backdrop-blur-md text-stone-200 flex flex-wrap items-center gap-2">
                         <div class="flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/30"></span>
                             <span class="font-bold text-white">Origin:</span> <span class="text-stone-300">Depot</span>
+                        </div>
+                        <span class="text-white/20">•</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse ring-2 ring-cyan-400/40"></span>
+                            <span class="font-bold text-cyan-300">Driver (Live GPS)</span>
                         </div>
                         <span class="text-white/20">•</span>
                         <div class="flex items-center gap-1.5">
@@ -319,8 +324,10 @@ let trackMap = null;
 let routePolyline = null;
 let originMarker = null;
 let destMarker = null;
+let driverMarker = null;
 let currentSelectedId = {{ selected_delivery.id|default:'null' }};
 let allDeliveriesData = [];
+let liveGpsPollTimer = null;
 
 // Farm Depot Coordinates: Silay Superworm & Crayfish Farm, Brgy Lantad, Silay City
 const FARM_ORIGIN = { lat: 10.8033, lng: 122.9733 };
@@ -331,6 +338,23 @@ try {
 } catch (e) {
     console.error('Failed to parse deliveries json:', e);
 }
+
+// Custom Driver Live Beacon Icon (Scooter with pulsing halo)
+const driverIcon = L.divIcon({
+    className: 'driver-live-gps-marker',
+    html: `
+        <div style="position:relative; width:42px; height:42px; cursor:pointer;">
+            <div style="position:absolute; inset:-4px; border-radius:50%; background:rgba(6,182,212,0.4); animation:ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="position:relative; width:42px; height:42px; border-radius:50%; background:#021f15; border:2.5px solid #22d3ee; display:flex; align-items:center; justify-content:center; box-shadow:0 0 16px rgba(34,211,238,0.8);">
+                <span style="font-size:20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🛵</span>
+            </div>
+            <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#083344; color:#67e8f9; border:1px solid rgba(34,211,238,0.6); font-size:9px; font-weight:900; padding:1px 6px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">RIDER (LIVE)</span>
+        </div>
+    `,
+    iconSize: [42, 42],
+    iconAnchor: [21, 21],
+    popupAnchor: [0, -24]
+});
 
 function initLiveTrackingMap() {
     const container = document.getElementById('live-tracking-gps-map');
@@ -354,14 +378,14 @@ function initLiveTrackingMap() {
     const farmIcon = L.divIcon({
         className: 'farm-origin-marker',
         html: `
-            <div style="position:relative; width:34px; height:44px; filter: drop-(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
+            <div style="position:relative; width:34px; height:44px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
                 <svg viewBox="0 0 34 44" width="34" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="#10b981"/>
                     <circle cx="17" cy="17" r="10" fill="#01140e"/>
                     <circle cx="17" cy="17" r="7.5" fill="#10b981"/>
                     <circle cx="17" cy="17" r="3.5" fill="#ffffff"/>
                 </svg>
-                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#34d399; border:1px solid rgba(16,185,129,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-:0 2px 4px rgba(0,0,0,0.5);">DEPOT</span>
+                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#34d399; border:1px solid rgba(16,185,129,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">DEPOT</span>
             </div>
         `,
         iconSize: [34, 44],
@@ -376,6 +400,9 @@ function initLiveTrackingMap() {
     if (currentSelectedId) {
         loadDeliveryRoute(currentSelectedId);
     }
+
+    // Start background live polling
+    startLiveGpsPolling();
 }
 
 function loadDeliveryRoute(deliveryId) {
@@ -385,23 +412,27 @@ function loadDeliveryRoute(deliveryId) {
     const destLat = parseFloat(item.lat) || 10.7970;
     const destLng = parseFloat(item.lng) || 122.9755;
 
-    // Remove existing destination marker if present
+    // Remove existing destination & driver markers if present
     if (destMarker && trackMap) {
         trackMap.removeLayer(destMarker);
+    }
+    if (driverMarker && trackMap) {
+        trackMap.removeLayer(driverMarker);
+        driverMarker = null;
     }
 
     // Custom Destination Marker (Customer Drop-off) - SVG Teardrop Pin
     const destIcon = L.divIcon({
         className: 'dest-customer-marker',
         html: `
-            <div style="position:relative; width:34px; height:44px; filter: drop-(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
+            <div style="position:relative; width:34px; height:44px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
                 <svg viewBox="0 0 34 44" width="34" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="#ef4444"/>
                     <circle cx="17" cy="17" r="10" fill="#01140e"/>
                     <circle cx="17" cy="17" r="7.5" fill="#ef4444"/>
                     <circle cx="17" cy="17" r="3.5" fill="#ffffff"/>
                 </svg>
-                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#f87171; border:1px solid rgba(239,68,68,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-:0 2px 4px rgba(0,0,0,0.5);">DROP-OFF</span>
+                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#f87171; border:1px solid rgba(239,68,68,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">DROP-OFF</span>
             </div>
         `,
         iconSize: [34, 44],
@@ -411,6 +442,18 @@ function loadDeliveryRoute(deliveryId) {
 
     destMarker = L.marker([destLat, destLng], { icon: destIcon }).addTo(trackMap);
     destMarker.bindPopup(`<b style="color:#01140e;">${item.customer_name}</b><br><span style="font-size:11px; color:#4b5563;">${item.delivery_location}</span>`);
+
+    // Place Driver Marker if in transit or if rider coordinates are known
+    let riderLat = parseFloat(item.rider_lat);
+    let riderLng = parseFloat(item.rider_lng);
+
+    if (item.status === 'in_transit' || (riderLat && riderLng)) {
+        const initRiderLat = (riderLat && !isNaN(riderLat)) ? riderLat : ((FARM_ORIGIN.lat + destLat) / 2);
+        const initRiderLng = (riderLng && !isNaN(riderLng)) ? riderLng : ((FARM_ORIGIN.lng + destLng) / 2);
+        
+        driverMarker = L.marker([initRiderLat, initRiderLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
+        driverMarker.bindPopup(`<b style="color:#01140e;">🛵 ${item.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS active • En route</span>`);
+    }
 
     // Remove previous polyline
     if (routePolyline && trackMap) {
@@ -435,6 +478,12 @@ function loadDeliveryRoute(deliveryId) {
                 destMarker.setLatLng([destLat, destLng]);
             }
 
+            // If driver position has no exact GPS yet and is in transit, position at 40% along the actual road route
+            if (item.status === 'in_transit' && (!riderLat || isNaN(riderLat)) && driverMarker && coords.length > 0) {
+                const midIdx = Math.floor(coords.length * 0.4);
+                driverMarker.setLatLng(coords[midIdx]);
+            }
+
             routePolyline = L.polyline(coords, {
                 color: '#6366f1', // Indigo / Road Blue
                 weight: 5,
@@ -456,6 +505,41 @@ function loadDeliveryRoute(deliveryId) {
             }).addTo(trackMap);
             trackMap.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
         });
+}
+
+function startLiveGpsPolling() {
+    if (liveGpsPollTimer) clearInterval(liveGpsPollTimer);
+    liveGpsPollTimer = setInterval(pollCurrentDeliveryGps, 4000);
+}
+
+function pollCurrentDeliveryGps() {
+    if (!currentSelectedId || !trackMap) return;
+    
+    fetch(`/sales/delivery/${currentSelectedId}/live-location/`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data || !data.success) return;
+
+            // If rider position is received from live phone GPS
+            if (data.rider_lat && data.rider_lng) {
+                const rLat = parseFloat(data.rider_lat);
+                const rLng = parseFloat(data.rider_lng);
+
+                if (!isNaN(rLat) && !isNaN(rLng)) {
+                    if (driverMarker) {
+                        driverMarker.setLatLng([rLat, rLng]);
+                    } else if (data.status === 'in_transit') {
+                        driverMarker = L.marker([rLat, rLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
+                    }
+
+                    if (driverMarker) {
+                        const updateTime = data.last_location_update ? `Updated ${data.last_location_update}` : 'Live';
+                        driverMarker.setPopupContent(`<b style="color:#01140e;">🛵 ${data.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS • ${updateTime}</span>`);
+                    }
+                }
+            }
+        })
+        .catch(() => {});
 }
 
 function selectShipment(deliveryId) {

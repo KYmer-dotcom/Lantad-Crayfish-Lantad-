@@ -7,9 +7,12 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum, Count, Q, Case, When, Value, IntegerField, Prefetch, F
 from django.core.paginator import Paginator
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django import forms
 from decimal import Decimal
 import datetime
+import json
 import re
 from apps.accounts.access import is_customer, get_customer_profile, is_owner, is_rider, get_rider_profile, get_accessible_ponds
 from apps.accounts.models import User
@@ -1887,77 +1890,127 @@ def delivery_track_page(request):
         cust_lat = getattr(cust, 'map_latitude', None)
         cust_lng = getattr(cust, 'map_longitude', None)
         
-        # Accurate Geocoding
-        def _resolve_coords(addr_text, c_lat, c_lng):
-            try:
-                if c_lat is not None and c_lng is not None:
-                    fl_lat, fl_lng = float(c_lat), float(c_lng)
-                    if 10.0 <= fl_lat <= 11.5 and 122.5 <= fl_lng <= 123.5:
-                        return fl_lat, fl_lng
-            except (ValueError, TypeError):
-                pass
-            
-            a = (addr_text or '').lower()
-            if 'mapalaron' in a or ('talisay' in a and ('12' in a or 'zone 12' in a)):
-                return 10.7390, 122.9675
-            elif 'carmela' in a or 'concepcion' in a:
-                return 10.7320, 122.9710
-            elif 'matab-ang' in a:
-                return 10.7250, 122.9620
-            elif 'dos hermanas' in a:
-                return 10.7450, 123.0100
-            elif 'talisay' in a:
-                return 10.7360, 122.9690
-            elif 'eustaquio lopez' in a or 'e. lopez' in a or 'e.lopez' in a or 'san jose' in a:
-                return 10.8140, 123.0180
-            elif 'balaring' in a:
-                return 10.8250, 122.9600
-            elif 'guinhalaran' in a:
-                return 10.7850, 122.9680
-            elif 'bagtic' in a:
-                return 10.7930, 122.9830
-            elif 'malihong' in a or 'lantad' in a:
-                return 10.8015, 122.9725
-            elif 'mambulac' in a:
-                return 10.7995, 122.9710
-            elif 'chmsu' in a or 'carlos hilado' in a:
-                return 10.7978, 122.9775
-            elif 'guimbala-on' in a or 'guimbalaon' in a or 'guimbala' in a:
-                return 10.7780, 123.0450
-            elif 'kapitan ramon' in a or 'ramon' in a:
-                return 10.7910, 123.0020
-            elif 'patag' in a:
-                return 10.7020, 123.1850
-            elif 'rizal' in a:
-                return 10.7820, 122.9850
-            elif 'barangay i ' in a or 'brgy 1' in a or 'zone 1' in a:
-                return 10.7985, 122.9740
-            elif 'barangay ii' in a or 'brgy 2' in a or 'zone 2' in a:
-                return 10.7965, 122.9760
-            elif 'barangay iii' in a or 'brgy 3' in a or 'zone 3' in a:
-                return 10.7950, 122.9775
-            elif 'barangay iv' in a or 'brgy 4' in a or 'zone 4' in a:
-                return 10.7990, 122.9790
-            elif 'barangay v' in a or 'brgy 5' in a or 'zone 5' in a:
-                return 10.7970, 122.9755
-            elif 'barangay vi' in a or 'brgy 6' in a or 'zone 6' in a:
-                return 10.7940, 122.9735
-            elif 'lacson' in a or 'mandalagan' in a or 'bata' in a:
-                return 10.6950, 122.9550
-            elif 'bacolod' in a:
-                return 10.6765, 122.9510
-            elif 'eb magalona' in a or 'e.b. magalona' in a or 'magalona' in a:
-                return 10.8490, 122.9900
-            elif 'victorias' in a:
-                return 10.8980, 123.0800
-            return 10.7970, 122.9755
+def _resolve_coords(addr_text, c_lat, c_lng):
+    """Accurate Geocoding helper for Silay City and Negros Occidental."""
+    try:
+        if c_lat is not None and c_lng is not None:
+            fl_lat, fl_lng = float(c_lat), float(c_lng)
+            if 10.0 <= fl_lat <= 11.5 and 122.5 <= fl_lng <= 123.5:
+                return fl_lat, fl_lng
+    except (ValueError, TypeError):
+        pass
+    
+    a = (addr_text or '').lower()
+    if 'mapalaron' in a or ('talisay' in a and ('12' in a or 'zone 12' in a)):
+        return 10.7390, 122.9675
+    elif 'carmela' in a or 'concepcion' in a:
+        return 10.7320, 122.9710
+    elif 'matab-ang' in a:
+        return 10.7250, 122.9620
+    elif 'dos hermanas' in a:
+        return 10.7450, 123.0100
+    elif 'talisay' in a:
+        return 10.7360, 122.9690
+    elif 'eustaquio lopez' in a or 'e. lopez' in a or 'e.lopez' in a or 'san jose' in a:
+        return 10.8140, 123.0180
+    elif 'balaring' in a:
+        return 10.8250, 122.9600
+    elif 'guinhalaran' in a:
+        return 10.7850, 122.9680
+    elif 'bagtic' in a:
+        return 10.7930, 122.9830
+    elif 'malihong' in a or 'lantad' in a:
+        return 10.8015, 122.9725
+    elif 'mambulac' in a:
+        return 10.7995, 122.9710
+    elif 'chmsu' in a or 'carlos hilado' in a:
+        return 10.7978, 122.9775
+    elif 'guimbala-on' in a or 'guimbalaon' in a or 'guimbala' in a:
+        return 10.7780, 123.0450
+    elif 'kapitan ramon' in a or 'ramon' in a:
+        return 10.7910, 123.0020
+    elif 'patag' in a:
+        return 10.7020, 123.1850
+    elif 'rizal' in a:
+        return 10.7820, 122.9850
+    elif 'barangay i ' in a or 'brgy 1' in a or 'zone 1' in a:
+        return 10.7985, 122.9740
+    elif 'barangay ii' in a or 'brgy 2' in a or 'zone 2' in a:
+        return 10.7965, 122.9760
+    elif 'barangay iii' in a or 'brgy 3' in a or 'zone 3' in a:
+        return 10.7950, 122.9775
+    elif 'barangay iv' in a or 'brgy 4' in a or 'zone 4' in a:
+        return 10.7990, 122.9790
+    elif 'barangay v' in a or 'brgy 5' in a or 'zone 5' in a:
+        return 10.7970, 122.9755
+    elif 'barangay vi' in a or 'brgy 6' in a or 'zone 6' in a:
+        return 10.7940, 122.9735
+    elif 'lacson' in a or 'mandalagan' in a or 'bata' in a:
+        return 10.6950, 122.9550
+    elif 'bacolod' in a:
+        return 10.6765, 122.9510
+    elif 'eb magalona' in a or 'e.b. magalona' in a or 'magalona' in a:
+        return 10.8490, 122.9900
+    elif 'victorias' in a:
+        return 10.8980, 123.0800
+    return 10.7970, 122.9755
 
+
+@login_required
+def delivery_track_page(request):
+    """Live GPS order tracking command center for Logistics & Fleet dispatch."""
+    access_response = _ensure_sales_owner(request)
+    if access_response:
+        return access_response
+
+    all_deliveries = Delivery.objects.select_related(
+        'order', 'order__customer', 'order__product', 'rider', 'created_by'
+    ).order_by('-created_at')
+
+    # Quick summary counters
+    in_transit_count = all_deliveries.filter(status=Delivery.Status.IN_TRANSIT).count()
+    scheduled_count = all_deliveries.filter(status=Delivery.Status.SCHEDULED).count()
+    delivered_count = all_deliveries.filter(status=Delivery.Status.DELIVERED).count()
+
+    query = request.GET.get('q', '').strip()
+    if query:
+        all_deliveries = all_deliveries.filter(
+            Q(order__order_number__icontains=query) |
+            Q(order__customer__name__icontains=query) |
+            Q(delivery_location__icontains=query) |
+            Q(rider__name__icontains=query)
+        )
+
+    # Initial selection: prioritizes in_transit, then scheduled, then first item
+    selected_delivery = None
+    target_id = request.GET.get('id')
+    if target_id:
+        selected_delivery = all_deliveries.filter(pk=target_id).first()
+
+    if not selected_delivery:
+        selected_delivery = all_deliveries.filter(status=Delivery.Status.IN_TRANSIT).first() or \
+                            all_deliveries.filter(status=Delivery.Status.SCHEDULED).first() or \
+                            all_deliveries.first()
+
+    # Pre-calculate coordinates & metadata payload for dynamic map switches
+    deliveries_data = []
+    for d in all_deliveries:
+        cust = d.order.customer if d.order else None
+        cust_addr = d.delivery_location or (cust.address if cust else '')
+        cust_lat = getattr(cust, 'map_latitude', None)
+        cust_lng = getattr(cust, 'map_longitude', None)
         lat, lng = _resolve_coords(cust_addr, cust_lat, cust_lng)
+
         approver = d.created_by.get_full_name() or d.created_by.username if d.created_by else 'Admin'
         rider_name = d.rider.name if d.rider else 'No rider assigned yet'
         rider_phone = d.rider.phone if (d.rider and d.rider.phone) else ''
         rider_vehicle = f"{d.rider.vehicle_type} • {d.rider.plate_number or 'No plate'}" if d.rider else ''
         prod_name = d.order.product.name if (d.order and d.order.product) else 'Stock Item'
+
+        rider_lat = d.current_latitude or (d.rider.current_latitude if d.rider else None)
+        rider_lng = d.current_longitude or (d.rider.current_longitude if d.rider else None)
+        last_loc = d.rider.last_location_update.strftime('%I:%M:%S %p') if (d.rider and d.rider.last_location_update) else ''
+
         deliveries_data.append({
             'id': d.id,
             'order_number': d.order.order_number if d.order else f'DEL-{d.id}',
@@ -1977,6 +2030,9 @@ def delivery_track_page(request):
             'rider_name': rider_name,
             'rider_phone': rider_phone,
             'rider_vehicle': rider_vehicle,
+            'rider_lat': rider_lat,
+            'rider_lng': rider_lng,
+            'last_location_update': last_loc,
             'notes': d.notes or '',
             'lat': lat,
             'lng': lng,
@@ -1992,6 +2048,99 @@ def delivery_track_page(request):
         'query': query,
     }
     return render(request, 'sales_management/track_order.html', context)
+
+
+@csrf_exempt
+def rider_location_update(request):
+    """API beacon endpoint for rider mobile device to stream live GPS coordinates."""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
+
+    lat = None
+    lng = None
+    delivery_id = None
+
+    if request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            lat = data.get('latitude') or data.get('lat')
+            lng = data.get('longitude') or data.get('lng')
+            delivery_id = data.get('delivery_id')
+        except Exception:
+            pass
+    else:
+        lat = request.POST.get('latitude') or request.POST.get('lat')
+        lng = request.POST.get('longitude') or request.POST.get('lng')
+        delivery_id = request.POST.get('delivery_id')
+
+    try:
+        lat = float(lat)
+        lng = float(lng)
+    except (TypeError, ValueError):
+        return JsonResponse({'success': False, 'error': 'Invalid coordinates'}, status=400)
+
+    now = datetime.datetime.now()
+    rider = None
+
+    if request.user.is_authenticated:
+        rider = get_rider_profile(request.user)
+
+    if delivery_id:
+        try:
+            delivery = Delivery.objects.get(pk=delivery_id)
+            delivery.current_latitude = lat
+            delivery.current_longitude = lng
+            delivery.save(update_fields=['current_latitude', 'current_longitude'])
+            if not rider and delivery.rider:
+                rider = delivery.rider
+        except Delivery.DoesNotExist:
+            pass
+
+    if rider:
+        rider.current_latitude = lat
+        rider.current_longitude = lng
+        rider.last_location_update = now
+        rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
+
+    return JsonResponse({
+        'success': True,
+        'latitude': lat,
+        'longitude': lng,
+        'timestamp': now.isoformat()
+    })
+
+
+def delivery_live_status(request, delivery_id):
+    """Real-time JSON endpoint for live GPS tracking map polling."""
+    delivery = get_object_or_404(Delivery, pk=delivery_id)
+    cust = delivery.order.customer if delivery.order else None
+    
+    # Destination coordinates
+    cust_lat = float(cust.map_latitude) if (cust and cust.map_latitude) else None
+    cust_lng = float(cust.map_longitude) if (cust and cust.map_longitude) else None
+    cust_addr = delivery.delivery_location or (cust.address if cust else '')
+    dest_lat, dest_lng = _resolve_coords(cust_addr, cust_lat, cust_lng)
+
+    # Live Rider Coordinates
+    rider_lat = delivery.current_latitude or (delivery.rider.current_latitude if delivery.rider else None)
+    rider_lng = delivery.current_longitude or (delivery.rider.current_longitude if delivery.rider else None)
+    last_update = delivery.rider.last_location_update.strftime('%I:%M:%S %p') if (delivery.rider and delivery.rider.last_location_update) else ''
+
+    return JsonResponse({
+        'success': True,
+        'id': delivery.id,
+        'status': delivery.status,
+        'status_display': delivery.get_status_display(),
+        'rider_name': delivery.rider.name if delivery.rider else 'Assigned Courier',
+        'rider_phone': delivery.rider.phone if (delivery.rider and delivery.rider.phone) else '',
+        'rider_lat': rider_lat,
+        'rider_lng': rider_lng,
+        'dest_lat': dest_lat,
+        'dest_lng': dest_lng,
+        'last_location_update': last_update,
+        'total_amount': float(delivery.order.total_amount) if (delivery.order and delivery.order.total_amount) else 0.0,
+        'payment_status': delivery.order.payment_status if delivery.order else 'unpaid',
+    })
 
 
 # ============================================================

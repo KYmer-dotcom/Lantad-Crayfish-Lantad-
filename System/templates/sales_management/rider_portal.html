@@ -694,22 +694,33 @@
     function updateRiderPhoneLocation(deliveryId, lat, lng) {
         liveRiderCoords = { lat, lng };
         const entry = activeGpsMaps[deliveryId];
-        if (!entry || !entry.map) return;
+        if (entry && entry.map) {
+            if (entry.riderMarker) {
+                entry.riderMarker.setLatLng([lat, lng]);
+            } else {
+                entry.riderMarker = L.marker([lat, lng], {
+                    icon: riderLiveBeaconIcon,
+                    zIndexOffset: 1000
+                }).addTo(entry.map);
+                entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
+            }
 
-        if (entry.riderMarker) {
-            entry.riderMarker.setLatLng([lat, lng]);
-        } else {
-            entry.riderMarker = L.marker([lat, lng], {
-                icon: riderLiveBeaconIcon,
-                zIndexOffset: 1000
-            }).addTo(entry.map);
-            entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
+            // Dynamically update road route from Rider's current GPS position to Destination
+            if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
+                fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
+            }
         }
 
-        // Dynamically update road route from Rider's current GPS position to Destination
-        if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
-            fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
-        }
+        // Stream live GPS coordinates to backend for central dispatch map
+        fetch('/sales/rider/location/update/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                delivery_id: deliveryId,
+                latitude: lat,
+                longitude: lng
+            })
+        }).catch(function() {});
     }
 
     function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName) {
