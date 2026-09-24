@@ -372,16 +372,21 @@
                     class="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#cca43b]/20 file:text-[#cca43b] hover:file:bg-[#cca43b]/30 file:transition-colors cursor-pointer">
             </div>
             <div id="current-receipt-container"
-                class="hidden rounded-lg border border-white/5 bg-black/20 p-4 text-left">
-                <p class="text-xs font-bold text-[#a0ac96] mb-2 uppercase tracking-wider">Current Receipt</p>
-                <a id="current-receipt-link" href="#" target="_blank"
-                    class="inline-flex items-center gap-2 text-xs font-bold text-[#cca43b] hover:underline">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    View Uploaded Receipt
-                </a>
+                class="hidden rounded-xl border border-white/10 bg-black/40 p-4 text-left space-y-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Current Uploaded Receipt</p>
+                    <a id="current-receipt-link" href="#" target="_blank"
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:underline">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Open Full View
+                    </a>
+                </div>
+                <div class="rounded-lg overflow-hidden border border-white/10 bg-black/50 p-2 flex items-center justify-center max-h-56">
+                    <img id="current-receipt-img" src="" alt="Receipt Image" class="max-h-52 w-auto object-contain rounded cursor-pointer hover:opacity-95 transition-opacity" onclick="if(this.src) window.open(this.src, '_blank')" />
+                </div>
             </div>
             <div class="flex items-center justify-end gap-4 border-t border-white/10 pt-6">
                 <button type="button" onclick="closePaymentModal()"
@@ -484,16 +489,19 @@
         const statusSelect = document.getElementById('modal-payment-status');
         const receiptContainer = document.getElementById('current-receipt-container');
         const receiptLink = document.getElementById('current-receipt-link');
+        const receiptImg = document.getElementById('current-receipt-img');
 
         form.action = `/sales/order/${orderId}/payment/`;
         statusSelect.value = currentStatus || 'unpaid';
 
         if (receiptUrl && receiptUrl.trim() !== '') {
             receiptContainer.classList.remove('hidden');
-            receiptLink.href = receiptUrl;
+            if (receiptLink) receiptLink.href = receiptUrl;
+            if (receiptImg) receiptImg.src = receiptUrl;
         } else {
             receiptContainer.classList.add('hidden');
-            receiptLink.href = '#';
+            if (receiptLink) receiptLink.href = '#';
+            if (receiptImg) receiptImg.src = '';
         }
 
         modal.classList.remove('hidden');

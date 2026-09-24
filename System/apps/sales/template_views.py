@@ -548,10 +548,11 @@ def order_status_update(request, order_id):
 @login_required
 def order_payment_update(request, order_id):
     """Update order payment status and receipt image"""
-    access_response = _ensure_sales_owner(request)
-    if access_response:
-        return access_response
     order = get_object_or_404(SalesOrder, pk=order_id)
+    user = request.user
+    if not (user.is_superuser or is_owner(user) or user.is_staff or getattr(user, 'role', '') in ['owner', 'admin', 'staff']):
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("Only owner/admin accounts can update payment records.")
 
     if request.method == 'POST':
         payment_status = request.POST.get('payment_status')
@@ -567,22 +568,75 @@ def order_payment_update(request, order_id):
         order.save()
         messages.success(request, f'Payment status for order "{order.order_number}" updated successfully!')
 
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('sales:list')
 
 
 @login_required
 def order_receipt_view(request, order_id):
-    """Serve the raw bytea receipt image from the database"""
-    access_response = _ensure_sales_owner(request)
-    if access_response:
-        return access_response
+    """Serve the raw receipt image from the database with auto MIME detection and safe access"""
     order = get_object_or_404(SalesOrder, pk=order_id)
-    if order.receipt_image:
-        from django.http import HttpResponse
-        img_data = bytes(order.receipt_image)
-        return HttpResponse(img_data, content_type='image/jpeg')
-    from django.http import Http404
-    raise Http404("No receipt image found")
+    
+    user = request.user
+    is_authorized = (
+        user.is_superuser or 
+        is_owner(user) or 
+        user.is_staff or 
+        getattr(user, 'role', '') in ['owner', 'admin', 'staff'] or
+        (hasattr(order, 'customer') and order.customer and order.customer.user == user) or
+        (hasattr(order, 'delivery') and order.delivery and order.delivery.rider and order.delivery.rider.user == user)
+    )
+    if not is_authorized:
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("You do not have permission to view this receipt.")
+        
+    if not order.receipt_image:
+        from django.http import Http404
+        raise Http404("No receipt image found for this order.")
+        
+    raw_data = order.receipt_image
+    if isinstance(raw_data, memoryview):
+        raw_data = raw_data.tobytes()
+    elif isinstance(raw_data, str):
+        import base64
+        if raw_data.startswith('data:'):
+            try:
+                header, encoded = raw_data.split(',', 1)
+                raw_data = base64.b64decode(encoded)
+            except Exception:
+                raw_data = raw_data.encode('utf-8')
+        else:
+            try:
+                raw_data = base64.b64decode(raw_data)
+            except Exception:
+                raw_data = raw_data.encode('utf-8')
+    elif isinstance(raw_data, (bytes, bytearray)):
+        raw_data = bytes(raw_data)
+    else:
+        try:
+            raw_data = bytes(raw_data)
+        except Exception:
+            raw_data = str(raw_data).encode('utf-8')
+
+    content_type = 'image/jpeg'
+    if raw_data.startswith(b'\x89PNG'):
+        content_type = 'image/png'
+    elif raw_data.startswith(b'GIF8'):
+        content_type = 'image/gif'
+    elif raw_data.startswith(b'RIFF') and b'WEBP' in raw_data[:16]:
+        content_type = 'image/webp'
+    elif raw_data.startswith(b'%PDF'):
+        content_type = 'application/pdf'
+    elif raw_data.startswith(b'<svg') or b'<svg' in raw_data[:64]:
+        content_type = 'image/svg+xml'
+
+    from django.http import HttpResponse
+    response = HttpResponse(raw_data, content_type=content_type)
+    ext = content_type.split('/')[-1].replace('svg+xml', 'svg')
+    response['Content-Disposition'] = f'inline; filename="receipt_{order.order_number}.{ext}"'
+    return response
 
 
 class ProductForm(forms.ModelForm):

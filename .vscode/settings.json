@@ -19,5 +19,9 @@
         "reportUndefinedVariable": "none",
         "reportGeneralTypeIssues": "none",
         "reportAttributeAccessIssue": "none"
-    }
+    },
+    "hediet.vscode-drawio.theme": "kennedy",
+    "hediet.vscode-drawio.appearance": "light",
+    "hediet.vscode-drawio.grid": false,
+    "hediet.vscode-drawio.customGlobalCSS": ".geDiagramContainer { background-color: #FFFFFF !important; }"
 }
