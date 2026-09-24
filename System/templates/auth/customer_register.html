@@ -4,15 +4,21 @@
 {% block title %}Customer Register - Silay Superworm & Crayfish{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8" style="background-image: url('{% static 'images/auth/customer-login-bg.jpg' %}');">
-    <div class="max-w-2xl w-full space-y-8">
+<div class="min-h-screen flex items-center justify-center p-4 sm:p-8 font-sans relative overflow-hidden">
+    <!-- Background Image with Blur & Dark Overlay -->
+    <div class="absolute inset-0 z-0">
+        <img src="{% static 'images/auth/bg.jpg' %}" class="w-full h-full object-cover filter blur-[8px] scale-105" alt="Background">
+        <div class="absolute inset-0 bg-slate-950/80"></div>
+    </div>
+
+    <div class="max-w-2xl w-full space-y-6 relative z-10 my-8">
         <div class="text-center">
-            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="mx-auto w-20 h-20 rounded-2xl bg-[#021f15] p-2 border-4 border-[#021f15]/50 object-contain">
-            <h2 class="mt-6 text-3xl font-extrabold text-[#cca43b] tracking-wider uppercase">SILAY SUPERWORM AND CRAYFISH RETAIL</h2>
-            <p class="mt-2 text-sm text-[#a0ac96]">Register</p>
+            <img src="{% static 'images/brand-logo.jpg' %}" alt="Silay Superworm & Crayfish" class="mx-auto w-20 h-20 rounded-2xl bg-[#021f15] p-2 border-4 border-[#021f15]/50 object-contain shadow-xl">
+            <h2 class="mt-5 text-2xl sm:text-3xl font-extrabold text-[#cca43b] tracking-wider uppercase">SILAY SUPERWORM AND CRAYFISH RETAIL</h2>
+            <p class="mt-1.5 text-xs sm:text-sm text-[#a0ac96]">Customer Registration Portal</p>
         </div>
 
-        <div class="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
+        <div class="bg-slate-900/70 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl">
             {% if messages %}
             <div class="mb-4 space-y-2">
                 {% for message in messages %}
