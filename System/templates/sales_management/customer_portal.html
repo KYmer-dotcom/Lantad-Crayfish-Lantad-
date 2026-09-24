@@ -5,12 +5,12 @@
 <div class="min-h-screen w-full relative font-sans text-stone-100 overflow-hidden flex flex-col">
     <!-- Blurred Image Background -->
     <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div
-            class="absolute inset-[-10%] bg-[url('{% static 'images/customer-bg.jpg' %}')] bg-cover bg-center blur-md scale-105">
+        <div class="absolute inset-[-10%] bg-cover bg-center blur-sm scale-105"
+            style="background-image: url('{% static 'images/customer-bg.jpg' %}');">
         </div>
         <!-- Semi-transparent diagonal split over the image -->
         <div class="absolute inset-0"
-            style="background: linear-gradient(105deg, rgba(1,20,14,0.92) 40%, rgba(2,31,21,0.85) 40.1%);"></div>
+            style="background: linear-gradient(105deg, rgba(1,20,14,0.85) 35%, rgba(2,33,24,0.55) 70%, rgba(2,33,24,0.40) 100%);"></div>
     </div>
 
     <!-- Optional: Subtle noise overlay -->
