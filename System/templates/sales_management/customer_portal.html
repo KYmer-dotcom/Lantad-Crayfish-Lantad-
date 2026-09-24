@@ -79,11 +79,9 @@
                     class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                     <span
                         class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
-                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{
-                        user.username.0|upper }}{% else %}C{% endif %}
+                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{ user.username.0|upper }}{% else %}C{% endif %}
                     </span>
-                    <span class="text-xs font-bold text-white">{% if customer and customer.name %}{{ customer.name }}{%
-                        elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
+                    <span class="text-xs font-bold text-white">{% if customer and customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
                     <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -156,17 +154,14 @@
                             class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
                             <span id="featured-stock-dot"
                                 class="w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0
-                                %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of
-                                Stock{% endif %}</span>
+                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
                         </span>
                     </div>
                 </div>
 
                 <p id="featured-notes"
                     class="text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
-                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with
-                    organic feeds to ensure maximum flavor and quality." }}
+                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
                 </p>
 
                 <div class="pt-4 space-y-5">
@@ -201,8 +196,7 @@
                     <!-- Price -->
                     <div class="flex items-baseline gap-2 py-2">
                         <p class="text-white font-bold text-sm tracking-wide">Price:</p>
-                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{
-                            featured_product.unit_price|floatformat:0 }}</p>
+                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
                         <span id="featured-unit-label" class="text-sm font-bold text-[#a0ac96]">/ pc</span>
                     </div>
 
@@ -227,8 +221,7 @@
                     <!-- Dynamic Total Price -->
                     <div class="flex items-center gap-2 py-1">
                         <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
-                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{
-                            featured_product.unit_price|floatformat:0 }}</p>
+                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
                     </div>
 
                     <!-- Order Button -->
@@ -236,10 +229,9 @@
                         <button id="featured-order-btn"
                             onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
                             class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all hover: group"
-                            {% if not featured_product or featured_product.quantity_kg <=0 %}disabled{% endif %}>
+                            {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
                             <span id="featured-order-text"
-                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and
-                                featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
                             <div
                                 class="w-10 h-10 bg-white group-hover:bg-[#01140e] group-hover:text-white rounded-lg flex items-center justify-center text-[#cca43b] transition-colors">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -328,7 +320,7 @@
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
                                 {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/kg{% endif %}
-                                {% if prod.unit_price <= 0 and prod.price_per_kg <=0 %}₱0{% endif %} </p>
+                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %} </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -471,12 +463,10 @@
 
                                     <!-- Product Details -->
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="font-black text-lg sm:text-xl text-white truncate tracking-tight">{{
-                                            order.product.name }}</h4>
+                                        <h4 class="font-black text-lg sm:text-xl text-white truncate tracking-tight">{{ order.product.name }}</h4>
                                         <div class="flex items-center gap-2 mt-2 flex-wrap">
                                             <span
-                                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2.5 py-0.5 rounded-full">{{
-                                                order.get_status_display }}</span>
+                                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
                                             {% if order.delivery_address|upper == "PICKUP" %}
                                             <span
                                                 class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🏪
@@ -522,9 +512,7 @@
                                         </div>
                                         <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
                                         {% else %}
-                                        <p class="font-black text-base text-white mt-1">{{
-                                            order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{%
-                                                if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
+                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
                                         {% endif %}
                                     </div>
 
@@ -537,8 +525,7 @@
                                             <p
                                                 class="font-black text-xl sm:text-2xl text-white font-mono tracking-tight flex items-baseline justify-end gap-1">
                                                 <span class="text-sm font-bold text-[#cca43b]">₱</span><span
-                                                    id="item-subtotal-{{ order.id }}">{{
-                                                    order.total_amount|floatformat:0 }}</span>
+                                                    id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -1714,8 +1701,7 @@
                         <div>
                             <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Delivery Address
                             </p>
-                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address
-                                provided" }}</p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address provided" }}</p>
                         </div>
                     </div>
                     {% if customer.map_latitude and customer.map_longitude %}
@@ -1732,11 +1718,9 @@
                         class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all">
                         <div class="space-y-2">
                             <div class="flex items-center gap-2.5">
-                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number
-                                    }}</span>
+                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number }}</span>
                                 <span
-                                    class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{
-                                    order.get_status_display }}</span>
+                                    class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
                                 <span
                                     class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if order.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
                                     {{ order.get_payment_status_display }}
@@ -1750,9 +1734,7 @@
                             <div class="text-right">
                                 <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}
                                 </p>
-                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in
-                                    order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{
-                                    order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
+                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
                             </div>
                             <button type="button" onclick="openCustomerReceiptModal({
                                     orderNumber: '{{ order.order_number }}',
@@ -2978,13 +2960,11 @@
         <div class="rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/20 p-4 space-y-2">
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Merchant:</span>
-                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH'
-                    }}</span>
+                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</span>
             </div>
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Recipient No:</span>
-                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567'
-                    }}</span>
+                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567' }}</span>
             </div>
             <div class="border-t border-white/10 pt-2 flex items-center justify-between">
                 <span class="text-xs uppercase tracking-wider font-black text-white">Amount to Pay:</span>
@@ -3092,8 +3072,7 @@
             </div>
             <div class="space-y-1">
                 <h4 class="text-lg font-black text-white uppercase tracking-wider">Payment Successful!</h4>
-                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM &
-                    CRAYFISH' }}</p>
+                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</p>
                 <p class="text-[11px] font-mono text-emerald-400 font-bold mt-2" id="gcash-success-ref">Ref:
                     GCASH-00000000</p>
             </div>
