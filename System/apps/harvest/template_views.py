@@ -190,7 +190,10 @@ def harvest_list(request):
             harvest_events.append({
                 'start': start.strftime('%Y-%m-%d'),
                 'end': end.strftime('%Y-%m-%d'),
-                'pond': f"{pond.name} (Main)"
+                'pond': f"{pond.name}",
+                'type': 'Main',
+                'category': 'Main Pond Harvest',
+                'transfer_date': pond.transfer_date.strftime('%b %d, %Y'),
             })
             
     for pond in sw_ponds:
@@ -200,7 +203,10 @@ def harvest_list(request):
             harvest_events.append({
                 'start': start.strftime('%Y-%m-%d'),
                 'end': end.strftime('%Y-%m-%d'),
-                'pond': f"{pond.name} (Superworm)"
+                'pond': f"{pond.name}",
+                'type': 'Superworm',
+                'category': 'Superworm Harvest',
+                'transfer_date': pond.transfer_date.strftime('%b %d, %Y'),
             })
             
     for pond in breeding_ponds:
@@ -210,14 +216,20 @@ def harvest_list(request):
                 harvest_events.append({
                     'start': est_date.strftime('%Y-%m-%d'),
                     'end': est_date.strftime('%Y-%m-%d'),
-                    'pond': f"{pond.name} (Breeding)"
+                    'pond': f"{pond.name}",
+                    'type': 'Breeding',
+                    'category': 'Breeding Transfer (Reproduction)',
+                    'transfer_date': pond.transfer_date.strftime('%b %d, %Y'),
                 })
             elif pond.breeding_type == 'Crilings':
                 est_date = pond.transfer_date + timedelta(days=60)
                 harvest_events.append({
                     'start': est_date.strftime('%Y-%m-%d'),
                     'end': est_date.strftime('%Y-%m-%d'),
-                    'pond': f"{pond.name} (Breeding)"
+                    'pond': f"{pond.name}",
+                    'type': 'Breeding',
+                    'category': 'Breeding Transfer (Crilings)',
+                    'transfer_date': pond.transfer_date.strftime('%b %d, %Y'),
                 })
                 
     for pond in azula_ponds:
@@ -226,7 +238,10 @@ def harvest_list(request):
             harvest_events.append({
                 'start': est_date.strftime('%Y-%m-%d'),
                 'end': est_date.strftime('%Y-%m-%d'),
-                'pond': f"{pond.name} (Azula)"
+                'pond': f"{pond.name}",
+                'type': 'Azula',
+                'category': 'Azula Cultivation Harvest',
+                'transfer_date': pond.transfer_date.strftime('%b %d, %Y'),
             })
             
     transfers_count = len(breeding_ponds)
