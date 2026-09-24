@@ -10,7 +10,7 @@
         </div>
         <!-- Semi-transparent diagonal split over the image -->
         <div class="absolute inset-0"
-            style="background-color: #022118; "></div>
+            style="background: linear-gradient(105deg, rgba(1,20,14,0.92) 40%, rgba(2,31,21,0.85) 40.1%);"></div>
     </div>
 
     <!-- Optional: Subtle noise overlay -->
@@ -59,12 +59,14 @@
             <a href="{% url 'sales:customer_cart_page' %}"
                 class="relative inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer group"
                 title="View Cart">
-                <svg class="w-5 h-5 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-5 h-5 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {% if cart_orders_count %}
-                <span class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] /40 ring-2 ring-[#01140e]">
+                <span
+                    class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] /40 ring-2 ring-[#01140e]">
                     {{ cart_orders_count }}
                 </span>
                 {% endif %}
@@ -75,9 +77,11 @@
                     class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                     <span
                         class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
-                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{ user.username.0|upper }}{% else %}C{% endif %}
+                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{
+                        user.username.0|upper }}{% else %}C{% endif %}
                     </span>
-                    <span class="text-xs font-bold text-white">{% if customer and customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
+                    <span class="text-xs font-bold text-white">{% if customer and customer.name %}{{ customer.name }}{%
+                        elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
                     <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -111,9 +115,11 @@
             {% else %}
             <a href="{% url 'customer_login' %}"
                 class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
-                <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
+                <span
+                    class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                 </span>
                 <span class="text-xs font-bold text-white">Customer Login</span>
@@ -144,16 +150,21 @@
                         <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
                     <div class="mt-3 flex items-center gap-2">
-                        <span id="featured-stock-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
-                            <span id="featured-stock-dot" class="w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        <span id="featured-stock-badge"
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span id="featured-stock-dot"
+                                class="w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0
+                                %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of
+                                Stock{% endif %}</span>
                         </span>
                     </div>
                 </div>
 
                 <p id="featured-notes"
                     class="text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
-                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
+                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with
+                    organic feeds to ensure maximum flavor and quality." }}
                 </p>
 
                 <div class="pt-4 space-y-5">
@@ -177,25 +188,28 @@
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" id="btn-unit-pc" onclick="setPricingUnit('pc')"
-                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Per Piece (pc)</button>
+                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Per
+                                Piece (pc)</button>
                             <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
-                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By KG (kg)</button>
+                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
+                                KG (kg)</button>
                         </div>
                     </div>
 
                     <!-- Price -->
                     <div class="flex items-baseline gap-2 py-2">
                         <p class="text-white font-bold text-sm tracking-wide">Price:</p>
-                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{
+                            featured_product.unit_price|floatformat:0 }}</p>
                         <span id="featured-unit-label" class="text-sm font-bold text-[#a0ac96]">/ pc</span>
                     </div>
 
                     <!-- Quantity & Order Row -->
                     <div class="flex items-center gap-4 pt-1 max-w-[380px]">
                         <div class="flex items-center gap-3">
-                            <p id="featured-quantity-label" class="text-white font-bold text-sm tracking-wide">Quantity (pcs):</p>
-                            <div
-                                class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px]">
+                            <p id="featured-quantity-label" class="text-white font-bold text-sm tracking-wide">Quantity
+                                (pcs):</p>
+                            <div class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px]">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
                                     class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">-</button>
                                 <input type="number" id="featured-quantity-input" value="1" oninput="updateTotalPrice()"
@@ -211,7 +225,8 @@
                     <!-- Dynamic Total Price -->
                     <div class="flex items-center gap-2 py-1">
                         <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
-                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{
+                            featured_product.unit_price|floatformat:0 }}</p>
                     </div>
 
                     <!-- Order Button -->
@@ -219,9 +234,10 @@
                         <button id="featured-order-btn"
                             onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
                             class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all hover: group"
-                            {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
+                            {% if not featured_product or featured_product.quantity_kg <=0 %}disabled{% endif %}>
                             <span id="featured-order-text"
-                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and
+                                featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
                             <div
                                 class="w-10 h-10 bg-white group-hover:bg-[#01140e] group-hover:text-white rounded-lg flex items-center justify-center text-[#cca43b] transition-colors">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -300,16 +316,17 @@
                                 <p
                                     class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
                                     {{ prod.name }}</p>
-                                <span class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
-                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
+                                <span
+                                    class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out
+                                    of stock{% endif %}
                                 </span>
                             </div>
                             <p class="text-xs text-[#a0ac96] mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
                                 {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/kg{% endif %}
-                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %}
-                            </p>
+                                {% if prod.unit_price <= 0 and prod.price_per_kg <=0 %}₱0{% endif %} </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -360,8 +377,7 @@
 
                     <!-- Line 1-2 -->
                     <div class="flex-1 h-0.5 mx-3 mt-5 bg-white/10 relative overflow-hidden rounded-full">
-                        <div id="stepper-line-1"
-                            class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
+                        <div id="stepper-line-1" class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
                     </div>
 
                     <!-- Step 2: Address -->
@@ -376,8 +392,7 @@
 
                     <!-- Line 2-3 -->
                     <div class="flex-1 h-0.5 mx-3 mt-5 bg-white/10 relative overflow-hidden rounded-full">
-                        <div id="stepper-line-2"
-                            class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
+                        <div id="stepper-line-2" class="h-full bg-[#cca43b] transition-all duration-500 w-0"></div>
                     </div>
 
                     <!-- Step 3: Payment -->
@@ -410,11 +425,14 @@
                                         class="w-6 h-6 border-2 border-white/20 rounded-lg bg-black/40 peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-xs after:hidden peer-checked:after:block">
                                     </div>
                                 </label>
-                                <span id="items-selected-count" class="text-xs font-bold uppercase tracking-wider text-stone-300">0/0 items selected</span>
+                                <span id="items-selected-count"
+                                    class="text-xs font-bold uppercase tracking-wider text-stone-300">0/0 items
+                                    selected</span>
                             </div>
                             <div class="flex items-center gap-4 text-xs font-black uppercase tracking-wider">
                                 <button type="button" onclick="removeAllSelected()"
-                                    class="text-[#a0ac96] hover:text-rose-400 transition-colors cursor-pointer">Remove Selected</button>
+                                    class="text-[#a0ac96] hover:text-rose-400 transition-colors cursor-pointer">Remove
+                                    Selected</button>
                             </div>
                         </div>
 
@@ -428,8 +446,8 @@
                                     <!-- Custom Checkbox -->
                                     {% if order.status == 'pending' %}
                                     <label class="relative flex items-center cursor-pointer flex-shrink-0">
-                                        <input type="checkbox" value="{{ order.id }}" checked onchange="recalculateCart()"
-                                            class="sr-only peer order-checkbox">
+                                        <input type="checkbox" value="{{ order.id }}" checked
+                                            onchange="recalculateCart()" class="sr-only peer order-checkbox">
                                         <div
                                             class="w-6 h-6 border-2 border-white/20 rounded-lg bg-black/40 peer-checked:bg-[#cca43b] peer-checked:border-[#cca43b] transition-all flex items-center justify-center after:content-['✓'] after:text-[#01140e] after:font-black after:text-xs after:hidden peer-checked:after:block">
                                         </div>
@@ -451,58 +469,74 @@
 
                                     <!-- Product Details -->
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="font-black text-lg sm:text-xl text-white truncate tracking-tight">{{ order.product.name }}</h4>
+                                        <h4 class="font-black text-lg sm:text-xl text-white truncate tracking-tight">{{
+                                            order.product.name }}</h4>
                                         <div class="flex items-center gap-2 mt-2 flex-wrap">
                                             <span
-                                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
+                                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2.5 py-0.5 rounded-full">{{
+                                                order.get_status_display }}</span>
                                             {% if order.delivery_address|upper == "PICKUP" %}
                                             <span
-                                                class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🏪 Pickup</span>
+                                                class="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🏪
+                                                Pickup</span>
                                             {% else %}
                                             <span
-                                                class="text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🚚 Delivery</span>
+                                                class="text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🚚
+                                                Delivery</span>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Quantity & Subtotal Controls -->
-                                <div class="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto pt-3 sm:pt-0 sm:pr-8 border-t sm:border-t-0 border-white/5">
+                                <div
+                                    class="flex items-center justify-between sm:justify-end gap-6 sm:gap-8 w-full sm:w-auto pt-3 sm:pt-0 sm:pr-8 border-t sm:border-t-0 border-white/5">
                                     <!-- Interactive Quantity Stepper -->
                                     <div class="flex flex-col items-center shrink-0">
-                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-center w-full">Quantity</p>
+                                        <p
+                                            class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-center w-full">
+                                            Quantity</p>
                                         {% if order.status == 'pending' %}
                                         <div class="flex items-center gap-2">
-                                            <div class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 transition-colors">
+                                            <div
+                                                class="flex items-center bg-black/60 border border-white/10 hover:border-[#cca43b]/40 rounded-xl p-1 transition-colors">
                                                 <button type="button" onclick="changeCardQuantity('{{ order.id }}', -1)"
                                                     class="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#cca43b] hover:text-[#01140e] text-stone-200 flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
                                                     -
                                                 </button>
-                                                <input type="number" id="qty-input-{{ order.id }}" value="{{ order.quantity_kg|floatformat:0 }}"
-                                                    min="1" max="9999" step="1"
-                                                    onchange="updateCardQuantity('{{ order.id }}', this.value)"
+                                                <input type="number" id="qty-input-{{ order.id }}"
+                                                    value="{{ order.quantity_kg|floatformat:0 }}" min="1" max="9999"
+                                                    step="1" onchange="updateCardQuantity('{{ order.id }}', this.value)"
                                                     class="w-10 text-center bg-transparent border-none text-white font-black text-sm focus:outline-none p-0 focus:ring-0 appearance-none">
                                                 <button type="button" onclick="changeCardQuantity('{{ order.id }}', 1)"
                                                     class="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#cca43b] hover:text-[#01140e] text-stone-200 flex items-center justify-center font-black text-sm transition-all focus:outline-none select-none cursor-pointer">
                                                     +
                                                 </button>
                                             </div>
-                                            <span class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
+                                            <span
+                                                class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
                                                 {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}
                                             </span>
                                         </div>
                                         <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
                                         {% else %}
-                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
+                                        <p class="font-black text-base text-white mt-1">{{
+                                            order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{%
+                                                if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
                                         {% endif %}
                                     </div>
 
                                     <!-- Total Item Price -->
                                     <div class="flex flex-col items-end shrink-0 min-w-[85px]">
-                                        <p class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-right w-full">Subtotal</p>
+                                        <p
+                                            class="text-[10px] uppercase font-black tracking-[0.15em] text-[#a0ac96] mb-1.5 text-right w-full">
+                                            Subtotal</p>
                                         <div class="h-[38px] flex items-center justify-end">
-                                            <p class="font-black text-xl sm:text-2xl text-white font-mono tracking-tight flex items-baseline justify-end gap-1">
-                                                <span class="text-sm font-bold text-[#cca43b]">₱</span><span id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
+                                            <p
+                                                class="font-black text-xl sm:text-2xl text-white font-mono tracking-tight flex items-baseline justify-end gap-1">
+                                                <span class="text-sm font-bold text-[#cca43b]">₱</span><span
+                                                    id="item-subtotal-{{ order.id }}">{{
+                                                    order.total_amount|floatformat:0 }}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -511,8 +545,10 @@
                                 <!-- Remove / Delete Card button -->
                                 {% if order.status == 'pending' %}
                                 <button type="button" onclick="confirmDeleteCard('{{ order.id }}')"
-                                    class="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/5 hover:bg-rose-500/20 text-stone-400 hover:text-rose-400 flex items-center justify-center transition-all focus:outline-none cursor-pointer" title="Remove Item">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    class="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/5 hover:bg-rose-500/20 text-stone-400 hover:text-rose-400 flex items-center justify-center transition-all focus:outline-none cursor-pointer"
+                                    title="Remove Item">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -540,32 +576,49 @@
                             <!-- Delivery Details Panel (for delivery) -->
                             <div id="section-delivery-details" class="space-y-6">
                                 <div>
-                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Delivery Address</h3>
-                                    <p class="text-xs text-[#a0ac96] mt-2">Please enter your complete delivery address below.</p>
+                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Delivery Address
+                                    </h3>
+                                    <p class="text-xs text-[#a0ac96] mt-2">Please enter your complete delivery address
+                                        below.</p>
                                 </div>
 
                                 <div class="space-y-4">
                                     <!-- Row 1: Province & Municipality / City -->
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div class="space-y-2">
-                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Province</label>
-                                            <div class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 text-sm flex items-center justify-between">
+                                            <label
+                                                class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Province</label>
+                                            <div
+                                                class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 text-sm flex items-center justify-between">
                                                 <span class="text-white font-bold">Negros Occidental</span>
-                                                <span class="text-[9px] font-black text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded-md uppercase tracking-wider">Coverage Area</span>
+                                                <span
+                                                    class="text-[9px] font-black text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-2 py-0.5 rounded-md uppercase tracking-wider">Coverage
+                                                    Area</span>
                                             </div>
-                                            <input type="hidden" id="checkout-province-select" value="Negros Occidental">
+                                            <input type="hidden" id="checkout-province-select"
+                                                value="Negros Occidental">
                                         </div>
                                         <div class="space-y-2">
-                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Municipality / City</label>
+                                            <label
+                                                class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Municipality
+                                                / City</label>
                                             <div class="relative">
-                                                <select id="checkout-city-select" onchange="updateBarangays(null, null, true)"
+                                                <select id="checkout-city-select"
+                                                    onchange="updateBarangays(null, null, true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
-                                                    <option value="Silay City" class="bg-[#01140e] text-white py-2" selected>Silay City</option>
-                                                    <option value="Talisay City" class="bg-[#01140e] text-white py-2">Talisay City</option>
-                                                    <option value="Bacolod City" class="bg-[#01140e] text-white py-2">Bacolod City</option>
+                                                    <option value="Silay City" class="bg-[#01140e] text-white py-2"
+                                                        selected>Silay City</option>
+                                                    <option value="Talisay City" class="bg-[#01140e] text-white py-2">
+                                                        Talisay City</option>
+                                                    <option value="Bacolod City" class="bg-[#01140e] text-white py-2">
+                                                        Bacolod City</option>
                                                 </select>
-                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
-                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                    </svg>
                                                 </div>
                                             </div>
                                         </div>
@@ -574,29 +627,45 @@
                                     <!-- Row 2: Barangay & Street / Road / Purok -->
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div class="space-y-2">
-                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Barangay</label>
+                                            <label
+                                                class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Barangay</label>
                                             <div class="relative">
-                                                <select id="checkout-barangay-select" onchange="updateStreets(null, true)"
+                                                <select id="checkout-barangay-select"
+                                                    onchange="updateStreets(null, true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
-                                                    <option value="" class="bg-[#01140e] text-white">Select Barangay</option>
+                                                    <option value="" class="bg-[#01140e] text-white">Select Barangay
+                                                    </option>
                                                 </select>
-                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
-                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                    </svg>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="space-y-2">
-                                            <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Street / Purok / Road</label>
+                                            <label
+                                                class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Street
+                                                / Purok / Road</label>
                                             <div class="relative">
-                                                <select id="checkout-street-select" onchange="onStreetSelectChange(true)"
+                                                <select id="checkout-street-select"
+                                                    onchange="onStreetSelectChange(true)"
                                                     class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm appearance-none cursor-pointer pr-10">
-                                                    <option value="" class="bg-[#01140e] text-white">Select Street / Purok</option>
+                                                    <option value="" class="bg-[#01140e] text-white">Select Street /
+                                                        Purok</option>
                                                 </select>
-                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
-                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#cca43b]">
+                                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                    </svg>
                                                 </div>
                                             </div>
-                                            <input type="text" id="checkout-custom-street-input" oninput="combineAddressFields(true)"
+                                            <input type="text" id="checkout-custom-street-input"
+                                                oninput="combineAddressFields(true)"
                                                 class="w-full h-[46px] mt-2 rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500 hidden"
                                                 placeholder="Type specific street name...">
                                         </div>
@@ -604,41 +673,58 @@
 
                                     <!-- Row 3: Home / House No. / Building / Landmark -->
                                     <div class="space-y-2">
-                                        <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Home / House No. / Building / Floor / Landmark</label>
-                                        <input type="text" id="checkout-house-input" oninput="combineAddressFields(false)"
+                                        <label
+                                            class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Home
+                                            / House No. / Building / Floor / Landmark</label>
+                                        <input type="text" id="checkout-house-input"
+                                            oninput="combineAddressFields(false)"
                                             class="w-full h-[52px] rounded-2xl border border-white/10 bg-black/40 text-white font-bold px-4 focus:border-[#cca43b]/60 focus:ring-1 focus:ring-[#cca43b]/40 focus:outline-none text-sm placeholder:text-stone-500"
                                             placeholder="e.g. House #45, Block 3 Lot 8, Blue Gate near Chapel">
                                     </div>
 
-                                    <textarea id="checkout-delivery-address" class="hidden">{{ customer.address }}</textarea>
+                                    <textarea id="checkout-delivery-address"
+                                        class="hidden">{{ customer.address }}</textarea>
                                 </div>
                             </div>
 
                             <!-- Pickup Details Panel (for pickup) -->
                             <div id="section-pickup-details" class="space-y-6 hidden">
                                 <div>
-                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Pickup Location</h3>
-                                    <p class="text-xs text-[#a0ac96] mt-2">Please pick up your order at our main establishment below.</p>
+                                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">Pickup Location
+                                    </h3>
+                                    <p class="text-xs text-[#a0ac96] mt-2">Please pick up your order at our main
+                                        establishment below.</p>
                                 </div>
                                 <div class="p-5 rounded-2xl border border-[#cca43b]/20 bg-[#cca43b]/5 space-y-2">
-                                    <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Establishment Address</p>
-                                    <p class="font-bold text-white text-sm leading-relaxed">Silay City, Negros Occidental, Philippines (Silay Superworm & Crayfish Farm)</p>
+                                    <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">
+                                        Establishment Address</p>
+                                    <p class="font-bold text-white text-sm leading-relaxed">Silay City, Negros
+                                        Occidental, Philippines (Silay Superworm & Crayfish Farm)</p>
                                 </div>
                             </div>
 
                             <!-- Map container (shared) -->
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]" id="map-label-text">📍 Pin Your Delivery Location (Drag or Click to Adjust)</label>
+                                    <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]"
+                                        id="map-label-text">📍 Pin Your Delivery Location (Drag or Click to
+                                        Adjust)</label>
                                     <button type="button" onclick="locateCurrentPosition()"
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] text-[10px] font-black uppercase tracking-wider transition-all border border-[#cca43b]/30 cursor-pointer">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
                                         Use Current GPS
                                     </button>
                                 </div>
-                                <div id="checkout-delivery-map" class="w-full h-[320px] rounded-2xl border border-white/10 z-0"></div>
+                                <div id="checkout-delivery-map"
+                                    class="w-full h-[320px] rounded-2xl border border-white/10 z-0"></div>
                                 <div class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
-                                    <span>Tip: Click anywhere on the map or drag the pin to set your exact location.</span>
+                                    <span>Tip: Click anywhere on the map or drag the pin to set your exact
+                                        location.</span>
                                     <span id="pin-coords-display" class="text-white/60 font-mono"></span>
                                 </div>
                                 <input type="hidden" id="checkout-latitude" name="latitude" value="">
@@ -658,33 +744,43 @@
                     <div id="checkout-step-3-content" class="hidden space-y-6">
                         <div class="rounded-3xl border border-white/10 bg-[#01140e]/80 backdrop-blur-md p-8 space-y-6">
                             <div>
-                                <h3 class="text-2xl font-black text-white uppercase tracking-wider">Choose Payment Method</h3>
-                                <p class="text-xs text-[#a0ac96] mt-2">Select your preferred transaction option for security and convenience.</p>
+                                <h3 class="text-2xl font-black text-white uppercase tracking-wider">Choose Payment
+                                    Method</h3>
+                                <p class="text-xs text-[#a0ac96] mt-2">Select your preferred transaction option for
+                                    security and convenience.</p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <!-- Cash on Delivery -->
                                 <label id="pay-card-cod" onclick="selectPaymentMethod('cod')"
                                     class="relative flex flex-col justify-between p-6 rounded-2xl border-2 border-[#cca43b] bg-[#cca43b]/10 cursor-pointer transition-all group hover:bg-[#cca43b]/15">
-                                    <input type="radio" name="payment_method" id="pay-radio-cod" value="cod" checked class="sr-only">
+                                    <input type="radio" name="payment_method" id="pay-radio-cod" value="cod" checked
+                                        class="sr-only">
                                     <div>
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg">
+                                                <div
+                                                    class="w-10 h-10 rounded-xl bg-[#cca43b]/20 border border-[#cca43b]/40 flex items-center justify-center text-lg">
                                                     💵
                                                 </div>
                                                 <div>
-                                                    <span id="pay-title-cod" class="text-base font-black text-white uppercase tracking-wider block">Cash on Delivery</span>
-                                                    <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-widest">Handover Payment</span>
+                                                    <span id="pay-title-cod"
+                                                        class="text-base font-black text-white uppercase tracking-wider block">Cash
+                                                        on Delivery</span>
+                                                    <span
+                                                        class="text-[10px] font-bold text-[#cca43b] uppercase tracking-widest">Handover
+                                                        Payment</span>
                                                 </div>
                                             </div>
-                                            <span id="pay-dot-cod" class="w-6 h-6 rounded-full border-2 border-[#cca43b] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#cca43b] after:rounded-full"></span>
+                                            <span id="pay-dot-cod"
+                                                class="w-6 h-6 rounded-full border-2 border-[#cca43b] flex items-center justify-center after:content-[''] after:w-2.5 after:h-2.5 after:bg-[#cca43b] after:rounded-full"></span>
                                         </div>
                                         <p id="pay-desc-cod" class="text-xs text-[#a0ac96] leading-relaxed mt-2">
                                             Pay in cash upon physical doorstep delivery or farm pickup.
                                         </p>
                                     </div>
-                                    <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                                    <div
+                                        class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
                                         <span>Fee: Free</span>
                                         <span class="text-emerald-400">Physical Cash</span>
                                     </div>
@@ -693,25 +789,34 @@
                                 <!-- GCash Online Checkout (Automated) -->
                                 <label id="pay-card-gcash" onclick="selectPaymentMethod('gcash')"
                                     class="relative flex flex-col justify-between p-6 rounded-2xl border-2 border-white/10 bg-white/5 cursor-pointer transition-all group hover:border-[#007DFE]/50 hover:bg-[#007DFE]/5">
-                                    <input type="radio" name="payment_method" id="pay-radio-gcash" value="gcash" class="sr-only">
+                                    <input type="radio" name="payment_method" id="pay-radio-gcash" value="gcash"
+                                        class="sr-only">
                                     <div>
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-xl bg-[#007DFE] flex items-center justify-center font-black text-white text-base /30">
+                                                <div
+                                                    class="w-10 h-10 rounded-xl bg-[#007DFE] flex items-center justify-center font-black text-white text-base /30">
                                                     G
                                                 </div>
                                                 <div>
-                                                    <span class="text-base font-black text-white uppercase tracking-wider block">GCash Online</span>
-                                                    <span class="text-[10px] font-black text-[#007DFE] uppercase tracking-widest">PayMongo Gateway</span>
+                                                    <span
+                                                        class="text-base font-black text-white uppercase tracking-wider block">GCash
+                                                        Online</span>
+                                                    <span
+                                                        class="text-[10px] font-black text-[#007DFE] uppercase tracking-widest">PayMongo
+                                                        Gateway</span>
                                                 </div>
                                             </div>
-                                            <span id="pay-dot-gcash" class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center"></span>
+                                            <span id="pay-dot-gcash"
+                                                class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center"></span>
                                         </div>
                                         <p class="text-xs text-[#a0ac96] leading-relaxed mt-2">
-                                            Secure instant payment via PayMongo. Enter your GCash number to receive your real SMS OTP and authorize payment.
+                                            Secure instant payment via PayMongo. Enter your GCash number to receive your
+                                            real SMS OTP and authorize payment.
                                         </p>
                                     </div>
-                                    <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                                    <div
+                                        class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-stone-400">
                                         <span>Instant Verification</span>
                                         <span class="text-[#007DFE]">Official GCash Portal</span>
                                     </div>
@@ -719,24 +824,32 @@
                             </div>
 
                             <!-- GCash Transfer Automated Info Panel -->
-                            <div id="gcash-payment-panel" class="hidden rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
-                                <div class="flex items-center gap-2 text-xs font-black text-white uppercase tracking-wider">
+                            <div id="gcash-payment-panel"
+                                class="hidden rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/10 via-[#01140e] to-[#01140e] p-5 space-y-3">
+                                <div
+                                    class="flex items-center gap-2 text-xs font-black text-white uppercase tracking-wider">
                                     <span class="text-[#007DFE] text-sm">⚡</span>
                                     <span>How Live GCash Payment Works</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                                        <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 1</span>
+                                        <span
+                                            class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step
+                                            1</span>
                                         <p class="text-xs font-bold text-white">Click Pay With GCash</p>
                                         <p class="text-[10px] text-[#a0ac96]">Redirects to PayMongo gateway</p>
                                     </div>
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                                        <span class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step 2</span>
+                                        <span
+                                            class="text-[9px] font-black text-[#007DFE] uppercase tracking-widest block">Step
+                                            2</span>
                                         <p class="text-xs font-bold text-white">Enter GCash & SMS OTP</p>
                                         <p class="text-[10px] text-[#a0ac96]">Verify with code sent to phone</p>
                                     </div>
                                     <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">Step 3</span>
+                                        <span
+                                            class="text-[9px] font-black text-emerald-400 uppercase tracking-widest block">Step
+                                            3</span>
                                         <p class="text-xs font-bold text-white">Instant Confirmation</p>
                                         <p class="text-[10px] text-[#a0ac96]">Order auto-marked as Paid</p>
                                     </div>
@@ -1312,7 +1425,7 @@
                         const brgySelect = document.getElementById('checkout-barangay-select');
                         const houseInput = document.getElementById('checkout-house-input');
                         const addressEl = document.getElementById('checkout-delivery-address');
-                        
+
                         const brgy = brgySelect ? brgySelect.value.trim() : '';
                         const address = addressEl ? addressEl.value.trim() : '';
                         const latVal = document.getElementById('checkout-latitude')?.value || '';
@@ -1385,7 +1498,7 @@
 
                 const grandTotalEl = document.getElementById('summary-grand-total');
                 const amountText = grandTotalEl ? grandTotalEl.textContent : '0';
-                
+
                 document.querySelectorAll('.gcash-display-amount').forEach(el => {
                     el.textContent = '₱' + amountText;
                 });
@@ -1586,7 +1699,8 @@
 
                 <!-- Customer Details Panel -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
-                    <div class="{% if customer.map_latitude and customer.map_longitude %}col-span-12 md:col-span-8{% else %}col-span-12{% endif %} p-6 rounded-2xl border border-[#cca43b]/20 bg-[#cca43b]/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div
+                        class="{% if customer.map_latitude and customer.map_longitude %}col-span-12 md:col-span-8{% else %}col-span-12{% endif %} p-6 rounded-2xl border border-[#cca43b]/20 bg-[#cca43b]/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
                             <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Customer Name</p>
                             <p class="font-bold text-white text-base mt-1">{{ customer.name }}</p>
@@ -1596,12 +1710,15 @@
                             <p class="font-bold text-white text-base mt-1">{{ customer.phone }}</p>
                         </div>
                         <div>
-                            <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Delivery Address</p>
-                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address provided" }}</p>
+                            <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Delivery Address
+                            </p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address
+                                provided" }}</p>
                         </div>
                     </div>
                     {% if customer.map_latitude and customer.map_longitude %}
-                    <div class="col-span-12 md:col-span-4 rounded-2xl border border-white/10 overflow-hidden h-[120px] md:h-auto relative min-h-[140px] z-0">
+                    <div
+                        class="col-span-12 md:col-span-4 rounded-2xl border border-white/10 overflow-hidden h-[120px] md:h-auto relative min-h-[140px] z-0">
                         <div id="receipt-map" class="w-full h-full"></div>
                     </div>
                     {% endif %}
@@ -1609,42 +1726,51 @@
 
                 <div class="space-y-4">
                     {% for order in orders %}
-                    <div class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all">
+                    <div
+                        class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all">
                         <div class="space-y-2">
                             <div class="flex items-center gap-2.5">
-                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number }}</span>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
-                                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if order.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number
+                                    }}</span>
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{
+                                    order.get_status_display }}</span>
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if order.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
                                     {{ order.get_payment_status_display }}
                                 </span>
                             </div>
                             <p class="font-bold text-xl text-white">{{ order.product.name|default:"Product" }}</p>
-                            <p class="text-xs text-[#a0ac96]">Ordered on {{ order.created_at|date:"M d, Y • h:i A" }}</p>
+                            <p class="text-xs text-[#a0ac96]">Ordered on {{ order.created_at|date:"M d, Y • h:i A" }}
+                            </p>
                         </div>
                         <div class="flex sm:flex-col items-end justify-between sm:justify-center gap-3">
                             <div class="text-right">
-                                <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</p>
-                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
+                                <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}
+                                </p>
+                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in
+                                    order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{
+                                    order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
                             </div>
-                            <button type="button" 
-                                onclick="openCustomerReceiptModal({
+                            <button type="button" onclick="openCustomerReceiptModal({
                                     orderNumber: '{{ order.order_number }}',
-                                    date: '{{ order.created_at|date:"M d, Y • h:i A" }}',
-                                    customerName: '{{ customer.name|escapejs }}',
-                                    customerPhone: '{{ customer.phone|escapejs }}',
-                                    deliveryAddress: '{{ order.delivery_address|default:customer.address|escapejs }}',
-                                    productName: '{{ order.product.name|default:"Aquaculture Product"|escapejs }}',
-                                    quantity: '{{ order.quantity_kg|floatformat:0 }}',
-                                    unit: '{% if "[KG]" in order.notes %}kg{% else %}pcs{% endif %}',
-                                    pricePerUnit: '{{ order.price_per_kg|floatformat:2 }}',
-                                    totalAmount: '{{ order.total_amount|floatformat:2 }}',
-                                    status: '{{ order.get_status_display }}',
-                                    paymentStatus: '{{ order.get_payment_status_display }}',
-                                    notes: '{{ order.notes|escapejs }}'
-                                })"
+                                    date: '{{ order.created_at|date:" M d, Y • h:i A" }}',
+                                customerName: '{{ customer.name|escapejs }}' ,
+                                customerPhone: '{{ customer.phone|escapejs }}' ,
+                                deliveryAddress: '{{ order.delivery_address|default:customer.address|escapejs }}' ,
+                                productName: '{{ order.product.name|default:"Aquaculture Product"|escapejs }}' ,
+                                quantity: '{{ order.quantity_kg|floatformat:0 }}' ,
+                                unit: '{% if "[KG]" in order.notes %}kg{% else %}pcs{% endif %}' ,
+                                pricePerUnit: '{{ order.price_per_kg|floatformat:2 }}' ,
+                                totalAmount: '{{ order.total_amount|floatformat:2 }}' ,
+                                status: '{{ order.get_status_display }}' ,
+                                paymentStatus: '{{ order.get_payment_status_display }}' ,
+                                notes: '{{ order.notes|escapejs }}' })"
                                 class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Print Receipt
                             </button>
@@ -1664,7 +1790,8 @@
                 </div>
 
                 {% if orders %}
-                <div class="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div
+                    class="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
                         <p class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Total Items</p>
                         <p class="text-4xl font-black text-white mt-1">{{ orders|length }}</p>
@@ -1675,36 +1802,47 @@
         </div>
 
         <!-- Official Printable Order Receipt Modal -->
-        <div id="customer-order-receipt-modal" class="fixed inset-0 z-[400] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-            <div class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 text-stone-100 transform transition-all space-y-6">
+        <div id="customer-order-receipt-modal"
+            class="fixed inset-0 z-[400] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
+            <div
+                class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 text-stone-100 transform transition-all space-y-6">
                 <!-- Printable Invoice Area -->
-                <div id="printable-receipt-area" class="space-y-6 bg-[#021f15] p-6 sm:p-8 rounded-2xl border border-white/10">
+                <div id="printable-receipt-area"
+                    class="space-y-6 bg-[#021f15] p-6 sm:p-8 rounded-2xl border border-white/10">
                     <!-- Receipt Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
                                 <span class="text-2xl">🦞</span>
-                                <h2 class="text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM & CRAYFISH</h2>
+                                <h2 class="text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM &
+                                    CRAYFISH</h2>
                             </div>
                             <p class="text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice & Delivery Receipt</p>
                             <p class="text-[11px] text-stone-400">Silay City, Negros Occidental, Philippines</p>
                         </div>
                         <div class="sm:text-right space-y-1">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-3 py-1 rounded-full border border-[#cca43b]/30 inline-block">Official Receipt</span>
+                            <span
+                                class="text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-3 py-1 rounded-full border border-[#cca43b]/30 inline-block">Official
+                                Receipt</span>
                             <p class="text-base font-mono font-bold text-white mt-1" id="rec-order-number">#SO-0000</p>
                             <p class="text-xs text-[#a0ac96]" id="rec-order-date">Date</p>
                         </div>
                     </div>
 
                     <!-- Customer & Delivery Info -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
                         <div class="space-y-1">
-                            <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Customer Details</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Customer
+                                Details</span>
                             <p class="font-bold text-white text-sm" id="rec-cust-name">-</p>
                             <p class="text-[#a0ac96]" id="rec-cust-phone">-</p>
                         </div>
                         <div class="space-y-1 sm:text-right">
-                            <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Destination / Delivery Address</span>
+                            <span
+                                class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Destination
+                                / Delivery Address</span>
                             <p class="font-medium text-white" id="rec-cust-address">-</p>
                         </div>
                     </div>
@@ -1712,7 +1850,8 @@
                     <!-- Itemized Table -->
                     <div class="overflow-x-auto rounded-xl border border-white/10">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-white/5 border-b border-white/10 text-[#cca43b] uppercase font-black tracking-wider text-[10px]">
+                            <thead
+                                class="bg-white/5 border-b border-white/10 text-[#cca43b] uppercase font-black tracking-wider text-[10px]">
                                 <tr>
                                     <th class="px-4 py-3">Description</th>
                                     <th class="px-4 py-3 text-center">Unit Type</th>
@@ -1727,7 +1866,8 @@
                                     <td class="px-4 py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
                                     <td class="px-4 py-3 text-center font-bold" id="rec-quantity">-</td>
                                     <td class="px-4 py-3 text-right text-stone-300" id="rec-unit-price">₱0.00</td>
-                                    <td class="px-4 py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00</td>
+                                    <td class="px-4 py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1737,12 +1877,18 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end pt-2">
                         <div class="space-y-2 text-xs">
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Order Status:</span>
-                                <span class="font-black text-white uppercase text-[10px] px-2 py-0.5 rounded bg-white/10" id="rec-status">-</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Order
+                                    Status:</span>
+                                <span
+                                    class="font-black text-white uppercase text-[10px] px-2 py-0.5 rounded bg-white/10"
+                                    id="rec-status">-</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Payment:</span>
-                                <span class="font-black text-emerald-400 uppercase text-[10px] px-2 py-0.5 rounded bg-emerald-500/20" id="rec-pay-status">-</span>
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Payment:</span>
+                                <span
+                                    class="font-black text-emerald-400 uppercase text-[10px] px-2 py-0.5 rounded bg-emerald-500/20"
+                                    id="rec-pay-status">-</span>
                             </div>
                             <p class="text-[11px] text-stone-400 italic" id="rec-notes"></p>
                         </div>
@@ -1751,7 +1897,8 @@
                                 <span>Delivery Fee:</span>
                                 <span class="text-emerald-400 font-bold">FREE</span>
                             </div>
-                            <div class="flex justify-between sm:justify-end gap-6 text-sm font-black border-t border-white/10 pt-2">
+                            <div
+                                class="flex justify-between sm:justify-end gap-6 text-sm font-black border-t border-white/10 pt-2">
                                 <span class="text-white uppercase">Total Paid / Due:</span>
                                 <span class="text-xl font-black text-[#cca43b]" id="rec-grand-total">₱0.00</span>
                             </div>
@@ -1759,7 +1906,8 @@
                     </div>
 
                     <div class="border-t border-dashed border-white/10 pt-4 text-center text-[10px] text-[#a0ac96]">
-                        Thank you for your business! For questions or assistance, contact Silay Superworm & Crayfish Farm.
+                        Thank you for your business! For questions or assistance, contact Silay Superworm & Crayfish
+                        Farm.
                     </div>
                 </div>
 
@@ -1771,8 +1919,10 @@
                     </button>
                     <button type="button" onclick="window.print()"
                         class="inline-flex items-center gap-2 rounded-xl from-[#cca43b] to-[#e5c05d] px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] /20 hover:opacity-95 transition-all cursor-pointer">
-                        <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
                         Print / Save PDF
                     </button>
@@ -1781,87 +1931,94 @@
         </div>
 
         <style>
-        @media print {
-            body * {
-                visibility: hidden !important;
+            @media print {
+                body * {
+                    visibility: hidden !important;
+                }
+
+                #customer-order-receipt-modal,
+                #customer-order-receipt-modal * {
+                    visibility: visible !important;
+                }
+
+                #customer-order-receipt-modal {
+                    position: fixed !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    background: white !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    z-index: 999999 !important;
+                    display: flex !important;
+                    align-items: flex-start !important;
+                    justify-content: center !important;
+                }
+
+                #printable-receipt-area {
+                    width: 100% !important;
+                    max-width: 800px !important;
+                    background: white !important;
+                    color: #111827 !important;
+                    border: 2px solid #e5e7eb !important;
+                    box-: none !important;
+                    padding: 30px !important;
+                }
+
+                #printable-receipt-area * {
+                    color: #111827 !important;
+                    border-color: #e5e7eb !important;
+                }
+
+                #printable-receipt-area .bg-black\/40,
+                #printable-receipt-area .bg-\[\#021f15\],
+                #printable-receipt-area .bg-white\/5 {
+                    background: #f9fafb !important;
+                }
+
+                #printable-receipt-area .text-\[\#cca43b\],
+                #printable-receipt-area .text-emerald-400 {
+                    color: #000000 !important;
+                    font-weight: 900 !important;
+                }
+
+                .no-print {
+                    display: none !important;
+                }
             }
-            #customer-order-receipt-modal,
-            #customer-order-receipt-modal * {
-                visibility: visible !important;
-            }
-            #customer-order-receipt-modal {
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                background: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                z-index: 999999 !important;
-                display: flex !important;
-                align-items: flex-start !important;
-                justify-content: center !important;
-            }
-            #printable-receipt-area {
-                width: 100% !important;
-                max-width: 800px !important;
-                background: white !important;
-                color: #111827 !important;
-                border: 2px solid #e5e7eb !important;
-                box-: none !important;
-                padding: 30px !important;
-            }
-            #printable-receipt-area * {
-                color: #111827 !important;
-                border-color: #e5e7eb !important;
-            }
-            #printable-receipt-area .bg-black\/40,
-            #printable-receipt-area .bg-\[\#021f15\],
-            #printable-receipt-area .bg-white\/5 {
-                background: #f9fafb !important;
-            }
-            #printable-receipt-area .text-\[\#cca43b\],
-            #printable-receipt-area .text-emerald-400 {
-                color: #000000 !important;
-                font-weight: 900 !important;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
         </style>
 
         <script>
-        function openCustomerReceiptModal(data) {
-            const modal = document.getElementById('customer-order-receipt-modal');
-            if (!modal) return;
+            function openCustomerReceiptModal(data) {
+                const modal = document.getElementById('customer-order-receipt-modal');
+                if (!modal) return;
 
-            document.getElementById('rec-order-number').textContent = '#' + (data.orderNumber || '0000');
-            document.getElementById('rec-order-date').textContent = data.date || '';
-            document.getElementById('rec-cust-name').textContent = data.customerName || 'Customer';
-            document.getElementById('rec-cust-phone').textContent = data.customerPhone || 'N/A';
-            document.getElementById('rec-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
-            document.getElementById('rec-prod-name').textContent = data.productName || 'Product';
-            document.getElementById('rec-unit-type').textContent = (data.unit || 'pcs').toUpperCase();
-            document.getElementById('rec-quantity').textContent = data.quantity || '1';
-            document.getElementById('rec-unit-price').textContent = '₱' + (data.pricePerUnit || '0.00');
-            document.getElementById('rec-subtotal').textContent = '₱' + (data.totalAmount || '0.00');
-            document.getElementById('rec-status').textContent = data.status || 'CONFIRMED';
-            document.getElementById('rec-pay-status').textContent = data.paymentStatus || 'UNPAID';
-            document.getElementById('rec-notes').textContent = data.notes || '';
-            document.getElementById('rec-grand-total').textContent = '₱' + (data.totalAmount || '0.00');
+                document.getElementById('rec-order-number').textContent = '#' + (data.orderNumber || '0000');
+                document.getElementById('rec-order-date').textContent = data.date || '';
+                document.getElementById('rec-cust-name').textContent = data.customerName || 'Customer';
+                document.getElementById('rec-cust-phone').textContent = data.customerPhone || 'N/A';
+                document.getElementById('rec-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
+                document.getElementById('rec-prod-name').textContent = data.productName || 'Product';
+                document.getElementById('rec-unit-type').textContent = (data.unit || 'pcs').toUpperCase();
+                document.getElementById('rec-quantity').textContent = data.quantity || '1';
+                document.getElementById('rec-unit-price').textContent = '₱' + (data.pricePerUnit || '0.00');
+                document.getElementById('rec-subtotal').textContent = '₱' + (data.totalAmount || '0.00');
+                document.getElementById('rec-status').textContent = data.status || 'CONFIRMED';
+                document.getElementById('rec-pay-status').textContent = data.paymentStatus || 'UNPAID';
+                document.getElementById('rec-notes').textContent = data.notes || '';
+                document.getElementById('rec-grand-total').textContent = '₱' + (data.totalAmount || '0.00');
 
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
 
-        function closeCustomerReceiptModal() {
-            const modal = document.getElementById('customer-order-receipt-modal');
-            if (!modal) return;
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
+            function closeCustomerReceiptModal() {
+                const modal = document.getElementById('customer-order-receipt-modal');
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         </script>
         {% endif %}
     </main>
@@ -1876,8 +2033,10 @@
             class="w-16 h-16 bg-[#cca43b]/10 border border-[#cca43b]/30 text-[#cca43b] rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
             ⚠️
         </div>
-        <h4 id="confirm-modal-title" class="text-2xl font-black text-white uppercase tracking-wider mb-2">Remove Items?</h4>
-        <p id="confirm-modal-desc" class="text-[#a0ac96] text-sm leading-relaxed mb-8">Are you sure you want to remove the selected items from
+        <h4 id="confirm-modal-title" class="text-2xl font-black text-white uppercase tracking-wider mb-2">Remove Items?
+        </h4>
+        <p id="confirm-modal-desc" class="text-[#a0ac96] text-sm leading-relaxed mb-8">Are you sure you want to remove
+            the selected items from
             your cart?</p>
         <div class="flex gap-4">
             <button id="confirm-cancel-btn"
@@ -1909,6 +2068,7 @@
     .leaflet-control-attribution {
         display: none !important;
     }
+
     /* Custom Leaflet Popup Styles matching Dark-Gold Theme */
     .custom-leaflet-popup .leaflet-popup-content-wrapper {
         background: #021f15 !important;
@@ -1970,14 +2130,14 @@
         {% for prod in products %}
     {
         id: "{{ prod.id }}",
-        name: "{{ prod.name|escapejs }}",
-        species: "{{ prod.species.name|default:'Premium'|escapejs }}",
-        notes: "{{ prod.notes|escapejs }}",
-        pricePc: "{{ prod.unit_price|floatformat:0 }}",
-        priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
-        piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
-        quantity: "{{ prod.quantity_kg|default:0 }}",
-        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+            name: "{{ prod.name|escapejs }}",
+                species: "{{ prod.species.name|default:'Premium'|escapejs }}",
+                    notes: "{{ prod.notes|escapejs }}",
+                        pricePc: "{{ prod.unit_price|floatformat:0 }}",
+                            priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
+                                piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
+                                    quantity: "{{ prod.quantity_kg|default:0 }}",
+                                        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
     } {% if not forloop.last %}, {% endif %}
     {% endfor %}
     ];
@@ -2009,7 +2169,7 @@
         const kgBtn = document.getElementById('btn-unit-kg');
         const unitLabel = document.getElementById('featured-unit-label');
         const qtyLabel = document.getElementById('featured-quantity-label');
-        
+
         if (unit === 'kg') {
             if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
             if (pcBtn) pcBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
@@ -2021,7 +2181,7 @@
             if (unitLabel) unitLabel.textContent = '/ pc';
             if (qtyLabel) qtyLabel.textContent = 'Quantity (pcs):';
         }
-        
+
         const currentProd = availableProducts[currentProductIndex];
         if (currentProd) {
             let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
@@ -2040,7 +2200,7 @@
         document.getElementById('featured-species').textContent = 'Table';
         document.getElementById('featured-name').textContent = (name || 'SILAY').toUpperCase();
         document.getElementById('featured-notes').textContent = notes || 'One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality.';
-        
+
         const p = availableProducts[currentProductIndex];
         let price = currentPricingUnit === 'kg' ? (parseFloat(p?.priceKg || priceKg) || parseFloat(p?.pricePc || pricePc) || 0) : (parseFloat(p?.pricePc || pricePc) || parseFloat(p?.priceKg || priceKg) || 0);
         document.getElementById('featured-price').textContent = '₱' + Math.round(price);
@@ -2366,7 +2526,7 @@
                                 if (disp) disp.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)} (${streetQuery})`;
                             }
                         })
-                        .catch(() => {});
+                        .catch(() => { });
                 }
             }, 250);
         }
@@ -2792,12 +2952,15 @@
 </script>
 
 <!-- Authentic Interactive GCash Checkout Portal Modal -->
-<div id="gcash-checkout-portal-modal" class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
-    <div class="relative w-full max-w-md rounded-[2.5rem] border border-[#007DFE]/40 bg-[#021f15] p-6 sm:p-8 text-stone-100 transform transition-all space-y-6">
+<div id="gcash-checkout-portal-modal"
+    class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
+    <div
+        class="relative w-full max-w-md rounded-[2.5rem] border border-[#007DFE]/40 bg-[#021f15] p-6 sm:p-8 text-stone-100 transform transition-all space-y-6">
         <!-- GCash Gateway Header -->
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-[#007DFE] flex items-center justify-center font-black text-white text-lg /40">
+                <div
+                    class="w-10 h-10 rounded-2xl bg-[#007DFE] flex items-center justify-center font-black text-white text-lg /40">
                     G
                 </div>
                 <div>
@@ -2805,18 +2968,21 @@
                     <p class="text-[11px] text-[#007DFE] font-bold">Official Online Payment Portal</p>
                 </div>
             </div>
-            <button type="button" onclick="closeGcashPortalModal()" class="text-[#a0ac96] hover:text-white text-2xl font-bold p-1 transition-colors cursor-pointer">&times;</button>
+            <button type="button" onclick="closeGcashPortalModal()"
+                class="text-[#a0ac96] hover:text-white text-2xl font-bold p-1 transition-colors cursor-pointer">&times;</button>
         </div>
 
         <!-- Merchant & Amount Ribbon -->
         <div class="rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/20 p-4 space-y-2">
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Merchant:</span>
-                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</span>
+                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH'
+                    }}</span>
             </div>
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Recipient No:</span>
-                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567' }}</span>
+                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567'
+                    }}</span>
             </div>
             <div class="border-t border-white/10 pt-2 flex items-center justify-between">
                 <span class="text-xs uppercase tracking-wider font-black text-white">Amount to Pay:</span>
@@ -2827,20 +2993,24 @@
         <!-- STEP 1: GCash Mobile Number Login -->
         <div id="gcash-step-1" class="space-y-5">
             <div class="space-y-1 text-left">
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96]">GCash Mobile Number</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96]">GCash Mobile
+                    Number</label>
                 <div class="relative">
                     <span class="absolute left-4 top-3.5 text-sm font-bold text-[#007DFE]">+63</span>
                     <input type="text" id="gcash-phone-input" value="{{ customer.phone|default:'9171234567' }}"
                         class="w-full rounded-xl border border-white/10 bg-black/60 pl-14 pr-4 py-3 text-sm font-mono font-bold text-white focus:border-[#007DFE] focus:outline-none focus:ring-1 focus:ring-[#007DFE]"
                         placeholder="9XX XXX XXXX">
                 </div>
-                <span class="text-[10px] text-stone-500 block">We will send a 6-digit authentication code to verify your GCash account.</span>
+                <span class="text-[10px] text-stone-500 block">We will send a 6-digit authentication code to verify your
+                    GCash account.</span>
             </div>
 
             {% if payment_settings.gcash_qr_image %}
             <div class="rounded-xl border border-white/10 bg-black/30 p-3 text-center space-y-2">
-                <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-wider block">Or Scan Merchant QR</span>
-                <img src="{{ payment_settings.gcash_qr_image.url }}" alt="GCash QR" class="w-32 h-32 mx-auto rounded-lg object-contain bg-white p-1">
+                <span class="text-[10px] font-bold text-[#cca43b] uppercase tracking-wider block">Or Scan Merchant
+                    QR</span>
+                <img src="{{ payment_settings.gcash_qr_image.url }}" alt="GCash QR"
+                    class="w-32 h-32 mx-auto rounded-lg object-contain bg-white p-1">
             </div>
             {% endif %}
 
@@ -2855,20 +3025,28 @@
             <div class="text-center space-y-1">
                 <span class="text-3xl">💬</span>
                 <h4 class="text-sm font-black text-white uppercase tracking-wider">Enter Authentication Code</h4>
-                <p class="text-xs text-[#a0ac96]">A 6-digit code was sent to <span id="gcash-otp-sent-phone" class="font-mono text-[#007DFE] font-bold">09XX</span></p>
+                <p class="text-xs text-[#a0ac96]">A 6-digit code was sent to <span id="gcash-otp-sent-phone"
+                        class="font-mono text-[#007DFE] font-bold">09XX</span></p>
             </div>
 
             <div class="flex justify-center gap-2">
-                <input type="text" maxlength="1" value="8" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
-                <input type="text" maxlength="1" value="9" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
-                <input type="text" maxlength="1" value="2" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
-                <input type="text" maxlength="1" value="4" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
-                <input type="text" maxlength="1" value="1" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
-                <input type="text" maxlength="1" value="9" class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="8"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="9"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="2"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="4"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="1"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
+                <input type="text" maxlength="1" value="9"
+                    class="gcash-otp-digit w-10 h-12 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-lg text-white focus:border-[#007DFE] focus:outline-none">
             </div>
 
             <div class="flex items-center justify-between text-[11px]">
-                <button type="button" onclick="autofillGcashOtp()" class="text-[#007DFE] hover:underline font-bold">Resend Code</button>
+                <button type="button" onclick="autofillGcashOtp()"
+                    class="text-[#007DFE] hover:underline font-bold">Resend Code</button>
                 <span class="text-stone-400">Expires in 04:59</span>
             </div>
 
@@ -2883,14 +3061,19 @@
             <div class="text-center space-y-1">
                 <span class="text-3xl">🔒</span>
                 <h4 class="text-sm font-black text-white uppercase tracking-wider">Enter 4-Digit MPIN</h4>
-                <p class="text-xs text-[#a0ac96]">Authorize deduction of <span class="gcash-display-amount font-black text-[#cca43b]">₱0.00</span></p>
+                <p class="text-xs text-[#a0ac96]">Authorize deduction of <span
+                        class="gcash-display-amount font-black text-[#cca43b]">₱0.00</span></p>
             </div>
 
             <div class="flex justify-center gap-3">
-                <input type="password" maxlength="1" value="1" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
-                <input type="password" maxlength="1" value="2" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
-                <input type="password" maxlength="1" value="3" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
-                <input type="password" maxlength="1" value="4" class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="1"
+                    class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="2"
+                    class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="3"
+                    class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
+                <input type="password" maxlength="1" value="4"
+                    class="w-12 h-14 rounded-xl bg-black/60 border border-white/20 text-center font-mono font-black text-2xl text-[#007DFE] focus:border-[#007DFE] focus:outline-none">
             </div>
 
             <button type="button" onclick="submitGcashStep3()"
@@ -2901,13 +3084,16 @@
 
         <!-- STEP 4: Payment Success Animation & Auto-Confirm -->
         <div id="gcash-step-4" class="hidden py-8 text-center space-y-4">
-            <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl animate-bounce">
+            <div
+                class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl animate-bounce">
                 ✓
             </div>
             <div class="space-y-1">
                 <h4 class="text-lg font-black text-white uppercase tracking-wider">Payment Successful!</h4>
-                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</p>
-                <p class="text-[11px] font-mono text-emerald-400 font-bold mt-2" id="gcash-success-ref">Ref: GCASH-00000000</p>
+                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM &
+                    CRAYFISH' }}</p>
+                <p class="text-[11px] font-mono text-emerald-400 font-bold mt-2" id="gcash-success-ref">Ref:
+                    GCASH-00000000</p>
             </div>
             <div class="flex items-center justify-center gap-2 text-xs text-[#cca43b] pt-2">
                 <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-ping"></span>
@@ -2918,22 +3104,22 @@
 </div>
 
 <script>
-function toggleCustomerMenu(event) {
-    if (event) event.stopPropagation();
-    const dropdown = document.getElementById('customer-menu-dropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('hidden');
-    }
-}
-
-document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('customer-menu-dropdown');
-    if (dropdown && !dropdown.classList.contains('hidden')) {
-        const btn = e.target.closest('button[onclick*="toggleCustomerMenu"]');
-        if (!btn && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+    function toggleCustomerMenu(event) {
+        if (event) event.stopPropagation();
+        const dropdown = document.getElementById('customer-menu-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
         }
     }
-});
+
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('customer-menu-dropdown');
+        if (dropdown && !dropdown.classList.contains('hidden')) {
+            const btn = e.target.closest('button[onclick*="toggleCustomerMenu"]');
+            if (!btn && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
 </script>
 {% endblock %}
