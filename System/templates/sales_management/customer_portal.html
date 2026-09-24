@@ -3100,5 +3100,45 @@
             }
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const receiptMapEl = document.getElementById('receipt-map');
+        if (receiptMapEl && typeof L !== 'undefined') {
+            const rawLat = "{{ customer.map_latitude|default:'' }}";
+            const rawLng = "{{ customer.map_longitude|default:'' }}";
+            const lat = parseFloat(rawLat);
+            const lng = parseFloat(rawLng);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                try {
+                    const rMap = L.map('receipt-map', {
+                        zoomControl: false,
+                        attributionControl: false,
+                        dragging: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false,
+                        boxZoom: false
+                    }).setView([lat, lng], 15);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19
+                    }).addTo(rMap);
+                    
+                    const goldPin = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+                    
+                    L.marker([lat, lng], { icon: goldPin }).addTo(rMap);
+                    setTimeout(() => { rMap.invalidateSize(); }, 300);
+                } catch (err) {
+                    console.error('Failed to init receipt map:', err);
+                }
+            }
+        }
+    });
 </script>
 {% endblock %}
