@@ -5,12 +5,14 @@
 <div class="min-h-screen w-full relative font-sans text-stone-100 overflow-hidden flex flex-col">
     <!-- Blurred Image Background -->
     <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div class="absolute inset-[-10%] bg-cover bg-center blur-sm scale-105"
+        <div class="absolute inset-[-10%] bg-cover bg-center blur-md scale-105"
             style="background-image: url('{% static 'images/customer-bg.jpg' %}');">
         </div>
-        <!-- Semi-transparent diagonal split over the image -->
-        <div class="absolute inset-0"
-            style="background: linear-gradient(105deg, rgba(1,20,14,0.85) 35%, rgba(2,33,24,0.55) 70%, rgba(2,33,24,0.40) 100%);"></div>
+        <!-- Soft tint over right photo area -->
+        <div class="absolute inset-0 bg-[#01140e]/35"></div>
+        <!-- Solid forest green diagonal wedge on left side (matches reference) -->
+        <div class="absolute inset-0 bg-[#01140e]"
+            style="clip-path: polygon(0 0, 46% 0, 31% 100%, 0 100%);"></div>
     </div>
 
     <!-- Optional: Subtle noise overlay -->
