@@ -127,6 +127,22 @@ class Pond(models.Model):
         if base_date:
             return base_date + timedelta(days=15)
         return None
+
+    @property
+    def sanitization_days_remaining(self):
+        from django.utils import timezone
+        today = timezone.now().date()
+        target = self.next_sanitization_date
+        if not target:
+            return 0
+        return (target - today).days
+
+    @property
+    def is_sanitization_due(self):
+        if not self.next_sanitization_date:
+            return True
+        return self.sanitization_days_remaining <= 0
+
     @property
     def est_transfer_date(self):
         from datetime import timedelta

@@ -13,22 +13,36 @@
     <div class="rounded-3xl border border-[#cca43b]/30 bg-[#cca43b]/10 backdrop-blur-sm p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b]"></span>
-                <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Azula Sanitization Protocol</p>
+                <span class="inline-block h-2 w-2 rounded-full {% if pond.is_sanitization_due %}bg-rose-500 animate-pulse{% else %}bg-emerald-400{% endif %}"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Azula Sanitization Protocol (15-Day Cycle)</p>
+                {% if not pond.is_sanitization_due %}
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Up to date</span>
+                {% else %}
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse">Action Required</span>
+                {% endif %}
             </div>
             <p class="text-xs text-stone-300">
                 Last Sanitized: <strong class="text-white">{{ pond.last_sanitized_date|date:"M. d, Y"|default:"Not recorded yet" }}</strong>
                 {% if pond.next_sanitization_date %}
-                &nbsp;·&nbsp; Next Due: <strong class="text-[#cca43b]">{{ pond.next_sanitization_date|date:"M. d, Y" }}</strong>
+                &nbsp;·&nbsp; Next Due: <strong class="{% if pond.is_sanitization_due %}text-rose-400{% else %}text-[#cca43b]{% endif %}">{{ pond.next_sanitization_date|date:"M. d, Y" }}</strong>
                 {% endif %}
             </p>
         </div>
+        {% if pond.is_sanitization_due %}
         <form method="post" action="{% url 'operations:pond_sanitize' pond.id %}" class="inline">
             {% csrf_token %}
-            <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#021f15] hover:bg-[#b08d33] transition-colors shadow-sm cursor-pointer">
-                ✓ Mark Sanitized Today
+            <button type="submit" class="rounded-2xl bg-[#cca43b] px-5 py-2 text-xs font-black uppercase tracking-wider text-[#021f15] hover:bg-[#b08d33] transition-colors shadow-sm cursor-pointer">
+                ✓ Mark Sanitized
             </button>
         </form>
+        {% else %}
+        <button type="button" disabled class="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-stone-500 cursor-not-allowed flex items-center gap-1.5" title="Sanitization is locked until the 15-day cycle expires">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Available in {{ pond.sanitization_days_remaining }} day{{ pond.sanitization_days_remaining|pluralize }}
+        </button>
+        {% endif %}
     </div>
     {% endif %}
 

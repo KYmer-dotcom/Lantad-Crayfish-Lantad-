@@ -130,10 +130,10 @@
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
-            {% if azula_sanitized_today %}
-            <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
+            {% if azula_all_up_to_date %}
+            <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-colors">Up to Date</button>
             {% else %}
-            <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Operation</button>
+            <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>Operation ({{ azula_due_count }} Due)</button>
             {% endif %}
         </div>
         <div class="p-6">
@@ -336,7 +336,7 @@
     <div class="flex items-center justify-between p-6 border-b border-white/10">
         <div>
             <h2 id="operations-sidebar-title" class="text-xl font-bold text-stone-100">Operations Data</h2>
-            <p class="text-sm text-[#a0ac96] mt-1">Detailed view of operational metrics</p>
+            <p id="operations-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Detailed view of operational metrics</p>
         </div>
         <button type="button" onclick="closeOperationsSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -410,53 +410,86 @@
 
         <!-- Azula Tanks Sanitization Table -->
         <div class="op-table-wrapper hidden" data-category="Azula">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Azula Tanks</h3>
-                    <p class="text-xs text-[#a0ac96] mt-0.5">15-day sanitization protocol for active tanks</p>
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider flex items-center gap-2">
+                        Azula Tanks Sanitization Protocol
+                    </h3>
+                    <p class="text-xs text-[#a0ac96] mt-0.5">15-day strict cycle. Sanitization is only accessible when a tank's cycle is due.</p>
                 </div>
-                <button type="button" onclick="submitAzulaOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
-                    Record
+                {% if azula_due_count > 0 %}
+                <button type="button" onclick="submitAzulaOperations(this)" class="rounded-xl border border-[#cca43b]/40 bg-[#cca43b]/20 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b] hover:text-[#021f15] hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-md flex items-center gap-1.5">
+                    <span class="h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    Record ({{ azula_due_count }} Due)
                 </button>
+                {% else %}
+                <button type="button" disabled class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed flex items-center gap-1.5">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    All Up to Date
+                </button>
+                {% endif %}
             </div>
-            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+            <div class="rounded-xl border border-white/10 bg-black/30 overflow-hidden shadow-inner">
                 <table class="w-full text-left text-sm text-stone-100">
-                    <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+                    <thead class="bg-black/60 text-[11px] font-black uppercase tracking-wider text-[#a0ac96] border-b border-white/10">
                         <tr>
-                            <th class="px-6 py-4">Name / ID</th>
+                            <th class="px-6 py-4">Tank Name / ID</th>
                             <th class="px-6 py-4 text-center">Sanitize</th>
-                            <th class="px-6 py-4">Sanitization Status</th>
+                            <th class="px-6 py-4">15-Day Protocol Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/10">
                         {% for pond in azula_active_ponds %}
-                        <tr class="azula-op-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
+                        <tr class="azula-op-row transition-colors {% if pond.is_sanitization_due %}bg-rose-950/10 hover:bg-rose-950/20{% else %}hover:bg-white/[0.02] opacity-85{% endif %}" data-pond-id="{{ pond.id }}">
                             <td class="px-6 py-4">
-                                <div class="font-bold text-white">{{ pond.name }}</div>
-                                <div class="text-xs text-[#a0ac96] mt-0.5">Quantity: {{ pond.capacity|default:"0" }} kg</div>
+                                <div class="font-bold text-white text-base tracking-tight">{{ pond.name }}</div>
+                                <div class="text-xs text-[#a0ac96] mt-0.5">Quantity: <span class="text-stone-300 font-semibold">{{ pond.capacity|default:"0" }} kg</span></div>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                {% if pond.last_sanitized_date == today %}
-                                <div class="flex flex-col items-center gap-1 justify-center recorded-badge">
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-black text-emerald-400 border border-emerald-500/20">
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Sanitized
-                                    </span>
-                                    <span class="text-[9px] text-[#a0ac96]">Today</span>
+                                {% if pond.is_sanitization_due %}
+                                <div class="flex items-center justify-center">
+                                    <input type="checkbox" checked class="azula-sanitize-checkbox h-5 w-5 rounded border-white/20 bg-black/40 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer shadow-sm">
                                 </div>
                                 {% else %}
-                                <input type="checkbox" checked class="azula-sanitize-checkbox h-5 w-5 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                                <div class="flex items-center justify-center" title="Locked: Cycle active. Accessible in {{ pond.sanitization_days_remaining }} day{{ pond.sanitization_days_remaining|pluralize }}">
+                                    <span class="inline-flex items-center justify-center h-7 w-7 rounded-lg bg-white/5 border border-white/10 text-stone-500 cursor-not-allowed">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </span>
+                                </div>
                                 {% endif %}
                             </td>
-                            <td class="px-6 py-4 text-xs font-mono">
-                                {% if pond.last_sanitized_date == today %}
-                                <span class="text-emerald-400 font-semibold">✓ Completed today (Next due in 15 days)</span>
-                                {% elif pond.next_sanitization_date %}
-                                <span class="text-[#cca43b]">Target: {{ pond.next_sanitization_date|date:"M. d, Y" }}</span>
+                            <td class="px-6 py-4">
+                                {% if pond.is_sanitization_due %}
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-xs font-black text-rose-400 uppercase tracking-wider">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                        Due for Sanitization
+                                    </span>
+                                    <div class="text-[11px] text-stone-400">
+                                        {% if pond.last_sanitized_date %}
+                                        Last: {{ pond.last_sanitized_date|date:"M. d, Y" }}
+                                        {% else %}
+                                        Transfer: {{ pond.transfer_date|date:"M. d, Y"|default:"Initial" }}
+                                        {% endif %}
+                                        · Target: <strong class="text-rose-400">{{ pond.next_sanitization_date|date:"M. d, Y" }}</strong>
+                                    </div>
+                                </div>
                                 {% else %}
-                                <span class="text-stone-400">Target: 15 days post-transfer</span>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Up to Date
+                                    </span>
+                                    <div class="text-[11px] text-[#a0ac96]">
+                                        Available in <strong class="text-[#cca43b]">{{ pond.sanitization_days_remaining }} day{{ pond.sanitization_days_remaining|pluralize }}</strong> ({{ pond.next_sanitization_date|date:"M. d, Y" }})
+                                    </div>
+                                </div>
                                 {% endif %}
                             </td>
                         </tr>
@@ -576,12 +609,17 @@
     // Operations Sidebar Toggle
     function openOperationsSidebar(category) {
         let title = "Operations Data";
+        const titleEl = document.getElementById('operations-sidebar-title');
+        const subtitleEl = document.getElementById('operations-sidebar-subtitle');
         if (category === 'Azula') {
             title = "Azula Sanitization Protocol";
+            if (subtitleEl) subtitleEl.textContent = "15-day strict cycle · Accessible once cycle expires";
         } else if (category) {
             title = category + " Operations";
+            if (subtitleEl) subtitleEl.textContent = "Detailed view of operational metrics";
+        } else {
+            if (subtitleEl) subtitleEl.textContent = "Detailed view of operational metrics";
         }
-        const titleEl = document.getElementById('operations-sidebar-title');
         if (titleEl) titleEl.textContent = title;
 
         if (category) {
@@ -751,20 +789,20 @@
 
     function checkRecordedTables() {
         document.querySelectorAll('table').forEach(table => {
-            const rows = table.querySelectorAll('.operation-row, .azula-op-row');
+            const rows = table.querySelectorAll('.operation-row');
             if (rows.length === 0) return;
             
             const recordedCount = table.querySelectorAll('.recorded-badge').length;
             if (rows.length === recordedCount) {
                 // Find the Record button above this table
-                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-lg');
+                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-2xl.border.border-white\\/10');
                 if (parent) {
                     const sibling = parent.previousElementSibling;
                     if (sibling) {
-                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"], button[onclick="submitAzulaOperations(this)"]');
+                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"]');
                         if (recordBtn) {
                             recordBtn.disabled = true;
-                            recordBtn.textContent = 'Recorded Today';
+                            recordBtn.textContent = 'Recorded';
                             recordBtn.classList.remove('text-[#cca43b]', 'border-[#cca43b]/30', 'bg-[#cca43b]/10', 'hover:bg-[#cca43b]/20', 'hover:scale-105');
                             recordBtn.classList.add('text-stone-500', 'border-white/5', 'bg-white/5', 'cursor-not-allowed');
                         }

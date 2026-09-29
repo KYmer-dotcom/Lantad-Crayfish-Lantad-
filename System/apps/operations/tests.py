@@ -80,6 +80,12 @@ class PondOperationalTest(TestCase):
         self.assertEqual(pond.last_sanitized_date, today)
         self.assertEqual(pond.next_sanitization_date, today + timedelta(days=15))
         self.assertEqual(pond.status, Pond.Status.ACTIVE)
+        self.assertFalse(pond.is_sanitization_due)
+        self.assertEqual(pond.sanitization_days_remaining, 15)
+
+        # Trying to sanitize before 15 days is blocked
+        response_blocked = self.client.post(f'/operations/pond/{pond.id}/sanitize/')
+        self.assertEqual(response_blocked.status_code, 302)
 
     def test_record_azula_sanitization_bulk_api(self):
         import json
@@ -107,5 +113,16 @@ class PondOperationalTest(TestCase):
         
         pond.refresh_from_db()
         self.assertEqual(pond.last_sanitized_date, today)
+        self.assertFalse(pond.is_sanitization_due)
+
+        # Subsequent bulk sanitize attempt while up-to-date is blocked
+        response2 = self.client.post(
+            '/operations/operations/azula-sanitize/',
+            data=json.dumps({'pond_ids': [pond.id]}),
+            content_type='application/json'
+        )
+        self.assertEqual(response2.status_code, 400)
+        self.assertEqual(response2.json().get('status'), 'error')
+
 
 

@@ -207,6 +207,8 @@ def ponds_list(request):
     azula_sanitized_today = len(azula_active_ponds) > 0 and all(
         p.last_sanitized_date == today for p in azula_active_ponds
     )
+    azula_due_count = sum(1 for p in azula_active_ponds if p.is_sanitization_due)
+    azula_all_up_to_date = len(azula_active_ponds) > 0 and azula_due_count == 0
 
     context = {
         'farms': farms,
@@ -228,6 +230,8 @@ def ponds_list(request):
         'breeding_pond_recorded_today': breeding_pond_recorded_today,
         'superworm_cabin_recorded_today': superworm_cabin_recorded_today,
         'azula_sanitized_today': azula_sanitized_today,
+        'azula_due_count': azula_due_count,
+        'azula_all_up_to_date': azula_all_up_to_date,
         'today': today,
     }
     return render(request, 'operations/list.html', context)
@@ -488,6 +492,13 @@ def mark_pond_sanitized(request, pond_id):
     ensure_not_customer(request.user)
     pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
     
+    if not pond.is_sanitization_due:
+        messages.warning(request, f"{pond.name} is not yet due for sanitization (available in {pond.sanitization_days_remaining} days).")
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        return redirect('notifications')
+    
     from django.utils import timezone
     today = timezone.now().date()
     pond.last_sanitized_date = today
@@ -527,8 +538,12 @@ def record_azula_sanitization(request):
         pond_ids = data.get('pond_ids', [])
         
         sanitized_names = []
+        skipped_names = []
         for pid in pond_ids:
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pid)
+            if not pond.is_sanitization_due:
+                skipped_names.append(pond.name)
+                continue
             pond.last_sanitized_date = today
             if pond.status == Pond.Status.MAINTENANCE:
                 pond.status = Pond.Status.ACTIVE
@@ -548,10 +563,16 @@ def record_azula_sanitization(request):
             except Exception:
                 pass
                 
+        if not sanitized_names and skipped_names:
+            return JsonResponse({
+                'status': 'error',
+                'message': "Selected tank(s) are not yet due for sanitization (15-day cycle not reached)."
+            }, status=400)
+
         return JsonResponse({
             'status': 'success',
             'sanitized_count': len(sanitized_names),
-            'message': f"Successfully recorded sanitization for {len(sanitized_names)} Azula tank(s)."
+            'message': f"Successfully recorded sanitization for {len(sanitized_names)} Azula tank(s). Next cycle due in 15 days."
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
