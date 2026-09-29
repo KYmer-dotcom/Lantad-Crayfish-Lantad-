@@ -97,19 +97,19 @@
 
                     <!-- Expanded Inline Submenu with Icons -->
                     <div id="op-dropdown" class="sidebar-submenu {% if 'operations:' not in current_url and '/operations' not in request.path %}hidden{% endif %} pl-5 pr-1 py-1 space-y-1">
-                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' and current_op_type != 'cabin' and current_op_type != 'azula' and pond.location != 'Azula' and pond.location != 'Superworm Cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0M3 9c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0" />
                             </svg>
                             <span class="sidebar-text-label">Pond</span>
                         </a>
-                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if request.GET.type == 'cabin' or current_op_type == 'cabin' or pond.location == 'Superworm Cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                             <span class="sidebar-text-label">Cabin</span>
                         </a>
-                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if '/operations' in request.path and request.GET.type == 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 py-1.5 px-3 rounded-xl text-xs transition-all hover:bg-white/5 hover:text-white {% if request.GET.type == 'azula' or current_op_type == 'azula' or pond.location == 'Azula' %}text-[#cca43b] font-bold bg-[#cca43b]/10{% else %}text-[#a0ac96]{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
@@ -120,19 +120,19 @@
                     <!-- Collapsed Hover Popout Menu -->
                     <div class="sidebar-floating-flyout hidden absolute left-full top-0 ml-3 p-2 w-44 rounded-2xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold z-50 group-hover/op:flex flex-col gap-1">
                         <div class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b] border-b border-white/10 mb-0.5">Operations</div>
-                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=pond" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type != 'cabin' and request.GET.type != 'azula' and current_op_type != 'cabin' and current_op_type != 'azula' and pond.location != 'Azula' and pond.location != 'Superworm Cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0M3 9c2.5-3 5.5-3 8 0 2.5-3 5.5-3 8 0" />
                             </svg>
                             <span>Pond</span>
                         </a>
-                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type == 'cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=cabin" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if request.GET.type == 'cabin' or current_op_type == 'cabin' or pond.location == 'Superworm Cabin' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                             <span>Cabin</span>
                         </a>
-                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if '/operations' in request.path and request.GET.type == 'azula' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
+                        <a href="{% url 'operations:list' %}?type=azula" class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs hover:bg-white/10 {% if request.GET.type == 'azula' or current_op_type == 'azula' or pond.location == 'Azula' %}text-[#cca43b] font-bold bg-[#cca43b]/15{% else %}text-[#a0ac96] hover:text-white{% endif %}">
                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>

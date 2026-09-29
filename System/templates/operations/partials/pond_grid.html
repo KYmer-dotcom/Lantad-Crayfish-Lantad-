@@ -24,7 +24,7 @@
                 {% endif %}
             </div>
             <div class="flex items-center gap-2">
-                <a href="{% url 'operations:pond_edit' pond.id %}" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
+                <a href="{% url 'operations:pond_edit' pond.id %}?type=pond" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />

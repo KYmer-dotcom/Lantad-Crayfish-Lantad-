@@ -325,6 +325,16 @@ def pond_edit(request, pond_id):
     
     pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
     
+    # Determine the category type (azula, cabin, or pond)
+    target_type = request.GET.get('type')
+    if not target_type:
+        if pond.location == 'Azula':
+            target_type = 'azula'
+        elif pond.location == 'Superworm Cabin':
+            target_type = 'cabin'
+        else:
+            target_type = 'pond'
+
     if request.method == 'POST':
         form = PondForm(request.POST, instance=pond, user=request.user)
         if form.is_valid():
@@ -334,6 +344,8 @@ def pond_edit(request, pond_id):
             messages.success(request, f'Record "{pond.name}" updated successfully!')
             if pond.location == 'Azula':
                 return redirect(reverse('ponds:list') + '?type=azula')
+            if pond.location == 'Superworm Cabin':
+                return redirect(reverse('ponds:list') + '?type=cabin')
             return redirect('ponds:list')
         else:
             for field, errors in form.errors.items():
@@ -343,7 +355,18 @@ def pond_edit(request, pond_id):
         initial_data = {'category': pond.location or 'Main Pond'}
         form = PondForm(instance=pond, initial=initial_data, user=request.user)
         
-    return render(request, 'operations/edit.html', {'form': form, 'pond': pond})
+    cancel_url = reverse('ponds:list')
+    if target_type == 'azula':
+        cancel_url += '?type=azula'
+    elif target_type == 'cabin':
+        cancel_url += '?type=cabin'
+
+    return render(request, 'operations/edit.html', {
+        'form': form, 
+        'pond': pond,
+        'current_op_type': target_type,
+        'cancel_url': cancel_url,
+    })
 
 
 @login_required
@@ -387,6 +410,8 @@ def pond_remove(request, pond_id):
 
     if pond_location == 'Azula':
         return redirect(reverse('ponds:list') + '?type=azula')
+    if pond_location == 'Superworm Cabin':
+        return redirect(reverse('ponds:list') + '?type=cabin')
     return redirect('ponds:list')
 
 
