@@ -88,11 +88,13 @@
             <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-rose-800/50 bg-rose-900/20 p-4 cursor-pointer hover:border-rose-500 transition-colors">
             {% elif product.accent_color == 'violet' %}
             <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-violet-800/50 bg-violet-900/20 p-4 cursor-pointer hover:border-violet-500 transition-colors">
+            {% elif product.accent_color == 'indigo' %}
+            <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-indigo-800/50 bg-indigo-900/20 p-4 cursor-pointer hover:border-indigo-500 transition-colors">
             {% else %}
             <div onclick="openEditProductModal('{% url 'sales:product_edit' product.id %}', '{{ product.name|escapejs }}', '{{ product.notes|escapejs }}', '{{ product.accent_color }}', '{{ product.icon }}', '{{ product.unit_price }}', '{{ product.price_per_kg }}', '{{ product.pieces_per_kg|default:1 }}', '{{ product.quantity_kg }}', '{{ product.unit_type|default:'pcs' }}')" class="product-card flex flex-col justify-between min-h-[148px] rounded-lg border border-white/10 bg-black/20 p-4 cursor-pointer hover:border-[#cca43b] transition-colors">
             {% endif %}
                 <div class="flex items-center justify-between">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-black/30 border border-white/10 text-2xl">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-lg border {% if product.accent_color == 'cyan' %}border-cyan-500/30 bg-cyan-500/15 text-cyan-400{% elif product.accent_color == 'emerald' %}border-emerald-500/30 bg-emerald-500/15 text-emerald-400{% elif product.accent_color == 'amber' %}border-amber-500/30 bg-amber-500/15 text-amber-400{% elif product.accent_color == 'rose' %}border-rose-500/30 bg-rose-500/15 text-rose-400{% elif product.accent_color == 'violet' %}border-violet-500/30 bg-violet-500/15 text-violet-400{% elif product.accent_color == 'indigo' %}border-indigo-500/30 bg-indigo-500/15 text-indigo-400{% else %}border-white/10 bg-black/30 text-white{% endif %} text-2xl">
                         {% if product.icon == 'shrimp' %}🦐
                         {% elif product.icon == 'lab' %}🧪
                         {% elif product.icon == 'leaf' %}🌿
@@ -303,26 +305,44 @@
             </div>
 
             <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Accent Color</label>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <button type="button" data-accent="indigo" class="accent-swatch h-8 w-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-[#021f15]"></button>
-                    <button type="button" data-accent="cyan" class="accent-swatch h-8 w-8 rounded-full bg-cyan-500"></button>
-                    <button type="button" data-accent="emerald" class="accent-swatch h-8 w-8 rounded-full bg-emerald-500"></button>
-                    <button type="button" data-accent="amber" class="accent-swatch h-8 w-8 rounded-full bg-amber-500"></button>
-                    <button type="button" data-accent="rose" class="accent-swatch h-8 w-8 rounded-full bg-rose-500"></button>
-                    <button type="button" data-accent="violet" class="accent-swatch h-8 w-8 rounded-full bg-violet-500"></button>
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-[#a0ac96]">Accent Color</label>
+                    <span id="selected-accent-name" class="text-xs font-bold text-[#cca43b] capitalize">Indigo</span>
+                </div>
+                <div class="mt-2.5 flex flex-wrap gap-2.5">
+                    <button type="button" data-accent="indigo" title="Indigo" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-indigo-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
+                    <button type="button" data-accent="cyan" title="Cyan" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-cyan-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
+                    <button type="button" data-accent="emerald" title="Emerald" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-emerald-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
+                    <button type="button" data-accent="amber" title="Amber" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-amber-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
+                    <button type="button" data-accent="rose" title="Rose" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-rose-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
+                    <button type="button" data-accent="violet" title="Violet" class="accent-swatch relative flex items-center justify-center h-9 w-9 rounded-full bg-violet-500 transition-all duration-150 hover:scale-110 focus:outline-none">
+                        <span class="swatch-check hidden text-white text-sm font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">✓</span>
+                    </button>
                 </div>
             </div>
 
             <div>
-                <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
-                <div class="mt-3 grid grid-cols-6 gap-2">
-                    <button type="button" data-icon="fish" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-[#cca43b] text-[#cca43b] bg-black/20">🐟</button>
-                    <button type="button" data-icon="shrimp" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🦐</button>
-                    <button type="button" data-icon="lab" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🧪</button>
-                    <button type="button" data-icon="leaf" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">🌿</button>
-                    <button type="button" data-icon="box" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">📦</button>
-                    <button type="button" data-icon="water" class="icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#a0ac96] bg-black/20 hover:border-[#cca43b]">💧</button>
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
+                    <span id="selected-icon-name" class="text-xs font-bold text-[#cca43b]">Fish 🐟</span>
+                </div>
+                <div class="mt-2.5 grid grid-cols-6 gap-2">
+                    <button type="button" data-icon="fish" title="Fish" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🐟</button>
+                    <button type="button" data-icon="shrimp" title="Shrimp" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🦐</button>
+                    <button type="button" data-icon="lab" title="Lab / Specimen" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🧪</button>
+                    <button type="button" data-icon="leaf" title="Plant / Leaf" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🌿</button>
+                    <button type="button" data-icon="box" title="Box / Pack" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">📦</button>
+                    <button type="button" data-icon="water" title="Water" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">💧</button>
                 </div>
             </div>
 
@@ -425,26 +445,62 @@ document.querySelectorAll('.product-delete-btn').forEach((btn) => {
     });
 });
 
+const accentNames = {
+    'indigo': 'Indigo',
+    'cyan': 'Cyan',
+    'emerald': 'Emerald',
+    'amber': 'Amber',
+    'rose': 'Rose',
+    'violet': 'Violet'
+};
+
+const iconNames = {
+    'fish': 'Fish 🐟',
+    'shrimp': 'Shrimp 🦐',
+    'lab': 'Lab / Specimen 🧪',
+    'leaf': 'Plant / Leaf 🌿',
+    'box': 'Box / Pack 📦',
+    'water': 'Water 💧'
+};
+
 function selectAccent(accentValue) {
+    const val = accentValue || 'indigo';
     document.querySelectorAll('.accent-swatch').forEach((btn) => {
-        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
+        btn.style.boxShadow = 'none';
+        btn.classList.remove('scale-110');
+        const check = btn.querySelector('.swatch-check');
+        if (check) check.classList.add('hidden');
     });
-    const swatch = document.querySelector(`.accent-swatch[data-accent="${accentValue}"]`);
-    if(swatch) swatch.classList.add('ring-2', 'ring-offset-2', 'ring-[#cca43b]');
-    document.getElementById('product-accent').value = accentValue;
+    const swatch = document.querySelector(`.accent-swatch[data-accent="${val}"]`);
+    if (swatch) {
+        swatch.style.boxShadow = '0 0 0 3px #021f15, 0 0 0 5px #cca43b, 0 0 16px rgba(204, 164, 59, 0.4)';
+        swatch.classList.add('scale-110');
+        const check = swatch.querySelector('.swatch-check');
+        if (check) check.classList.remove('hidden');
+    }
+    const label = document.getElementById('selected-accent-name');
+    if (label) label.textContent = accentNames[val] || val;
+    document.getElementById('product-accent').value = val;
 }
 
 function selectIcon(iconValue) {
+    const val = iconValue || 'fish';
     document.querySelectorAll('.icon-swatch').forEach((btn) => {
-        btn.classList.remove('border-[#cca43b]', 'text-[#cca43b]');
-        btn.classList.add('border-white/10', 'text-[#a0ac96]');
+        btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btn.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+        btn.style.boxShadow = 'none';
+        btn.classList.remove('scale-105');
     });
-    const swatch = document.querySelector(`.icon-swatch[data-icon="${iconValue}"]`);
-    if(swatch) {
-        swatch.classList.remove('border-white/10', 'text-[#a0ac96]');
-        swatch.classList.add('border-[#cca43b]', 'text-[#cca43b]');
+    const swatch = document.querySelector(`.icon-swatch[data-icon="${val}"]`);
+    if (swatch) {
+        swatch.style.borderColor = '#cca43b';
+        swatch.style.backgroundColor = 'rgba(204, 164, 59, 0.2)';
+        swatch.style.boxShadow = '0 0 12px rgba(204, 164, 59, 0.35)';
+        swatch.classList.add('scale-105');
     }
-    document.getElementById('product-icon').value = iconValue;
+    const label = document.getElementById('selected-icon-name');
+    if (label) label.textContent = iconNames[val] || val;
+    document.getElementById('product-icon').value = val;
 }
 
 document.querySelectorAll('.accent-swatch').forEach((swatch) => {

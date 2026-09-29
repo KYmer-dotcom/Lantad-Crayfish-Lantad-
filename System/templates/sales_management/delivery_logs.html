@@ -596,8 +596,15 @@
                             <!-- Product Name & Species -->
                             <td class="py-4 px-6">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 font-black text-sm shrink-0">
-                                        {% if p.category == 'shrimp' %}🦐{% else %}🐟{% endif %}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl font-black text-base shrink-0 border {% if p.accent_color == 'cyan' %}border-cyan-500/30 bg-cyan-500/15 text-cyan-300{% elif p.accent_color == 'emerald' %}border-emerald-500/30 bg-emerald-500/15 text-emerald-300{% elif p.accent_color == 'amber' %}border-amber-500/30 bg-amber-500/15 text-amber-300{% elif p.accent_color == 'rose' %}border-rose-500/30 bg-rose-500/15 text-rose-300{% elif p.accent_color == 'violet' %}border-violet-500/30 bg-violet-500/15 text-violet-300{% elif p.accent_color == 'indigo' %}border-indigo-500/30 bg-indigo-500/15 text-indigo-300{% else %}border-[#cca43b]/30 bg-[#cca43b]/15 text-[#cca43b]{% endif %}">
+                                        {% if p.icon == 'shrimp' %}🦐
+                                        {% elif p.icon == 'lab' %}🧪
+                                        {% elif p.icon == 'leaf' %}🌿
+                                        {% elif p.icon == 'box' %}📦
+                                        {% elif p.icon == 'water' %}💧
+                                        {% elif p.icon == 'fish' %}🐟
+                                        {% elif p.category == 'shrimp' %}🦐
+                                        {% else %}🐟{% endif %}
                                     </div>
                                     <div>
                                         <p class="font-bold text-white">{{ p.name }}</p>
