@@ -81,7 +81,7 @@ class Product(models.Model):
     category = models.CharField(max_length=20, choices=Category.choices, default=Category.FISH)
     accent_color = models.CharField(max_length=20, default='indigo')
     icon = models.CharField(max_length=20, default='fish')
-    unit_type = models.CharField(max_length=20, choices=UnitType.choices, default=UnitType.PCS, help_text="Measurement unit for this product")
+    unit_type = models.CharField(max_length=50, blank=True, default='pcs', help_text="Measurement unit for this product")
     quantity_kg = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     reorder_level_kg = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -103,7 +103,17 @@ class Product(models.Model):
 
     @property
     def unit_display(self):
-        return self.unit_type or 'pcs'
+        if not self.unit_type:
+            return 'pcs'
+        legacy_labels = {
+            'pcs': 'Pieces (pcs)',
+            'kg': 'Kilograms (kg)',
+            'tub': 'Tubs',
+            'pair': 'Pairs',
+            'pack': 'Packs',
+            'head': 'Heads',
+        }
+        return legacy_labels.get(self.unit_type.lower(), self.unit_type)
 
     @property
     def is_low_stock(self):
