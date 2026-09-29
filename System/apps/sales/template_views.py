@@ -963,39 +963,101 @@ def product_edit(request, product_id):
         quantity_kg = request.POST.get('quantity_kg')
         
         if name:
-            product.name = name
-            if notes is not None:
+            from decimal import Decimal
+            spec_changes = []
+            update_fields = []
+
+            # Compare Name
+            if name != product.name:
+                spec_changes.append(f'Name: "{product.name}" → "{name}"')
+                product.name = name
+                update_fields.append('name')
+
+            # Compare Notes
+            if notes is not None and notes.strip() != (product.notes or '').strip():
+                spec_changes.append('Notes')
                 product.notes = notes
-            if accent:
+                update_fields.append('notes')
+
+            # Compare Accent
+            if accent and accent != product.accent_color:
+                spec_changes.append(f'Accent: "{product.accent_color}" → "{accent}"')
                 product.accent_color = accent
-            if icon:
+                update_fields.append('accent_color')
+
+            # Compare Icon
+            if icon and icon != product.icon:
+                spec_changes.append(f'Icon: "{product.icon}" → "{icon}"')
                 product.icon = icon
-            if unit_type:
+                update_fields.append('icon')
+
+            # Compare Unit Type
+            if unit_type and unit_type.strip() != (product.unit_type or '').strip():
+                spec_changes.append(f'Unit Type: "{product.unit_type}" → "{unit_type}"')
                 product.unit_type = unit_type
-            
-            if unit_price:
+                update_fields.append('unit_type')
+
+            # Compare Unit Price
+            if unit_price is not None and unit_price != '':
                 try:
-                    product.unit_price = f"{float(unit_price):.2f}"
-                except ValueError:
+                    new_unit_price = Decimal(f"{float(unit_price):.2f}")
+                    if Decimal(str(product.unit_price or 0)) != new_unit_price:
+                        spec_changes.append(f'Unit Price: ₱{product.unit_price} → ₱{new_unit_price}')
+                        product.unit_price = new_unit_price
+                        update_fields.append('unit_price')
+                except (ValueError, TypeError):
                     pass
-            if price_per_kg:
+
+            # Compare Price per kg / Bulk Price
+            if price_per_kg is not None and price_per_kg != '':
                 try:
-                    product.price_per_kg = f"{float(price_per_kg):.2f}"
-                except ValueError:
+                    new_price_per_kg = Decimal(f"{float(price_per_kg):.2f}")
+                    if Decimal(str(product.price_per_kg or 0)) != new_price_per_kg:
+                        spec_changes.append(f'Price/kg: ₱{product.price_per_kg} → ₱{new_price_per_kg}')
+                        product.price_per_kg = new_price_per_kg
+                        update_fields.append('price_per_kg')
+                except (ValueError, TypeError):
                     pass
-            if pieces_per_kg:
+
+            # Compare Pieces per kg / Items per Unit
+            if pieces_per_kg is not None and pieces_per_kg != '':
                 try:
-                    product.pieces_per_kg = f"{float(pieces_per_kg):.2f}"
-                except ValueError:
+                    new_pieces_per_kg = Decimal(f"{float(pieces_per_kg):.2f}")
+                    if Decimal(str(product.pieces_per_kg or 0)) != new_pieces_per_kg:
+                        spec_changes.append(f'Items/Unit: {product.pieces_per_kg} → {new_pieces_per_kg}')
+                        product.pieces_per_kg = new_pieces_per_kg
+                        update_fields.append('pieces_per_kg')
+                except (ValueError, TypeError):
                     pass
-            if quantity_kg:
+
+            # Compare Stock Quantity (inventory change, not product spec)
+            if quantity_kg is not None and quantity_kg != '':
                 try:
-                    product.quantity_kg = f"{float(quantity_kg):.2f}"
-                except ValueError:
+                    new_quantity_kg = Decimal(f"{float(quantity_kg):.2f}")
+                    if Decimal(str(product.quantity_kg or 0)) != new_quantity_kg:
+                        product.quantity_kg = new_quantity_kg
+                        update_fields.append('quantity_kg')
+                except (ValueError, TypeError):
                     pass
-                    
-            product.save(update_fields=['name', 'notes', 'accent_color', 'icon', 'unit_type', 'unit_price', 'price_per_kg', 'pieces_per_kg', 'quantity_kg', 'updated_at'])
-            messages.success(request, f'Product "{product.name}" updated successfully!')
+
+            if spec_changes:
+                from django.utils import timezone
+                product.updated_at = timezone.now()
+                update_fields.append('updated_at')
+                product.save(update_fields=update_fields)
+                InputLog.log(
+                    user=request.user,
+                    action=InputLog.Action.MODIFIED,
+                    module='Product Management',
+                    target_entity=f'Product: {product.name}',
+                    details=f'Admin updated product "{product.name}": {", ".join(spec_changes)}'
+                )
+                messages.success(request, f'Product "{product.name}" updated successfully!')
+            elif update_fields:
+                product.save(update_fields=update_fields)
+                messages.success(request, f'Product "{product.name}" stock updated successfully!')
+            else:
+                messages.info(request, f'No changes made to product "{product.name}".')
         else:
             messages.error(request, 'Product name is required.')
         

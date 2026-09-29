@@ -101,6 +101,22 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.pk and 'update_fields' not in kwargs:
+            try:
+                orig = Product.objects.get(pk=self.pk)
+                spec_fields = [
+                    'name', 'category', 'species_id', 'pond_id', 'accent_color',
+                    'icon', 'unit_type', 'unit_price', 'price_per_kg',
+                    'pieces_per_kg', 'reorder_level_kg', 'notes', 'is_active'
+                ]
+                has_spec_change = any(getattr(self, f) != getattr(orig, f) for f in spec_fields)
+                if not has_spec_change:
+                    kwargs['update_fields'] = [f.name for f in self._meta.concrete_fields if f.name not in ('updated_at', 'id')]
+            except Product.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+
     @property
     def unit_display(self):
         if not self.unit_type:
@@ -247,7 +263,7 @@ class SalesOrder(models.Model):
 
             current_stock = Decimal(str(self.product.quantity_kg or 0))
             self.product.quantity_kg = max(current_stock - deduct_qty, Decimal('0'))
-            self.product.save(update_fields=['quantity_kg', 'updated_at'])
+            self.product.save(update_fields=['quantity_kg'])
             InventoryTransaction.objects.create(
                 product=self.product,
                 quantity_kg=-deduct_qty,
