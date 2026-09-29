@@ -190,7 +190,7 @@
                             <!-- Product & Quantity -->
                             <td class="px-5 py-4 whitespace-nowrap">
                                 <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
-                                <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg }} kg
+                                <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg|floatformat:0 }} {% if '[KG]' in delivery.order.notes %}{{ delivery.order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}
                                 </div>
                             </td>
 

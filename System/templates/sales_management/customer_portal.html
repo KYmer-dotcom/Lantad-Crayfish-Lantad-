@@ -187,7 +187,7 @@
                                 Piece (pc)</button>
                             <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
                                 class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
-                                {{ featured_product.unit_display|default:'kg' }}</button>
+                                <span id="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                         </div>
                     </div>
 
@@ -317,7 +317,7 @@
                             <p class="text-xs text-[#a0ac96] mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.unit_display|default:'kg' }}{% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
                                 {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %} </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
@@ -505,12 +505,12 @@
                                             </div>
                                             <span
                                                 class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
-                                                {% if '[KG]' in order.notes %}{{ order.product.unit_display|default:'kg' }}{% else %}pcs{% endif %}
+                                                {% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}
                                             </span>
                                         </div>
                                         <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
                                         {% else %}
-                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}{{ order.product.unit_display|default:'kg' }}{% else %}pcs{% endif %}</span></p>
+                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}</span></p>
                                         {% endif %}
                                     </div>
 
@@ -1732,7 +1732,7 @@
                             <div class="text-right">
                                 <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}
                                 </p>
-                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}kg @ ₱{{ order.price_per_kg|floatformat:0 }}/kg{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
+                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }} @ ₱{{ order.price_per_kg|floatformat:0 }}/{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
                             </div>
                             <button type="button" onclick="openCustomerReceiptModal({
                                     orderNumber: '{{ order.order_number }}',
@@ -1742,7 +1742,7 @@
                                 deliveryAddress: '{{ order.delivery_address|default:customer.address|escapejs }}' ,
                                 productName: '{{ order.product.name|default:"Aquaculture Product"|escapejs }}' ,
                                 quantity: '{{ order.quantity_kg|floatformat:0 }}' ,
-                                unit: '{% if "[KG]" in order.notes %}kg{% else %}pcs{% endif %}' ,
+                                unit: '{% if "[KG]" in order.notes %}{{ order.product.bulk_unit_display|default:"kg"|escapejs }}{% else %}pcs{% endif %}' ,
                                 pricePerUnit: '{{ order.price_per_kg|floatformat:2 }}' ,
                                 totalAmount: '{{ order.total_amount|floatformat:2 }}' ,
                                 status: '{{ order.get_status_display }}' ,
@@ -2119,7 +2119,8 @@
                             priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
                                 piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
                                     quantity: "{{ prod.quantity_kg|default:0 }}",
-                                        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                                        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}",
+                                        bulkUnit: "{{ prod.bulk_unit_display|default:'kg'|escapejs }}"
     } {% if not forloop.last %}, {% endif %}
     {% endfor %}
     ];
@@ -2151,20 +2152,31 @@
         const kgBtn = document.getElementById('btn-unit-kg');
         const unitLabel = document.getElementById('featured-unit-label');
         const qtyLabel = document.getElementById('featured-quantity-label');
+        const currentProd = availableProducts[currentProductIndex];
+        const bulkUnitName = currentProd?.bulkUnit || 'kg';
 
         if (unit === 'kg') {
-            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
+            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all";
             if (pcBtn) pcBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
-            if (unitLabel) unitLabel.textContent = '/ kg';
-            if (qtyLabel) qtyLabel.textContent = 'Quantity (kg):';
+            if (unitLabel) unitLabel.textContent = '/ ' + bulkUnitName;
+            if (qtyLabel) {
+                const ppk = parseFloat(currentProd?.piecesPerKg) || 1;
+                const qtyInput = document.getElementById('featured-quantity-input');
+                const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+                const estPcs = Math.round(qty * ppk);
+                if (ppk > 1) {
+                    qtyLabel.innerHTML = `Quantity (${bulkUnitName}) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
+                } else {
+                    qtyLabel.textContent = `Quantity (${bulkUnitName}):`;
+                }
+            }
         } else {
-            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
+            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all";
             if (kgBtn) kgBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
             if (unitLabel) unitLabel.textContent = '/ pc';
             if (qtyLabel) qtyLabel.textContent = 'Quantity (pcs):';
         }
 
-        const currentProd = availableProducts[currentProductIndex];
         if (currentProd) {
             let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
             document.getElementById('featured-price').textContent = '₱' + Math.round(price);
@@ -2184,8 +2196,19 @@
         document.getElementById('featured-notes').textContent = notes || 'One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality.';
 
         const p = availableProducts[currentProductIndex];
+        const bulkUnitName = p?.bulkUnit || 'kg';
+        const bulkUnitTextEl = document.getElementById('btn-bulk-unit-text');
+        if (bulkUnitTextEl) {
+            bulkUnitTextEl.textContent = bulkUnitName;
+        }
+
         let price = currentPricingUnit === 'kg' ? (parseFloat(p?.priceKg || priceKg) || parseFloat(p?.pricePc || pricePc) || 0) : (parseFloat(p?.pricePc || pricePc) || parseFloat(p?.priceKg || priceKg) || 0);
         document.getElementById('featured-price').textContent = '₱' + Math.round(price);
+
+        const unitLabel = document.getElementById('featured-unit-label');
+        if (unitLabel) {
+            unitLabel.textContent = currentPricingUnit === 'kg' ? ('/ ' + bulkUnitName) : '/ pc';
+        }
 
         const btn = document.getElementById('featured-order-btn');
         const btnText = document.getElementById('featured-order-text');
@@ -2836,9 +2859,14 @@
 
             if (qtyLabel) {
                 if (currentPricingUnit === 'kg') {
+                    const bulkUnitName = currentProd.bulkUnit || 'kg';
                     const ppk = parseFloat(currentProd.piecesPerKg) || 1;
                     const estPcs = Math.round(qty * ppk);
-                    qtyLabel.innerHTML = `Quantity (kg) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
+                    if (ppk > 1) {
+                        qtyLabel.innerHTML = `Quantity (${bulkUnitName}) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
+                    } else {
+                        qtyLabel.textContent = `Quantity (${bulkUnitName}):`;
+                    }
                 } else {
                     qtyLabel.textContent = 'Quantity (pcs):';
                 }

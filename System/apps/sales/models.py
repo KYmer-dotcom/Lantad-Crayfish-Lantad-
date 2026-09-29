@@ -104,18 +104,44 @@ class Product(models.Model):
     @property
     def unit_display(self):
         if not self.unit_type:
-            return 'pcs'
+            return 'kg' if self.price_per_kg > 0 else 'pc'
+        val = str(self.unit_type).strip().lower()
         legacy_labels = {
             'pcs': 'pc',
+            'pc': 'pc',
+            'piece': 'pc',
+            'pieces': 'pc',
             'pieces (pcs)': 'pc',
             'kg': 'kg',
             'kilograms (kg)': 'kg',
-            'tub': 'Tubs',
-            'pair': 'Pairs',
-            'pack': 'Packs',
-            'head': 'Heads',
+            'kilogram': 'kg',
+            'kilograms': 'kg',
+            'tub': 'Tub',
+            'tubs': 'Tubs',
+            'pair': 'Pair',
+            'pairs': 'Pairs',
+            'pack': 'Pack',
+            'packs': 'Packs',
+            'head': 'Head',
+            'heads': 'Heads',
+            'box': 'Box',
+            'boxes': 'Boxes',
+            'sack': 'Sack',
+            'sacks': 'Sacks',
+            'bottle': 'Bottle',
+            'bottles': 'Bottles',
         }
-        return legacy_labels.get(self.unit_type.lower(), self.unit_type)
+        return legacy_labels.get(val, self.unit_type)
+
+    @property
+    def bulk_unit_display(self):
+        """Measurement unit for bulk/secondary pricing (e.g. Pack, Tub, Pair, kg). Defaults to kg if unit_type is pcs or empty."""
+        if not self.unit_type:
+            return 'kg'
+        val = str(self.unit_type).strip().lower()
+        if val in ['pcs', 'pc', 'piece', 'pieces', 'pieces (pcs)']:
+            return 'kg'
+        return self.unit_display
 
     @property
     def is_low_stock(self):
