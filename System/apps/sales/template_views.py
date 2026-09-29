@@ -1047,7 +1047,7 @@ def product_edit(request, product_id):
                 product.save(update_fields=update_fields)
                 InputLog.log(
                     user=request.user,
-                    action=InputLog.Action.MODIFIED,
+                    action=InputLog.Action.UPDATED,
                     module='Product Management',
                     target_entity=f'Product: {product.name}',
                     details=f'Admin updated product "{product.name}": {", ".join(spec_changes)}'
