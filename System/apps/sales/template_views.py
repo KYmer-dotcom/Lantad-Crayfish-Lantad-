@@ -1692,10 +1692,12 @@ def delivery_logs_page(request):
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
-    # Active Log Type Tab: 'product' vs 'activity' vs 'input'
-    tab_filter = request.GET.get('tab', 'product').strip().lower()
-    if tab_filter not in ['product', 'activity', 'input']:
-        tab_filter = 'product'
+    # Active Log Type Tab: 'order' vs 'activity' vs 'input'
+    tab_filter = request.GET.get('tab', 'order').strip().lower()
+    if tab_filter == 'product':
+        tab_filter = 'order'
+    if tab_filter not in ['order', 'activity', 'input']:
+        tab_filter = 'order'
 
     # Fetch Input / Deletion Logs (Who added that data and deleted that)
     input_logs_qs = InputLog.objects.all()

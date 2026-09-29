@@ -113,9 +113,9 @@
         <!-- Top Row: Tab Switcher & Active Filter State -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
             <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/50 border border-white/10 overflow-x-auto" id="logs-type-tabs">
-                <button type="button" onclick="switchLogView('product')" id="tab-btn-product"
-                    class="log-tab-btn {% if tab_filter == 'product' or not tab_filter %}active{% endif %}">
-                    Product Logs ({{ total_logs }})
+                <button type="button" onclick="switchLogView('order')" id="tab-btn-order"
+                    class="log-tab-btn {% if tab_filter == 'order' or tab_filter == 'product' or not tab_filter %}active{% endif %}">
+                    Order Logs ({{ total_logs }})
                 </button>
                 <button type="button" onclick="switchLogView('activity')" id="tab-btn-activity"
                     class="log-tab-btn {% if tab_filter == 'activity' %}active{% endif %}">
@@ -130,14 +130,14 @@
             {% if start_date or end_date or query %}
             <div class="flex items-center gap-2">
                 <span class="text-[11px] font-mono text-[#cca43b]">Filters Active</span>
-                <a href="?tab={{ tab_filter|default:'product' }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
+                <a href="?tab={{ tab_filter|default:'order' }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
             </div>
             {% endif %}
         </div>
 
         <!-- Filter Form: Filter by Date & Search -->
         <form method="GET" class="flex flex-wrap items-center justify-between gap-3">
-            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter|default:'product' }}">
+            <input type="hidden" name="tab" id="search-tab-input" value="{{ tab_filter|default:'order' }}">
             {% if status_filter != 'all' and status_filter %}
             <input type="hidden" name="status" value="{{ status_filter }}">
             {% endif %}
@@ -181,8 +181,8 @@
         </form>
     </div>
 
-    <!-- Product Logs Panel -->
-    <div id="product-logs-panel" class="{% if tab_filter == 'activity' or tab_filter == 'input' %}hidden{% endif %} space-y-6">
+    <!-- Order Logs Panel -->
+    <div id="order-logs-panel" class="{% if tab_filter == 'activity' or tab_filter == 'input' %}hidden{% endif %} space-y-6">
         <!-- Audit Logs Table -->
         <div class="glass-card rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
@@ -797,28 +797,28 @@ function printReceiptDoc() {
 }
 
 function switchLogView(type) {
-    const prodPanel = document.getElementById('product-logs-panel');
+    const orderPanel = document.getElementById('order-logs-panel') || document.getElementById('product-logs-panel');
     const actPanel = document.getElementById('activity-logs-panel');
     const inputPanel = document.getElementById('input-logs-panel');
-    const prodBtn = document.getElementById('tab-btn-product');
+    const orderBtn = document.getElementById('tab-btn-order') || document.getElementById('tab-btn-product');
     const actBtn = document.getElementById('tab-btn-activity');
     const inputBtn = document.getElementById('tab-btn-input');
     const searchTabInput = document.getElementById('search-tab-input');
 
     // Hide all panels
-    if (prodPanel) prodPanel.classList.add('hidden');
+    if (orderPanel) orderPanel.classList.add('hidden');
     if (actPanel) actPanel.classList.add('hidden');
     if (inputPanel) inputPanel.classList.add('hidden');
 
     // Reset button states
-    [prodBtn, actBtn, inputBtn].forEach(btn => {
+    [orderBtn, actBtn, inputBtn].forEach(btn => {
         if (btn) btn.classList.remove('active');
     });
 
-    if (type === 'product') {
-        if (prodPanel) prodPanel.classList.remove('hidden');
-        if (prodBtn) prodBtn.classList.add('active');
-        if (searchTabInput) searchTabInput.value = 'product';
+    if (type === 'order' || type === 'product') {
+        if (orderPanel) orderPanel.classList.remove('hidden');
+        if (orderBtn) orderBtn.classList.add('active');
+        if (searchTabInput) searchTabInput.value = 'order';
     } else if (type === 'activity') {
         if (actPanel) actPanel.classList.remove('hidden');
         if (actBtn) actBtn.classList.add('active');
