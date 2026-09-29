@@ -250,6 +250,11 @@
                         <a href="{% url 'analytics:dashboard' %}"
                             class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Reports
                             & Analytics</a>
+                        {% if user.is_owner or user.is_staff or user.is_superuser %}
+                        <a href="{% url 'archive_dashboard' %}"
+                            class="rounded-xl border border-[#cca43b]/40 bg-[#cca43b]/10 px-4 py-2 text-[#cca43b] font-bold">Data
+                            Archive</a>
+                        {% endif %}
                         <a href="{% url 'notifications' %}"
                             class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Notifications</a>
                         {% endif %}

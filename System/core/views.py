@@ -615,4 +615,162 @@ def notifications(request):
     return render(request, 'notifications/index.html', context)
 
 
+# =============================================================================
+# DATA ARCHIVE & RESTORE
+# =============================================================================
+
+ENTITY_MODEL_MAP = {
+    'product': ('Product', 'apps.sales.models', 'Product Management', lambda p: p.name),
+    'feed_type': ('FeedType', 'apps.feed.models', 'Feed Inventory', lambda f: f.name),
+    'stock_batch': ('StockBatch', 'apps.stock.models', 'Stock Monitoring', lambda b: b.batch_code),
+    'sales_order': ('SalesOrder', 'apps.sales.models', 'Sales Orders', lambda o: f"Order #{o.order_number}"),
+}
+
+
+@login_required
+def archive_dashboard(request):
+    """
+    Dedicated view for Data Archive & Soft-Deleted Records.
+    Allows viewing, filtering, restoring, and permanently deleting archived records.
+    Accessible to Owners and Admins.
+    """
+    if not (getattr(request.user, 'is_owner', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, 'Access denied. Only Farm Owners and Administrators can view the Data Archive.')
+        return redirect('dashboard')
+
+    from apps.sales.models import Product, SalesOrder
+    from apps.feed.models import FeedType
+    from apps.stock.models import StockBatch
+
+    q = request.GET.get('q', '').strip()
+    active_tab = request.GET.get('tab', 'products')
+
+    # Query all archived records
+    archived_products_qs = Product.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
+    archived_feed_types_qs = FeedType.all_objects.filter(is_deleted=True).select_related('deleted_by')
+    archived_batches_qs = StockBatch.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
+    archived_orders_qs = SalesOrder.all_objects.filter(is_deleted=True).select_related('customer', 'product', 'deleted_by')
+
+    if q:
+        archived_products_qs = archived_products_qs.filter(name__icontains=q)
+        archived_feed_types_qs = archived_feed_types_qs.filter(name__icontains=q)
+        archived_batches_qs = archived_batches_qs.filter(batch_code__icontains=q)
+        archived_orders_qs = archived_orders_qs.filter(order_number__icontains=q)
+
+    archived_products = list(archived_products_qs.order_by('-deleted_at'))
+    archived_feed_types = list(archived_feed_types_qs.order_by('-deleted_at'))
+    archived_batches = list(archived_batches_qs.order_by('-deleted_at'))
+    archived_orders = list(archived_orders_qs.order_by('-deleted_at'))
+
+    counts = {
+        'products': len(archived_products),
+        'feed_types': len(archived_feed_types),
+        'batches': len(archived_batches),
+        'orders': len(archived_orders),
+        'total': len(archived_products) + len(archived_feed_types) + len(archived_batches) + len(archived_orders),
+    }
+
+    context = {
+        'active_tab': active_tab,
+        'search_query': q,
+        'counts': counts,
+        'archived_products': archived_products,
+        'archived_feed_types': archived_feed_types,
+        'archived_batches': archived_batches,
+        'archived_orders': archived_orders,
+    }
+    return render(request, 'archive/dashboard.html', context)
+
+
+@login_required
+def archive_restore(request, entity_type, entity_id):
+    """Restore a soft-deleted entity back to the active system."""
+    if not (getattr(request.user, 'is_owner', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, 'Unauthorized action.')
+        return redirect('dashboard')
+
+    if request.method != 'POST':
+        return redirect('archive_dashboard')
+
+    config = ENTITY_MODEL_MAP.get(entity_type)
+    if not config:
+        messages.error(request, f'Invalid entity type: {entity_type}')
+        return redirect('archive_dashboard')
+
+    model_name, module_path, log_module, name_getter = config
+    import importlib
+    mod = importlib.import_module(module_path)
+    model_class = getattr(mod, model_name)
+
+    item = model_class.all_objects.filter(pk=entity_id, is_deleted=True).first()
+    if not item:
+        messages.error(request, f'{model_name} #{entity_id} not found in archive.')
+        return redirect('archive_dashboard')
+
+    item_name = name_getter(item)
+    item.restore()
+
+    try:
+        from apps.sales.models import InputLog
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.UPDATED,
+            module='Data Archive',
+            target_entity=f'{model_name}: {item_name}',
+            details=f'Restored {item_name} from Data Archive back into active {log_module}.'
+        )
+    except Exception:
+        pass
+
+    messages.success(request, f'Successfully restored {item_name} back to active catalog!')
+    tab_name = entity_type + ('es' if entity_type.endswith('ch') else 's')
+    return redirect(f"/archive/?tab={tab_name}")
+
+
+@login_required
+def archive_hard_delete(request, entity_type, entity_id):
+    """Permanently delete an entity from the database."""
+    if not (getattr(request.user, 'is_owner', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, 'Unauthorized action.')
+        return redirect('dashboard')
+
+    if request.method != 'POST':
+        return redirect('archive_dashboard')
+
+    config = ENTITY_MODEL_MAP.get(entity_type)
+    if not config:
+        messages.error(request, f'Invalid entity type: {entity_type}')
+        return redirect('archive_dashboard')
+
+    model_name, module_path, log_module, name_getter = config
+    import importlib
+    mod = importlib.import_module(module_path)
+    model_class = getattr(mod, model_name)
+
+    item = model_class.all_objects.filter(pk=entity_id, is_deleted=True).first()
+    if not item:
+        messages.error(request, f'{model_name} #{entity_id} not found in archive.')
+        return redirect('archive_dashboard')
+
+    item_name = name_getter(item)
+    item.hard_delete()
+
+    try:
+        from apps.sales.models import InputLog
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Data Archive',
+            target_entity=f'{model_name}: {item_name}',
+            details=f'Permanently purged {item_name} from database.'
+        )
+    except Exception:
+        pass
+
+    messages.success(request, f'Permanently deleted {item_name}.')
+    tab_name = entity_type + ('es' if entity_type.endswith('ch') else 's')
+    return redirect(f"/archive/?tab={tab_name}")
+
+
+
 

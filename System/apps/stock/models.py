@@ -10,6 +10,7 @@ from django.db import models
 from django.conf import settings
 from datetime import date, timedelta
 import math
+from core.abstract_models import SoftDeleteModel
 
 
 class Species(models.Model):
@@ -46,7 +47,7 @@ class Species(models.Model):
         return self.name
 
 
-class StockBatch(models.Model):
+class StockBatch(SoftDeleteModel):
     """Batch of stock in a pond."""
     
     class Stage(models.TextChoices):

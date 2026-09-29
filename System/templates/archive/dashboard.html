@@ -1,0 +1,622 @@
+{% extends 'layout.html' %}
+{% load static humanize %}
+
+{% block title %}Data Archive & Recycle Bin - Silay Superworm & Crayfish{% endblock %}
+
+{% block header_icon %}
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b]">
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+    </svg>
+</div>
+{% endblock %}
+
+{% block header_title %}Data Archive & Recycle Bin{% endblock %}
+
+{% block page_content %}
+<div class="space-y-6">
+
+    <!-- Top Hero Banner / Stat Summary -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Total Archived -->
+        <div class="rounded-2xl bg-[#022118] border border-white/10 p-5 flex items-center justify-between transition-all hover:border-[#cca43b]/30">
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Total Archived Items</p>
+                <h3 class="text-3xl font-black text-white mt-1">{{ counts.total }}</h3>
+                <p class="text-xs text-[#a0ac96]/80 mt-1">Safely retained in soft storage</p>
+            </div>
+            <div class="h-12 w-12 rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/20 flex items-center justify-center text-[#cca43b] shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 2: Products -->
+        <div class="rounded-2xl bg-[#022118] border border-white/10 p-5 flex items-center justify-between transition-all hover:border-emerald-500/30">
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Archived Products</p>
+                <h3 class="text-3xl font-black text-emerald-400 mt-1">{{ counts.products }}</h3>
+                <p class="text-xs text-[#a0ac96]/80 mt-1">Catalog items hidden from store</p>
+            </div>
+            <div class="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 3: Feed Types -->
+        <div class="rounded-2xl bg-[#022118] border border-white/10 p-5 flex items-center justify-between transition-all hover:border-amber-500/30">
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Archived Feed Types</p>
+                <h3 class="text-3xl font-black text-amber-400 mt-1">{{ counts.feed_types }}</h3>
+                <p class="text-xs text-[#a0ac96]/80 mt-1">Past formulas & inventory profiles</p>
+            </div>
+            <div class="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 4: Batches & Orders -->
+        <div class="rounded-2xl bg-[#022118] border border-white/10 p-5 flex items-center justify-between transition-all hover:border-cyan-500/30">
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-[#a0ac96]">Batches & Orders</p>
+                <h3 class="text-3xl font-black text-cyan-400 mt-1">{{ counts.batches|add:counts.orders }}</h3>
+                <p class="text-xs text-[#a0ac96]/80 mt-1">{{ counts.batches }} batches • {{ counts.orders }} orders</p>
+            </div>
+            <div class="h-12 w-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Panel: Controls, Tab Switcher & Content -->
+    <div class="rounded-3xl bg-[#022118] border border-white/10 overflow-hidden shadow-2xl">
+        
+        <!-- Controls Bar -->
+        <div class="p-6 border-b border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#011a13]">
+            <!-- Navigation Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
+                <button type="button" onclick="switchArchiveTab('products')" id="tab-btn-products"
+                    class="archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all {% if active_tab == 'products' or not active_tab %}bg-[#cca43b] text-[#01140e]{% else %}bg-white/5 text-[#a0ac96] hover:bg-white/10 hover:text-white{% endif %}">
+                    <span>Products</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black {% if active_tab == 'products' or not active_tab %}bg-[#01140e]/20 text-[#01140e]{% else %}bg-white/10 text-white{% endif %}">
+                        {{ counts.products }}
+                    </span>
+                </button>
+
+                <button type="button" onclick="switchArchiveTab('feed_types')" id="tab-btn-feed_types"
+                    class="archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all {% if active_tab == 'feed_types' %}bg-[#cca43b] text-[#01140e]{% else %}bg-white/5 text-[#a0ac96] hover:bg-white/10 hover:text-white{% endif %}">
+                    <span>Feed Types</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black {% if active_tab == 'feed_types' %}bg-[#01140e]/20 text-[#01140e]{% else %}bg-white/10 text-white{% endif %}">
+                        {{ counts.feed_types }}
+                    </span>
+                </button>
+
+                <button type="button" onclick="switchArchiveTab('batches')" id="tab-btn-batches"
+                    class="archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all {% if active_tab == 'batches' %}bg-[#cca43b] text-[#01140e]{% else %}bg-white/5 text-[#a0ac96] hover:bg-white/10 hover:text-white{% endif %}">
+                    <span>Stock Batches</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black {% if active_tab == 'batches' %}bg-[#01140e]/20 text-[#01140e]{% else %}bg-white/10 text-white{% endif %}">
+                        {{ counts.batches }}
+                    </span>
+                </button>
+
+                <button type="button" onclick="switchArchiveTab('orders')" id="tab-btn-orders"
+                    class="archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all {% if active_tab == 'orders' %}bg-[#cca43b] text-[#01140e]{% else %}bg-white/5 text-[#a0ac96] hover:bg-white/10 hover:text-white{% endif %}">
+                    <span>Sales Orders</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black {% if active_tab == 'orders' %}bg-[#01140e]/20 text-[#01140e]{% else %}bg-white/10 text-white{% endif %}">
+                        {{ counts.orders }}
+                    </span>
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <form method="get" action="{% url 'archive_dashboard' %}" class="relative w-full md:w-72">
+                <input type="hidden" name="tab" id="form-tab-input" value="{{ active_tab|default:'products' }}">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search archived records..."
+                    class="w-full pl-9 pr-4 py-2 rounded-xl bg-black/40 border border-white/15 text-xs text-white placeholder-stone-400 focus:outline-none focus:border-[#cca43b]">
+                <svg class="h-4 w-4 text-stone-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {% if search_query %}
+                <a href="{% url 'archive_dashboard' %}?tab={{ active_tab|default:'products' }}" class="absolute right-3 top-2 text-stone-400 hover:text-white text-xs font-bold" title="Clear search">✕</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: ARCHIVED PRODUCTS -->
+        <!-- ========================================================= -->
+        <div id="tab-content-products" class="archive-tab-pane {% if active_tab and active_tab != 'products' %}hidden{% endif %}">
+            {% if archived_products %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/[0.02] text-[#a0ac96] uppercase text-[10px] tracking-wider">
+                            <th class="py-3 px-5 font-bold">Product</th>
+                            <th class="py-3 px-5 font-bold">Category</th>
+                            <th class="py-3 px-5 font-bold">Price / Unit</th>
+                            <th class="py-3 px-5 font-bold">Archived Date</th>
+                            <th class="py-3 px-5 font-bold">Archived By</th>
+                            <th class="py-3 px-5 font-bold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for product in archived_products %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-4 px-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-9 w-9 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-lg shrink-0">
+                                        {% if product.icon == 'fish' %}🐟
+                                        {% elif product.icon == 'shrimp' %}🦐
+                                        {% elif product.icon == 'package' %}📦
+                                        {% elif product.icon == 'box' %}🍱
+                                        {% elif product.icon == 'bug' %}🐛
+                                        {% else %}🐟{% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white text-sm leading-tight">{{ product.name }}</p>
+                                        <p class="text-[11px] text-[#a0ac96] mt-0.5">
+                                            {% if product.species %}{{ product.species.name }}{% endif %}
+                                            {% if product.pond %} • {{ product.pond.name }}{% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-5">
+                                <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-stone-300">
+                                    {{ product.get_category_display }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-semibold text-white">₱{{ product.unit_price|floatformat:2|intcomma }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">Per {{ product.unit_display|default:'piece' }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                <p class="font-semibold">{{ product.deleted_at|date:"M d, Y" }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">{{ product.deleted_at|date:"h:i A" }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                {% if product.deleted_by %}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-5 w-5 rounded-full bg-[#cca43b]/20 text-[#cca43b] text-[10px] font-bold flex items-center justify-center">
+                                        {{ product.deleted_by.username|slice:":1"|upper }}
+                                    </span>
+                                    <span>{{ product.deleted_by.get_full_name|default:product.deleted_by.username }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-stone-500 italic">System / Unspecified</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <!-- Restore Button -->
+                                    <form method="post" action="{% url 'archive_restore' entity_type='product' entity_id=product.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-[#01140e] text-xs font-bold transition-all cursor-pointer"
+                                            title="Restore back to active products">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span>Restore</span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Hard Delete Button -->
+                                    <button type="button" onclick="confirmHardDelete('product', '{{ product.id }}', '{{ product.name|escapejs }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                                        title="Permanently erase from database">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        <span>Purge</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="py-16 text-center">
+                <div class="h-16 w-16 mx-auto rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl text-stone-400 mb-3">
+                    📦
+                </div>
+                <h4 class="text-base font-bold text-white">No archived products found</h4>
+                <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">When products are removed from the active catalog, they will appear here safely for reference or instant restoration.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: ARCHIVED FEED TYPES -->
+        <!-- ========================================================= -->
+        <div id="tab-content-feed_types" class="archive-tab-pane {% if active_tab != 'feed_types' %}hidden{% endif %}">
+            {% if archived_feed_types %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/[0.02] text-[#a0ac96] uppercase text-[10px] tracking-wider">
+                            <th class="py-3 px-5 font-bold">Feed Formula</th>
+                            <th class="py-3 px-5 font-bold">Brand / Category</th>
+                            <th class="py-3 px-5 font-bold">Protein Content</th>
+                            <th class="py-3 px-5 font-bold">Price / kg</th>
+                            <th class="py-3 px-5 font-bold">Archived Date</th>
+                            <th class="py-3 px-5 font-bold">Archived By</th>
+                            <th class="py-3 px-5 font-bold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for ft in archived_feed_types %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-4 px-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-9 w-9 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-lg shrink-0">
+                                        🍲
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white text-sm leading-tight">{{ ft.name }}</p>
+                                        <p class="text-[11px] text-[#a0ac96] mt-0.5">{{ ft.description|truncatechars:35|default:"Formula profile" }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-bold text-stone-200">{{ ft.brand|default:"Standard" }}</p>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/5 text-[#cca43b]">
+                                    {{ ft.get_category_display }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-5">
+                                <span class="font-bold text-cyan-400">{{ ft.protein_content }}%</span>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-semibold text-white">₱{{ ft.price_per_kg|floatformat:2|intcomma }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                <p class="font-semibold">{{ ft.deleted_at|date:"M d, Y" }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">{{ ft.deleted_at|date:"h:i A" }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                {% if ft.deleted_by %}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-5 w-5 rounded-full bg-[#cca43b]/20 text-[#cca43b] text-[10px] font-bold flex items-center justify-center">
+                                        {{ ft.deleted_by.username|slice:":1"|upper }}
+                                    </span>
+                                    <span>{{ ft.deleted_by.get_full_name|default:ft.deleted_by.username }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-stone-500 italic">System / Unspecified</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <!-- Restore Button -->
+                                    <form method="post" action="{% url 'archive_restore' entity_type='feed_type' entity_id=ft.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-[#01140e] text-xs font-bold transition-all cursor-pointer"
+                                            title="Restore back to active feed inventory">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span>Restore</span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Hard Delete Button -->
+                                    <button type="button" onclick="confirmHardDelete('feed_type', '{{ ft.id }}', '{{ ft.name|escapejs }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                                        title="Permanently erase from database">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        <span>Purge</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="py-16 text-center">
+                <div class="h-16 w-16 mx-auto rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl text-stone-400 mb-3">
+                    🍱
+                </div>
+                <h4 class="text-base font-bold text-white">No archived feed types found</h4>
+                <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">Deleted feed types are safely retained without breaking historical feeding logs or nutritional records.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: ARCHIVED STOCK BATCHES -->
+        <!-- ========================================================= -->
+        <div id="tab-content-batches" class="archive-tab-pane {% if active_tab != 'batches' %}hidden{% endif %}">
+            {% if archived_batches %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/[0.02] text-[#a0ac96] uppercase text-[10px] tracking-wider">
+                            <th class="py-3 px-5 font-bold">Batch Code</th>
+                            <th class="py-3 px-5 font-bold">Species & Pond</th>
+                            <th class="py-3 px-5 font-bold">Quantity</th>
+                            <th class="py-3 px-5 font-bold">Stage</th>
+                            <th class="py-3 px-5 font-bold">Archived Date</th>
+                            <th class="py-3 px-5 font-bold">Archived By</th>
+                            <th class="py-3 px-5 font-bold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for batch in archived_batches %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-4 px-5 font-mono font-bold text-amber-300">
+                                {{ batch.batch_code }}
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-bold text-white">{{ batch.species.name }}</p>
+                                <p class="text-[11px] text-[#a0ac96]">{{ batch.pond.name|default:"Unassigned" }}</p>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-semibold text-white">{{ batch.current_quantity|intcomma }} pcs</p>
+                                <p class="text-[10px] text-[#a0ac96]">Initial: {{ batch.initial_quantity|intcomma }}</p>
+                            </td>
+                            <td class="py-4 px-5">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-stone-300">
+                                    {{ batch.get_stage_display }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                <p class="font-semibold">{{ batch.deleted_at|date:"M d, Y" }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">{{ batch.deleted_at|date:"h:i A" }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                {% if batch.deleted_by %}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-5 w-5 rounded-full bg-[#cca43b]/20 text-[#cca43b] text-[10px] font-bold flex items-center justify-center">
+                                        {{ batch.deleted_by.username|slice:":1"|upper }}
+                                    </span>
+                                    <span>{{ batch.deleted_by.get_full_name|default:batch.deleted_by.username }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-stone-500 italic">System / Unspecified</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <!-- Restore Button -->
+                                    <form method="post" action="{% url 'archive_restore' entity_type='stock_batch' entity_id=batch.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-[#01140e] text-xs font-bold transition-all cursor-pointer"
+                                            title="Restore back to active stocking">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span>Restore</span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Hard Delete Button -->
+                                    <button type="button" onclick="confirmHardDelete('stock_batch', '{{ batch.id }}', '{{ batch.batch_code|escapejs }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                                        title="Permanently erase from database">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        <span>Purge</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="py-16 text-center">
+                <div class="h-16 w-16 mx-auto rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl text-stone-400 mb-3">
+                    🏷️
+                </div>
+                <h4 class="text-base font-bold text-white">No archived batches found</h4>
+                <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">Closed or removed batches remain fully auditable in the database.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: ARCHIVED SALES ORDERS -->
+        <!-- ========================================================= -->
+        <div id="tab-content-orders" class="archive-tab-pane {% if active_tab != 'orders' %}hidden{% endif %}">
+            {% if archived_orders %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/[0.02] text-[#a0ac96] uppercase text-[10px] tracking-wider">
+                            <th class="py-3 px-5 font-bold">Order #</th>
+                            <th class="py-3 px-5 font-bold">Customer</th>
+                            <th class="py-3 px-5 font-bold">Product & Qty</th>
+                            <th class="py-3 px-5 font-bold">Total Amount</th>
+                            <th class="py-3 px-5 font-bold">Archived Date</th>
+                            <th class="py-3 px-5 font-bold">Archived By</th>
+                            <th class="py-3 px-5 font-bold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for order in archived_orders %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="py-4 px-5 font-mono font-bold text-cyan-400">
+                                {{ order.order_number }}
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-bold text-white">{{ order.customer.name }}</p>
+                                <p class="text-[11px] text-[#a0ac96]">{{ order.customer.phone }}</p>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-semibold text-white">{{ order.product.name|default:"General Product" }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">{{ order.quantity_kg }} kg</p>
+                            </td>
+                            <td class="py-4 px-5">
+                                <p class="font-bold text-emerald-400">₱{{ order.total_amount|floatformat:2|intcomma }}</p>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-stone-300">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                <p class="font-semibold">{{ order.deleted_at|date:"M d, Y" }}</p>
+                                <p class="text-[10px] text-[#a0ac96]">{{ order.deleted_at|date:"h:i A" }}</p>
+                            </td>
+                            <td class="py-4 px-5 text-stone-300">
+                                {% if order.deleted_by %}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="h-5 w-5 rounded-full bg-[#cca43b]/20 text-[#cca43b] text-[10px] font-bold flex items-center justify-center">
+                                        {{ order.deleted_by.username|slice:":1"|upper }}
+                                    </span>
+                                    <span>{{ order.deleted_by.get_full_name|default:order.deleted_by.username }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-stone-500 italic">System / Unspecified</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-4 px-5 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <!-- Restore Button -->
+                                    <form method="post" action="{% url 'archive_restore' entity_type='sales_order' entity_id=order.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-[#01140e] text-xs font-bold transition-all cursor-pointer"
+                                            title="Restore back to active sales orders">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span>Restore</span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Hard Delete Button -->
+                                    <button type="button" onclick="confirmHardDelete('sales_order', '{{ order.id }}', 'Order #{{ order.order_number|escapejs }}')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                                        title="Permanently erase from database">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        <span>Purge</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="py-16 text-center">
+                <div class="h-16 w-16 mx-auto rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl text-stone-400 mb-3">
+                    📋
+                </div>
+                <h4 class="text-base font-bold text-white">No archived orders found</h4>
+                <p class="text-xs text-[#a0ac96] max-w-sm mx-auto mt-1">Archived orders can be inspected and restored back to active billing at any time.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- CONFIRM HARD DELETE (PURGE) MODAL -->
+<!-- ========================================================================= -->
+<div id="purge-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-rose-500/30 p-6 shadow-2xl relative transform transition-all">
+        <div class="flex items-center gap-3 text-rose-400 mb-4">
+            <div class="h-10 w-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">Permanent Purge</h3>
+                <p class="text-xs text-rose-400/80 font-medium">This action cannot be undone</p>
+            </div>
+        </div>
+
+        <p class="text-xs text-stone-300 leading-relaxed mb-6">
+            Are you sure you want to permanently erase <span id="purge-item-name" class="font-bold text-white"></span> from the database? All linked logs and records will be deleted forever.
+        </p>
+
+        <form id="purge-form" method="post" action="" class="flex items-center justify-end gap-3">
+            {% csrf_token %}
+            <button type="button" onclick="closePurgeModal()" 
+                class="px-4 py-2 rounded-xl bg-white/5 border border-white/15 text-xs font-bold text-stone-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer">
+                Cancel
+            </button>
+            <button type="submit" 
+                class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all cursor-pointer">
+                Permanently Purge
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchArchiveTab(tabKey) {
+        // Hide all tab panes
+        document.querySelectorAll('.archive-tab-pane').forEach(el => el.classList.add('hidden'));
+
+        // Reset all buttons
+        document.querySelectorAll('.archive-tab-btn').forEach(btn => {
+            btn.className = 'archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-white/5 text-[#a0ac96] hover:bg-white/10 hover:text-white';
+            const badge = btn.querySelector('span:last-child');
+            if (badge) badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-white/10 text-white';
+        });
+
+        // Show selected pane
+        const selectedPane = document.getElementById('tab-content-' + tabKey);
+        if (selectedPane) selectedPane.classList.remove('hidden');
+
+        // Activate button
+        const selectedBtn = document.getElementById('tab-btn-' + tabKey);
+        if (selectedBtn) {
+            selectedBtn.className = 'archive-tab-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-[#cca43b] text-[#01140e]';
+            const badge = selectedBtn.querySelector('span:last-child');
+            if (badge) badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black bg-[#01140e]/20 text-[#01140e]';
+        }
+
+        // Update hidden input and browser URL without page reload
+        const tabInput = document.getElementById('form-tab-input');
+        if (tabInput) tabInput.value = tabKey;
+
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('tab', tabKey);
+        window.history.replaceState({}, '', currentUrl);
+    }
+
+    function confirmHardDelete(entityType, entityId, itemName) {
+        const modal = document.getElementById('purge-modal');
+        const form = document.getElementById('purge-form');
+        const nameEl = document.getElementById('purge-item-name');
+
+        nameEl.textContent = `"${itemName}"`;
+        form.action = `/archive/hard-delete/${entityType}/${entityId}/`;
+        modal.classList.remove('hidden');
+    }
+
+    function closePurgeModal() {
+        const modal = document.getElementById('purge-modal');
+        modal.classList.add('hidden');
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePurgeModal();
+    });
+</script>
+{% endblock %}

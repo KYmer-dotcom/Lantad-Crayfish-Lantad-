@@ -350,8 +350,8 @@ def order_delete_admin(request, order_id):
             target_entity=f'Order #{order_number}',
             details=f'Deleted customer sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
         )
-        order.delete()
-        messages.success(request, f'Order "{order_number}" deleted successfully.')
+        order.soft_delete(user=request.user)
+        messages.success(request, f'Order "{order_number}" archived successfully. You can restore it anytime from Data Archive.')
     return redirect('sales:orders_admin')
 
 
@@ -372,8 +372,8 @@ def order_delete(request, order_id):
             target_entity=f'Order #{order_number}',
             details=f'Deleted sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
         )
-        order.delete()
-        messages.success(request, f'Order "{order_number}" deleted successfully.')
+        order.soft_delete(user=request.user)
+        messages.success(request, f'Order "{order_number}" archived successfully. You can restore it anytime from Data Archive.')
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
@@ -928,16 +928,15 @@ def product_delete(request, product_id):
 
     product = get_object_or_404(Product, pk=product_id)
 
-    product.is_active = False
-    product.save(update_fields=['is_active'])
+    product.soft_delete(user=request.user)
     InputLog.log(
         user=request.user,
         action=InputLog.Action.DELETED,
         module='Product Management',
         target_entity=f'Product: {product.name}',
-        details=f'Admin deleted product "{product.name}" from active catalog.'
+        details=f'Admin archived product "{product.name}" from active catalog.'
     )
-    messages.success(request, f'Product "{product.name}" removed successfully.')
+    messages.success(request, f'Product "{product.name}" archived successfully. You can restore it anytime from Data Archive.')
 
     next_url = request.POST.get('next') or request.GET.get('next')
     return redirect(next_url or 'sales:list')

@@ -39,8 +39,13 @@ urlpatterns = [
     path('track-order/', lambda request: redirect('sales:delivery_track'), name='track_order_root'),
     path('delivery/track/', lambda request: redirect('sales:delivery_track')),
     path('delivery-logs/', lambda request: redirect('sales:delivery_logs'), name='delivery_logs_root'),
-    path('delivery/logs/', lambda request: redirect('sales:delivery_logs')),
     path('notifications/', views.notifications, name='notifications'),
+    
+    # Data Archive & Restore
+    path('archive/', views.archive_dashboard, name='archive_dashboard'),
+    path('archive/restore/<str:entity_type>/<int:entity_id>/', views.archive_restore, name='archive_restore'),
+    path('archive/hard-delete/<str:entity_type>/<int:entity_id>/', views.archive_hard_delete, name='archive_hard_delete'),
+
     
     # Module Pages
     path('operations/', include(('apps.operations.template_urls', 'ponds'), namespace='operations')),

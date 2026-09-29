@@ -329,18 +329,24 @@ def feed_type_edit(request, feed_type_id):
 
 @login_required
 def feed_type_delete(request, feed_type_id):
-    """Delete a feed type."""
+    """Soft delete / archive a feed type."""
     ensure_not_customer(request.user)
     feed_type = get_object_or_404(FeedType, id=feed_type_id)
     
     if request.method == 'POST':
-        if feed_type.feeding_logs.exists() or feed_type.inventory.exists():
-            # Instead of deleting, just deactivate to preserve history
-            feed_type.is_active = False
-            feed_type.save()
-            messages.success(request, 'Feed type deactivated (cannot be completely deleted due to existing records).')
-        else:
-            feed_type.delete()
-            messages.success(request, 'Feed type deleted successfully.')
-            
+        feed_type.soft_delete(user=request.user)
+        try:
+            from apps.sales.models import InputLog
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.DELETED,
+                module='Feed Inventory',
+                target_entity=f'Feed Type: {feed_type.name}',
+                details=f'Archived feed type "{feed_type.name}" ({feed_type.get_category_display()})'
+            )
+        except Exception:
+            pass
+        messages.success(request, f'Feed type "{feed_type.name}" archived successfully. You can restore it anytime from Data Archive.')
+        
     return redirect(request.META.get('HTTP_REFERER', 'inventory'))
+

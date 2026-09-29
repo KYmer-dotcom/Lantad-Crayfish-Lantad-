@@ -9,6 +9,7 @@ Manages customers, sales orders, and delivery tracking.
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from core.abstract_models import SoftDeleteModel
 
 
 class Customer(models.Model):
@@ -60,7 +61,7 @@ class Customer(models.Model):
         return self.orders.values('product').distinct().count()
 
 
-class Product(models.Model):
+class Product(SoftDeleteModel):
     """Products available for sale in the market."""
 
     class Category(models.TextChoices):
@@ -164,7 +165,7 @@ class Product(models.Model):
         return self.quantity_kg <= self.reorder_level_kg
 
 
-class SalesOrder(models.Model):
+class SalesOrder(SoftDeleteModel):
     """Sales orders for fish products."""
 
     class OrderType(models.TextChoices):

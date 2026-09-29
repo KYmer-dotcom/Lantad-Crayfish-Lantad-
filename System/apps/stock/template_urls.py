@@ -14,4 +14,6 @@ urlpatterns = [
     path('stock/add/', template_views.species_stock_add, name='species_stock_add'),
     path('batch/create/', template_views.batch_create, name='batch_create'),
     path('batch/<int:batch_id>/update/', template_views.batch_update, name='batch_update'),
+    path('batch/<int:batch_id>/delete/', template_views.batch_delete, name='batch_delete'),
 ]
+

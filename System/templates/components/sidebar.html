@@ -277,6 +277,19 @@
                     <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Reports & Analytics</span>
                 </a>
 
+                {% if user.is_owner or user.is_staff or user.is_superuser %}
+                <!-- Data Archive -->
+                <a href="{% url 'archive_dashboard' %}" 
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'archive_dashboard' or '/archive' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    title="Data Archive">
+                    <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
+                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Data Archive</span>
+                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Data Archive</span>
+                </a>
+                {% endif %}
+
                 <!-- Notifications -->
                 <a href="{% url 'notifications' %}" 
                     class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'notifications' or '/notifications' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"

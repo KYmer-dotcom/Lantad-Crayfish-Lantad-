@@ -10,9 +10,10 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum, Value, DecimalField
 from django.db.models.functions import Coalesce
+from core.abstract_models import SoftDeleteModel
 
 
-class FeedType(models.Model):
+class FeedType(SoftDeleteModel):
     """Types of fish feed available."""
     
     class Category(models.TextChoices):

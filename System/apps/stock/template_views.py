@@ -379,3 +379,28 @@ def batch_update(request, batch_id):
         messages.error(request, 'Please provide valid stock values.')
 
     return redirect('stock:list')
+
+
+@login_required
+def batch_delete(request, batch_id):
+    """Soft delete / archive a stock batch."""
+    ensure_not_customer(request.user)
+    batch = get_object_or_404(filter_batches_for_user(request.user), pk=batch_id)
+    if request.method == 'POST':
+        batch_code = batch.batch_code
+        pond_name = batch.pond.name if batch.pond else 'Pond'
+        batch.soft_delete(user=request.user)
+        try:
+            from apps.sales.models import InputLog
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.DELETED,
+                module='Stock Monitoring',
+                target_entity=f'Batch: {batch_code}',
+                details=f'Archived stock batch "{batch_code}" from {pond_name}'
+            )
+        except Exception:
+            pass
+        messages.success(request, f'Stock batch "{batch_code}" archived successfully. You can restore it anytime from Data Archive.')
+    return redirect('stock:list')
+
