@@ -200,7 +200,16 @@
                     </svg>
                     {{ alert.sanitization_date|date:"M. d" }}
                 </span>
-                <a href="{% url 'operations:list' %}" class="text-[#cca43b] font-bold hover:underline cursor-pointer">Manage →</a>
+                {% if alert.pond.id %}
+                <form method="POST" action="{% url 'operations:pond_sanitize' alert.pond.id %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-[#cca43b] font-bold hover:underline cursor-pointer flex items-center gap-1">
+                        ✓ Mark Sanitized
+                    </button>
+                </form>
+                {% else %}
+                <a href="{% url 'operations:list' %}?type=azula" class="text-[#cca43b] font-bold hover:underline cursor-pointer">Manage →</a>
+                {% endif %}
             </div>
         </div>
         {% endwith %}
@@ -364,10 +373,20 @@
                         <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pond Sanitization: {{ alert.pond.name|default:"Azula Sector 1" }}</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ alert.badge_class }} font-mono">{{ alert.status_text }}</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Azula pond requires sanitization 15 days after transfer (Transfer: {{ alert.pond.transfer_date|default:"Recent" }}). Target: {{ alert.sanitization_date|date:"M. d, Y" }}.</p>
-                    <div class="flex items-center gap-4">
-                        <a href="{% url 'operations:list' %}" class="inline-flex items-center gap-1.5 text-xs font-black text-[#cca43b] hover:text-[#cca43b]/80 uppercase tracking-wider">
-                            Sanitization Protocol
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">
+                        Azula pond requires sanitization 15 days after transfer (Transfer: {{ alert.pond.transfer_date|default:"Recent" }}{% if alert.last_sanitized_date %}, Last Sanitized: {{ alert.last_sanitized_date|date:"M. d, Y" }}{% endif %}). Target: {{ alert.sanitization_date|date:"M. d, Y" }}.
+                    </p>
+                    <div class="flex items-center gap-4 flex-wrap">
+                        {% if alert.pond.id %}
+                        <form method="POST" action="{% url 'operations:pond_sanitize' alert.pond.id %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-[#cca43b] text-[#021f15] hover:bg-[#b08d33] transition-all shadow-sm cursor-pointer">
+                                ✓ Mark Sanitized
+                            </button>
+                        </form>
+                        {% endif %}
+                        <a href="{% url 'operations:list' %}?type=azula" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:text-[#cca43b]/80 uppercase tracking-wider">
+                            View Azula Sector
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                     </div>

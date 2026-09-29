@@ -60,6 +60,7 @@ class Pond(models.Model):
     # Dynamic form fields
     product_name = models.CharField(max_length=100, blank=True)
     transfer_date = models.DateField(null=True, blank=True)
+    last_sanitized_date = models.DateField(null=True, blank=True, help_text="Date when this pond or tank was last sanitized")
     breeding_type = models.CharField(max_length=50, blank=True, help_text="e.g. Reproduction, Crilings")
     male_quantity = models.IntegerField(null=True, blank=True, default=0)
     female_quantity = models.IntegerField(null=True, blank=True, default=0)
@@ -117,6 +118,14 @@ class Pond(models.Model):
         if self.transfer_date and self.location == 'Azula':
             harvest_date = self.transfer_date + timedelta(days=30)
             return harvest_date.strftime('%b. %d, %Y')
+        return None
+
+    @property
+    def next_sanitization_date(self):
+        from datetime import timedelta
+        base_date = self.last_sanitized_date or self.transfer_date
+        if base_date:
+            return base_date + timedelta(days=15)
         return None
     @property
     def est_transfer_date(self):

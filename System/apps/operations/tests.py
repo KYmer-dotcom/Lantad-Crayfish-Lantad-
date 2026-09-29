@@ -53,3 +53,31 @@ class PondOperationalTest(TestCase):
         pond.save()
         pond.refresh_from_db()
         self.assertEqual(pond.status, Pond.Status.MAINTENANCE)
+
+    def test_azula_sanitization_lifecycle(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        today = timezone.now().date()
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='AZULA-POND-01',
+            location='Azula',
+            size=Decimal('50.00'),
+            depth=Decimal('1.00'),
+            capacity=1000,
+            transfer_date=today - timedelta(days=20),
+            status=Pond.Status.MAINTENANCE
+        )
+        # Next sanitization initially based on transfer_date
+        self.assertEqual(pond.next_sanitization_date, pond.transfer_date + timedelta(days=15))
+
+        # Client posts to sanitize view
+        self.client.login(username='pondowner', password='password123')
+        response = self.client.post(f'/operations/pond/{pond.id}/sanitize/')
+        self.assertEqual(response.status_code, 302)
+        
+        pond.refresh_from_db()
+        self.assertEqual(pond.last_sanitized_date, today)
+        self.assertEqual(pond.next_sanitization_date, today + timedelta(days=15))
+        self.assertEqual(pond.status, Pond.Status.ACTIVE)
+

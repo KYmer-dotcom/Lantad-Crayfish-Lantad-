@@ -12,6 +12,7 @@ urlpatterns = [
     path('farm/create/', template_views.farm_create, name='farm_create'),
     path('pond/create/', template_views.pond_create, name='pond_create'),
     path('pond/<int:pond_id>/edit/', template_views.pond_edit, name='pond_edit'),
+    path('pond/<int:pond_id>/sanitize/', template_views.mark_pond_sanitized, name='pond_sanitize'),
     path('farm/<int:farm_id>/remove/', template_views.farm_remove, name='farm_remove'),
     path('pond/<int:pond_id>/remove/', template_views.pond_remove, name='pond_remove'),
     path('operations/', template_views.operations_data, name='operations_data'),

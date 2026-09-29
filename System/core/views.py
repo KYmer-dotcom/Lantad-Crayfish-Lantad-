@@ -292,7 +292,8 @@ def dashboard(request):
     
     azula_alerts = []
     for pond in azula_ponds:
-        sanitization_date = pond.transfer_date + timedelta(days=15)
+        base_date = pond.last_sanitized_date or pond.transfer_date
+        sanitization_date = base_date + timedelta(days=15)
         days_until = (sanitization_date - today).days
         
         if days_until < 0:
@@ -317,6 +318,7 @@ def dashboard(request):
         azula_alerts.append({
             'pond': pond,
             'sanitization_date': sanitization_date,
+            'last_sanitized_date': pond.last_sanitized_date,
             'days_until': days_until,
             'status_text': status_text,
             'badge_class': badge_class,
@@ -555,7 +557,8 @@ def notifications(request):
     
     azula_alerts = []
     for pond in azula_ponds:
-        sanitization_date = pond.transfer_date + timedelta(days=15)
+        base_date = pond.last_sanitized_date or pond.transfer_date
+        sanitization_date = base_date + timedelta(days=15)
         days_until = (sanitization_date - today).days
         
         if days_until < 0:
@@ -574,6 +577,7 @@ def notifications(request):
         azula_alerts.append({
             'pond': pond,
             'sanitization_date': sanitization_date,
+            'last_sanitized_date': pond.last_sanitized_date,
             'days_until': days_until,
             'status_text': status_text,
             'badge_class': badge_class,

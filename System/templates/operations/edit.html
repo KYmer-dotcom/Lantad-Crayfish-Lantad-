@@ -9,6 +9,29 @@
         <h1 class="mt-2 text-2xl font-semibold text-stone-100">Edit Record</h1>
     </div>
 
+    {% if pond.location == 'Azula' or 'Azula' in pond.name %}
+    <div class="rounded-3xl border border-[#cca43b]/30 bg-[#cca43b]/10 backdrop-blur-sm p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b]"></span>
+                <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Azula Sanitization Protocol</p>
+            </div>
+            <p class="text-xs text-stone-300">
+                Last Sanitized: <strong class="text-white">{{ pond.last_sanitized_date|date:"M. d, Y"|default:"Not recorded yet" }}</strong>
+                {% if pond.next_sanitization_date %}
+                &nbsp;·&nbsp; Next Due: <strong class="text-[#cca43b]">{{ pond.next_sanitization_date|date:"M. d, Y" }}</strong>
+                {% endif %}
+            </p>
+        </div>
+        <form method="post" action="{% url 'operations:pond_sanitize' pond.id %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="rounded-2xl bg-[#cca43b] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#021f15] hover:bg-[#b08d33] transition-colors shadow-sm cursor-pointer">
+                ✓ Mark Sanitized Today
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
     <div class="rounded-3xl border border-white/10 bg-[#021f15]/80 backdrop-blur-sm p-6">
         <form method="post" action="{% url 'operations:pond_edit' pond.id %}" class="space-y-4">
             {% csrf_token %}

@@ -475,3 +475,38 @@ def record_operations(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
+@login_required
+@require_POST
+def mark_pond_sanitized(request, pond_id):
+    ensure_not_customer(request.user)
+    pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
+    
+    from django.utils import timezone
+    today = timezone.now().date()
+    pond.last_sanitized_date = today
+    if pond.status == Pond.Status.MAINTENANCE:
+        pond.status = Pond.Status.ACTIVE
+    pond.save()
+    
+    # Audit trail
+    try:
+        from apps.sales.models import InputLog
+        InputLog.log(
+            user=request.user,
+            module='Operations',
+            action='sanitized',
+            target_entity=f"Pond {pond.name}",
+            change_details=f"Pond {pond.name} marked as sanitized on {today}. Next sanitization due in 15 days."
+        )
+    except Exception:
+        pass
+        
+    messages.success(request, f"{pond.name} has been marked as sanitized. Next cycle due in 15 days.")
+    
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('notifications')
+
+
+
