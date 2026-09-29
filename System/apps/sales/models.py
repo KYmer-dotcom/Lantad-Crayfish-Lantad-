@@ -106,8 +106,10 @@ class Product(models.Model):
         if not self.unit_type:
             return 'pcs'
         legacy_labels = {
-            'pcs': 'Pieces (pcs)',
-            'kg': 'Kilograms (kg)',
+            'pcs': 'pc',
+            'pieces (pcs)': 'pc',
+            'kg': 'kg',
+            'kilograms (kg)': 'kg',
             'tub': 'Tubs',
             'pair': 'Pairs',
             'pack': 'Packs',

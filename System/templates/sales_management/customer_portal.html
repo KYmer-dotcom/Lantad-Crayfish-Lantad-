@@ -178,7 +178,7 @@
                         value="{% if first_order %}{% if first_order.delivery_address|upper == 'PICKUP' %}pickup{% else %}delivery{% endif %}{% else %}pickup{% endif %}">
                     {% endwith %}
 
-                    <!-- Pricing Unit Selector: Per Piece vs By KG -->
+                    <!-- Pricing Unit Selector: Per Piece vs By Unit -->
                     <div class="space-y-2 pt-2">
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
@@ -187,7 +187,7 @@
                                 Piece (pc)</button>
                             <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
                                 class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
-                                KG (kg)</button>
+                                {{ featured_product.unit_display|default:'kg' }}</button>
                         </div>
                     </div>
 
@@ -317,7 +317,7 @@
                             <p class="text-xs text-[#a0ac96] mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/kg{% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.unit_display|default:'kg' }}{% endif %}
                                 {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %} </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
@@ -505,12 +505,12 @@
                                             </div>
                                             <span
                                                 class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
-                                                {% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}
+                                                {% if '[KG]' in order.notes %}{{ order.product.unit_display|default:'kg' }}{% else %}pcs{% endif %}
                                             </span>
                                         </div>
                                         <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
                                         {% else %}
-                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}kg{% else %}pcs{% endif %}</span></p>
+                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}{{ order.product.unit_display|default:'kg' }}{% else %}pcs{% endif %}</span></p>
                                         {% endif %}
                                     </div>
 
