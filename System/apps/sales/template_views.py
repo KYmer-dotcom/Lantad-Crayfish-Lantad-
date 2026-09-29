@@ -1692,11 +1692,9 @@ def delivery_logs_page(request):
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
-    # Active Log Type Tab: 'order' vs 'activity' vs 'input'
+    # Active Log Type Tab: 'order' vs 'product' vs 'activity' vs 'input'
     tab_filter = request.GET.get('tab', 'order').strip().lower()
-    if tab_filter == 'product':
-        tab_filter = 'order'
-    if tab_filter not in ['order', 'activity', 'input']:
+    if tab_filter not in ['order', 'product', 'activity', 'input']:
         tab_filter = 'order'
 
     # Fetch Input / Deletion Logs (Who added that data and deleted that)
@@ -1819,6 +1817,30 @@ def delivery_logs_page(request):
     from django.utils import timezone
     activity_logs.sort(key=lambda x: x['timestamp'] if x['timestamp'] else timezone.now(), reverse=True)
 
+    # Product Logs: Snapshot of all active products and their pricing info
+    product_logs_qs = Product.objects.filter(is_active=True).select_related('species', 'pond').order_by('name')
+    if query:
+        product_logs_qs = product_logs_qs.filter(
+            Q(name__icontains=query) |
+            Q(unit_type__icontains=query) |
+            Q(notes__icontains=query) |
+            Q(category__icontains=query)
+        )
+    # Date filter: filter products by their updated_at date
+    if start_date:
+        try:
+            start_d = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            product_logs_qs = product_logs_qs.filter(updated_at__date__gte=start_d)
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_d = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+            product_logs_qs = product_logs_qs.filter(updated_at__date__lte=end_d)
+        except ValueError:
+            pass
+    product_logs_count = product_logs_qs.count()
+
     context = {
         'deliveries': page_obj,
         'page_obj': page_obj,
@@ -1827,6 +1849,8 @@ def delivery_logs_page(request):
         'input_logs_count': input_logs_count,
         'input_logs_added_count': input_logs_added_count,
         'input_logs_deleted_count': input_logs_deleted_count,
+        'product_logs': product_logs_qs,
+        'product_logs_count': product_logs_count,
         'total_logs': total_logs,
         'delivered_count': delivered_count,
         'in_transit_count': in_transit_count,
