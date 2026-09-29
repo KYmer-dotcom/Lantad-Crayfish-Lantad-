@@ -17,4 +17,6 @@ urlpatterns = [
     path('pond/<int:pond_id>/remove/', template_views.pond_remove, name='pond_remove'),
     path('operations/', template_views.operations_data, name='operations_data'),
     path('operations/record/', template_views.record_operations, name='record_operations'),
+    path('operations/azula-sanitize/', template_views.record_azula_sanitization, name='record_azula_sanitization'),
 ]
+

@@ -130,6 +130,11 @@
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
+            {% if azula_sanitized_today %}
+            <button type="button" disabled class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
+            {% else %}
+            <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-full bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Operation</button>
+            {% endif %}
         </div>
         <div class="p-6">
             <div class="grid gap-4 min-h-[600px] text-stone-100 font-bold" style="grid-template-columns: 2fr 2fr 1fr 2fr 3fr; grid-template-rows: repeat(10, 1fr);">
@@ -402,6 +407,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Azula Tanks Sanitization Table -->
+        <div class="op-table-wrapper hidden" data-category="Azula">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Azula Tanks</h3>
+                    <p class="text-xs text-[#a0ac96] mt-0.5">15-day sanitization protocol for active tanks</p>
+                </div>
+                <button type="button" onclick="submitAzulaOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
+                    Record
+                </button>
+            </div>
+            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                <table class="w-full text-left text-sm text-stone-100">
+                    <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
+                        <tr>
+                            <th class="px-6 py-4">Name / ID</th>
+                            <th class="px-6 py-4 text-center">Sanitize</th>
+                            <th class="px-6 py-4">Sanitization Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        {% for pond in azula_active_ponds %}
+                        <tr class="azula-op-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-white">{{ pond.name }}</div>
+                                <div class="text-xs text-[#a0ac96] mt-0.5">Quantity: {{ pond.capacity|default:"0" }} kg</div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {% if pond.last_sanitized_date == today %}
+                                <div class="flex flex-col items-center gap-1 justify-center recorded-badge">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-black text-emerald-400 border border-emerald-500/20">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Sanitized
+                                    </span>
+                                    <span class="text-[9px] text-[#a0ac96]">Today</span>
+                                </div>
+                                {% else %}
+                                <input type="checkbox" checked class="azula-sanitize-checkbox h-5 w-5 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-xs font-mono">
+                                {% if pond.last_sanitized_date == today %}
+                                <span class="text-emerald-400 font-semibold">✓ Completed today (Next due in 15 days)</span>
+                                {% elif pond.next_sanitization_date %}
+                                <span class="text-[#cca43b]">Target: {{ pond.next_sanitization_date|date:"M. d, Y" }}</span>
+                                {% else %}
+                                <span class="text-stone-400">Target: 15 days post-transfer</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No active Azula tanks found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -509,8 +576,15 @@
     // Operations Sidebar Toggle
     function openOperationsSidebar(category) {
         let title = "Operations Data";
-        if (category) {
+        if (category === 'Azula') {
+            title = "Azula Sanitization Protocol";
+        } else if (category) {
             title = category + " Operations";
+        }
+        const titleEl = document.getElementById('operations-sidebar-title');
+        if (titleEl) titleEl.textContent = title;
+
+        if (category) {
             // Show only relevant category table wrapper
             document.querySelectorAll('.op-table-wrapper').forEach(wrapper => {
                 if (wrapper.dataset.category === category) {
@@ -620,19 +694,74 @@
         });
     }
 
+    function submitAzulaOperations(button) {
+        const rows = document.querySelectorAll('.azula-op-row');
+        const pondIds = [];
+        
+        rows.forEach(row => {
+            const checkbox = row.querySelector('.azula-sanitize-checkbox');
+            if (checkbox && checkbox.checked) {
+                const pondId = row.getAttribute('data-pond-id');
+                if (pondId) pondIds.push(parseInt(pondId));
+            }
+        });
+        
+        if (pondIds.length === 0) {
+            showToast('No active tanks selected for sanitization.', 'error');
+            return;
+        }
+        
+        const originalText = button.textContent;
+        button.textContent = 'Recording...';
+        button.disabled = true;
+        
+        fetch("{% url 'operations:record_azula_sanitization' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ pond_ids: pondIds })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to record sanitization.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast(data.message || 'Sanitization recorded successfully!', 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('operationsScrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 1200);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error recording sanitization: ' + error.message, 'error');
+        })
+        .finally(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        });
+    }
+
     function checkRecordedTables() {
         document.querySelectorAll('table').forEach(table => {
-            const rows = table.querySelectorAll('.operation-row');
+            const rows = table.querySelectorAll('.operation-row, .azula-op-row');
             if (rows.length === 0) return;
             
             const recordedCount = table.querySelectorAll('.recorded-badge').length;
             if (rows.length === recordedCount) {
                 // Find the Record button above this table
-                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-2xl.border.border-white\\/10');
+                const parent = table.closest('.rounded-2xl') || table.closest('.rounded-lg');
                 if (parent) {
                     const sibling = parent.previousElementSibling;
                     if (sibling) {
-                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"]');
+                        const recordBtn = sibling.querySelector('button[onclick="submitPondOperations(this)"], button[onclick="submitAzulaOperations(this)"]');
                         if (recordBtn) {
                             recordBtn.disabled = true;
                             recordBtn.textContent = 'Recorded Today';

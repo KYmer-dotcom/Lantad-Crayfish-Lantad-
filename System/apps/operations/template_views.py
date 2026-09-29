@@ -183,6 +183,7 @@ def ponds_list(request):
     main_ponds = sorted(list(ponds.filter(location='Main Pond') | ponds.filter(location='')), key=natural_sort_key)
     azula_ponds_list = list(ponds.filter(location='Azula'))
     azula_ponds = {p.shelf_position: p for p in azula_ponds_list}
+    azula_active_ponds = sorted([p for p in azula_ponds_list if p.status == 'active'], key=natural_sort_key)
 
     # Attach today_log to all finalized list elements in Python
     all_finalized = sw_block1_ponds + sw_block2_ponds + sw_block3_ponds + breeding_ponds + main_ponds + azula_ponds_list
@@ -203,6 +204,9 @@ def ponds_list(request):
     superworm_cabin_recorded_today = superworm_ponds.exists() and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in superworm_ponds
     )
+    azula_sanitized_today = len(azula_active_ponds) > 0 and all(
+        p.last_sanitized_date == today for p in azula_active_ponds
+    )
 
     context = {
         'farms': farms,
@@ -216,12 +220,15 @@ def ponds_list(request):
         'sw_block2_ponds': sw_block2_ponds,
         'sw_block3_ponds': sw_block3_ponds,
         'azula_ponds': azula_ponds,
+        'azula_active_ponds': azula_active_ponds,
         'farm_form': FarmForm(),
         'pond_form': PondForm(user=request.user),
         'feed_types': FeedType.objects.filter(is_active=True).order_by('category', 'name'),
         'main_pond_recorded_today': main_pond_recorded_today,
         'breeding_pond_recorded_today': breeding_pond_recorded_today,
         'superworm_cabin_recorded_today': superworm_cabin_recorded_today,
+        'azula_sanitized_today': azula_sanitized_today,
+        'today': today,
     }
     return render(request, 'operations/list.html', context)
 
@@ -507,6 +514,48 @@ def mark_pond_sanitized(request, pond_id):
     if referer:
         return redirect(referer)
     return redirect('notifications')
+
+
+@login_required
+@require_POST
+def record_azula_sanitization(request):
+    ensure_not_customer(request.user)
+    try:
+        from django.utils import timezone
+        today = timezone.now().date()
+        data = json.loads(request.body)
+        pond_ids = data.get('pond_ids', [])
+        
+        sanitized_names = []
+        for pid in pond_ids:
+            pond = get_object_or_404(get_accessible_ponds(request.user), pk=pid)
+            pond.last_sanitized_date = today
+            if pond.status == Pond.Status.MAINTENANCE:
+                pond.status = Pond.Status.ACTIVE
+            pond.save()
+            sanitized_names.append(pond.name)
+            
+            # Audit trail
+            try:
+                from apps.sales.models import InputLog
+                InputLog.log(
+                    user=request.user,
+                    module='Operations',
+                    action='sanitized',
+                    target_entity=f"Pond {pond.name}",
+                    change_details=f"Azula tank {pond.name} sanitized on {today} via Operations Sidebar."
+                )
+            except Exception:
+                pass
+                
+        return JsonResponse({
+            'status': 'success',
+            'sanitized_count': len(sanitized_names),
+            'message': f"Successfully recorded sanitization for {len(sanitized_names)} Azula tank(s)."
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 
 
 

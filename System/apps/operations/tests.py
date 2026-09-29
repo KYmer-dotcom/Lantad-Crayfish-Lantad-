@@ -81,3 +81,31 @@ class PondOperationalTest(TestCase):
         self.assertEqual(pond.next_sanitization_date, today + timedelta(days=15))
         self.assertEqual(pond.status, Pond.Status.ACTIVE)
 
+    def test_record_azula_sanitization_bulk_api(self):
+        import json
+        from django.utils import timezone
+        today = timezone.now().date()
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='AZULA-POND-02',
+            location='Azula',
+            size=Decimal('50.00'),
+            depth=Decimal('1.00'),
+            capacity=1000,
+            status=Pond.Status.ACTIVE
+        )
+        self.client.login(username='pondowner', password='password123')
+        response = self.client.post(
+            '/operations/operations/azula-sanitize/',
+            data=json.dumps({'pond_ids': [pond.id]}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data.get('status'), 'success')
+        self.assertEqual(data.get('sanitized_count'), 1)
+        
+        pond.refresh_from_db()
+        self.assertEqual(pond.last_sanitized_date, today)
+
+
