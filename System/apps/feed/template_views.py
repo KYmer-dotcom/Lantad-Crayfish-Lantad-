@@ -346,7 +346,7 @@ def feed_type_delete(request, feed_type_id):
             )
         except Exception:
             pass
-        messages.success(request, f'Feed type "{feed_type.name}" archived successfully. You can restore it anytime from Data Archive.')
+        messages.success(request, f'Feed type "{feed_type.name}" moved to Bin. You can restore it anytime from Bin.')
         
     return redirect(request.META.get('HTTP_REFERER', 'inventory'))
 

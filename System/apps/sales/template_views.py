@@ -351,7 +351,7 @@ def order_delete_admin(request, order_id):
             details=f'Deleted customer sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
         )
         order.soft_delete(user=request.user)
-        messages.success(request, f'Order "{order_number}" archived successfully. You can restore it anytime from Data Archive.')
+        messages.success(request, f'Order "{order_number}" moved to Bin. You can restore it anytime from Bin.')
     return redirect('sales:orders_admin')
 
 
@@ -373,7 +373,7 @@ def order_delete(request, order_id):
             details=f'Deleted sales order for {cust_name} ({order.quantity_kg} kg • ₱{order.total_amount:,.2f})'
         )
         order.soft_delete(user=request.user)
-        messages.success(request, f'Order "{order_number}" archived successfully. You can restore it anytime from Data Archive.')
+        messages.success(request, f'Order "{order_number}" moved to Bin. You can restore it anytime from Bin.')
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
@@ -934,9 +934,9 @@ def product_delete(request, product_id):
         action=InputLog.Action.DELETED,
         module='Product Management',
         target_entity=f'Product: {product.name}',
-        details=f'Admin archived product "{product.name}" from active catalog.'
+        details=f'Admin moved product "{product.name}" to Bin.'
     )
-    messages.success(request, f'Product "{product.name}" archived successfully. You can restore it anytime from Data Archive.')
+    messages.success(request, f'Product "{product.name}" moved to Bin. You can restore it anytime from Bin.')
 
     next_url = request.POST.get('next') or request.GET.get('next')
     return redirect(next_url or 'sales:list')

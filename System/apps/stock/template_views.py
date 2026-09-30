@@ -401,6 +401,6 @@ def batch_delete(request, batch_id):
             )
         except Exception:
             pass
-        messages.success(request, f'Stock batch "{batch_code}" archived successfully. You can restore it anytime from Data Archive.')
+        messages.success(request, f'Stock batch "{batch_code}" moved to Bin. You can restore it anytime from Bin.')
     return redirect('stock:list')
 

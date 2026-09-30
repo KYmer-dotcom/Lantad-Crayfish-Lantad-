@@ -635,7 +635,7 @@ def archive_dashboard(request):
     Accessible to Owners and Admins.
     """
     if not (getattr(request.user, 'is_owner', False) or request.user.is_staff or request.user.is_superuser):
-        messages.error(request, 'Access denied. Only Farm Owners and Administrators can view the Data Archive.')
+        messages.error(request, 'Access denied. Only Farm Owners and Administrators can view the Bin.')
         return redirect('dashboard')
 
     from apps.sales.models import Product, SalesOrder
@@ -715,9 +715,9 @@ def archive_restore(request, entity_type, entity_id):
         InputLog.log(
             user=request.user,
             action=InputLog.Action.UPDATED,
-            module='Data Archive',
+            module='Bin',
             target_entity=f'{model_name}: {item_name}',
-            details=f'Restored {item_name} from Data Archive back into active {log_module}.'
+            details=f'Restored {item_name} from Bin back into active {log_module}.'
         )
     except Exception:
         pass
@@ -760,7 +760,7 @@ def archive_hard_delete(request, entity_type, entity_id):
         InputLog.log(
             user=request.user,
             action=InputLog.Action.DELETED,
-            module='Data Archive',
+            module='Bin',
             target_entity=f'{model_name}: {item_name}',
             details=f'Permanently purged {item_name} from database.'
         )
