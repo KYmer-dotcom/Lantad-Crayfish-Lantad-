@@ -66,10 +66,11 @@
                 <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Output Format</p>
             </div>
-            <select
+            <select id="output-format-select"
                 class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer mt-2">
-                <option class="bg-[#01140e] text-white">Printable PDF</option>
-                <option class="bg-[#01140e] text-white">Dashboard View</option>
+                <option value="pdf" class="bg-[#01140e] text-white">Printable PDF</option>
+                <option value="csv" class="bg-[#01140e] text-white">CSV Spreadsheet (.csv)</option>
+                <option value="dashboard" class="bg-[#01140e] text-white">Dashboard View</option>
             </select>
         </div>
 
@@ -796,6 +797,13 @@
             <h2 class="text-xl font-bold text-stone-100">REPORT</h2>
         </div>
         <div class="flex items-center gap-3">
+            <button type="button" onclick="exportReportToCSV()"
+                class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600/90 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500 transition-colors cursor-pointer border border-emerald-500/30">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export CSV
+            </button>
             <button onclick="window.print()"
                 class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-black hover:bg-[#cca43b]/90 transition-colors cursor-pointer">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1210,9 +1218,101 @@
             });
         }
 
+        // CSV Export Helper
+        window.exportReportToCSV = function () {
+            const rType = document.getElementById('report-type-select') ? document.getElementById('report-type-select').value : 'all';
+            const startDate = document.getElementById('start-date-input').value || 'All Dates';
+            const endDate = document.getElementById('end-date-input').value || 'All Dates';
+            
+            let csvRows = [];
+            csvRows.push(['"SILAY SUPERWORM & CRAYFISH - AQUACULTURE MANAGEMENT SYSTEM"']);
+            csvRows.push([`"Report Type: ${rType.toUpperCase()}"`, `"Period: ${startDate} to ${endDate}"`, `"Generated: ${new Date().toLocaleDateString()}"`]);
+            csvRows.push([]);
+
+            function escapeCSV(val) {
+                if (val === null || val === undefined) return '""';
+                let str = String(val).trim().replace(/"/g, '""');
+                return `"${str}"`;
+            }
+
+            function extractTableData(tbodyId, headerCols, title) {
+                const tbody = document.getElementById(tbodyId);
+                if (!tbody) return;
+                const rows = tbody.querySelectorAll('tr');
+                if (rows.length === 0 || (rows.length === 1 && rows[0].textContent.includes('No '))) return;
+
+                csvRows.push([`"--- ${title.toUpperCase()} ---"`]);
+                csvRows.push(headerCols.map(h => `"${h}"`));
+
+                rows.forEach(tr => {
+                    const cells = tr.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        let rowData = [];
+                        cells.forEach(td => {
+                            rowData.push(escapeCSV(td.textContent.replace(/\s+/g, ' ')));
+                        });
+                        csvRows.push(rowData);
+                    }
+                });
+                csvRows.push([]);
+            }
+
+            if (rType === 'sales' || rType === 'all') {
+                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
+            }
+            if (rType === 'operations' || rType === 'all') {
+                extractTableData('ops-log-tbody', ['Date', 'Time', 'Pond Name', 'Status', 'Logged By'], 'Operational Logs');
+            }
+            if (rType === 'product_logs' || rType === 'all' || rType === 'logs') {
+                extractTableData('source-product-logs-tbody', ['Date', 'Ref / Tracking', 'Status', 'Type', 'Destination', 'Weight / Quantity', 'Rider / Personnel', 'Vehicle'], 'Product Delivery Logs');
+            }
+            if (rType === 'activity_logs' || rType === 'all' || rType === 'logs') {
+                extractTableData('source-activity-logs-tbody', ['Date', 'User', 'Role', 'Category', 'Action / Event', 'Status', 'IP Address'], 'Activity Audit Logs');
+            }
+            if (rType === 'input_logs' || rType === 'all' || rType === 'logs') {
+                extractTableData('source-input-logs-tbody', ['Date', 'User', 'Role', 'Category', 'Item / Field Modified', 'Action Detail', 'Remarks'], 'Input Modification Logs');
+            }
+            if (rType === 'receipts') {
+                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Verified Receipts Ledger');
+            }
+
+            const csvString = csvRows.map(e => e.join(',')).join('\r\n');
+            const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `AquaFarm_Report_${rType}_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            if (typeof showToast === 'function') {
+                showToast('CSV Report exported and downloaded successfully!', 'success');
+            }
+        };
+
         if (generateBtn) {
             generateBtn.addEventListener('click', function () {
                 const originalText = this.innerHTML;
+                const outputFormatSelect = document.getElementById('output-format-select');
+                const outputFormat = outputFormatSelect ? outputFormatSelect.value : 'pdf';
+
+                if (outputFormat === 'csv') {
+                    this.disabled = true;
+                    this.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>Exporting CSV...
+                    `;
+                    setTimeout(() => {
+                        exportReportToCSV();
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }, 400);
+                    return;
+                }
+
                 this.disabled = true;
                 this.innerHTML = `
                     <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
@@ -1230,7 +1330,9 @@
                     if (startDate) url += `start_date=${startDate}&`;
                     if (endDate) url += `end_date=${endDate}&`;
                     if (reportType) url += `report_type=${reportType}&`;
-                    url += 'show_report=1';
+                    if (outputFormat === 'pdf') {
+                        url += 'show_report=1';
+                    }
 
                     window.location.href = url;
                 }, 500);
