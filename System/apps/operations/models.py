@@ -90,8 +90,8 @@ class Pond(models.Model):
     def days_since_transfer(self):
         from django.utils import timezone
         if self.transfer_date:
-            delta = timezone.now().date() - self.transfer_date
-            return delta.days
+            delta = timezone.localdate() - self.transfer_date
+            return max(0, delta.days)
         return None
 
     @property
@@ -131,7 +131,7 @@ class Pond(models.Model):
     @property
     def sanitization_days_remaining(self):
         from django.utils import timezone
-        today = timezone.now().date()
+        today = timezone.localdate()
         target = self.next_sanitization_date
         if not target:
             return 0

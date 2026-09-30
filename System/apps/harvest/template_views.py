@@ -357,7 +357,7 @@ def pond_harvest(request, pond_id):
     if active_batch:
         HarvestRecord.objects.create(
             stock_batch=active_batch,
-            harvest_date=timezone.now().date(),
+            harvest_date=timezone.localdate(),
             quantity_harvested=active_batch.current_quantity or harvested_qty,
             total_weight_kg=active_batch.total_biomass_kg or 0,
             average_weight_per_fish=active_batch.average_weight_g or 0,
