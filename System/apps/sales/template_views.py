@@ -1145,7 +1145,10 @@ def customer_orders_page(request):
                 (order.delivery_address or '').strip().upper() == (prev_order.delivery_address or '').strip().upper()):
                 is_same_group = True
 
-        unit_display = 'kg' if (order.notes and '[KG]' in order.notes) else 'pcs'
+        if order.product:
+            unit_display = order.product.bulk_unit_display if (order.notes and '[KG]' in order.notes) else 'pcs'
+        else:
+            unit_display = 'kg' if (order.notes and '[KG]' in order.notes) else 'pcs'
         item_data = {
             'id': order.id,
             'order_number': order.order_number,

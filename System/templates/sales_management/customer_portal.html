@@ -1936,36 +1936,42 @@
 
         <!-- Official Printable Order Receipt Modal -->
         <div id="customer-order-receipt-modal"
-            class="fixed inset-0 z-[400] hidden items-center justify-center bg-black/85 backdrop-blur-md px-4 py-6 overflow-y-auto">
+            class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/90 backdrop-blur-xl px-3 sm:px-4 py-4 sm:py-6 overflow-y-auto">
             <div
-                class="relative w-full max-w-2xl rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-6 sm:p-10 text-stone-100 transform transition-all space-y-6">
+                class="relative w-full max-w-2xl rounded-3xl sm:rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-4 sm:p-8 text-stone-100 transform transition-all space-y-4 sm:space-y-6 my-auto">
+                <!-- Close Top-Right Button -->
+                <button type="button" onclick="closeCustomerReceiptModal()"
+                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print" title="Close">
+                    ✕
+                </button>
+
                 <!-- Printable Invoice Area -->
                 <div id="printable-receipt-area"
-                    class="space-y-6 bg-[#021f15] p-6 sm:p-8 rounded-2xl border border-white/10">
+                    class="space-y-4 sm:space-y-6 bg-[#021f15] p-4 sm:p-8 rounded-2xl border border-white/10">
                     <!-- Receipt Header -->
                     <div
-                        class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
+                        class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 sm:pb-6 gap-3 sm:gap-4 pr-6 sm:pr-0">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <span class="text-2xl">🦞</span>
-                                <h2 class="text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM &
+                                <span class="text-xl sm:text-2xl">🦞</span>
+                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM &
                                     CRAYFISH</h2>
                             </div>
-                            <p class="text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice & Delivery Receipt</p>
-                            <p class="text-[11px] text-stone-400">Silay City, Negros Occidental, Philippines</p>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice & Delivery Receipt</p>
+                            <p class="text-[10px] sm:text-[11px] text-stone-400">Silay City, Negros Occidental, Philippines</p>
                         </div>
                         <div class="sm:text-right space-y-1">
                             <span
-                                class="text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-3 py-1 rounded-full border border-[#cca43b]/30 inline-block">Official
+                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#cca43b]/30 inline-block">Official
                                 Receipt</span>
-                            <p class="text-base font-mono font-bold text-white mt-1" id="rec-order-number">#SO-0000</p>
-                            <p class="text-xs text-[#a0ac96]" id="rec-order-date">Date</p>
+                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="rec-order-number">#SO-0000</p>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]" id="rec-order-date">Date</p>
                         </div>
                     </div>
 
                     <!-- Customer & Delivery Info -->
                     <div
-                        class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs bg-black/40 p-3.5 sm:p-4 rounded-xl border border-white/5">
                         <div class="space-y-1">
                             <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Customer
                                 Details</span>
@@ -1976,39 +1982,38 @@
                             <span
                                 class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Destination
                                 / Delivery Address</span>
-                            <p class="font-medium text-white" id="rec-cust-address">-</p>
+                            <p class="font-medium text-white text-xs sm:text-sm" id="rec-cust-address">-</p>
                         </div>
                     </div>
 
-                    <!-- Itemized Table -->
-                    <div class="overflow-x-auto rounded-xl border border-white/10">
-                        <table class="w-full text-left text-xs">
+                    <!-- Itemized Table (Responsive Horizontal Scroll on small phones) -->
+                    <div class="overflow-x-auto rounded-xl border border-white/10 -mx-1 sm:mx-0">
+                        <table class="w-full text-left text-xs min-w-[320px]">
                             <thead
-                                class="bg-white/5 border-b border-white/10 text-[#cca43b] uppercase font-black tracking-wider text-[10px]">
+                                class="bg-white/5 border-b border-white/10 text-[#cca43b] uppercase font-black tracking-wider text-[9px] sm:text-[10px]">
                                 <tr>
-                                    <th class="px-4 py-3">Description</th>
-                                    <th class="px-4 py-3 text-center">Unit Type</th>
-                                    <th class="px-4 py-3 text-center">Qty</th>
-                                    <th class="px-4 py-3 text-right">Price</th>
-                                    <th class="px-4 py-3 text-right">Amount</th>
+                                    <th class="px-2.5 sm:px-4 py-2 sm:py-3">Description</th>
+                                    <th class="px-1.5 sm:px-3 py-2 sm:py-3 text-center">Unit</th>
+                                    <th class="px-1.5 sm:px-3 py-2 sm:py-3 text-center">Qty</th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-right">Price</th>
+                                    <th class="px-2.5 sm:px-4 py-2 sm:py-3 text-right">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody id="rec-items-tbody" class="divide-y divide-white/5 text-white font-medium">
+                            <tbody id="rec-items-tbody" class="divide-y divide-white/5 text-white font-medium text-[11px] sm:text-xs">
                                 <tr>
-                                    <td class="px-4 py-3 font-bold" id="rec-prod-name">-</td>
-                                    <td class="px-4 py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
-                                    <td class="px-4 py-3 text-center font-bold" id="rec-quantity">-</td>
-                                    <td class="px-4 py-3 text-right text-stone-300" id="rec-unit-price">₱0.00</td>
-                                    <td class="px-4 py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00
-                                    </td>
+                                    <td class="px-2.5 sm:px-4 py-2 sm:py-3 font-bold" id="rec-prod-name">-</td>
+                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
+                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center font-bold" id="rec-quantity">-</td>
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-stone-300" id="rec-unit-price">₱0.00</td>
+                                    <td class="px-2.5 sm:px-4 py-2 sm:py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Summary & Payment Info -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end pt-2">
-                        <div class="space-y-2 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end pt-2">
+                        <div class="space-y-1.5 text-xs">
                             <div class="flex items-center gap-2">
                                 <span class="text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">Order
                                     Status:</span>
@@ -2023,9 +2028,9 @@
                                     class="font-black text-emerald-400 uppercase text-[10px] px-2 py-0.5 rounded bg-emerald-500/20"
                                     id="rec-pay-status">-</span>
                             </div>
-                            <p class="text-[11px] text-stone-400 italic" id="rec-notes"></p>
+                            <p class="text-[10px] sm:text-[11px] text-stone-400 italic" id="rec-notes"></p>
                         </div>
-                        <div class="space-y-1.5 text-xs sm:text-right bg-black/40 p-4 rounded-xl border border-white/5">
+                        <div class="space-y-1.5 text-xs sm:text-right bg-black/40 p-3.5 sm:p-4 rounded-xl border border-white/5">
                             <div class="flex justify-between sm:justify-end gap-6 text-[#a0ac96]">
                                 <span>Delivery Fee:</span>
                                 <span class="text-emerald-400 font-bold">FREE</span>
@@ -2033,25 +2038,25 @@
                             <div
                                 class="flex justify-between sm:justify-end gap-6 text-sm font-black border-t border-white/10 pt-2">
                                 <span class="text-white uppercase">Total Paid / Due:</span>
-                                <span class="text-xl font-black text-[#cca43b]" id="rec-grand-total">₱0.00</span>
+                                <span class="text-lg sm:text-xl font-black text-[#cca43b]" id="rec-grand-total">₱0.00</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t border-dashed border-white/10 pt-4 text-center text-[10px] text-[#a0ac96]">
+                    <div class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
                         Thank you for your business! For questions or assistance, contact Silay Superworm & Crayfish
                         Farm.
                     </div>
                 </div>
 
                 <!-- Modal Action Buttons (Hidden when printing) -->
-                <div class="flex items-center justify-between gap-4 border-t border-white/10 pt-4 no-print">
+                <div class="flex items-center justify-between gap-4 border-t border-white/10 pt-3 sm:pt-4 no-print">
                     <button type="button" onclick="closeCustomerReceiptModal()"
-                        class="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-bold text-stone-300 hover:text-white transition-colors cursor-pointer">
+                        class="rounded-xl border border-white/10 bg-white/5 px-4 sm:px-5 py-2.5 text-xs font-bold text-stone-300 hover:text-white transition-colors cursor-pointer">
                         Close
                     </button>
                     <button type="button" onclick="window.print()"
-                        class="inline-flex items-center gap-2 rounded-xl from-[#cca43b] to-[#e5c05d] px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] /20 hover:opacity-95 transition-all cursor-pointer">
+                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#cca43b] to-[#e5c05d] px-5 sm:px-6 py-2.5 text-xs font-black uppercase tracking-wider text-[#01140e] hover:opacity-95 transition-all cursor-pointer">
                         <svg class="h-4 w-4 text-[#01140e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                             stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -2095,7 +2100,7 @@
                     background: white !important;
                     color: #111827 !important;
                     border: 2px solid #e5e7eb !important;
-                    box-: none !important;
+                    box-shadow: none !important;
                     padding: 30px !important;
                 }
 
@@ -2151,11 +2156,11 @@
                     items.forEach(item => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td class="px-4 py-3 font-bold text-white">${item.product_name}</td>
-                            <td class="px-4 py-3 text-center uppercase text-stone-300">${(item.unit || 'pcs').toUpperCase()}</td>
-                            <td class="px-4 py-3 text-center font-bold text-white">${item.quantity}</td>
-                            <td class="px-4 py-3 text-right text-stone-300">₱${Number(item.price_per_unit).toFixed(2)}</td>
-                            <td class="px-4 py-3 text-right font-black text-[#cca43b]">₱${Number(item.subtotal).toFixed(2)}</td>
+                            <td class="px-2.5 sm:px-4 py-2.5 font-bold text-white whitespace-nowrap">${item.product_name}</td>
+                            <td class="px-1.5 sm:px-3 py-2.5 text-center uppercase text-stone-300 text-[10px] sm:text-xs">${item.unit}</td>
+                            <td class="px-1.5 sm:px-3 py-2.5 text-center font-bold text-white">${item.quantity}</td>
+                            <td class="px-2 sm:px-4 py-2.5 text-right text-stone-300 whitespace-nowrap">₱${Number(item.price_per_unit).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
+                            <td class="px-2.5 sm:px-4 py-2.5 text-right font-black text-[#cca43b] whitespace-nowrap">₱${Number(item.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         `;
                         tbody.appendChild(tr);
                     });
