@@ -95,7 +95,7 @@
                         
                         <div class="flex items-center justify-between gap-2">
                             <span class="font-mono font-bold text-xs text-white">{{ d.order.order_number }}</span>
-                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 animate-pulse {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-300 border-rose-500/30{% endif %}">
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-300 border-rose-500/30{% endif %}">
                                 {{ d.get_status_display }}
                             </span>
                         </div>
@@ -143,7 +143,7 @@
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
                             <h2 id="disp-order-number" class="text-base sm:text-lg font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
-                            <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40 {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40 {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
+                            <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40 {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40 {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
                                 {{ selected_delivery.get_status_display }}
                             </span>
                             <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
@@ -191,7 +191,7 @@
                         <!-- Step 3: In Transit -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-center">
-                                <div id="step-3-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e] {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#01140e] -cyan-400/30 animate-pulse{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
+                                <div id="step-3-circle" class="h-6 w-6 rounded-full flex items-center justify-center ring-3 ring-[#01140e] {% if selected_delivery.status == 'in_transit' or selected_delivery.status == 'delivered' %}bg-cyan-400 text-[#01140e] -cyan-400/30{% else %}bg-[#01140e] border border-white/20 text-stone-500{% endif %} font-black text-[10px]">
                                     {% if selected_delivery.status == 'delivered' %}✓{% else %}3{% endif %}
                                 </div>
                             </div>
@@ -226,7 +226,7 @@
                         </div>
                         <span class="text-white/20">•</span>
                         <div class="flex items-center gap-1.5">
-                            <span class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse ring-2 ring-cyan-400/40"></span>
+                            <span class="h-2.5 w-2.5 rounded-full bg-cyan-400 ring-2 ring-cyan-400/40"></span>
                             <span class="font-bold text-cyan-300">Driver (Live GPS)</span>
                         </div>
                         <span class="text-white/20">•</span>
@@ -561,7 +561,7 @@ function pollCurrentDeliveryGps() {
                     }
 
                     if (liveBadge) {
-                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
+                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
                     }
                 }
             } else if (data.status === 'in_transit') {
@@ -572,7 +572,7 @@ function pollCurrentDeliveryGps() {
                     smoothMoveMarker(driverMarker, nextPt[0], nextPt[1], 2500);
 
                     if (liveBadge) {
-                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span><span class="text-amber-300 font-bold">In Transit • Moving to Destination</span>`;
+                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-400"></span><span class="text-amber-300 font-bold">In Transit • Moving to Destination</span>`;
                     }
                 }
             }
@@ -616,7 +616,7 @@ function selectShipment(deliveryId) {
         if (item.status === 'delivered') {
             statusBadge.className += 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40';
         } else if (item.status === 'in_transit') {
-            statusBadge.className += 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse';
+            statusBadge.className += 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
         } else if (item.status === 'scheduled') {
             statusBadge.className += 'bg-amber-500/20 text-amber-300 border-amber-500/40';
         } else {

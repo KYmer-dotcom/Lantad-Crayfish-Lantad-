@@ -265,7 +265,7 @@
                 <!-- Floating Order & Transit Badge (Crisp, No Squish) -->
                 <div class="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
                     <div class="flex items-center gap-2 bg-[#021f15]/95 border border-[#cca43b]/40 backdrop-blur-md px-4 py-2 rounded-full pointer-events-auto">
-                        <span class="h-2.5 w-2.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-400 animate-ping{% else %}bg-amber-400 animate-pulse{% endif %}"></span>
+                        <span class="h-2.5 w-2.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-400{% else %}bg-amber-400{% endif %}"></span>
                         <span class="font-mono text-xs font-black text-white whitespace-nowrap tracking-wider">{{ delivery.order.order_number }}</span>
                         <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border border-cyan-500/30{% else %}bg-amber-500/20 text-amber-300 border border-amber-500/30{% endif %} whitespace-nowrap">{{ delivery.get_status_display }}</span>
                     </div>
@@ -274,7 +274,7 @@
                     <div class="flex items-center gap-2 pointer-events-auto">
                         <!-- Live GPS Status Pill -->
                         <button type="button" onclick="recenterGpsMap('{{ delivery.id }}')" id="gps-status-pill-{{ delivery.id }}" class="flex items-center gap-1.5 bg-[#021f15]/95 border border-[#cca43b]/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-[#a0ac96] hover:text-white transition-all cursor-pointer">
-                            <span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" id="gps-status-dot-{{ delivery.id }}"></span>
+                            <span class="h-2 w-2 rounded-full bg-cyan-400" id="gps-status-dot-{{ delivery.id }}"></span>
                             <span id="gps-status-text-{{ delivery.id }}">GPS Ready</span>
                         </button>
 
@@ -666,10 +666,10 @@
 
         label.textContent = text;
         if (state === 'active') {
-            dot.className = 'h-2 w-2 rounded-full bg-emerald-400 animate-pulse';
+            dot.className = 'h-2 w-2 rounded-full bg-emerald-400';
             pill.className = 'flex items-center gap-1.5 bg-[#021f15]/95 border border-emerald-500/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-emerald-300 transition-all cursor-pointer';
         } else if (state === 'acquiring') {
-            dot.className = 'h-2 w-2 rounded-full bg-amber-400 animate-ping';
+            dot.className = 'h-2 w-2 rounded-full bg-amber-400';
             pill.className = 'flex items-center gap-1.5 bg-[#021f15]/95 border border-amber-500/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-amber-300 transition-all cursor-pointer';
         } else {
             dot.className = 'h-2 w-2 rounded-full bg-rose-400';
