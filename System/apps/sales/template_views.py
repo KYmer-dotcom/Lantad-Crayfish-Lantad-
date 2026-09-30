@@ -241,18 +241,26 @@ def sales_orders_page(request):
     if access_response:
         return access_response
 
-    all_orders = SalesOrder.objects.select_related('customer', 'product').all()
+    # Active orders in pipeline (exclude completed, delivered, cancelled)
+    active_statuses = [
+        SalesOrder.Status.PENDING,
+        SalesOrder.Status.CONFIRMED,
+        SalesOrder.Status.PROCESSING,
+        SalesOrder.Status.SHIPPED,
+    ]
+
+    active_orders = SalesOrder.objects.filter(status__in=active_statuses).select_related('customer', 'product')
     active_orders_prefetch = Prefetch(
         'orders',
-        queryset=SalesOrder.objects.all().select_related('product').order_by('-order_date', '-created_at')
+        queryset=SalesOrder.objects.filter(status__in=active_statuses).select_related('product').order_by('-order_date', '-created_at')
     )
-    customers = Customer.objects.filter(orders__isnull=False).annotate(
-        active_total=Sum('orders__total_amount')
+    customers = Customer.objects.filter(orders__status__in=active_statuses).annotate(
+        active_total=Sum('orders__total_amount', filter=Q(orders__status__in=active_statuses))
     ).prefetch_related(active_orders_prefetch).distinct().order_by('name')
 
-    total_active_orders = all_orders.exclude(status='cancelled').count()
-    pending_orders = all_orders.filter(status='pending').count()
-    total_active_revenue = all_orders.exclude(status='cancelled').aggregate(total=Sum('total_amount'))['total'] or Decimal('0')
+    total_active_orders = active_orders.count()
+    pending_orders = active_orders.filter(status=SalesOrder.Status.PENDING).count()
+    total_active_revenue = active_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0')
 
     from apps.sales.models import PaymentSetting
     payment_settings = PaymentSetting.get_settings()
