@@ -1845,46 +1845,63 @@
                 </div>
 
                 <div class="space-y-4">
-                    {% for order in orders %}
-                    <div
-                        class="rounded-2xl border border-white/10 bg-black/40 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group hover:border-[#cca43b]/40 transition-all">
-                        <div class="space-y-2">
+                    {% for group in grouped_orders %}
+                    <div class="rounded-2xl border border-white/10 bg-black/40 p-5 sm:p-6 flex flex-col gap-4 group hover:border-[#cca43b]/40 transition-all">
+                        <!-- Group Header: Order #, Badges & Date -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-3">
                             <div class="flex items-center gap-2.5">
-                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ order.order_number }}</span>
-                                <span
-                                    class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
-                                <span
-                                    class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if order.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
-                                    {{ order.get_payment_status_display }}
+                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ group.order_number }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ group.status_display }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if group.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                                    {{ group.payment_status_display }}
                                 </span>
                             </div>
-                            <p class="font-bold text-xl text-white">{{ order.product.name|default:"Product" }}</p>
-                            <p class="text-xs text-[#a0ac96]">Ordered on {{ order.created_at|date:"M d, Y • h:i A" }}
-                            </p>
+                            <p class="text-xs text-[#a0ac96]">Ordered on {{ group.created_at|date:"M d, Y • h:i A" }}</p>
                         </div>
-                        <div class="flex sm:flex-col items-end justify-between sm:justify-center gap-3">
-                            <div class="text-right">
-                                <p class="font-black text-2xl text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}
-                                </p>
-                                <p class="text-xs text-[#a0ac96]">{{ order.quantity_kg|floatformat:0 }} {% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }} @ ₱{{ order.price_per_kg|floatformat:0 }}/{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs @ ₱{{ order.price_per_kg|floatformat:0 }}/pc{% endif %}</p>
+
+                        <!-- Items List -->
+                        <div class="space-y-2 divide-y divide-white/5">
+                            {% for item in group.items %}
+                            <div class="flex items-center justify-between text-sm pt-2 first:pt-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-white">{{ item.product_name }}</span>
+                                    <span class="text-xs text-[#a0ac96]">({{ item.quantity|floatformat:0 }} {{ item.unit }} @ ₱{{ item.price_per_unit|floatformat:0 }}/{{ item.unit }})</span>
+                                </div>
+                                <span class="font-bold text-stone-200">₱{{ item.subtotal|floatformat:2 }}</span>
                             </div>
-                            <button type="button" onclick="openCustomerReceiptModal({
-                                    orderNumber: '{{ order.order_number }}',
-                                    date: '{{ order.created_at|date:" M d, Y • h:i A" }}',
-                                customerName: '{{ customer.name|escapejs }}' ,
-                                customerPhone: '{{ customer.phone|escapejs }}' ,
-                                deliveryAddress: '{{ order.delivery_address|default:customer.address|escapejs }}' ,
-                                productName: '{{ order.product.name|default:"Aquaculture Product"|escapejs }}' ,
-                                quantity: '{{ order.quantity_kg|floatformat:0 }}' ,
-                                unit: '{% if "[KG]" in order.notes %}{{ order.product.bulk_unit_display|default:"kg"|escapejs }}{% else %}pcs{% endif %}' ,
-                                pricePerUnit: '{{ order.price_per_kg|floatformat:2 }}' ,
-                                totalAmount: '{{ order.total_amount|floatformat:2 }}' ,
-                                status: '{{ order.get_status_display }}' ,
-                                paymentStatus: '{{ order.get_payment_status_display }}' ,
-                                notes: '{{ order.notes|escapejs }}' })"
+                            {% endfor %}
+                        </div>
+
+                        <!-- Footer: Total Amount & Single Print Receipt Button -->
+                        <div class="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
+                            <div>
+                                <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider block">Total Amount</span>
+                                <span class="font-black text-2xl text-[#cca43b]">₱{{ group.total_amount|floatformat:2 }}</span>
+                            </div>
+                            <button type="button" onclick='openCustomerReceiptModal({
+                                    orderNumber: "{{ group.order_number }}",
+                                    date: "{{ group.created_at|date:"M d, Y • h:i A" }}",
+                                    customerName: "{{ customer.name|escapejs }}",
+                                    customerPhone: "{{ customer.phone|escapejs }}",
+                                    deliveryAddress: "{{ group.delivery_address|escapejs }}",
+                                    status: "{{ group.status_display }}",
+                                    paymentStatus: "{{ group.payment_status_display }}",
+                                    notes: "{{ group.notes|escapejs }}",
+                                    totalAmount: "{{ group.total_amount|floatformat:2 }}",
+                                    items: [
+                                        {% for item in group.items %}
+                                        {
+                                            product_name: "{{ item.product_name|escapejs }}",
+                                            quantity: "{{ item.quantity|floatformat:0 }}",
+                                            unit: "{{ item.unit|escapejs }}",
+                                            price_per_unit: "{{ item.price_per_unit|floatformat:2 }}",
+                                            subtotal: "{{ item.subtotal|floatformat:2 }}"
+                                        }{% if not forloop.last %},{% endif %}
+                                        {% endfor %}
+                                    ]
+                                })'
                                 class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="2">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -1895,8 +1912,8 @@
                     {% empty %}
                     <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 py-24 text-center">
                         <div class="text-6xl mb-6 opacity-50">📦</div>
-                        <p class="text-white font-bold text-2xl uppercase tracking-wider">Your cart is empty</p>
-                        <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Looks like you haven't added anything yet.</p>
+                        <p class="text-white font-bold text-2xl uppercase tracking-wider">You have no past orders</p>
+                        <p class="text-[#a0ac96] mt-2 max-w-sm mx-auto">Looks like you haven't placed an order yet.</p>
                         <a href="{% url 'sales:customer_portal' %}"
                             class="inline-block mt-8 rounded-xl bg-[#cca43b] hover:bg-white text-[#01140e] text-sm font-black uppercase tracking-wider px-8 py-4 transition-colors">
                             Browse Market
@@ -1905,12 +1922,12 @@
                     {% endfor %}
                 </div>
 
-                {% if orders %}
+                {% if grouped_orders %}
                 <div
                     class="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <p class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Total Items</p>
-                        <p class="text-4xl font-black text-white mt-1">{{ orders|length }}</p>
+                        <p class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]">Total Orders</p>
+                        <p class="text-4xl font-black text-white mt-1">{{ grouped_orders|length }}</p>
                     </div>
                 </div>
                 {% endif %}
@@ -1976,7 +1993,7 @@
                                     <th class="px-4 py-3 text-right">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5 text-white font-medium">
+                            <tbody id="rec-items-tbody" class="divide-y divide-white/5 text-white font-medium">
                                 <tr>
                                     <td class="px-4 py-3 font-bold" id="rec-prod-name">-</td>
                                     <td class="px-4 py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
@@ -2115,15 +2132,34 @@
                 document.getElementById('rec-cust-name').textContent = data.customerName || 'Customer';
                 document.getElementById('rec-cust-phone').textContent = data.customerPhone || 'N/A';
                 document.getElementById('rec-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
-                document.getElementById('rec-prod-name').textContent = data.productName || 'Product';
-                document.getElementById('rec-unit-type').textContent = (data.unit || 'pcs').toUpperCase();
-                document.getElementById('rec-quantity').textContent = data.quantity || '1';
-                document.getElementById('rec-unit-price').textContent = '₱' + (data.pricePerUnit || '0.00');
-                document.getElementById('rec-subtotal').textContent = '₱' + (data.totalAmount || '0.00');
                 document.getElementById('rec-status').textContent = data.status || 'CONFIRMED';
                 document.getElementById('rec-pay-status').textContent = data.paymentStatus || 'UNPAID';
                 document.getElementById('rec-notes').textContent = data.notes || '';
-                document.getElementById('rec-grand-total').textContent = '₱' + (data.totalAmount || '0.00');
+                document.getElementById('rec-grand-total').textContent = '₱' + (parseFloat(data.totalAmount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const tbody = document.getElementById('rec-items-tbody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    const items = (data.items && data.items.length > 0) ? data.items : [{
+                        product_name: data.productName || 'Product',
+                        unit: data.unit || 'pcs',
+                        quantity: data.quantity || '1',
+                        price_per_unit: data.pricePerUnit || '0.00',
+                        subtotal: data.totalAmount || '0.00'
+                    }];
+
+                    items.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 font-bold text-white">${item.product_name}</td>
+                            <td class="px-4 py-3 text-center uppercase text-stone-300">${(item.unit || 'pcs').toUpperCase()}</td>
+                            <td class="px-4 py-3 text-center font-bold text-white">${item.quantity}</td>
+                            <td class="px-4 py-3 text-right text-stone-300">₱${Number(item.price_per_unit).toFixed(2)}</td>
+                            <td class="px-4 py-3 text-right font-black text-[#cca43b]">₱${Number(item.subtotal).toFixed(2)}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
 
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');

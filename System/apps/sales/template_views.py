@@ -1125,10 +1125,67 @@ def customer_orders_page(request):
         return redirect('customer_login')
 
     cart_orders_count = SalesOrder.objects.filter(customer=customer, status=SalesOrder.Status.PENDING).count()
+    raw_orders = list(SalesOrder.objects.select_related('product', 'product__species').filter(customer=customer).exclude(status=SalesOrder.Status.PENDING).order_by('-created_at', '-id'))
+
+    grouped_orders = []
+    current_group = None
+
+    for order in raw_orders:
+        order_created = order.created_at
+        is_same_group = False
+
+        if current_group:
+            prev_order = current_group['orders'][-1]
+            time_diff = abs((prev_order.created_at - order_created).total_seconds()) if (prev_order.created_at and order_created) else 9999
+
+            # Group if within 300 seconds (5 min) of each other with matching status, payment status, and delivery address
+            if (time_diff <= 300 and 
+                order.status == prev_order.status and 
+                order.payment_status == prev_order.payment_status and 
+                (order.delivery_address or '').strip().upper() == (prev_order.delivery_address or '').strip().upper()):
+                is_same_group = True
+
+        unit_display = 'kg' if (order.notes and '[KG]' in order.notes) else 'pcs'
+        item_data = {
+            'id': order.id,
+            'order_number': order.order_number,
+            'product_name': order.product.name if order.product else 'Aquaculture Product',
+            'species_name': order.product.species.name if (order.product and order.product.species) else '',
+            'quantity': float(order.quantity_kg),
+            'unit': unit_display,
+            'price_per_unit': float(order.price_per_kg),
+            'subtotal': float(order.total_amount),
+            'order_obj': order,
+        }
+
+        if is_same_group and current_group:
+            current_group['items'].append(item_data)
+            current_group['orders'].append(order)
+            current_group['total_amount'] += float(order.total_amount)
+            current_group['total_items_count'] += 1
+        else:
+            current_group = {
+                'id': order.id,
+                'order_number': order.order_number,
+                'created_at': order.created_at,
+                'status': order.status,
+                'status_display': order.get_status_display(),
+                'payment_status': order.payment_status,
+                'payment_status_display': order.get_payment_status_display(),
+                'delivery_address': order.delivery_address or customer.address or 'Pickup',
+                'notes': order.notes or '',
+                'total_amount': float(order.total_amount),
+                'total_items_count': 1,
+                'items': [item_data],
+                'orders': [order],
+            }
+            grouped_orders.append(current_group)
+
     context = {
         'customer': customer,
         'products': Product.objects.filter(is_active=True).select_related('species'),
-        'orders': SalesOrder.objects.select_related('product').filter(customer=customer).exclude(status=SalesOrder.Status.PENDING),
+        'orders': raw_orders,
+        'grouped_orders': grouped_orders,
         'deliveries': Delivery.objects.select_related('order').filter(order__customer=customer),
         'order_form': CustomerOrderForm(),
         'location_form': CustomerLocationForm(instance=customer),
