@@ -98,8 +98,8 @@
                         {% if product.icon == 'shrimp' %}🦐
                         {% elif product.icon == 'lab' %}🧪
                         {% elif product.icon == 'leaf' %}🌿
-                        {% elif product.icon == 'box' %}📦
-                        {% elif product.icon == 'water' %}💧
+                        {% elif product.icon == 'insect' or product.icon == 'box' %}🪲
+                        {% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱
                         {% else %}🐟{% endif %}
                     </div>
                     <div class="flex items-center gap-2">
@@ -175,8 +175,8 @@
                                         {% if product.icon == 'shrimp' %}🦐
                                         {% elif product.icon == 'lab' %}🧪
                                         {% elif product.icon == 'leaf' %}🌿
-                                        {% elif product.icon == 'box' %}📦
-                                        {% elif product.icon == 'water' %}💧
+                                        {% elif product.icon == 'insect' or product.icon == 'box' %}🪲
+                                        {% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱
                                         {% else %}🐟{% endif %}
                                     </div>
                                     <div class="flex flex-col">
@@ -332,11 +332,11 @@
                 <label class="text-xs font-semibold text-[#a0ac96]">Icon</label>
                 <div class="mt-2.5 grid grid-cols-6 gap-2">
                     <button type="button" data-icon="fish" title="Fish" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🐟</button>
-                    <button type="button" data-icon="shrimp" title="Shrimp" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🦐</button>
+                    <button type="button" data-icon="shrimp" title="Shrimp / Crayfish" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🦐</button>
                     <button type="button" data-icon="lab" title="Lab / Specimen" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🧪</button>
                     <button type="button" data-icon="leaf" title="Plant / Leaf" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🌿</button>
-                    <button type="button" data-icon="box" title="Box / Pack" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">📦</button>
-                    <button type="button" data-icon="water" title="Water" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">💧</button>
+                    <button type="button" data-icon="insect" title="Insect / Beetle" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🪲</button>
+                    <button type="button" data-icon="worm" title="Worm / Superworm" class="icon-swatch flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-xl bg-black/20 hover:border-[#cca43b] transition-all">🪱</button>
                 </div>
             </div>
 
@@ -453,8 +453,10 @@ const iconNames = {
     'shrimp': 'Shrimp 🦐',
     'lab': 'Lab / Specimen 🧪',
     'leaf': 'Plant / Leaf 🌿',
-    'box': 'Box / Pack 📦',
-    'water': 'Water 💧'
+    'insect': 'Insect 🪲',
+    'box': 'Insect 🪲',
+    'worm': 'Worm 🪱',
+    'water': 'Worm 🪱'
 };
 
 function selectAccent(accentValue) {
@@ -478,7 +480,9 @@ function selectAccent(accentValue) {
 }
 
 function selectIcon(iconValue) {
-    const val = iconValue || 'fish';
+    let val = iconValue || 'fish';
+    if (val === 'box') val = 'insect';
+    if (val === 'water') val = 'worm';
     document.querySelectorAll('.icon-swatch').forEach((btn) => {
         btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
         btn.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
