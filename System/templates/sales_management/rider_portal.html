@@ -345,17 +345,6 @@
                     </div>
                 </div>
 
-                <!-- Live GPS Tip & Simulation Bar -->
-                <div class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1 pt-1 border-t border-white/5">
-                    <span class="flex items-center gap-1.5 text-stone-300">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                        <span>Tap map anytime to set location</span>
-                    </span>
-                    <button type="button" onclick="toggleSimulateMovement('{{ delivery.id }}')" id="sim-btn-{{ delivery.id }}" class="text-[10px] font-bold uppercase tracking-wider text-[#cca43b] hover:text-white bg-black/40 border border-[#cca43b]/30 rounded-lg px-2.5 py-1 transition-all cursor-pointer">
-                        Simulate Movement
-                    </button>
-                </div>
-
                 <!-- Primary Bottom Action Button (Full-width CTA from Reference Image) -->
                 <div class="pt-1">
                     {% if delivery.status == 'scheduled' %}
@@ -623,7 +612,6 @@
 
     const activeGpsMaps = {};
     let liveRiderCoords = {% if rider.current_latitude and rider.current_longitude %}{ lat: {{ rider.current_latitude }}, lng: {{ rider.current_longitude }} }{% else %}null{% endif %};
-    const simIntervals = {};
 
     // Custom Live Rider Beacon (Pulsing Cyan GPS Dot matching Uber/Google Maps)
     const riderLiveBeaconIcon = L.divIcon({
@@ -820,35 +808,6 @@
                 longitude: lng
             })
         }).catch(function() {});
-    }
-
-    function toggleSimulateMovement(deliveryId) {
-        const btn = document.getElementById(`sim-btn-${deliveryId}`);
-        if (simIntervals[deliveryId]) {
-            clearInterval(simIntervals[deliveryId]);
-            delete simIntervals[deliveryId];
-            if (btn) btn.textContent = 'Simulate Movement';
-            return;
-        }
-
-        const entry = activeGpsMaps[deliveryId];
-        if (!entry || !entry.routeCoords || entry.routeCoords.length < 2) {
-            alert('Loading route points, please try again in a moment...');
-            return;
-        }
-
-        let idx = 0;
-        if (btn) btn.textContent = 'Stop Simulation';
-
-        simIntervals[deliveryId] = setInterval(() => {
-            if (idx >= entry.routeCoords.length) {
-                idx = 0;
-            }
-            const pt = entry.routeCoords[idx];
-            updateRiderPhoneLocation(deliveryId, pt[0], pt[1]);
-            updateGpsStatusBadge(deliveryId, 'active', 'Simulating GPS');
-            idx++;
-        }, 2200);
     }
 
     function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName, riderLat, riderLng) {
