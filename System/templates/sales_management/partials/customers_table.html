@@ -61,29 +61,40 @@
                     <div class="flex items-center gap-2">
                         {% with latest_order=customer.orders.first %}
                         {% if latest_order %}
-                        {% if latest_order.status == 'pending' %}
-                        <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}"
-                            class="inline" onclick="event.stopPropagation();">
-                            {% csrf_token %}
-                            <input type="hidden" name="status" value="confirmed">
-                            <button type="submit"
-                                class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
-                        </form>
-                        {% elif latest_order.status == 'completed' or latest_order.status == 'delivered' %}
-                        <span
-                            class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Completed</span>
-                        {% elif latest_order.status == 'shipped' or latest_order.status == 'processing' %}
-                        <span
-                            class="text-xs px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-black uppercase">In Delivery</span>
-                        {% elif latest_order.status == 'confirmed' %}
-                        <span
-                            class="text-xs px-2.5 py-1 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/30 font-black uppercase">Confirmed</span>
-                        {% elif latest_order.status == 'cancelled' %}
-                        <span
-                            class="text-xs px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 font-black uppercase">Cancelled</span>
+                        {% if latest_order.delivery_address|upper == 'PICKUP' %}
+                            {% if latest_order.payment_status == 'paid' %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Completed</span>
+                            {% else %}
+                            <button type="button"
+                                onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();"
+                                class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500 hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Pending Settle</button>
+                            {% endif %}
                         {% else %}
-                        <span
-                            class="text-xs px-2.5 py-1 rounded-lg bg-white/10 text-stone-300 border border-white/20 font-black uppercase">{{ latest_order.get_status_display }}</span>
+                            {% if latest_order.status == 'pending' %}
+                            <form method="POST" action="{% url 'sales:order_status_update' latest_order.id %}"
+                                class="inline" onclick="event.stopPropagation();">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="confirmed">
+                                <button type="submit"
+                                    class="text-xs px-2.5 py-1 rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 hover:bg-[#cca43b] hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Approve</button>
+                            </form>
+                            {% elif latest_order.status == 'completed' or latest_order.status == 'delivered' %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Completed</span>
+                            {% elif latest_order.status == 'shipped' or latest_order.status == 'processing' %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-black uppercase">In Delivery</span>
+                            {% elif latest_order.status == 'confirmed' %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/30 font-black uppercase">Confirmed</span>
+                            {% elif latest_order.status == 'cancelled' %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 font-black uppercase">Cancelled</span>
+                            {% else %}
+                            <span
+                                class="text-xs px-2.5 py-1 rounded-lg bg-white/10 text-stone-300 border border-white/20 font-black uppercase">{{ latest_order.get_status_display }}</span>
+                            {% endif %}
                         {% endif %}
                         {% endif %}
                         {% endwith %}

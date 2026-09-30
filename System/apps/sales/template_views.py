@@ -204,23 +204,24 @@ def sales_list(request):
     ).prefetch_related(active_orders_prefetch).distinct().order_by('name')
 
     
-    # Summary stats
-    total_orders = all_orders.exclude(status='cancelled').count()
-    total_revenue = all_orders.filter(
-        Q(status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED]) | Q(payment_status=SalesOrder.PaymentStatus.PAID)
-    ).exclude(status='cancelled').aggregate(
+    # Summary stats & completed paid transactions ledger
+    completed_paid_orders = all_orders.filter(
+        status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED],
+        payment_status=SalesOrder.PaymentStatus.PAID
+    ).exclude(status=SalesOrder.Status.CANCELLED).order_by('-order_date', '-id')
+
+    total_orders = completed_paid_orders.count()
+    total_revenue = completed_paid_orders.aggregate(
         total=Sum('total_amount')
     )['total'] or Decimal('0')
-    pending_orders = all_orders.filter(
-        status__in=[SalesOrder.Status.PENDING, SalesOrder.Status.CONFIRMED, SalesOrder.Status.PROCESSING]
-    ).count()
+    pending_orders = SalesOrder.objects.filter(status=SalesOrder.Status.PENDING).count()
     
-    # Filter to show only Pickup orders in the "Pick up Orders" list
-    pickup_orders = all_orders.filter(delivery_address__iexact='pickup')
+    # Filter to show only active Pickup orders
+    pickup_orders = all_orders.filter(delivery_address__iexact='pickup').exclude(status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED, SalesOrder.Status.CANCELLED])
     
     context = {
         'orders': pickup_orders,
-        'all_orders': all_orders.exclude(status='cancelled').order_by('-order_date', '-id'),
+        'all_orders': completed_paid_orders,
         'products': products,
         'deliveries': deliveries,
         'customers': customers,
@@ -1503,13 +1504,12 @@ def customer_checkout_submit(request):
                 from django.http import JsonResponse
                 return JsonResponse({'success': False, 'error': session_data['error']})
             
-            # Confirm GCash payment with verified reference
+            # Confirm GCash payment with verified reference or uploaded receipt
             ref_label = payment_reference if payment_reference else "Verified Online"
             for order in orders_to_place:
-                order.status = SalesOrder.Status.CONFIRMED
-                order.payment_status = SalesOrder.PaymentStatus.PAID
-                unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
-                order.notes = f"{unit_info}Payment: GCash ({ref_label})".strip()
+                order.status = SalesOrder.Status.PENDING
+                order.payment_status = SalesOrder.PaymentStatus.PAID if receipt_bytes else SalesOrder.PaymentStatus.UNPAID
+                order.notes = f"Payment: GCash ({ref_label})".strip()
                 if receipt_bytes:
                     order.receipt_image = receipt_bytes
                 order.save()
@@ -1522,17 +1522,13 @@ def customer_checkout_submit(request):
 
         # Cash / Cash on Delivery flow
         for order in orders_to_place:
-            order.status = SalesOrder.Status.CONFIRMED
+            order.status = SalesOrder.Status.PENDING
             order.payment_status = SalesOrder.PaymentStatus.UNPAID
             
             is_pickup = (order.delivery_address and order.delivery_address.upper() == 'PICKUP')
-            method_label = "Cash" if is_pickup else "Cash on Delivery"
+            method_label = "Cash (Pickup)" if is_pickup else "Cash on Delivery"
                 
-            unit_info = ""
-            if order.notes and ('[KG]' in order.notes or '[PC]' in order.notes):
-                unit_info = "[KG] " if '[KG]' in order.notes else "[PC] "
-                
-            order.notes = f"{unit_info}Payment: {method_label}".strip()
+            order.notes = f"Payment: {method_label}".strip()
             order.save()
             
             if order.product and order.product.quantity_kg >= order.quantity_kg:
@@ -1548,15 +1544,20 @@ def customer_checkout_submit(request):
 
 
 def _sync_order_deliveries():
-    """Auto-sync delivery records for all orders with a delivery address."""
+    """Auto-sync delivery records for all approved/confirmed delivery orders."""
     missing_deliveries = SalesOrder.objects.exclude(
         delivery_address__iexact='pickup'
     ).exclude(
         delivery_address=''
     ).filter(
+        status__in=[
+            SalesOrder.Status.CONFIRMED,
+            SalesOrder.Status.PROCESSING,
+            SalesOrder.Status.SHIPPED,
+            SalesOrder.Status.DELIVERED,
+            SalesOrder.Status.COMPLETED,
+        ],
         deliveries__isnull=True
-    ).exclude(
-        status=SalesOrder.Status.CANCELLED
     ).select_related('created_by')
 
     for ord_obj in missing_deliveries:
