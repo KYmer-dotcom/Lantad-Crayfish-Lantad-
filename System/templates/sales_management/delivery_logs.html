@@ -9,7 +9,7 @@
     .glass-card {
         background-color: #022118;
         border: 1px solid rgba(255, 255, 255, 0.10);
-        box-: none;
+        box-shadow: none;
     }
 
     .log-tab-btn {
@@ -36,7 +36,7 @@
         background-color: #cca43b !important;
         color: #01140e !important;
         font-weight: 900 !important;
-        box-: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
+        box-shadow: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
         border-color: transparent !important;
     }
 </style>
@@ -113,6 +113,7 @@
     <div class="glass-card rounded-xl p-4 sm:p-5 space-y-4">
         <!-- Top Row: Tab Switcher & Active Filter State -->
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-3">
+            <!-- Primary Audit Logs Tabs -->
             <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/50 border border-white/10 overflow-x-auto" id="logs-type-tabs">
                 <button type="button" onclick="switchLogView('order')" id="tab-btn-order"
                     class="log-tab-btn {% if tab_filter == 'order' or not tab_filter %}active{% endif %}">
@@ -130,18 +131,28 @@
                     class="log-tab-btn {% if tab_filter == 'product' %}active{% endif %}">
                     Product Logs ({{ product_logs_count }})
                 </button>
-                <button type="button" onclick="switchLogView('bin')" id="tab-btn-bin"
-                    class="log-tab-btn {% if tab_filter == 'bin' %}active{% endif %}">
-                    Bin ({{ bin_counts.total }})
-                </button>
             </div>
             
-            {% if start_date or end_date or query %}
-            <div class="flex items-center gap-2">
-                <span class="text-[11px] font-mono text-[#cca43b]">Filters Active</span>
-                <a href="?tab={{ tab_filter|default:'order' }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
+            <!-- Right Side: Active Filters Indicator & Standalone Bin Tab -->
+            <div class="flex items-center gap-3 ml-auto">
+                {% if start_date or end_date or query %}
+                <div class="flex items-center gap-2 mr-1">
+                    <span class="text-[11px] font-mono text-[#cca43b]">Filters Active</span>
+                    <a href="?tab={{ tab_filter|default:'order' }}" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline">Reset All</a>
+                </div>
+                {% endif %}
+
+                <!-- Separated Bin Button on Far Right -->
+                <div class="inline-flex p-1 rounded-xl bg-black/50 border border-white/10 shadow-sm">
+                    <button type="button" onclick="switchLogView('bin')" id="tab-btn-bin"
+                        class="log-tab-btn inline-flex items-center gap-1.5 {% if tab_filter == 'bin' %}active{% endif %}">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Bin ({{ bin_counts.total }})</span>
+                    </button>
+                </div>
             </div>
-            {% endif %}
         </div>
 
         <!-- Filter Form: Filter by Date & Search -->
