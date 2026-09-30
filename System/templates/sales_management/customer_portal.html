@@ -124,160 +124,321 @@
         {% if active_page == 'market' %}
         {% if products %}
         {% with featured_product=products|first other_products=products %}
-        <div class="flex-1 grid grid-cols-12 items-center h-full min-h-0 lg:min-h-[700px] gap-y-6 lg:gap-y-0">
 
-            <!-- LEFT SIDE: Info (Order-2 on mobile, Order-1 on desktop) -->
-            <div class="col-span-12 lg:col-span-4 space-y-4 sm:space-y-5 self-center py-2 lg:py-12 order-2 lg:order-1">
-                <div
-                    class="text-[#a0ac96] text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
-                    <span>Home</span> > <span>Market</span> > <span id="featured-species"
-                        class="text-[#cca43b] truncate">Table</span>
+        <!-- ============================================================== -->
+        <!-- 1. MOBILE DEDICATED MARKET UI (Visible only on mobile: block lg:hidden) -->
+        <!-- ============================================================== -->
+        <div class="block lg:hidden w-full pb-10 space-y-4">
+            
+            <!-- Breadcrumb Navigation & Status -->
+            <div class="flex items-center justify-between px-1 pt-1">
+                <div class="text-[#a0ac96] text-[10px] uppercase tracking-[0.2em] font-semibold flex items-center gap-1.5">
+                    <span>Home</span> &gt; <span>Market</span> &gt; <span class="featured-species-text text-[#cca43b] truncate">{{ featured_product.species.name|default:"Table"|upper }}</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Farm Fresh
+                </div>
+            </div>
+
+            <!-- Mobile Hero Product Card -->
+            <div class="rounded-3xl border border-[#cca43b]/30 bg-gradient-to-b from-[#021f15]/95 to-[#01140e]/95 p-4 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4">
+                
+                <!-- Showcase Image Card with interactive navigation overlay -->
+                <div class="relative w-full h-60 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
+                    <img src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                        class="featured-image-el w-full h-full object-cover transition-all duration-500"
+                        alt="Featured Product">
+                    
+                    <!-- Subtle vignette gradient overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none"></div>
+
+                    <!-- Top Floating Badges -->
+                    <div class="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
+                        <span class="featured-species-text bg-black/70 backdrop-blur-md border border-[#cca43b]/40 text-[#cca43b] text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md pointer-events-auto">
+                            {{ featured_product.species.name|default:"PREMIUM"|upper }}
+                        </span>
+
+                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-emerald-950/80 border-emerald-500/40 text-emerald-400{% else %}bg-rose-950/80 border-rose-500/40 text-rose-400{% endif %}">
+                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-emerald-400{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} in stock{% else %}Out of Stock{% endif %}</span>
+                        </span>
+                    </div>
+
+                    <!-- Side Chevrons for Prev / Next -->
+                    <button type="button" onclick="prevProduct()"
+                        class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-[#cca43b] hover:text-[#01140e] text-white backdrop-blur-md border border-white/20 hover:border-[#cca43b] flex items-center justify-center transition-all active:scale-90 z-20 shadow-lg cursor-pointer"
+                        title="Previous Dish">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <button type="button" onclick="nextProduct()"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-[#cca43b] hover:text-[#01140e] text-white backdrop-blur-md border border-white/20 hover:border-[#cca43b] flex items-center justify-center transition-all active:scale-90 z-20 shadow-lg cursor-pointer"
+                        title="Next Dish">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    <!-- Carousel Indicators floating at bottom center -->
+                    <div class="carousel-dots absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                        <!-- Dots populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Product Identity -->
+                <div class="space-y-1">
+                    <h2 class="featured-name-text text-2xl sm:text-3xl font-black text-white uppercase tracking-tight font-serif" style="font-family: 'Georgia', serif;">
+                        {{ featured_product.name|default:"SILAY"|upper }}
+                    </h2>
+                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium">
+                        {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
+                    </p>
+                </div>
+
+                <!-- Segmented Delivery Method -->
+                <div class="space-y-1.5 {% if orders %}hidden{% endif %}">
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Delivery Method</p>
+                    <div class="bg-black/50 p-1 rounded-xl border border-white/10 grid grid-cols-2 gap-1">
+                        <button type="button" onclick="setDeliveryMethod('pickup')"
+                            class="btn-pickup bg-[#cca43b] text-[#01140e] py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer">Pickup</button>
+                        <button type="button" onclick="setDeliveryMethod('delivery')"
+                            class="btn-delivery text-[#a0ac96] hover:text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
+                    </div>
+                </div>
+
+                <!-- Segmented Pricing Unit Option -->
+                <div class="space-y-1.5">
+                    <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Pricing Option</p>
+                    <div class="bg-black/50 p-1 rounded-xl border border-white/10 grid grid-cols-2 gap-1">
+                        <button type="button" onclick="setPricingUnit('pc')"
+                            class="btn-unit-pc bg-[#cca43b] text-[#01140e] py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer">Per Piece (pc)</button>
+                        <button type="button" onclick="setPricingUnit('kg')"
+                            class="btn-unit-kg text-[#a0ac96] hover:text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                    </div>
+                </div>
+
+                <!-- Price & Quantity Bar -->
+                <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Unit Price</p>
+                        <div class="flex items-baseline gap-1 mt-0.5">
+                            <span class="featured-price-text text-2xl font-black text-[#cca43b] font-mono leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                            <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">/ pc</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-end">
+                        <p class="featured-quantity-label text-[10px] uppercase font-bold tracking-wider text-[#a0ac96] mb-1">Quantity (pcs)</p>
+                        <div class="flex items-center bg-black/70 border border-[#cca43b]/40 rounded-xl overflow-hidden h-10 w-28">
+                            <button type="button" onclick="adjustFeaturedQuantity(-1)"
+                                class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
+                            <input type="number" value="1" oninput="updateTotalPrice()"
+                                onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
+                                min="1"
+                                class="featured-quantity-input w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            <button type="button" onclick="adjustFeaturedQuantity(1)"
+                                class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order CTA Button with dynamic total -->
+                <div class="pt-1">
+                    <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
+                        class="featured-order-btn w-full bg-gradient-to-r from-[#e5b84c] via-[#cca43b] to-[#b38a22] hover:brightness-110 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-13 font-black text-xs uppercase tracking-[0.15em] flex items-center justify-between px-5 shadow-xl shadow-[#cca43b]/25 transition-all cursor-pointer"
+                        {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                        </div>
+                        <span class="featured-total-price font-mono font-black text-sm bg-black/15 px-3 py-1 rounded-xl">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Quick Product Switcher Drawer -->
+            <div class="space-y-2.5 pt-2">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="text-xs uppercase font-black tracking-[0.15em] text-[#cca43b] flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#cca43b]"></span>Available Products
+                    </h3>
+                    <span class="text-[10px] text-[#a0ac96] font-bold">Tap to view</span>
+                </div>
+                <div class="grid grid-cols-1 gap-2.5">
+                    {% for prod in other_products %}
+                    <button type="button"
+                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                        class="w-full bg-[#01140e]/90 hover:bg-[#cca43b]/10 border border-white/10 hover:border-[#cca43b]/50 p-3 rounded-2xl flex items-center gap-3 text-left transition-all group cursor-pointer shadow-md">
+                        <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
+                            {% if prod.icon == 'shrimp' %}🦐
+                            {% elif prod.icon == 'lab' %}🧪
+                            {% elif prod.icon == 'leaf' %}🌿
+                            {% elif prod.icon == 'box' %}📦
+                            {% elif prod.icon == 'water' %}💧
+                            {% else %}🐟{% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-1">
+                                <p class="font-bold text-white text-xs truncate group-hover:text-[#cca43b]">{{ prod.name }}</p>
+                                <span class="text-[10px] font-mono font-bold shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-[#a0ac96] font-mono mt-0.5">
+                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
+                                {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
+                            </p>
+                        </div>
+                        <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-0.5 transition-all shrink-0">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 2. DESKTOP DEDICATED WEB UI (Visible only on desktop: hidden lg:grid) -->
+        <!-- ============================================================== -->
+        <div class="hidden lg:grid grid-cols-12 items-center h-full min-h-[700px]">
+
+            <!-- LEFT SIDE: Info -->
+            <div class="col-span-12 lg:col-span-4 space-y-5 self-center py-12">
+                <div class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
+                    <span>Home</span> > <span>Market</span> > <span class="featured-species-text text-[#cca43b] truncate">Table</span>
                 </div>
 
                 <div>
-                    <h2 id="featured-name-container"
-                        class="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-black text-white uppercase tracking-tight leading-[0.95] drop-shadow-md flex items-center gap-3 flex-wrap"
-                        style="font-family: 'Georgia', serif;">
-                        <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
+                    <h2 class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] flex items-center gap-4 flex-wrap" style="font-family: 'Georgia', serif;">
+                        <span class="featured-name-text">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
-                    <div class="mt-2.5 flex items-center gap-2">
-                        <span id="featured-stock-badge"
-                            class="inline-flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
-                            <span id="featured-stock-dot"
-                                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span class="featured-stock-dot w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
                         </span>
                     </div>
                 </div>
 
-                <p id="featured-notes"
-                    class="text-[#a0ac96] text-xs sm:text-sm leading-relaxed max-w-[340px] font-medium border-l-2 border-[#cca43b]/40 pl-3 sm:pl-4 mt-2">
+                <p class="featured-notes-text text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
                     {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
                 </p>
 
-                <div class="pt-2 sm:pt-4 space-y-4 sm:space-y-5">
+                <div class="pt-4 space-y-5">
                     <!-- Delivery Method Selection -->
-                    <div class="space-y-1.5 {% if orders %}hidden{% endif %}">
-                        <p class="text-white font-bold text-xs uppercase tracking-wider">Delivery Method:</p>
-                        <div class="flex gap-2.5">
-                            <button type="button" id="btn-pickup" onclick="setDeliveryMethod('pickup')"
-                                class="bg-[#cca43b] text-[#01140e] px-5 sm:px-6 py-1.5 sm:py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all">Pickup</button>
-                            <button type="button" id="btn-delivery" onclick="setDeliveryMethod('delivery')"
-                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-5 sm:px-6 py-1.5 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all">Delivery</button>
+                    <div class="space-y-2 {% if orders %}hidden{% endif %}">
+                        <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="setDeliveryMethod('pickup')"
+                                class="btn-pickup bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Pickup</button>
+                            <button type="button" onclick="setDeliveryMethod('delivery')"
+                                class="btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
                         </div>
                     </div>
-                    {% with first_order=orders|first %}
-                    <input type="hidden" name="delivery_method" id="delivery-method-input"
-                        value="{% if first_order %}{% if first_order.delivery_address|upper == 'PICKUP' %}pickup{% else %}delivery{% endif %}{% else %}pickup{% endif %}">
-                    {% endwith %}
 
                     <!-- Pricing Unit Selector: Per Piece vs By Unit -->
-                    <div class="space-y-1.5">
-                        <p class="text-white font-bold text-xs uppercase tracking-wider">Pricing Option:</p>
+                    <div class="space-y-2 pt-2">
+                        <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
-                            <button type="button" id="btn-unit-pc" onclick="setPricingUnit('pc')"
-                                class="bg-[#cca43b] text-[#01140e] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all">Per
-                                Piece (pc)</button>
-                            <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
-                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
-                                <span id="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            <button type="button" onclick="setPricingUnit('pc')"
+                                class="btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                            <button type="button" onclick="setPricingUnit('kg')"
+                                class="btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                         </div>
                     </div>
 
                     <!-- Price -->
-                    <div class="flex items-baseline gap-2 py-1">
-                        <span class="text-white font-bold text-xs uppercase tracking-wider">Price:</span>
-                        <span id="featured-price" class="text-2xl sm:text-3xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</span>
-                        <span id="featured-unit-label" class="text-xs font-bold text-[#a0ac96]">/ pc</span>
+                    <div class="flex items-baseline gap-2 py-2">
+                        <p class="text-white font-bold text-sm tracking-wide">Price:</p>
+                        <p class="featured-price-text text-4xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <span class="featured-unit-label-text text-sm font-bold text-[#a0ac96]">/ pc</span>
                     </div>
 
                     <!-- Quantity & Order Row -->
-                    <div class="flex flex-wrap items-center justify-between gap-3 pt-1 max-w-[340px]">
-                        <div class="flex items-center gap-2">
-                            <span id="featured-quantity-label" class="text-white font-bold text-xs uppercase tracking-wider">Qty:</span>
-                            <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
+                    <div class="flex items-center gap-4 pt-1 max-w-[380px]">
+                        <div class="flex items-center gap-3">
+                            <p class="featured-quantity-label text-white font-bold text-sm tracking-wide">Quantity (pcs):</p>
+                            <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-11 w-28">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
                                     class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
-                                <input type="number" id="featured-quantity-input" value="1" oninput="updateTotalPrice()"
+                                <input type="number" value="1" oninput="updateTotalPrice()"
                                     onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
                                     min="1"
-                                    class="w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                    class="featured-quantity-input w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                 <button type="button" onclick="adjustFeaturedQuantity(1)"
                                     class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
                             </div>
                         </div>
-                        <div class="flex items-baseline gap-1.5">
-                            <span class="text-[#a0ac96] text-xs font-bold uppercase">Total:</span>
-                            <span id="featured-total-price" class="text-xl sm:text-2xl font-black text-[#cca43b] font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</span>
-                        </div>
+                    </div>
+
+                    <!-- Dynamic Total Price -->
+                    <div class="flex items-center gap-2 py-1">
+                        <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
+                        <p class="featured-total-price text-2xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
                     </div>
 
                     <!-- Order Button -->
                     <div class="pt-2 max-w-[340px]">
-                        <button id="featured-order-btn"
-                            onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
-                            class="w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-12 sm:h-14 font-black text-xs sm:text-sm uppercase tracking-[0.15em] flex items-center justify-center shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
+                        <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
+                            class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 text-[#01140e] rounded-2xl h-14 font-black text-sm uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
                             {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
-                            <span id="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                            <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                            <span class="featured-total-price font-mono font-bold text-sm">₱{{ featured_product.unit_price|floatformat:0 }}</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- CENTER: Hero Dish / Bowl (Order-1 on mobile, Order-2 on desktop) -->
-            <div
-                class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[260px] sm:min-h-[350px] lg:min-h-[500px] pointer-events-none order-1 lg:order-2">
-                <!-- Absolute wrapper to center perfectly to page on desktop, relative on mobile -->
-                <div
-                    class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto my-4 sm:my-8 lg:my-0">
+            <!-- CENTER: Huge Bowl -->
+            <div class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[500px] pointer-events-none">
+                <div class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto">
                     <!-- Brush stroke background effect behind bowl -->
-                    <div
-                        class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
                         <svg viewBox="0 0 200 200" class="w-[120%] h-[120%] text-[#cca43b]" fill="currentColor">
-                            <path
-                                d="M45.7,-76.4C58.3,-69.3,67,-53.4,75.1,-37.6C83.2,-21.8,90.6,-6.1,89.1,9.1C87.6,24.3,77.1,38.9,65.3,51.3C53.5,63.7,40.4,73.8,25.4,79.5C10.4,85.2,-6.5,86.4,-22.1,82.3C-37.7,78.2,-52.1,68.8,-63.3,56C-74.5,43.2,-82.6,27.1,-86.1,10.2C-89.6,-6.8,-88.5,-24.5,-80.1,-39.1C-71.7,-53.6,-56,-65,-41,-72.7C-26,-80.3,-13,-84.1,2.5,-88.1C18,-92.1,33.1,-83.4,45.7,-76.4Z"
+                            <path d="M45.7,-76.4C58.3,-69.3,67,-53.4,75.1,-37.6C83.2,-21.8,90.6,-6.1,89.1,9.1C87.6,24.3,77.1,38.9,65.3,51.3C53.5,63.7,40.4,73.8,25.4,79.5C10.4,85.2,-6.5,86.4,-22.1,82.3C-37.7,78.2,-52.1,68.8,-63.3,56C-74.5,43.2,-82.6,27.1,-86.1,10.2C-89.6,-6.8,-88.5,-24.5,-80.1,-39.1C-71.7,-53.6,-56,-65,-41,-72.7C-26,-80.3,-13,-84.1,2.5,-88.1C18,-92.1,33.1,-83.4,45.7,-76.4Z"
                                 transform="translate(100 100) scale(0.9)" />
                         </svg>
                     </div>
 
-                    <div
-                        class="relative w-[210px] h-[210px] sm:w-[320px] sm:h-[320px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[6px] sm:border-[8px] lg:border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
-                        <img id="featured-image"
-                            src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
-                            class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
+                    <div class="relative w-[580px] h-[580px] xl:w-[620px] xl:h-[620px] rounded-full border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
+                        <img src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                            class="featured-image-el w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
                             alt="Featured Dish">
-                        <div
-                            class="absolute inset-0 ring-inset ring-3 sm:ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none">
-                        </div>
+                        <div class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none"></div>
                     </div>
 
                     <!-- Circle arrow navigation overlapping bottom of bowl -->
                     <button onclick="nextProduct()"
-                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-14 sm:h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-3 sm:border-4 border-[#01140e] text-[#01140e] shadow-lg cursor-pointer" title="Next Product">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-4 border-[#01140e] text-[#01140e] shadow-lg cursor-pointer" title="Next Product">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </button>
 
                     <!-- Dots -->
-                    <div id="carousel-dots" class="absolute -bottom-8 sm:-bottom-12 left-1/2 -translate-x-1/2 flex gap-2.5 sm:gap-3 z-20">
+                    <div class="carousel-dots absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-20">
                         <!-- Dots populated by JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT SIDE: Add-ons (Order-3 on mobile and desktop) -->
-            <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-4 lg:pt-10 pb-6 lg:max-h-[700px] order-3 lg:order-3">
+            <!-- RIGHT SIDE: Add-ons -->
+            <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-10 pb-6 max-h-[700px]">
                 <h3 class="text-xl font-bold text-[#cca43b] tracking-wide mb-6 shrink-0">Available Products</h3>
 
-                <div
-                    class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
+                <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
                     {% for prod in other_products %}
-                    <button
-                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
-                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0">
-                        <div
-                            class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
+                    <button onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0 cursor-pointer">
+                        <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
                             {% if prod.icon == 'shrimp' %}🦐
                             {% elif prod.icon == 'lab' %}🧪
                             {% elif prod.icon == 'leaf' %}🌿
@@ -287,20 +448,17 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-                                <p
-                                    class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
-                                    {{ prod.name }}</p>
-                                <span
-                                    class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
-                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out
-                                    of stock{% endif %}
+                                <p class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">{{ prod.name }}</p>
+                                <span class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a0ac96] mt-0.5">
+                            <p class="text-xs text-[#a0ac96] mt-0.5 font-mono">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
                                 {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
-                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %} </p>
+                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %}
+                            </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -317,12 +475,12 @@
 
                 <div class="pt-6 shrink-0">
                     <p class="text-[10px] text-[#a0ac96]/50 leading-relaxed font-medium">
-                        * Free delivery for orders within a 5km radius. All products are harvested fresh from our
-                        controlled aquaculture ponds in Silay City, ensuring top quality and hygiene.
+                        * Free delivery for orders within a 5km radius. All products are harvested fresh from our controlled aquaculture ponds in Silay City, ensuring top quality and hygiene.
                     </p>
                 </div>
             </div>
         </div>
+
         {% endwith %}
         {% else %}
         <!-- Empty Market State -->
@@ -2110,58 +2268,79 @@
     let currentPricingUnit = 'pc';
 
     function updateDots() {
-        const dotsContainer = document.getElementById('carousel-dots');
-        if (!dotsContainer) return;
-        dotsContainer.innerHTML = '';
-        availableProducts.forEach((_, idx) => {
-            if (idx === currentProductIndex) {
-                dotsContainer.innerHTML += '<div class="w-2.5 h-2.5 rounded-full bg-[#cca43b] ring-4 ring-[#cca43b]/20 transition-all"></div>';
-            } else {
-                dotsContainer.innerHTML += '<div class="w-2 h-2 rounded-full bg-white/20 transition-all"></div>';
-            }
+        const dotContainers = document.querySelectorAll('.carousel-dots, #carousel-dots');
+        dotContainers.forEach(container => {
+            container.innerHTML = '';
+            availableProducts.forEach((_, idx) => {
+                if (idx === currentProductIndex) {
+                    container.innerHTML += '<div class="w-2.5 h-2.5 rounded-full bg-[#cca43b] ring-4 ring-[#cca43b]/25 transition-all"></div>';
+                } else {
+                    container.innerHTML += '<div class="w-2 h-2 rounded-full bg-white/25 transition-all"></div>';
+                }
+            });
         });
     }
 
     function nextProduct() {
+        if (!availableProducts.length) return;
         currentProductIndex = (currentProductIndex + 1) % availableProducts.length;
+        const p = availableProducts[currentProductIndex];
+        selectProduct(p.id, p.name, p.species, p.notes, p.pricePc, p.priceKg, p.quantity, p.imageUrl, true);
+    }
+
+    function prevProduct() {
+        if (!availableProducts.length) return;
+        currentProductIndex = (currentProductIndex - 1 + availableProducts.length) % availableProducts.length;
         const p = availableProducts[currentProductIndex];
         selectProduct(p.id, p.name, p.species, p.notes, p.pricePc, p.priceKg, p.quantity, p.imageUrl, true);
     }
 
     function setPricingUnit(unit) {
         currentPricingUnit = unit;
-        const pcBtn = document.getElementById('btn-unit-pc');
-        const kgBtn = document.getElementById('btn-unit-kg');
-        const unitLabel = document.getElementById('featured-unit-label');
-        const qtyLabel = document.getElementById('featured-quantity-label');
         const currentProd = availableProducts[currentProductIndex];
         const bulkUnitName = currentProd?.bulkUnit || 'kg';
 
-        if (unit === 'kg') {
-            if (kgBtn) kgBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all";
-            if (pcBtn) pcBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
-            if (unitLabel) unitLabel.textContent = '/ ' + bulkUnitName;
-            if (qtyLabel) {
+        document.querySelectorAll('.btn-unit-pc, #btn-unit-pc').forEach(btn => {
+            if (unit === 'pc') {
+                btn.className = "btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
+            } else {
+                btn.className = "btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            }
+        });
+
+        document.querySelectorAll('.btn-unit-kg, #btn-unit-kg').forEach(btn => {
+            if (unit === 'kg') {
+                btn.className = "btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
+            } else {
+                btn.className = "btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            }
+        });
+
+        document.querySelectorAll('.featured-unit-label-text, #featured-unit-label').forEach(el => {
+            el.textContent = unit === 'kg' ? ('/ ' + bulkUnitName) : '/ pc';
+        });
+
+        document.querySelectorAll('.featured-quantity-label, #featured-quantity-label').forEach(el => {
+            if (unit === 'kg') {
                 const ppk = parseFloat(currentProd?.piecesPerKg) || 1;
-                const qtyInput = document.getElementById('featured-quantity-input');
+                const qtyInput = document.querySelector('.featured-quantity-input, #featured-quantity-input');
                 const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
                 const estPcs = Math.round(qty * ppk);
                 if (ppk > 1) {
-                    qtyLabel.innerHTML = `Quantity (${bulkUnitName}) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
+                    el.innerHTML = `Quantity (${bulkUnitName}) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
                 } else {
-                    qtyLabel.textContent = `Quantity (${bulkUnitName}):`;
+                    el.textContent = `Quantity (${bulkUnitName}):`;
                 }
+            } else {
+                el.textContent = 'Quantity (pcs):';
             }
-        } else {
-            if (pcBtn) pcBtn.className = "bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all";
-            if (kgBtn) kgBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
-            if (unitLabel) unitLabel.textContent = '/ pc';
-            if (qtyLabel) qtyLabel.textContent = 'Quantity (pcs):';
-        }
+        });
 
         if (currentProd) {
             let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
-            document.getElementById('featured-price').textContent = '₱' + Math.round(price);
+            document.querySelectorAll('.featured-price-text, #featured-price').forEach(el => {
+                el.textContent = '₱' + Math.round(price);
+            });
         }
         updateTotalPrice();
     }
@@ -2173,68 +2352,77 @@
         }
         updateDots();
 
-        document.getElementById('featured-species').textContent = 'Table';
-        document.getElementById('featured-name').textContent = (name || 'SILAY').toUpperCase();
-        document.getElementById('featured-notes').textContent = notes || 'One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality.';
+        document.querySelectorAll('.featured-species-text, #featured-species').forEach(el => {
+            el.textContent = species || 'PREMIUM';
+        });
+
+        document.querySelectorAll('.featured-name-text, #featured-name').forEach(el => {
+            el.textContent = (name || 'SILAY').toUpperCase();
+        });
+
+        document.querySelectorAll('.featured-notes-text, #featured-notes').forEach(el => {
+            el.textContent = notes || 'One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality.';
+        });
 
         const p = availableProducts[currentProductIndex];
         const bulkUnitName = p?.bulkUnit || 'kg';
-        const bulkUnitTextEl = document.getElementById('btn-bulk-unit-text');
-        if (bulkUnitTextEl) {
-            bulkUnitTextEl.textContent = bulkUnitName;
-        }
+        document.querySelectorAll('.btn-bulk-unit-text, #btn-bulk-unit-text').forEach(el => {
+            el.textContent = bulkUnitName;
+        });
 
         let price = currentPricingUnit === 'kg' ? (parseFloat(p?.priceKg || priceKg) || parseFloat(p?.pricePc || pricePc) || 0) : (parseFloat(p?.pricePc || pricePc) || parseFloat(p?.priceKg || priceKg) || 0);
-        document.getElementById('featured-price').textContent = '₱' + Math.round(price);
+        document.querySelectorAll('.featured-price-text, #featured-price').forEach(el => {
+            el.textContent = '₱' + Math.round(price);
+        });
 
-        const unitLabel = document.getElementById('featured-unit-label');
-        if (unitLabel) {
-            unitLabel.textContent = currentPricingUnit === 'kg' ? ('/ ' + bulkUnitName) : '/ pc';
-        }
+        document.querySelectorAll('.featured-unit-label-text, #featured-unit-label').forEach(el => {
+            el.textContent = currentPricingUnit === 'kg' ? ('/ ' + bulkUnitName) : '/ pc';
+        });
 
-        const btn = document.getElementById('featured-order-btn');
-        const btnText = document.getElementById('featured-order-text');
-        btn.setAttribute('onclick', `openCustomerOrderWithProduct('${id}')`);
-
-        const stockBadge = document.getElementById('featured-stock-badge');
-        const stockDot = document.getElementById('featured-stock-dot');
-        const stockText = document.getElementById('featured-stock-text');
         const stockQty = parseFloat(quantity) || 0;
-
-        if (stockBadge && stockDot && stockText) {
+        document.querySelectorAll('.featured-stock-badge, #featured-stock-badge').forEach(el => {
             if (stockQty > 0) {
-                stockBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]";
-                stockDot.className = "w-2 h-2 rounded-full bg-[#cca43b]";
-                stockText.textContent = `${Math.round(stockQty)} stock available`;
+                el.className = "featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold border transition-all bg-emerald-950/80 border-emerald-500/40 text-emerald-400";
             } else {
-                stockBadge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all bg-rose-500/15 border-rose-500/40 text-rose-400";
-                stockDot.className = "w-2 h-2 rounded-full bg-rose-400";
-                stockText.textContent = "Out of Stock";
+                el.className = "featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold border transition-all bg-rose-950/80 border-rose-500/40 text-rose-400";
             }
-        }
+        });
 
-        if (stockQty > 0) {
-            btn.removeAttribute('disabled');
-            btnText.textContent = 'Add to Cart';
-        } else {
-            btn.setAttribute('disabled', 'true');
-            btnText.textContent = 'Out of Stock';
-        }
+        document.querySelectorAll('.featured-stock-dot, #featured-stock-dot').forEach(el => {
+            el.className = "featured-stock-dot w-1.5 h-1.5 rounded-full " + (stockQty > 0 ? "bg-emerald-400" : "bg-rose-400");
+        });
 
-        // Reset quantity input to 1 and update total price
-        const qtyInput = document.getElementById('featured-quantity-input');
-        if (qtyInput) {
-            qtyInput.value = 1;
-        }
+        document.querySelectorAll('.featured-stock-text, #featured-stock-text').forEach(el => {
+            el.textContent = stockQty > 0 ? `${Math.round(stockQty)} in stock` : 'Out of Stock';
+        });
+
+        document.querySelectorAll('.featured-order-btn, #featured-order-btn').forEach(btn => {
+            btn.setAttribute('onclick', `openCustomerOrderWithProduct('${id}')`);
+            if (stockQty > 0) {
+                btn.removeAttribute('disabled');
+            } else {
+                btn.setAttribute('disabled', 'true');
+            }
+        });
+
+        document.querySelectorAll('.featured-order-text, #featured-order-text').forEach(el => {
+            el.textContent = stockQty > 0 ? 'Add to Cart' : 'Out of Stock';
+        });
+
+        // Reset quantity input to 1
+        document.querySelectorAll('.featured-quantity-input, #featured-quantity-input').forEach(input => {
+            input.value = 1;
+        });
         updateTotalPrice();
 
-        // Change image smoothly
-        const img = document.getElementById('featured-image');
-        img.style.opacity = '0';
-        setTimeout(() => {
-            img.src = imageUrl || placeholderImages[0];
-            img.style.opacity = '0.9';
-        }, 300);
+        // Change images smoothly
+        document.querySelectorAll('.featured-image-el, #featured-image').forEach(img => {
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = imageUrl || placeholderImages[0];
+                img.style.opacity = '0.9';
+            }, 250);
+        });
     }
 
     const bacolodBrgys = [];
@@ -2794,56 +2982,58 @@
     });
 
     function setDeliveryMethod(method) {
-        const pickupBtn = document.getElementById('btn-pickup');
-        const deliveryBtn = document.getElementById('btn-delivery');
-        const input = document.getElementById('delivery-method-input');
-        if (!pickupBtn || !deliveryBtn || !input) return;
-
         localStorage.setItem('saved_delivery_method', method);
+
+        const input = document.getElementById('delivery-method-input');
+        if (input) input.value = method;
+
+        document.querySelectorAll('.btn-pickup, #btn-pickup').forEach(btn => {
+            if (method === 'pickup') {
+                btn.className = "btn-pickup bg-[#cca43b] text-[#01140e] px-4 sm:px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
+            } else {
+                btn.className = "btn-pickup border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 sm:px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            }
+        });
+
+        document.querySelectorAll('.btn-delivery, #btn-delivery').forEach(btn => {
+            if (method === 'delivery') {
+                btn.className = "btn-delivery bg-[#cca43b] text-[#01140e] px-4 sm:px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
+            } else {
+                btn.className = "btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 sm:px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            }
+        });
 
         const payTitleCod = document.getElementById('pay-title-cod');
         const payDescCod = document.getElementById('pay-desc-cod');
-
-        if (method === 'pickup') {
-            pickupBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
-            deliveryBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
-            input.value = 'pickup';
-
-            if (payTitleCod) payTitleCod.textContent = 'Cash';
-            if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at our pickup station.';
-        } else {
-            deliveryBtn.className = "bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider  transition-all";
-            pickupBtn.className = "border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all";
-            input.value = 'delivery';
-
-            if (payTitleCod) payTitleCod.textContent = 'Cash on Delivery';
-            if (payDescCod) payDescCod.textContent = 'Pay with cash upon physical handover at your address.';
-        }
+        if (payTitleCod) payTitleCod.textContent = method === 'pickup' ? 'Cash' : 'Cash on Delivery';
+        if (payDescCod) payDescCod.textContent = method === 'pickup' ? 'Pay with cash upon physical handover at our pickup station.' : 'Pay with cash upon physical handover at your address.';
     }
 
     function updateTotalPrice() {
-        const input = document.getElementById('featured-quantity-input');
-        const priceEl = document.getElementById('featured-total-price');
-        const qtyLabel = document.getElementById('featured-quantity-label');
-        if (!input || !priceEl) return;
-
-        // Strip out non-digit characters (for pasted content or fallback browser inputs)
-        input.value = input.value.replace(/[^0-9]/g, '');
-
-        let qty = parseInt(input.value) || 0;
-        if (qty < 0) qty = 0;
+        const qtyInputs = document.querySelectorAll('.featured-quantity-input, #featured-quantity-input');
+        let currentQty = 1;
+        qtyInputs.forEach(input => {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            let val = parseInt(input.value) || 0;
+            if (val < 0) val = 0;
+            currentQty = val;
+        });
 
         const currentProd = availableProducts[currentProductIndex];
         if (currentProd) {
             const price = currentPricingUnit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
-            const total = qty * price;
-            priceEl.textContent = '₱' + total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            const total = currentQty * price;
+            const formattedTotal = '₱' + total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-            if (qtyLabel) {
+            document.querySelectorAll('.featured-total-price, #featured-total-price').forEach(priceEl => {
+                priceEl.textContent = formattedTotal;
+            });
+
+            document.querySelectorAll('.featured-quantity-label, #featured-quantity-label').forEach(qtyLabel => {
                 if (currentPricingUnit === 'kg') {
                     const bulkUnitName = currentProd.bulkUnit || 'kg';
                     const ppk = parseFloat(currentProd.piecesPerKg) || 1;
-                    const estPcs = Math.round(qty * ppk);
+                    const estPcs = Math.round(currentQty * ppk);
                     if (ppk > 1) {
                         qtyLabel.innerHTML = `Quantity (${bulkUnitName}) <span class="text-xs text-[#cca43b] font-semibold">(≈ ${estPcs} pcs)</span>:`;
                     } else {
@@ -2852,18 +3042,18 @@
                 } else {
                     qtyLabel.textContent = 'Quantity (pcs):';
                 }
-            }
+            });
         }
     }
 
     function adjustFeaturedQuantity(amount) {
-        const input = document.getElementById('featured-quantity-input');
-        if (!input) return;
-        let val = parseInt(input.value) || 1;
+        const qtyInputs = document.querySelectorAll('.featured-quantity-input, #featured-quantity-input');
+        if (!qtyInputs.length) return;
+
+        let val = parseInt(qtyInputs[0].value) || 1;
         val += amount;
         if (val < 1) val = 1;
 
-        // Cap quantity to product stock limit if available
         const currentProd = availableProducts[currentProductIndex];
         if (currentProd && currentProd.quantity !== undefined) {
             const maxQty = parseFloat(currentProd.quantity);
@@ -2871,7 +3061,10 @@
                 val = Math.floor(maxQty) || 1;
             }
         }
-        input.value = val;
+
+        qtyInputs.forEach(input => {
+            input.value = val;
+        });
         updateTotalPrice();
     }
 
@@ -2881,8 +3074,10 @@
         return;
         {% endif %}
 
-        const qty = document.getElementById('featured-quantity-input').value;
-        const method = document.getElementById('delivery-method-input').value;
+        const qtyInput = document.querySelector('.featured-quantity-input, #featured-quantity-input');
+        const qty = qtyInput ? qtyInput.value : 1;
+        const methodInput = document.getElementById('delivery-method-input');
+        const method = methodInput ? methodInput.value : 'pickup';
 
         document.getElementById('direct-product-id').value = productId;
         document.getElementById('direct-quantity').value = qty;
