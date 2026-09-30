@@ -195,9 +195,9 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Delivery Method:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setDeliveryMethod('pickup')"
-                            class="btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Pickup</button>
+                            class="btn-pickup mobile-btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Pickup</button>
                         <button type="button" onclick="setDeliveryMethod('delivery')"
-                            class="btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
+                            class="btn-delivery mobile-btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
                     </div>
                 </div>
 
@@ -206,9 +206,9 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Pricing Option:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setPricingUnit('pc')"
-                            class="btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Per Piece (pc)</button>
+                            class="btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Per Piece (pc)</button>
                         <button type="button" onclick="setPricingUnit('kg')"
-                            class="btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            class="btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                     </div>
                 </div>
 
@@ -299,7 +299,7 @@
             <!-- LEFT SIDE: Info -->
             <div class="col-span-12 lg:col-span-4 space-y-5 self-center py-12">
                 <div class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
-                    <span>Home</span> > <span>Market</span> > <span class="featured-species-text text-[#cca43b] truncate">Table</span>
+                    <span>Home</span> > <span>Market</span> > <span class="text-[#cca43b] truncate">Table</span>
                 </div>
 
                 <div>
@@ -324,9 +324,9 @@
                         <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
                         <div class="flex gap-3">
                             <button type="button" onclick="setDeliveryMethod('pickup')"
-                                class="btn-pickup bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Pickup</button>
+                                class="btn-pickup desktop-btn-pickup bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Pickup</button>
                             <button type="button" onclick="setDeliveryMethod('delivery')"
-                                class="btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
+                                class="btn-delivery desktop-btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
                         </div>
                     </div>
 
@@ -335,9 +335,9 @@
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" onclick="setPricingUnit('pc')"
-                                class="btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                                class="btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
                             <button type="button" onclick="setPricingUnit('kg')"
-                                class="btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                                class="btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                         </div>
                     </div>
 
@@ -2286,20 +2286,28 @@
         const currentProd = availableProducts[currentProductIndex];
         const bulkUnitName = currentProd?.bulkUnit || 'kg';
 
-        document.querySelectorAll('.btn-unit-pc, #btn-unit-pc').forEach(btn => {
-            if (unit === 'pc') {
-                btn.className = "btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
-            } else {
-                btn.className = "btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
-            }
+        // Desktop Unit Buttons
+        document.querySelectorAll('.desktop-btn-unit-pc').forEach(btn => {
+            btn.className = (unit === 'pc')
+                ? "btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                : "btn-unit-pc desktop-btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+        });
+        document.querySelectorAll('.desktop-btn-unit-kg').forEach(btn => {
+            btn.className = (unit === 'kg')
+                ? "btn-unit-kg desktop-btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                : "btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
         });
 
-        document.querySelectorAll('.btn-unit-kg, #btn-unit-kg').forEach(btn => {
-            if (unit === 'kg') {
-                btn.className = "btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
-            } else {
-                btn.className = "btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
-            }
+        // Mobile Unit Buttons
+        document.querySelectorAll('.mobile-btn-unit-pc').forEach(btn => {
+            btn.className = (unit === 'pc')
+                ? "btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                : "btn-unit-pc mobile-btn-unit-pc flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+        });
+        document.querySelectorAll('.mobile-btn-unit-kg').forEach(btn => {
+            btn.className = (unit === 'kg')
+                ? "btn-unit-kg mobile-btn-unit-kg flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                : "btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
         });
 
         document.querySelectorAll('.featured-unit-label-text, #featured-unit-label').forEach(el => {
@@ -2973,20 +2981,28 @@
         const input = document.getElementById('delivery-method-input');
         if (input) input.value = method;
 
-        document.querySelectorAll('.btn-pickup, #btn-pickup').forEach(btn => {
-            if (method === 'pickup') {
-                btn.className = "btn-pickup bg-[#cca43b] text-[#01140e] px-4 sm:px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
-            } else {
-                btn.className = "btn-pickup border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 sm:px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
-            }
+        // Desktop Delivery buttons
+        document.querySelectorAll('.desktop-btn-pickup').forEach(btn => {
+            btn.className = (method === 'pickup')
+                ? "btn-pickup desktop-btn-pickup bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                : "btn-pickup desktop-btn-pickup border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+        });
+        document.querySelectorAll('.desktop-btn-delivery').forEach(btn => {
+            btn.className = (method === 'delivery')
+                ? "btn-delivery desktop-btn-delivery bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                : "btn-delivery desktop-btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
         });
 
-        document.querySelectorAll('.btn-delivery, #btn-delivery').forEach(btn => {
-            if (method === 'delivery') {
-                btn.className = "btn-delivery bg-[#cca43b] text-[#01140e] px-4 sm:px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer";
-            } else {
-                btn.className = "btn-delivery border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 sm:px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
-            }
+        // Mobile Delivery buttons
+        document.querySelectorAll('.mobile-btn-pickup').forEach(btn => {
+            btn.className = (method === 'pickup')
+                ? "btn-pickup mobile-btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                : "btn-pickup mobile-btn-pickup flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+        });
+        document.querySelectorAll('.mobile-btn-delivery').forEach(btn => {
+            btn.className = (method === 'delivery')
+                ? "btn-delivery mobile-btn-delivery flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                : "btn-delivery mobile-btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
         });
 
         const payTitleCod = document.getElementById('pay-title-cod');
