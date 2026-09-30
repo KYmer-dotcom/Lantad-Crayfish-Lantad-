@@ -822,7 +822,7 @@
                                     <label class="block text-[10px] font-bold text-[#a0ac96] uppercase tracking-[0.2em]"
                                         id="map-label-text">📍 Pin Your Delivery Location (Drag or Click to
                                         Adjust)</label>
-                                    <button type="button" onclick="locateCurrentPosition()"
+                                    <button type="button" id="locate-gps-btn" onclick="locateCurrentPosition()"
                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#cca43b]/15 hover:bg-[#cca43b] text-[#cca43b] hover:text-[#01140e] text-[10px] font-black uppercase tracking-wider transition-all border border-[#cca43b]/30 cursor-pointer">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -835,7 +835,7 @@
                                 </div>
                                 <div id="checkout-delivery-map"
                                     class="w-full h-[320px] rounded-2xl border border-white/10 z-0"></div>
-                                <div class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
+                                <div id="map-delivery-tip" class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
                                     <span>Tip: Click anywhere on the map or drag the pin to set your exact
                                         location.</span>
                                     <span id="pin-coords-display" class="text-white/60 font-mono"></span>
@@ -1305,16 +1305,22 @@
                     const pickupSection = document.getElementById('section-pickup-details');
                     const mapLabelText = document.getElementById('map-label-text');
                     const addressInput = document.getElementById('checkout-delivery-address');
+                    const gpsBtn = document.getElementById('locate-gps-btn');
+                    const mapDeliveryTip = document.getElementById('map-delivery-tip');
 
                     if (allPickup) {
                         if (deliverySection) deliverySection.classList.add('hidden');
                         if (pickupSection) pickupSection.classList.remove('hidden');
-                        if (mapLabelText) mapLabelText.textContent = 'Establishment Map';
+                        if (mapLabelText) mapLabelText.textContent = '📍 Establishment Location';
+                        if (gpsBtn) gpsBtn.classList.add('hidden');
+                        if (mapDeliveryTip) mapDeliveryTip.classList.add('hidden');
                         if (addressInput) addressInput.value = 'PICKUP';
                     } else {
                         if (deliverySection) deliverySection.classList.remove('hidden');
                         if (pickupSection) pickupSection.classList.add('hidden');
-                        if (mapLabelText) mapLabelText.textContent = 'Pin Your Delivery Location';
+                        if (mapLabelText) mapLabelText.textContent = '📍 Pin Your Delivery Location (Drag or Click to Adjust)';
+                        if (gpsBtn) gpsBtn.classList.remove('hidden');
+                        if (mapDeliveryTip) mapDeliveryTip.classList.remove('hidden');
                         if (addressInput && addressInput.value === 'PICKUP') {
                             addressInput.value = '{{ customer.address|escapejs }}';
                         }
@@ -1505,7 +1511,9 @@
                     const disp = document.getElementById('pin-coords-display');
                     if (disp) disp.textContent = `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
                 };
-                updatePinDisplay(defaultLat, defaultLng);
+                if (!allPickup) {
+                    updatePinDisplay(defaultLat, defaultLng);
+                }
 
                 if (allPickup) {
                     checkoutMarker.bindPopup(pickupPopupHtml, { className: 'custom-leaflet-popup' }).openPopup();
