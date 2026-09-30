@@ -2201,7 +2201,7 @@ def rider_location_update(request):
     except (TypeError, ValueError):
         return JsonResponse({'success': False, 'error': 'Invalid coordinates'}, status=400)
 
-    now = datetime.datetime.now()
+    now = timezone.now()
     rider = None
 
     if request.user.is_authenticated:
@@ -2215,7 +2215,7 @@ def rider_location_update(request):
             delivery.save(update_fields=['current_latitude', 'current_longitude'])
             if not rider and delivery.rider:
                 rider = delivery.rider
-        except Delivery.DoesNotExist:
+        except (Delivery.DoesNotExist, ValueError):
             pass
 
     if rider:
@@ -2223,6 +2223,11 @@ def rider_location_update(request):
         rider.current_longitude = lng
         rider.last_location_update = now
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
+        # Also sync to active delivery records for this rider
+        Delivery.objects.filter(rider=rider, status__in=[Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED]).update(
+            current_latitude=lat,
+            current_longitude=lng
+        )
 
     return JsonResponse({
         'success': True,
@@ -2463,7 +2468,16 @@ def rider_portal(request):
 
     deliveries_qs = Delivery.objects.filter(rider=rider).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
 
-    active_deliveries = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+    active_deliveries = list(deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT]))
+    for d in active_deliveries:
+        cust = d.order.customer if d.order else None
+        cust_addr = d.delivery_location or (cust.address if cust else '')
+        cust_lat = getattr(cust, 'map_latitude', None)
+        cust_lng = getattr(cust, 'map_longitude', None)
+        res_lat, res_lng = _resolve_coords(cust_addr, cust_lat, cust_lng)
+        d.resolved_dest_lat = res_lat
+        d.resolved_dest_lng = res_lng
+
     completed_deliveries = deliveries_qs.filter(status=Delivery.Status.DELIVERED)
 
     # Available / Unassigned delivery dispatches that riders can claim

@@ -281,13 +281,22 @@
                         <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded-full {% if delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border border-cyan-500/30{% else %}bg-amber-500/20 text-amber-300 border border-amber-500/30{% endif %} whitespace-nowrap">{{ delivery.get_status_display }}</span>
                     </div>
 
-                    <!-- Recenter Route Button -->
-                    <button type="button" onclick="recenterGpsMap('{{ delivery.id }}')" class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#021f15]/95 border border-[#cca43b]/40 text-[#cca43b] backdrop-blur-md hover:bg-[#cca43b] hover:text-[#021f15] transition-all cursor-pointer" title="Recenter Route View">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
+                    <!-- Right Controls: GPS Status Pill & Recenter / Find My Location Button -->
+                    <div class="flex items-center gap-2 pointer-events-auto">
+                        <!-- Live GPS Status Pill -->
+                        <button type="button" onclick="recenterGpsMap('{{ delivery.id }}')" id="gps-status-pill-{{ delivery.id }}" class="flex items-center gap-1.5 bg-[#021f15]/95 border border-[#cca43b]/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-[#a0ac96] hover:text-white transition-all cursor-pointer">
+                            <span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" id="gps-status-dot-{{ delivery.id }}"></span>
+                            <span id="gps-status-text-{{ delivery.id }}">GPS Ready</span>
+                        </button>
+
+                        <!-- Recenter Route Button -->
+                        <button type="button" onclick="recenterGpsMap('{{ delivery.id }}')" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#021f15]/95 border border-[#cca43b]/40 text-[#cca43b] backdrop-blur-md hover:bg-[#cca43b] hover:text-[#021f15] transition-all cursor-pointer" title="Recenter Route View">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -345,6 +354,17 @@
                         </span>
                         <p class="text-sm font-mono font-bold text-[#cca43b] mt-1">₱{{ delivery.order.total_amount|floatformat:2|default:"0.00" }}</p>
                     </div>
+                </div>
+
+                <!-- Live GPS Tip & Simulation Bar -->
+                <div class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1 pt-1 border-t border-white/5">
+                    <span class="flex items-center gap-1.5 text-stone-300">
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                        <span>Tap map anytime to set location</span>
+                    </span>
+                    <button type="button" onclick="toggleSimulateMovement('{{ delivery.id }}')" id="sim-btn-{{ delivery.id }}" class="text-[10px] font-bold uppercase tracking-wider text-[#cca43b] hover:text-white bg-black/40 border border-[#cca43b]/30 rounded-lg px-2.5 py-1 transition-all cursor-pointer">
+                        Simulate Movement
+                    </button>
                 </div>
 
                 <!-- Primary Bottom Action Button (Full-width CTA from Reference Image) -->
@@ -613,14 +633,15 @@
     }
 
     const activeGpsMaps = {};
-    let liveRiderCoords = null;
+    let liveRiderCoords = {% if rider.current_latitude and rider.current_longitude %}{ lat: {{ rider.current_latitude }}, lng: {{ rider.current_longitude }} }{% else %}null{% endif %};
+    const simIntervals = {};
 
     // Custom Live Rider Beacon (Pulsing Cyan GPS Dot matching Uber/Google Maps)
     const riderLiveBeaconIcon = L.divIcon({
         className: 'gps-rider-phone-marker',
         html: `<div style="position:relative; display:flex; align-items:center; justify-content:center; width:38px; height:38px;">
-                   <div style="position:absolute; width:36px; height:36px; border-radius:50%; background:rgba(6,182,212,0.35); border:1.5px solid #06b6d4; box-:0 0 16px rgba(6,182,212,0.8); animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
-                   <div style="position:relative; width:16px; height:16px; border-radius:50%; background:#06b6d4; border:3px solid #ffffff; box-:0 2px 8px rgba(0,0,0,0.5);"></div>
+                   <div style="position:absolute; width:36px; height:36px; border-radius:50%; background:rgba(6,182,212,0.35); border:1.5px solid #06b6d4; box-shadow:0 0 16px rgba(6,182,212,0.8); animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
+                   <div style="position:relative; width:16px; height:16px; border-radius:50%; background:#06b6d4; border:3px solid #ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>
                </div>`,
         iconSize: [38, 38],
         iconAnchor: [19, 19]
@@ -633,16 +654,98 @@
             orderNumber: '{{ d.order.order_number|escapejs }}',
             customerName: '{{ d.order.customer.name|escapejs }}',
             address: '{{ d.delivery_location|default:d.order.customer.address|escapejs }}',
-            lat: '{{ d.order.customer.map_latitude|default:"" }}',
-            lng: '{{ d.order.customer.map_longitude|default:"" }}'
+            lat: '{{ d.resolved_dest_lat|default:d.order.customer.map_latitude|default:"" }}',
+            lng: '{{ d.resolved_dest_lng|default:d.order.customer.map_longitude|default:"" }}',
+            riderLat: '{{ d.current_latitude|default:rider.current_latitude|default:"" }}',
+            riderLng: '{{ d.current_longitude|default:rider.current_longitude|default:"" }}',
+            status: '{{ d.status }}'
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
     function initAllActiveGpsMaps() {
         activeDeliveryList.forEach(item => {
-            initActiveGpsMap(item.id, item.address, item.lat, item.lng, item.customerName);
+            initActiveGpsMap(item.id, item.address, item.lat, item.lng, item.customerName, item.riderLat, item.riderLng);
         });
+    }
+
+    function updateGpsStatusBadge(deliveryId, state, text) {
+        const pill = document.getElementById(`gps-status-pill-${deliveryId}`);
+        const dot = document.getElementById(`gps-status-dot-${deliveryId}`);
+        const label = document.getElementById(`gps-status-text-${deliveryId}`);
+        if (!pill || !dot || !label) return;
+
+        label.textContent = text;
+        if (state === 'active') {
+            dot.className = 'h-2 w-2 rounded-full bg-emerald-400 animate-pulse';
+            pill.className = 'flex items-center gap-1.5 bg-[#021f15]/95 border border-emerald-500/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-emerald-300 transition-all cursor-pointer';
+        } else if (state === 'acquiring') {
+            dot.className = 'h-2 w-2 rounded-full bg-amber-400 animate-ping';
+            pill.className = 'flex items-center gap-1.5 bg-[#021f15]/95 border border-amber-500/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-amber-300 transition-all cursor-pointer';
+        } else {
+            dot.className = 'h-2 w-2 rounded-full bg-rose-400';
+            pill.className = 'flex items-center gap-1.5 bg-[#021f15]/95 border border-rose-500/40 backdrop-blur-md px-3 py-2 rounded-full text-[10px] font-black tracking-wider text-rose-300 transition-all cursor-pointer';
+        }
+    }
+
+    function requestRiderGps(deliveryId, isUserTriggered) {
+        if (!("geolocation" in navigator)) {
+            updateGpsStatusBadge(deliveryId, 'error', 'GPS Unsupported');
+            return;
+        }
+
+        updateGpsStatusBadge(deliveryId, 'acquiring', 'Acquiring GPS...');
+
+        function onGpsSuccess(pos) {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+            updateRiderPhoneLocation(deliveryId, lat, lng);
+            const entry = activeGpsMaps[deliveryId];
+            if (entry && entry.map && isUserTriggered) {
+                entry.map.setView([lat, lng], 16);
+            }
+        }
+
+        function onGpsError(err) {
+            // Fallback to low accuracy / cellular network
+            navigator.geolocation.getCurrentPosition(
+                onGpsSuccess,
+                function(fallbackErr) {
+                    if (fallbackErr.code === 1) {
+                        updateGpsStatusBadge(deliveryId, 'error', 'GPS Blocked • Tap to Allow');
+                    } else if (fallbackErr.code === 3) {
+                        updateGpsStatusBadge(deliveryId, 'error', 'GPS Timeout • Tap to Retry');
+                    } else {
+                        updateGpsStatusBadge(deliveryId, 'error', 'GPS Offline • Tap to Retry');
+                    }
+                },
+                { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+            );
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            onGpsSuccess,
+            onGpsError,
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
+        );
+
+        if (!window.riderGpsWatchId) {
+            window.riderGpsWatchId = navigator.geolocation.watchPosition(
+                function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+                    Object.keys(activeGpsMaps).forEach(delId => {
+                        updateRiderPhoneLocation(delId, lat, lng);
+                    });
+                },
+                function (watchErr) {
+                    console.warn('watchPosition error:', watchErr);
+                },
+                { enableHighAccuracy: true, maximumAge: 3000, timeout: 15000 }
+            );
+        }
     }
 
     function fetchRoadRoute(map, entry, originLat, originLng, destLat, destLng) {
@@ -657,6 +760,7 @@
                 } else {
                     routeCoords = [[originLat, originLng], [destLat, destLng]];
                 }
+                entry.routeCoords = routeCoords;
 
                 if (entry.polyline) {
                     entry.polyline.setLatLngs(routeCoords);
@@ -675,6 +779,7 @@
             })
             .catch(() => {
                 const fallbackCoords = [[originLat, originLng], [destLat, destLng]];
+                entry.routeCoords = fallbackCoords;
                 if (entry.polyline) {
                     entry.polyline.setLatLngs(fallbackCoords);
                 } else {
@@ -700,9 +805,14 @@
             } else {
                 entry.riderMarker = L.marker([lat, lng], {
                     icon: riderLiveBeaconIcon,
-                    zIndexOffset: 1000
+                    zIndexOffset: 1000,
+                    draggable: true
                 }).addTo(entry.map);
                 entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
+                entry.riderMarker.on('dragend', function (e) {
+                    const pos = e.target.getLatLng();
+                    updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
+                });
             }
 
             // Dynamically update road route from Rider's current GPS position to Destination
@@ -723,13 +833,46 @@
         }).catch(function() {});
     }
 
-    function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName) {
+    function toggleSimulateMovement(deliveryId) {
+        const btn = document.getElementById(`sim-btn-${deliveryId}`);
+        if (simIntervals[deliveryId]) {
+            clearInterval(simIntervals[deliveryId]);
+            delete simIntervals[deliveryId];
+            if (btn) btn.textContent = 'Simulate Movement';
+            return;
+        }
+
+        const entry = activeGpsMaps[deliveryId];
+        if (!entry || !entry.routeCoords || entry.routeCoords.length < 2) {
+            alert('Loading route points, please try again in a moment...');
+            return;
+        }
+
+        let idx = 0;
+        if (btn) btn.textContent = 'Stop Simulation';
+
+        simIntervals[deliveryId] = setInterval(() => {
+            if (idx >= entry.routeCoords.length) {
+                idx = 0;
+            }
+            const pt = entry.routeCoords[idx];
+            updateRiderPhoneLocation(deliveryId, pt[0], pt[1]);
+            updateGpsStatusBadge(deliveryId, 'active', 'Simulating GPS');
+            idx++;
+        }, 2200);
+    }
+
+    function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName, riderLat, riderLng) {
         const container = document.getElementById(`active-gps-map-${deliveryId}`);
         if (!container) return;
 
         if (activeGpsMaps[deliveryId]) {
             activeGpsMaps[deliveryId].map.invalidateSize();
             return;
+        }
+
+        if (riderLat && riderLng && !isNaN(parseFloat(riderLat)) && !isNaN(parseFloat(riderLng))) {
+            liveRiderCoords = { lat: parseFloat(riderLat), lng: parseFloat(riderLng) };
         }
 
         // Farm origin coords (Silay Farm / Pickup)
@@ -741,25 +884,24 @@
             zoomControl: false
         }).setView([farmLat, farmLng], 14);
 
-        // Clean mobile GPS map: no desktop zoom control box collision
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19
         }).addTo(map);
 
-        // Custom Pickup Marker (Clean glowing green halo matching Grab/Uber)
+        // Custom Pickup Marker
         const pickupIcon = L.divIcon({
             className: 'gps-pickup-marker',
-            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:rgba(16,185,129,0.3); border:2.5px solid #10b981; box-:0 0 16px rgba(16,185,129,0.7);">
-                   <div style="width:12px; height:12px; border-radius:50%; background:#10b981; border:2px solid #ffffff; box-:0 2px 4px rgba(0,0,0,0.3);"></div>
+            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:rgba(16,185,129,0.3); border:2.5px solid #10b981; box-shadow:0 0 16px rgba(16,185,129,0.7);">
+                   <div style="width:12px; height:12px; border-radius:50%; background:#10b981; border:2px solid #ffffff; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
                </div>`,
             iconSize: [34, 34],
             iconAnchor: [17, 17]
         });
 
-        // Custom Dropoff Marker (Clean red pin matching reference image)
+        // Custom Dropoff Marker
         const dropoffIcon = L.divIcon({
             className: 'gps-dropoff-marker',
-            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#f43f5e; border:2.5px solid #ffffff; box-:0 4px 14px rgba(244,63,94,0.7);">
+            html: `<div style="display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#f43f5e; border:2.5px solid #ffffff; box-shadow:0 4px 14px rgba(244,63,94,0.7);">
                    <svg style="width:18px; height:18px; color:#ffffff;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                </div>`,
             iconSize: [34, 34],
@@ -779,40 +921,39 @@
                 pickupMarker: pickupMarker,
                 dropoffMarker: dropoffMarker,
                 riderMarker: null,
-                destCoords: { lat: targetLat, lng: targetLng }
+                destCoords: { lat: targetLat, lng: targetLng },
+                routeCoords: []
             };
             activeGpsMaps[deliveryId] = entry;
 
-            // Route from Live Phone Location if available, otherwise from Farm
+            // Immediately create Rider marker if coordinates are already known!
             const startLat = liveRiderCoords ? liveRiderCoords.lat : farmLat;
             const startLng = liveRiderCoords ? liveRiderCoords.lng : farmLng;
 
+            if (liveRiderCoords) {
+                entry.riderMarker = L.marker([liveRiderCoords.lat, liveRiderCoords.lng], {
+                    icon: riderLiveBeaconIcon,
+                    zIndexOffset: 1000,
+                    draggable: true
+                }).addTo(map);
+                entry.riderMarker.bindPopup('<b>🛵 Your Location</b> (Tap or drag to update)');
+                entry.riderMarker.on('dragend', function (e) {
+                    const pos = e.target.getLatLng();
+                    updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
+                });
+                updateGpsStatusBadge(deliveryId, 'active', 'GPS Ready');
+            }
+
             fetchRoadRoute(map, entry, startLat, startLng, targetLat, targetLng);
 
-            // Request Phone GPS Location
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    function (pos) {
-                        updateRiderPhoneLocation(deliveryId, pos.coords.latitude, pos.coords.longitude);
-                    },
-                    function (err) {
-                        console.log("Phone GPS not available, using farm origin.");
-                    },
-                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
-                );
+            // Tap map to set/update position anytime
+            map.on('click', function(e) {
+                updateRiderPhoneLocation(deliveryId, e.latlng.lat, e.latlng.lng);
+                updateGpsStatusBadge(deliveryId, 'active', 'Location Set');
+            });
 
-                if (!window.riderGpsWatchId) {
-                    window.riderGpsWatchId = navigator.geolocation.watchPosition(
-                        function (pos) {
-                            Object.keys(activeGpsMaps).forEach(delId => {
-                                updateRiderPhoneLocation(delId, pos.coords.latitude, pos.coords.longitude);
-                            });
-                        },
-                        null,
-                        { enableHighAccuracy: true, maximumAge: 4000 }
-                    );
-                }
-            }
+            // Actively request phone GPS
+            requestRiderGps(deliveryId, false);
         }
 
         const hasExactCoords = destLat && destLng && !isNaN(parseFloat(destLat)) && !isNaN(parseFloat(destLng));
@@ -839,8 +980,11 @@
         const entry = activeGpsMaps[deliveryId];
         if (!entry || !entry.map) return;
 
+        // Request GPS with user gesture
+        requestRiderGps(deliveryId, true);
+
         if (liveRiderCoords) {
-            entry.map.setView([liveRiderCoords.lat, liveRiderCoords.lng], 17);
+            entry.map.setView([liveRiderCoords.lat, liveRiderCoords.lng], 16);
             if (entry.riderMarker) entry.riderMarker.openPopup();
         } else if (entry.polyline) {
             entry.map.fitBounds(entry.polyline.getBounds(), { padding: [50, 50] });
