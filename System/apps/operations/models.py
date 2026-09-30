@@ -157,6 +157,41 @@ class Pond(models.Model):
             return self.transfer_date + timedelta(days=60)
         return None
 
+    @property
+    def harvest_due_target_days(self):
+        if self.location == 'Main Pond':
+            return 150
+        elif self.location == 'Superworm Cabin':
+            return 90
+        elif self.location == 'Azula':
+            return 30
+        elif self.location == 'Breeding Pond':
+            if self.breeding_type == 'Reproduction':
+                return 21
+            elif self.breeding_type == 'Crilings':
+                return 60
+        return 150
+
+    @property
+    def is_harvest_due(self):
+        if not self.transfer_date or self.status == 'empty':
+            return False
+        if self.capacity <= 0 and (self.female_quantity or 0) <= 0 and (self.male_quantity or 0) <= 0:
+            return False
+        days = self.days_since_transfer
+        if days is None:
+            return False
+        return days >= self.harvest_due_target_days
+
+    @property
+    def days_until_harvest(self):
+        if not self.transfer_date:
+            return None
+        target = self.harvest_due_target_days
+        days = self.days_since_transfer or 0
+        remaining = target - days
+        return max(0, remaining)
+
 
 class PondFeedingLog(models.Model):
     """Logs feeding operations for a pond."""

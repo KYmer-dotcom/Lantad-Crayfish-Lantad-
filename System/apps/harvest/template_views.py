@@ -1,14 +1,17 @@
 """
 Template views for Harvest module
 """
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.utils import timezone
 from django.contrib import messages
 from django import forms
 
-from apps.accounts.access import filter_by_pond, ensure_not_customer
+from apps.accounts.access import filter_by_pond, ensure_not_customer, get_accessible_ponds
 from .models import HarvestSchedule, HarvestRecord
 from apps.stock.models import StockBatch
+from apps.operations.models import Pond
 
 
 class HarvestScheduleForm(forms.ModelForm):
@@ -328,3 +331,51 @@ def record_create(request):
         return render(request, 'harvest_management/partials/record_form.html', {'form': form})
     
     return redirect('harvest:list')
+
+
+@login_required
+@require_POST
+def pond_harvest(request, pond_id):
+    """Harvest and clear a pond once its estimated harvest/transfer date is due."""
+    ensure_not_customer(request.user)
+    accessible_ponds = get_accessible_ponds(request.user)
+    pond = get_object_or_404(accessible_ponds, id=pond_id)
+    
+    if not pond.is_harvest_due:
+        days_left = pond.days_until_harvest
+        messages.error(
+            request, 
+            f"Cannot harvest {pond.name} yet. Harvest is locked until due date ({days_left} days remaining)."
+        )
+        return redirect('harvest:list')
+    
+    harvested_qty = pond.capacity or pond.female_quantity or 0
+    pond_name = pond.name
+    
+    # Auto-log to HarvestRecord if there are active stock batches
+    active_batch = pond.stock_batches.filter(is_active=True).first()
+    if active_batch:
+        HarvestRecord.objects.create(
+            stock_batch=active_batch,
+            harvest_date=timezone.now().date(),
+            quantity_harvested=active_batch.current_quantity or harvested_qty,
+            total_weight_kg=active_batch.total_biomass_kg or 0,
+            average_weight_per_fish=active_batch.average_weight_g or 0,
+            harvested_by=request.user,
+            notes=f"Harvested from {pond.name} (Production cycle completed)"
+        )
+        active_batch.current_quantity = 0
+        active_batch.is_active = False
+        active_batch.save(update_fields=['current_quantity', 'is_active', 'updated_at'])
+
+    # Clear pond stock and mark as empty
+    pond.capacity = 0
+    pond.male_quantity = 0
+    pond.female_quantity = 0
+    pond.status = Pond.Status.EMPTY
+    pond.transfer_date = None
+    pond.save()
+
+    messages.success(request, f"Successfully harvested and cleared {pond_name}! Quantity has been cleared and pond reset to Empty.")
+    return redirect('harvest:list')
+
