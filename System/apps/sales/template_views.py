@@ -2468,7 +2468,11 @@ def rider_portal(request):
 
     deliveries_qs = Delivery.objects.filter(rider=rider).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
 
-    active_deliveries = list(deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT]))
+    active_deliveries_qs = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+    active_count = active_deliveries_qs.count()
+    in_transit_count = active_deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
+
+    active_deliveries = list(active_deliveries_qs)
     for d in active_deliveries:
         cust = d.order.customer if d.order else None
         cust_addr = d.delivery_location or (cust.address if cust else '')
@@ -2488,9 +2492,7 @@ def rider_portal(request):
         delivery_location__iexact='pickup'
     ).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
 
-    active_count = active_deliveries.count()
     available_count = available_deliveries.count()
-    in_transit_count = active_deliveries.filter(status=Delivery.Status.IN_TRANSIT).count()
     completed_count = completed_deliveries.count()
     total_volume_today = deliveries_qs.filter(delivered_date=datetime.date.today()).aggregate(total=Sum('quantity_kg'))['total'] or 0
 
