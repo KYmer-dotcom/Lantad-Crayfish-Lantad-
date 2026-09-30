@@ -130,18 +130,13 @@
         <!-- ============================================================== -->
         <div class="block lg:hidden w-full pb-10 space-y-4">
             
-            <!-- Breadcrumb Navigation & Status -->
-            <div class="flex items-center justify-between px-1 pt-1">
-                <div class="text-[#a0ac96] text-[10px] uppercase tracking-[0.2em] font-semibold flex items-center gap-1.5">
-                    <span>Home</span> &gt; <span>Market</span> &gt; <span class="featured-species-text text-[#cca43b] truncate">{{ featured_product.species.name|default:"Table"|upper }}</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Farm Fresh
-                </div>
+            <!-- Breadcrumb Navigation -->
+            <div class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2 px-1 pt-1">
+                <span>Home</span> &gt; <span>Market</span> &gt; <span class="featured-species-text text-[#cca43b] truncate">{{ featured_product.species.name|default:"Table"|upper }}</span>
             </div>
 
             <!-- Mobile Hero Product Card -->
-            <div class="rounded-3xl border border-[#cca43b]/30 bg-gradient-to-b from-[#021f15]/95 to-[#01140e]/95 p-4 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4">
+            <div class="rounded-3xl border border-[#cca43b]/30 bg-[#01140e]/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4">
                 
                 <!-- Showcase Image Card with interactive navigation overlay -->
                 <div class="relative w-full h-60 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
@@ -152,15 +147,15 @@
                     <!-- Subtle vignette gradient overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none"></div>
 
-                    <!-- Top Floating Badges -->
+                    <!-- Top Floating Badges matching PC colors -->
                     <div class="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
                         <span class="featured-species-text bg-black/70 backdrop-blur-md border border-[#cca43b]/40 text-[#cca43b] text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md pointer-events-auto">
                             {{ featured_product.species.name|default:"PREMIUM"|upper }}
                         </span>
 
-                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-emerald-950/80 border-emerald-500/40 text-emerald-400{% else %}bg-rose-950/80 border-rose-500/40 text-rose-400{% endif %}">
-                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-emerald-400{% else %}bg-rose-400{% endif %}"></span>
-                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} in stock{% else %}Out of Stock{% endif %}</span>
+                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/20 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
                         </span>
                     </div>
 
@@ -188,92 +183,95 @@
                 </div>
 
                 <!-- Product Identity -->
-                <div class="space-y-1">
-                    <h2 class="featured-name-text text-2xl sm:text-3xl font-black text-white uppercase tracking-tight font-serif" style="font-family: 'Georgia', serif;">
+                <div class="space-y-1.5">
+                    <h2 class="featured-name-text text-3xl sm:text-4xl font-black text-white uppercase tracking-tight font-serif" style="font-family: 'Georgia', serif;">
                         {{ featured_product.name|default:"SILAY"|upper }}
                     </h2>
-                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium">
+                    
+                    <!-- Stock Badge matching PC layout -->
+                    <div class="flex items-center gap-2">
+                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        </span>
+                    </div>
+
+                    <!-- Category / Notes matching PC layout -->
+                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium border-l-2 border-[#cca43b]/40 pl-3 mt-2">
                         {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
                     </p>
                 </div>
 
-                <!-- Segmented Delivery Method -->
-                <div class="space-y-1.5 {% if orders %}hidden{% endif %}">
-                    <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Delivery Method</p>
-                    <div class="bg-black/50 p-1 rounded-xl border border-white/10 grid grid-cols-2 gap-1">
+                <!-- Delivery Method Selector matching PC -->
+                <div class="space-y-2 {% if orders %}hidden{% endif %}">
+                    <p class="text-white font-bold text-xs uppercase tracking-wide">Delivery Method:</p>
+                    <div class="flex gap-2.5">
                         <button type="button" onclick="setDeliveryMethod('pickup')"
-                            class="btn-pickup bg-[#cca43b] text-[#01140e] py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer">Pickup</button>
+                            class="btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer">Pickup</button>
                         <button type="button" onclick="setDeliveryMethod('delivery')"
-                            class="btn-delivery text-[#a0ac96] hover:text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
+                            class="btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
                     </div>
                 </div>
 
-                <!-- Segmented Pricing Unit Option -->
-                <div class="space-y-1.5">
-                    <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Pricing Option</p>
-                    <div class="bg-black/50 p-1 rounded-xl border border-white/10 grid grid-cols-2 gap-1">
+                <!-- Pricing Option Selector matching PC -->
+                <div class="space-y-2">
+                    <p class="text-white font-bold text-xs uppercase tracking-wide">Pricing Option:</p>
+                    <div class="flex gap-2.5">
                         <button type="button" onclick="setPricingUnit('pc')"
-                            class="btn-unit-pc bg-[#cca43b] text-[#01140e] py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer">Per Piece (pc)</button>
+                            class="btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
                         <button type="button" onclick="setPricingUnit('kg')"
-                            class="btn-unit-kg text-[#a0ac96] hover:text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            class="btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                     </div>
                 </div>
 
-                <!-- Price & Quantity Bar -->
-                <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-[10px] uppercase font-bold tracking-wider text-[#a0ac96]">Unit Price</p>
-                        <div class="flex items-baseline gap-1 mt-0.5">
-                            <span class="featured-price-text text-2xl font-black text-[#cca43b] font-mono leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</span>
-                            <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">/ pc</span>
-                        </div>
-                    </div>
+                <!-- Price Row matching PC -->
+                <div class="flex items-baseline gap-2 pt-1">
+                    <p class="text-white font-bold text-xs uppercase tracking-wide">Price:</p>
+                    <p class="featured-price-text text-3xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                    <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">/ pc</span>
+                </div>
 
-                    <div class="flex flex-col items-end">
-                        <p class="featured-quantity-label text-[10px] uppercase font-bold tracking-wider text-[#a0ac96] mb-1">Quantity (pcs)</p>
-                        <div class="flex items-center bg-black/70 border border-[#cca43b]/40 rounded-xl overflow-hidden h-10 w-28">
-                            <button type="button" onclick="adjustFeaturedQuantity(-1)"
-                                class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
-                            <input type="number" value="1" oninput="updateTotalPrice()"
-                                onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
-                                min="1"
-                                class="featured-quantity-input w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                            <button type="button" onclick="adjustFeaturedQuantity(1)"
-                                class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
-                        </div>
+                <!-- Quantity Row matching PC -->
+                <div class="flex items-center justify-between gap-3 pt-1">
+                    <p class="featured-quantity-label text-white font-bold text-xs uppercase tracking-wide">Quantity (pcs):</p>
+                    <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
+                        <button type="button" onclick="adjustFeaturedQuantity(-1)"
+                            class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
+                        <input type="number" value="1" oninput="updateTotalPrice()"
+                            onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
+                            min="1"
+                            class="featured-quantity-input w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <button type="button" onclick="adjustFeaturedQuantity(1)"
+                            class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
                     </div>
                 </div>
 
-                <!-- Order CTA Button with dynamic total -->
+                <!-- Total Price Row matching PC -->
+                <div class="flex items-center gap-2 py-0.5">
+                    <p class="text-white font-bold text-xs uppercase tracking-wide">Total Price:</p>
+                    <p class="featured-total-price text-xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                </div>
+
+                <!-- Order CTA Button matching PC -->
                 <div class="pt-1">
                     <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
-                        class="featured-order-btn w-full bg-gradient-to-r from-[#e5b84c] via-[#cca43b] to-[#b38a22] hover:brightness-110 active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-13 font-black text-xs uppercase tracking-[0.15em] flex items-center justify-between px-5 shadow-xl shadow-[#cca43b]/25 transition-all cursor-pointer"
+                        class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-13 font-black text-xs uppercase tracking-[0.15em] flex items-center justify-between px-5 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
                         {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                            <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
-                        </div>
-                        <span class="featured-total-price font-mono font-black text-sm bg-black/15 px-3 py-1 rounded-xl">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                        <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                        <span class="featured-total-price font-mono font-black text-sm">₱{{ featured_product.unit_price|floatformat:0 }}</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Mobile Quick Product Switcher Drawer -->
-            <div class="space-y-2.5 pt-2">
-                <div class="flex items-center justify-between px-1">
-                    <h3 class="text-xs uppercase font-black tracking-[0.15em] text-[#cca43b] flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#cca43b]"></span>Available Products
-                    </h3>
-                    <span class="text-[10px] text-[#a0ac96] font-bold">Tap to view</span>
-                </div>
+            <!-- Mobile Quick Product Switcher Drawer matching PC cards -->
+            <div class="space-y-3 pt-2">
+                <h3 class="text-base font-bold text-[#cca43b] tracking-wide px-1">Available Products</h3>
                 <div class="grid grid-cols-1 gap-2.5">
                     {% for prod in other_products %}
                     <button type="button"
                         onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
-                        class="w-full bg-[#01140e]/90 hover:bg-[#cca43b]/10 border border-white/10 hover:border-[#cca43b]/50 p-3 rounded-2xl flex items-center gap-3 text-left transition-all group cursor-pointer shadow-md">
-                        <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
+                        class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-3.5 rounded-2xl flex items-center gap-3.5 text-left transition-all group cursor-pointer">
+                        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
                             {% if prod.icon == 'shrimp' %}🦐
                             {% elif prod.icon == 'lab' %}🧪
                             {% elif prod.icon == 'leaf' %}🌿
@@ -283,12 +281,12 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-1">
-                                <p class="font-bold text-white text-xs truncate group-hover:text-[#cca43b]">{{ prod.name }}</p>
-                                <span class="text-[10px] font-mono font-bold shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                <p class="font-bold text-white text-sm truncate group-hover:text-[#cca43b] transition-colors">{{ prod.name }}</p>
+                                <span class="text-xs font-mono font-bold shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
                                     {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
                                 </span>
                             </div>
-                            <p class="text-[11px] text-[#a0ac96] font-mono mt-0.5">
+                            <p class="text-xs text-[#a0ac96] font-mono mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
                                 {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
