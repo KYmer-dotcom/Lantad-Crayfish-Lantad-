@@ -162,6 +162,16 @@
         });
     </script>
     
+    {% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                showToast("{{ message|escapejs }}", "{% if message.tags == 'error' %}error{% elif message.tags == 'info' %}info{% else %}success{% endif %}");
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
