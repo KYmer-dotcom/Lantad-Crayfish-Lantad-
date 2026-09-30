@@ -147,6 +147,14 @@
                     <!-- Subtle vignette gradient overlay -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"></div>
 
+                    <!-- Top-Right Floating Stock Badge on Picture -->
+                    <div class="absolute top-3 right-3 z-10 pointer-events-none">
+                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/20 border-[#cca43b]/50 text-[#cca43b]{% else %}bg-rose-500/20 border-rose-500/50 text-rose-400{% endif %} shadow-lg">
+                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        </span>
+                    </div>
+
                     <!-- Side Chevrons for Prev / Next -->
                     <button type="button" onclick="prevProduct()"
                         class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 active:bg-black/90 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all active:scale-90 z-20 shadow-lg cursor-pointer"
@@ -171,21 +179,13 @@
                 </div>
 
                 <!-- Product Identity -->
-                <div class="space-y-1.5">
+                <div class="space-y-1">
                     <h2 class="featured-name-text text-3xl sm:text-4xl font-black text-white uppercase tracking-tight font-serif" style="font-family: 'Georgia', serif;">
                         {{ featured_product.name|default:"SILAY"|upper }}
                     </h2>
-                    
-                    <!-- Stock Badge matching PC layout -->
-                    <div class="flex items-center gap-2">
-                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
-                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
-                        </span>
-                    </div>
 
                     <!-- Category / Notes matching PC layout -->
-                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium border-l-2 border-[#cca43b]/40 pl-3 mt-2">
+                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium border-l-2 border-[#cca43b]/40 pl-3 mt-1.5">
                         {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
                     </p>
                 </div>
@@ -195,9 +195,9 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Delivery Method:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setDeliveryMethod('pickup')"
-                            class="btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer">Pickup</button>
+                            class="btn-pickup flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Pickup</button>
                         <button type="button" onclick="setDeliveryMethod('delivery')"
-                            class="btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
+                            class="btn-delivery flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">Delivery</button>
                     </div>
                 </div>
 
@@ -206,9 +206,9 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Pricing Option:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setPricingUnit('pc')"
-                            class="btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                            class="btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Per Piece (pc)</button>
                         <button type="button" onclick="setPricingUnit('kg')"
-                            class="btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            class="btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                     </div>
                 </div>
 
@@ -240,13 +240,13 @@
                     <p class="featured-total-price text-xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
                 </div>
 
-                <!-- Order CTA Button matching PC -->
-                <div class="pt-1">
+                <!-- Order CTA Button matching PC (Large & Bold) -->
+                <div class="pt-2">
                     <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
-                        class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-13 font-black text-xs uppercase tracking-[0.15em] flex items-center justify-between px-5 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
+                        class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-14 sm:h-16 font-black text-sm sm:text-base uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-xl shadow-[#cca43b]/25 transition-all cursor-pointer"
                         {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
                         <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
-                        <span class="featured-total-price font-mono font-black text-sm">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                        <span class="featured-total-price font-mono font-black text-base sm:text-lg">₱{{ featured_product.unit_price|floatformat:0 }}</span>
                     </button>
                 </div>
             </div>
