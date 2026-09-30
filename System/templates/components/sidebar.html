@@ -255,15 +255,15 @@
                 </a>
                 {% endif %}
 
-                <!-- Logs -->
+                <!-- Audit -->
                 <a href="{% url 'sales:delivery_logs' %}" 
-                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:delivery_logs' or current_url == 'delivery_logs_root' or '/deliveries/logs' in request.path or '/delivery-logs' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
-                    title="Logs">
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:delivery_logs' or current_url == 'delivery_logs_root' or '/deliveries/logs' in request.path or '/delivery-logs' in request.path or current_url == 'archive_dashboard' or '/archive' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    title="Audit">
                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                     </svg>
-                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Logs</span>
-                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Logs</span>
+                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Audit</span>
+                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Audit</span>
                 </a>
 
                 <!-- Reports & Analytics -->
@@ -276,19 +276,6 @@
                     <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Reports & Analytics</span>
                     <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Reports & Analytics</span>
                 </a>
-
-                {% if user.is_owner or user.is_staff or user.is_superuser %}
-                <!-- Bin -->
-                <a href="{% url 'archive_dashboard' %}" 
-                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'archive_dashboard' or '/archive' in request.path %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
-                    title="Bin">
-                    <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Bin</span>
-                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Bin</span>
-                </a>
-                {% endif %}
 
                 <!-- Notifications -->
                 <a href="{% url 'notifications' %}" 

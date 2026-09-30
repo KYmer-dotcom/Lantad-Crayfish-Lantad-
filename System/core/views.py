@@ -629,57 +629,12 @@ ENTITY_MODEL_MAP = {
 
 @login_required
 def archive_dashboard(request):
-    """
-    Dedicated view for Data Archive & Soft-Deleted Records.
-    Allows viewing, filtering, restoring, and permanently deleting archived records.
-    Accessible to Owners and Admins.
-    """
-    if not (getattr(request.user, 'is_owner', False) or request.user.is_staff or request.user.is_superuser):
-        messages.error(request, 'Access denied. Only Farm Owners and Administrators can view the Bin.')
-        return redirect('dashboard')
-
-    from apps.sales.models import Product, SalesOrder
-    from apps.feed.models import FeedType
-    from apps.stock.models import StockBatch
-
-    q = request.GET.get('q', '').strip()
-    active_tab = request.GET.get('tab', 'products')
-
-    # Query all archived records
-    archived_products_qs = Product.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
-    archived_feed_types_qs = FeedType.all_objects.filter(is_deleted=True).select_related('deleted_by')
-    archived_batches_qs = StockBatch.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
-    archived_orders_qs = SalesOrder.all_objects.filter(is_deleted=True).select_related('customer', 'product', 'deleted_by')
-
-    if q:
-        archived_products_qs = archived_products_qs.filter(name__icontains=q)
-        archived_feed_types_qs = archived_feed_types_qs.filter(name__icontains=q)
-        archived_batches_qs = archived_batches_qs.filter(batch_code__icontains=q)
-        archived_orders_qs = archived_orders_qs.filter(order_number__icontains=q)
-
-    archived_products = list(archived_products_qs.order_by('-deleted_at'))
-    archived_feed_types = list(archived_feed_types_qs.order_by('-deleted_at'))
-    archived_batches = list(archived_batches_qs.order_by('-deleted_at'))
-    archived_orders = list(archived_orders_qs.order_by('-deleted_at'))
-
-    counts = {
-        'products': len(archived_products),
-        'feed_types': len(archived_feed_types),
-        'batches': len(archived_batches),
-        'orders': len(archived_orders),
-        'total': len(archived_products) + len(archived_feed_types) + len(archived_batches) + len(archived_orders),
-    }
-
-    context = {
-        'active_tab': active_tab,
-        'search_query': q,
-        'counts': counts,
-        'archived_products': archived_products,
-        'archived_feed_types': archived_feed_types,
-        'archived_batches': archived_batches,
-        'archived_orders': archived_orders,
-    }
-    return render(request, 'archive/dashboard.html', context)
+    """Redirect to the unified Audit & Bin dashboard tab."""
+    tab = request.GET.get('tab', '')
+    url = '/delivery-logs/?tab=bin'
+    if tab:
+        url += f'&bin_tab={tab}'
+    return redirect(url)
 
 
 @login_required
@@ -690,12 +645,12 @@ def archive_restore(request, entity_type, entity_id):
         return redirect('dashboard')
 
     if request.method != 'POST':
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     config = ENTITY_MODEL_MAP.get(entity_type)
     if not config:
         messages.error(request, f'Invalid entity type: {entity_type}')
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     model_name, module_path, log_module, name_getter = config
     import importlib
@@ -705,7 +660,7 @@ def archive_restore(request, entity_type, entity_id):
     item = model_class.all_objects.filter(pk=entity_id, is_deleted=True).first()
     if not item:
         messages.error(request, f'{model_name} #{entity_id} not found in archive.')
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     item_name = name_getter(item)
     item.restore()
@@ -724,7 +679,8 @@ def archive_restore(request, entity_type, entity_id):
 
     messages.success(request, f'Successfully restored {item_name} back to active catalog!')
     tab_name = entity_type + ('es' if entity_type.endswith('ch') else 's')
-    return redirect(f"/archive/?tab={tab_name}")
+    next_url = request.POST.get('next')
+    return redirect(next_url or f"/delivery-logs/?tab=bin&bin_tab={tab_name}")
 
 
 @login_required
@@ -735,12 +691,12 @@ def archive_hard_delete(request, entity_type, entity_id):
         return redirect('dashboard')
 
     if request.method != 'POST':
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     config = ENTITY_MODEL_MAP.get(entity_type)
     if not config:
         messages.error(request, f'Invalid entity type: {entity_type}')
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     model_name, module_path, log_module, name_getter = config
     import importlib
@@ -750,7 +706,7 @@ def archive_hard_delete(request, entity_type, entity_id):
     item = model_class.all_objects.filter(pk=entity_id, is_deleted=True).first()
     if not item:
         messages.error(request, f'{model_name} #{entity_id} not found in archive.')
-        return redirect('archive_dashboard')
+        return redirect('/delivery-logs/?tab=bin')
 
     item_name = name_getter(item)
     item.hard_delete()
@@ -769,7 +725,9 @@ def archive_hard_delete(request, entity_type, entity_id):
 
     messages.success(request, f'Permanently deleted {item_name}.')
     tab_name = entity_type + ('es' if entity_type.endswith('ch') else 's')
-    return redirect(f"/archive/?tab={tab_name}")
+    next_url = request.POST.get('next')
+    return redirect(next_url or f"/delivery-logs/?tab=bin&bin_tab={tab_name}")
+
 
 
 

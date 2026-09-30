@@ -1902,6 +1902,34 @@ def delivery_logs_page(request):
             pass
     product_logs_count = product_logs_qs.count()
 
+    # Bin / Archived Records for Audit
+    from apps.feed.models import FeedType
+    from apps.stock.models import StockBatch
+
+    archived_products_qs = Product.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
+    archived_feed_types_qs = FeedType.all_objects.filter(is_deleted=True).select_related('deleted_by')
+    archived_batches_qs = StockBatch.all_objects.filter(is_deleted=True).select_related('species', 'pond', 'deleted_by')
+    archived_orders_qs = SalesOrder.all_objects.filter(is_deleted=True).select_related('customer', 'product', 'deleted_by')
+
+    if query:
+        archived_products_qs = archived_products_qs.filter(name__icontains=query)
+        archived_feed_types_qs = archived_feed_types_qs.filter(name__icontains=query)
+        archived_batches_qs = archived_batches_qs.filter(batch_code__icontains=query)
+        archived_orders_qs = archived_orders_qs.filter(order_number__icontains=query)
+
+    bin_products = list(archived_products_qs.order_by('-deleted_at'))
+    bin_feed_types = list(archived_feed_types_qs.order_by('-deleted_at'))
+    bin_batches = list(archived_batches_qs.order_by('-deleted_at'))
+    bin_orders = list(archived_orders_qs.order_by('-deleted_at'))
+
+    bin_counts = {
+        'products': len(bin_products),
+        'feed_types': len(bin_feed_types),
+        'batches': len(bin_batches),
+        'orders': len(bin_orders),
+        'total': len(bin_products) + len(bin_feed_types) + len(bin_batches) + len(bin_orders),
+    }
+
     context = {
         'deliveries': page_obj,
         'page_obj': page_obj,
@@ -1912,6 +1940,12 @@ def delivery_logs_page(request):
         'input_logs_deleted_count': input_logs_deleted_count,
         'product_logs': product_logs_qs,
         'product_logs_count': product_logs_count,
+        'bin_products': bin_products,
+        'bin_feed_types': bin_feed_types,
+        'bin_batches': bin_batches,
+        'bin_orders': bin_orders,
+        'bin_counts': bin_counts,
+        'bin_subtab': request.GET.get('bin_tab', 'products'),
         'total_logs': total_logs,
         'delivered_count': delivered_count,
         'in_transit_count': in_transit_count,
