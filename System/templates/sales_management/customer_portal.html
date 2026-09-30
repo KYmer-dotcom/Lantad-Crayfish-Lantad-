@@ -27,46 +27,46 @@
             stroke="currentColor" stroke-width="1" fill="none" />
     </svg>
 
-    <!-- Header (exactly like reference) -->
+    <!-- Header (Mobile-optimized & Desktop polished) -->
     <header
-        class="w-full flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-8 py-4 md:py-6 relative z-30 gap-4">
+        class="w-full flex items-center justify-between px-4 sm:px-8 py-3.5 sm:py-5 relative z-30 gap-3">
         <!-- Logo -->
-        <div class="w-auto md:w-[30%] flex-shrink-0 flex items-center gap-3">
+        <div class="flex items-center gap-2.5 sm:gap-3">
             <div
-                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e]">
+                class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e] shrink-0">
                 <img src="{% static 'images/brand-logo.jpg' %}" alt="Logo"
                     class="w-full h-full object-cover rounded-full mix-blend-multiply">
             </div>
             <div>
-                <p class="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#cca43b] font-bold leading-none">
+                <p class="text-[8px] sm:text-[9px] uppercase tracking-widest text-[#cca43b] font-bold leading-none">
                     Silay</p>
                 <h1
-                    class="text-white font-black text-xs sm:text-sm uppercase leading-none tracking-wider whitespace-nowrap">
+                    class="text-white font-black text-[11px] sm:text-xs uppercase leading-none tracking-wider whitespace-nowrap">
                     SUPERWORM & CRAYFISH</h1>
             </div>
         </div>
 
-        <!-- Navigation Links -->
+        <!-- Navigation Links (Desktop) -->
         <nav
-            class="w-full md:w-auto md:flex-1 flex justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide order-last md:order-none py-1 md:py-0 select-none">
+            class="hidden md:flex md:flex-1 justify-center items-center gap-6 sm:gap-8 lg:gap-12 text-[#a0ac96] text-xs sm:text-sm font-semibold tracking-wide select-none">
             <a href="{% url 'sales:customer_portal' %}"
                 class="{% if active_page == 'market' %}text-[#cca43b] border-b-2 border-[#cca43b]{% else %}hover:text-white transition-colors{% endif %} pb-1 uppercase font-bold tracking-wider">Market</a>
         </nav>
 
         <!-- Right side tools: Cart Icon + Customer Profile & Dropdown -->
-        <div class="w-auto md:w-[30%] flex-shrink-0 flex justify-end items-center gap-2.5 sm:gap-3.5">
+        <div class="flex justify-end items-center gap-2 sm:gap-3">
             <!-- Cart Icon Button -->
             <a href="{% url 'sales:customer_cart_page' %}"
-                class="relative inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer group"
+                class="relative inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer group"
                 title="View Cart">
-                <svg class="w-5 h-5 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none"
+                <svg class="w-4 h-4 text-[#cca43b] group-hover:scale-110 transition-transform" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {% if cart_orders_count %}
                 <span
-                    class="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[10px] font-black text-[#01140e] /40 ring-2 ring-[#01140e]">
+                    class="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#cca43b] px-1 text-[9px] font-black text-[#01140e] ring-2 ring-[#01140e]">
                     {{ cart_orders_count }}
                 </span>
                 {% endif %}
@@ -74,13 +74,13 @@
             {% if user.is_authenticated %}
             <div class="relative">
                 <button type="button" onclick="toggleCustomerMenu(event)"
-                    class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
+                    class="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                     <span
-                        class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
+                        class="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-[#cca43b] text-[#01140e] font-black text-[11px] sm:text-xs">
                         {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{ user.username.0|upper }}{% else %}C{% endif %}
                     </span>
-                    <span class="text-xs font-bold text-white">{% if customer and customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
-                    <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span class="text-xs font-bold text-white max-w-[80px] sm:max-w-none truncate">{% if customer and customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
+                    <svg class="h-3 w-3 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
@@ -102,7 +102,7 @@
                         <button type="submit"
                             class="flex w-full items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
                             Logout
@@ -112,15 +112,8 @@
             </div>
             {% else %}
             <a href="{% url 'customer_login' %}"
-                class="inline-flex items-center gap-2 rounded-2xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-sm font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
-                <span
-                    class="flex h-7 w-7 items-center justify-center rounded-xl bg-[#cca43b] text-[#01140e] font-black text-xs">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                </span>
-                <span class="text-xs font-bold text-white">Register</span>
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
+                <span>Register</span>
             </a>
             {% endif %}
         </div>
@@ -131,46 +124,46 @@
         {% if active_page == 'market' %}
         {% if products %}
         {% with featured_product=products|first other_products=products %}
-        <div class="flex-1 grid grid-cols-12 items-center h-full min-h-0 lg:min-h-[700px]">
+        <div class="flex-1 grid grid-cols-12 items-center h-full min-h-0 lg:min-h-[700px] gap-y-6 lg:gap-y-0">
 
-            <!-- LEFT SIDE: Info -->
-            <div class="col-span-12 lg:col-span-4 space-y-5 self-center py-6 lg:py-12">
+            <!-- LEFT SIDE: Info (Order-2 on mobile, Order-1 on desktop) -->
+            <div class="col-span-12 lg:col-span-4 space-y-4 sm:space-y-5 self-center py-2 lg:py-12 order-2 lg:order-1">
                 <div
-                    class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
+                    class="text-[#a0ac96] text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
                     <span>Home</span> > <span>Market</span> > <span id="featured-species"
                         class="text-[#cca43b] truncate">Table</span>
                 </div>
 
                 <div>
                     <h2 id="featured-name-container"
-                        class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] drop- flex items-center gap-4 flex-wrap"
+                        class="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-black text-white uppercase tracking-tight leading-[0.95] drop-shadow-md flex items-center gap-3 flex-wrap"
                         style="font-family: 'Georgia', serif;">
                         <span id="featured-name">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
-                    <div class="mt-3 flex items-center gap-2">
+                    <div class="mt-2.5 flex items-center gap-2">
                         <span id="featured-stock-badge"
-                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            class="inline-flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
                             <span id="featured-stock-dot"
-                                class="w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
                             <span id="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
                         </span>
                     </div>
                 </div>
 
                 <p id="featured-notes"
-                    class="text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
+                    class="text-[#a0ac96] text-xs sm:text-sm leading-relaxed max-w-[340px] font-medium border-l-2 border-[#cca43b]/40 pl-3 sm:pl-4 mt-2">
                     {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
                 </p>
 
-                <div class="pt-4 space-y-5">
+                <div class="pt-2 sm:pt-4 space-y-4 sm:space-y-5">
                     <!-- Delivery Method Selection -->
-                    <div class="space-y-2 {% if orders %}hidden{% endif %}">
-                        <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
-                        <div class="flex gap-3">
+                    <div class="space-y-1.5 {% if orders %}hidden{% endif %}">
+                        <p class="text-white font-bold text-xs uppercase tracking-wider">Delivery Method:</p>
+                        <div class="flex gap-2.5">
                             <button type="button" id="btn-pickup" onclick="setDeliveryMethod('pickup')"
-                                class="bg-[#cca43b] text-[#01140e] px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Pickup</button>
+                                class="bg-[#cca43b] text-[#01140e] px-5 sm:px-6 py-1.5 sm:py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all">Pickup</button>
                             <button type="button" id="btn-delivery" onclick="setDeliveryMethod('delivery')"
-                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">Delivery</button>
+                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-5 sm:px-6 py-1.5 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all">Delivery</button>
                         </div>
                     </div>
                     {% with first_order=orders|first %}
@@ -179,75 +172,64 @@
                     {% endwith %}
 
                     <!-- Pricing Unit Selector: Per Piece vs By Unit -->
-                    <div class="space-y-2 pt-2">
-                        <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
+                    <div class="space-y-1.5">
+                        <p class="text-white font-bold text-xs uppercase tracking-wider">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" id="btn-unit-pc" onclick="setPricingUnit('pc')"
-                                class="bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all">Per
+                                class="bg-[#cca43b] text-[#01140e] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all">Per
                                 Piece (pc)</button>
                             <button type="button" id="btn-unit-kg" onclick="setPricingUnit('kg')"
-                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
+                                class="border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all">By
                                 <span id="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                         </div>
                     </div>
 
                     <!-- Price -->
-                    <div class="flex items-baseline gap-2 py-2">
-                        <p class="text-white font-bold text-sm tracking-wide">Price:</p>
-                        <p id="featured-price" class="text-4xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
-                        <span id="featured-unit-label" class="text-sm font-bold text-[#a0ac96]">/ pc</span>
+                    <div class="flex items-baseline gap-2 py-1">
+                        <span class="text-white font-bold text-xs uppercase tracking-wider">Price:</span>
+                        <span id="featured-price" class="text-2xl sm:text-3xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                        <span id="featured-unit-label" class="text-xs font-bold text-[#a0ac96]">/ pc</span>
                     </div>
 
                     <!-- Quantity & Order Row -->
-                    <div class="flex items-center gap-4 pt-1 max-w-[380px]">
-                        <div class="flex items-center gap-3">
-                            <p id="featured-quantity-label" class="text-white font-bold text-sm tracking-wide">Quantity
-                                (pcs):</p>
-                            <div class="flex items-center bg-white rounded-lg overflow-hidden h-[42px] w-[100px]">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-1 max-w-[340px]">
+                        <div class="flex items-center gap-2">
+                            <span id="featured-quantity-label" class="text-white font-bold text-xs uppercase tracking-wider">Qty:</span>
+                            <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
-                                    class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">-</button>
+                                    class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
                                 <input type="number" id="featured-quantity-input" value="1" oninput="updateTotalPrice()"
                                     onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
                                     min="1"
-                                    class="w-10 h-full text-center text-black font-black outline-none border-none p-0 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                    class="w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                 <button type="button" onclick="adjustFeaturedQuantity(1)"
-                                    class="w-8 h-full text-black font-black flex items-center justify-center hover:bg-gray-200 transition-colors">+</button>
+                                    class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Dynamic Total Price -->
-                    <div class="flex items-center gap-2 py-1">
-                        <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
-                        <p id="featured-total-price" class="text-2xl font-black text-[#cca43b] leading-none">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <div class="flex items-baseline gap-1.5">
+                            <span class="text-[#a0ac96] text-xs font-bold uppercase">Total:</span>
+                            <span id="featured-total-price" class="text-xl sm:text-2xl font-black text-[#cca43b] font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                        </div>
                     </div>
 
                     <!-- Order Button -->
                     <div class="pt-2 max-w-[340px]">
                         <button id="featured-order-btn"
                             onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
-                            class="w-full bg-[#cca43b] hover:bg-white disabled:bg-[#cca43b]/50 disabled:text-white/50 text-[#01140e] rounded-xl h-14 flex items-center justify-between px-2 transition-all hover: group"
+                            class="w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-12 sm:h-14 font-black text-xs sm:text-sm uppercase tracking-[0.15em] flex items-center justify-center shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
                             {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
-                            <span id="featured-order-text"
-                                class="pl-6 font-black text-sm uppercase tracking-[0.15em]">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
-                            <div
-                                class="w-10 h-10 bg-white group-hover:bg-[#01140e] group-hover:text-white rounded-lg flex items-center justify-center text-[#cca43b] transition-colors">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                    stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                </svg>
-                            </div>
+                            <span id="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- CENTER: Huge Bowl -->
+            <!-- CENTER: Hero Dish / Bowl (Order-1 on mobile, Order-2 on desktop) -->
             <div
-                class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[350px] lg:min-h-[500px] pointer-events-none">
+                class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[260px] sm:min-h-[350px] lg:min-h-[500px] pointer-events-none order-1 lg:order-2">
                 <!-- Absolute wrapper to center perfectly to page on desktop, relative on mobile -->
                 <div
-                    class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto my-8 lg:my-0">
+                    class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto my-4 sm:my-8 lg:my-0">
                     <!-- Brush stroke background effect behind bowl -->
                     <div
                         class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
@@ -259,33 +241,33 @@
                     </div>
 
                     <div
-                        class="relative w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[8px] lg:border-[16px] border-[#01140e] overflow-hidden z-20 group">
+                        class="relative w-[210px] h-[210px] sm:w-[320px] sm:h-[320px] lg:w-[600px] lg:h-[600px] xl:w-[650px] xl:h-[650px] rounded-full border-[6px] sm:border-[8px] lg:border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
                         <img id="featured-image"
                             src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                             class="w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
                             alt="Featured Dish">
                         <div
-                            class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none">
+                            class="absolute inset-0 ring-inset ring-3 sm:ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none">
                         </div>
                     </div>
 
                     <!-- Circle arrow navigation overlapping bottom of bowl -->
                     <button onclick="nextProduct()"
-                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-4 border-[#01140e] text-[#01140e]">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-14 sm:h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-3 sm:border-4 border-[#01140e] text-[#01140e] shadow-lg cursor-pointer" title="Next Product">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </button>
 
                     <!-- Dots -->
-                    <div id="carousel-dots" class="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                    <div id="carousel-dots" class="absolute -bottom-8 sm:-bottom-12 left-1/2 -translate-x-1/2 flex gap-2.5 sm:gap-3 z-20">
                         <!-- Dots populated by JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT SIDE: Add-ons -->
-            <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-6 lg:pt-10 pb-6 lg:max-h-[700px]">
+            <!-- RIGHT SIDE: Add-ons (Order-3 on mobile and desktop) -->
+            <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-4 lg:pt-10 pb-6 lg:max-h-[700px] order-3 lg:order-3">
                 <h3 class="text-xl font-bold text-[#cca43b] tracking-wide mb-6 shrink-0">Available Products</h3>
 
                 <div
