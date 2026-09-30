@@ -140,28 +140,21 @@
             <!-- Active Shipment Banner & Stepper -->
             <div id="tracked-order-banner" class="glass-card rounded-xl p-4 sm:p-5 border border-[#cca43b]/30">
                 <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 shrink-0">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 id="disp-order-number" class="text-base sm:text-lg font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
+                            <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40 {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40 {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
+                                {{ selected_delivery.get_status_display }}
+                            </span>
+                            <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
+                                {% if selected_delivery.order.payment_status == 'paid' %}Paid{% else %}COD (Collect on Delivery){% endif %}
+                            </span>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <h2 id="disp-order-number" class="text-base sm:text-lg font-black text-white font-mono tracking-tight">{{ selected_delivery.order.order_number }}</h2>
-                                <span id="disp-status-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border {% if selected_delivery.status == 'delivered' %}bg-emerald-500/20 text-emerald-400 border-emerald-500/40 {% elif selected_delivery.status == 'in_transit' %}bg-cyan-500/20 text-cyan-300 border-cyan-500/40 animate-pulse {% elif selected_delivery.status == 'scheduled' %}bg-amber-500/20 text-amber-300 border-amber-500/40 {% else %}bg-rose-500/20 text-rose-300 border-rose-500/40{% endif %}">
-                                    {{ selected_delivery.get_status_display }}
-                                </span>
-                                <span id="disp-payment-badge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {% if selected_delivery.order.payment_status == 'paid' %}bg-emerald-500/15 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/15 text-amber-400 border border-amber-500/30{% endif %}">
-                                    {% if selected_delivery.order.payment_status == 'paid' %}Paid{% else %}COD (Collect on Delivery){% endif %}
-                                </span>
-                            </div>
-                            <p class="text-xs text-[#a0ac96] mt-0.5">
-                                Customer: <strong id="disp-customer-name" class="text-white">{{ selected_delivery.order.customer.name }}</strong> • 
-                                Item: <strong id="disp-product-summary" class="text-[#cca43b]">{{ selected_delivery.order.product.name|default:"Stock" }} ({{ selected_delivery.quantity_kg }} kg)</strong> •
-                                Total: <strong id="disp-total-amount" class="text-white font-mono">₱{{ selected_delivery.order.total_amount|floatformat:2 }}</strong>
-                            </p>
-                        </div>
+                        <p class="text-xs text-[#a0ac96] mt-0.5">
+                            Customer: <strong id="disp-customer-name" class="text-white">{{ selected_delivery.order.customer.name }}</strong> • 
+                            Item: <strong id="disp-product-summary" class="text-[#cca43b]">{{ selected_delivery.order.product.name|default:"Stock" }} ({{ selected_delivery.quantity_kg }} kg)</strong> •
+                            Total: <strong id="disp-total-amount" class="text-white font-mono">₱{{ selected_delivery.order.total_amount|floatformat:2 }}</strong>
+                        </p>
                     </div>
                 </div>
 
