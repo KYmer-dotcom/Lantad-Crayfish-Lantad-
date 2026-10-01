@@ -2524,15 +2524,26 @@
                 }
                 const csrftoken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value;
 
-                fetch(`/market/orders/${orderId}/upload-receipt/`, {
+                fetch(`/sales/market/orders/${orderId}/upload-receipt/`, {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': csrftoken,
+                        'X-CSRFToken': csrftoken || '',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: formData
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch(err) {
+                        throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+                    }
+                    if (!res.ok || !data.success) {
+                        throw new Error(data.error || `Upload failed (${res.status})`);
+                    }
+                    return data;
+                })
                 .then(data => {
                     if (data.success && data.receipt_url) {
                         currentEvidenceData.hasReceiptImage = true;
@@ -2559,14 +2570,11 @@
                         placeholder.classList.add('hidden');
                         if (proofStatus) proofStatus.textContent = 'Attached Slip Available';
                         if (btnText) btnText.textContent = 'Replace Screenshot';
-                    } else {
-                        alert(data.error || 'Failed to upload screenshot.');
-                        if (btnText) btnText.textContent = 'Select Screenshot';
                     }
                 })
                 .catch(err => {
                     console.error('Evidence upload error:', err);
-                    alert('An error occurred during upload.');
+                    alert(err.message || 'An error occurred during upload.');
                     if (btnText) btnText.textContent = 'Select Screenshot';
                 });
             }

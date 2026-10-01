@@ -24,6 +24,18 @@ GUEST_CUSTOMER_SESSION_KEY = 'guest_customer_profile'
 WHOLESALE_MIN_QTY_KG = Decimal('50')
 
 
+def _resolve_customer_profile(request):
+    if request.user.is_authenticated and is_customer(request.user):
+        customer = get_customer_profile(request.user)
+        if customer:
+            return customer, False
+    if request.user.is_authenticated:
+        customer = Customer.objects.filter(user=request.user).first()
+        if customer:
+            return customer, False
+    return None, True
+
+
 def _ensure_sales_owner(request):
     if is_customer(request.user):
         return redirect('sales:customer_portal')
@@ -676,13 +688,18 @@ def order_receipt_view(request, order_id):
     return response
 
 
+@csrf_exempt
 def customer_order_upload_receipt(request, order_id):
     """Allow customer to upload or update receipt image proof for their order."""
     customer, needs_login = _resolve_customer_profile(request)
-    if not customer:
-        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
+    if not customer and not (request.user.is_authenticated and (request.user.is_superuser or is_owner(request.user))):
+        return JsonResponse({'success': False, 'error': 'Unauthorized. Please log in.'}, status=401)
     
-    order = get_object_or_404(SalesOrder, pk=order_id, customer=customer)
+    if customer:
+        order = get_object_or_404(SalesOrder, pk=order_id, customer=customer)
+    else:
+        order = get_object_or_404(SalesOrder, pk=order_id)
+        
     if request.method == 'POST' and 'receipt_image' in request.FILES:
         file = request.FILES['receipt_image']
         order.receipt_image = file.read()

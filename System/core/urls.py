@@ -11,6 +11,7 @@ from django.conf.urls.static import static
 from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
 from . import views
+from apps.sales import template_views as sales_template_views
 
 urlpatterns = [
     # Admin
@@ -22,6 +23,8 @@ urlpatterns = [
     
     # Authentication
     path('login/', never_cache(auth_views.LoginView.as_view(template_name='auth/login.html')), name='login'),
+    path('market/orders/<int:order_id>/upload-receipt/', sales_template_views.customer_order_upload_receipt, name='market_upload_receipt_root'),
+    path('customer/orders/<int:order_id>/upload-receipt/', sales_template_views.customer_order_upload_receipt),
     path('customer/', lambda request: redirect('sales:customer_portal'), name='customer_home'),
     path('customer/market/', lambda request: redirect('sales:customer_portal')),
     path('customer/orders/', lambda request: redirect('sales:customer_orders_page')),
