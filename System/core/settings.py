@@ -37,11 +37,18 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'https://lantadcrayfish.tech',
     'https://www.lantadcrayfish.tech',
+    'http://lantadcrayfish.tech',
+    'http://www.lantadcrayfish.tech',
     'http://187.77.150.222',
     'https://187.77.150.222',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://localhost:3000',
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 
 # Application definition
