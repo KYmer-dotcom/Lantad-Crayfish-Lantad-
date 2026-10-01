@@ -655,6 +655,106 @@
         }
     }
 
+    function calcGpsDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371000;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    let lastBroadcastTime = 0;
+    let lastRoutedCoords = null;
+    let lastBroadcastCoords = null;
+
+    function processStabilizedGps(deliveryId, rawLat, rawLng, accuracy, isUserTriggered) {
+        // Discard poor accuracy fixes if we already have a previous accurate fix
+        if (accuracy && accuracy > 65 && liveRiderCoords) {
+            return;
+        }
+
+        let lat = rawLat;
+        let lng = rawLng;
+
+        if (liveRiderCoords) {
+            const dist = calcGpsDistance(liveRiderCoords.lat, liveRiderCoords.lng, rawLat, rawLng);
+            // Ignore sub-4m GPS sensor stationary jitter
+            if (dist < 4 && !isUserTriggered) {
+                return;
+            }
+            // Low-pass exponential moving average smoothing
+            lat = liveRiderCoords.lat * 0.25 + rawLat * 0.75;
+            lng = liveRiderCoords.lng * 0.25 + rawLng * 0.75;
+        }
+
+        liveRiderCoords = { lat, lng };
+
+        if (deliveryId) {
+            updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+            const entry = activeGpsMaps[deliveryId];
+            if (entry && entry.map) {
+                if (entry.riderMarker) {
+                    entry.riderMarker.setLatLng([lat, lng]);
+                } else {
+                    entry.riderMarker = L.marker([lat, lng], {
+                        icon: riderLiveBeaconIcon,
+                        zIndexOffset: 1000,
+                        draggable: false
+                    }).addTo(entry.map);
+                    entry.riderMarker.bindPopup('<b>🛵 Live Rider GPS</b><br><span style="font-size:11px; color:#06b6d4;">Phone GPS Connected</span>');
+                }
+
+                if (isUserTriggered) {
+                    entry.map.setView([lat, lng], 16);
+                }
+
+                // Only recalculate road route if rider actually traveled at least 25 meters
+                const routeDist = lastRoutedCoords ? calcGpsDistance(lastRoutedCoords.lat, lastRoutedCoords.lng, lat, lng) : 999;
+                if (routeDist >= 25) {
+                    lastRoutedCoords = { lat, lng };
+                    if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
+                        fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
+                    }
+                }
+            }
+        }
+
+        // Broadcast to server at most once every 2.5s or on 6m+ displacement
+        const now = Date.now();
+        const serverDist = lastBroadcastCoords ? calcGpsDistance(lastBroadcastCoords.lat, lastBroadcastCoords.lng, lat, lng) : 999;
+        if (now - lastBroadcastTime > 2500 || serverDist >= 6) {
+            lastBroadcastTime = now;
+            lastBroadcastCoords = { lat, lng };
+            syncLocationToServer(deliveryId, lat, lng);
+        }
+    }
+
+    function syncLocationToServer(deliveryId, lat, lng) {
+        const payload = JSON.stringify({
+            delivery_id: deliveryId || null,
+            latitude: lat,
+            longitude: lng
+        });
+
+        fetch('/sales/rider/location/update/', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: payload
+        }).catch(function(err) {
+            if (navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon('/sales/rider/location/update/', blob);
+            }
+        });
+    }
+
     function requestRiderGps(deliveryId, isUserTriggered) {
         if (!("geolocation" in navigator)) {
             if (deliveryId) updateGpsStatusBadge(deliveryId, 'error', 'GPS Unsupported');
@@ -664,21 +764,10 @@
         if (deliveryId) updateGpsStatusBadge(deliveryId, 'acquiring', 'Acquiring GPS...');
 
         function onGpsSuccess(pos) {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            liveRiderCoords = { lat, lng };
-            if (deliveryId) updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
-            updateRiderPhoneLocation(deliveryId, lat, lng);
-            if (deliveryId) {
-                const entry = activeGpsMaps[deliveryId];
-                if (entry && entry.map && isUserTriggered) {
-                    entry.map.setView([lat, lng], 16);
-                }
-            }
+            processStabilizedGps(deliveryId, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, isUserTriggered);
         }
 
         function onGpsError(err) {
-            // Fallback to low accuracy / cellular network
             navigator.geolocation.getCurrentPosition(
                 onGpsSuccess,
                 function(fallbackErr) {
@@ -704,21 +793,17 @@
         if (!window.riderGpsWatchId) {
             window.riderGpsWatchId = navigator.geolocation.watchPosition(
                 function (pos) {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    liveRiderCoords = { lat, lng };
-                    if (deliveryId) updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
-                    updateRiderPhoneLocation(deliveryId, lat, lng);
+                    processStabilizedGps(deliveryId, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, false);
                     Object.keys(activeGpsMaps).forEach(delId => {
                         if (delId !== String(deliveryId)) {
-                            updateRiderPhoneLocation(delId, lat, lng);
+                            processStabilizedGps(delId, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, false);
                         }
                     });
                 },
                 function (watchErr) {
                     console.warn('watchPosition error:', watchErr);
                 },
-                { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+                { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
             );
         }
     }
@@ -741,7 +826,7 @@
                     entry.polyline.setLatLngs(routeCoords);
                 } else {
                     entry.polyline = L.polyline(routeCoords, {
-                        color: '#8b5cf6', // Purple road route line
+                        color: '#8b5cf6',
                         weight: 6,
                         opacity: 0.95,
                         lineCap: 'round',
@@ -772,53 +857,7 @@
     }
 
     function updateRiderPhoneLocation(deliveryId, lat, lng) {
-        liveRiderCoords = { lat, lng };
-        if (deliveryId && activeGpsMaps[deliveryId]) {
-            const entry = activeGpsMaps[deliveryId];
-            if (entry && entry.map) {
-                if (entry.riderMarker) {
-                    entry.riderMarker.setLatLng([lat, lng]);
-                } else {
-                    entry.riderMarker = L.marker([lat, lng], {
-                        icon: riderLiveBeaconIcon,
-                        zIndexOffset: 1000,
-                        draggable: false
-                    }).addTo(entry.map);
-                    entry.riderMarker.bindPopup('<b>🛵 Live Rider GPS</b><br><span style="font-size:11px; color:#06b6d4;">Phone GPS Connected</span>');
-                }
-
-                // Dynamically update road route from Rider's current GPS position to Destination
-                if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
-                    fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
-                }
-            }
-        }
-
-        // Stream live GPS coordinates to backend for central dispatch map
-        const payload = JSON.stringify({
-            delivery_id: deliveryId || null,
-            latitude: lat,
-            longitude: lng
-        });
-
-        fetch('/sales/rider/location/update/', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: payload
-        }).then(res => res.json())
-        .then(data => {
-            console.log('GPS Beacon updated on server:', data);
-        }).catch(function(err) {
-            console.error('Location sync fetch failed, trying beacon fallback:', err);
-            if (navigator.sendBeacon) {
-                const blob = new Blob([payload], { type: 'application/json' });
-                navigator.sendBeacon('/sales/rider/location/update/', blob);
-            }
-        });
+        processStabilizedGps(deliveryId, lat, lng, 10, false);
     }
 
     function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName, riderLat, riderLng) {
