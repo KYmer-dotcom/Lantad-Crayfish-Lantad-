@@ -205,50 +205,48 @@
                 <p class="text-xs font-black uppercase tracking-wider text-white">Upcoming Days Forecast</p>
                 <span class="text-[11px] text-[#a0ac96] font-mono">Next {{ remaining_forecast_list|length }} days projected</span>
             </div>
-            <div class="overflow-x-auto rounded-xl border border-white/15 max-h-72 custom-scrollbar bg-black/20">
-                <table class="min-w-full text-left text-xs border-collapse">
-                    <thead class="sticky top-0 z-10 bg-[#021f15] border-b border-white/15 shadow-md">
-                        <tr class="text-[11px] font-black uppercase tracking-wider text-[#a0ac96]">
-                            <th scope="col" class="px-5 py-3.5 bg-[#021f15]">Date</th>
-                            <th scope="col" class="px-5 py-3.5 text-right bg-[#021f15]">Predicted Revenue</th>
-                            <th scope="col" class="px-5 py-3.5 text-right bg-[#021f15]">80% Prediction Interval</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5 font-mono">
-                        {% for item in remaining_forecast_list %}
-                        <tr class="hover:bg-white/[0.04] transition-colors {% if item.is_sunday %}opacity-60 bg-white/[0.01]{% endif %}">
-                            <td class="px-5 py-3 text-stone-200 font-sans font-medium whitespace-nowrap">
-                                <div class="flex items-center gap-2">
-                                    <span>{{ item.day_name }}</span>
-                                    {% if item.day_name == busiest_day_name %}
-                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/40 font-mono">Peak</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td class="px-5 py-3 text-right font-bold whitespace-nowrap {% if item.is_sunday %}text-[#a0ac96] font-normal font-sans{% else %}text-[#cca43b]{% endif %}">
-                                {% if item.is_sunday %}
-                                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-white/5 text-[#a0ac96]">No Orders</span>
-                                {% else %}
-                                ₱{{ item.predicted_revenue|floatformat:2 }}
+            
+            <div class="rounded-xl border border-white/15 bg-[#01170f] overflow-hidden shadow-lg">
+                <!-- 100% Solid Fixed Header (Completely outside scroll container) -->
+                <div class="grid grid-cols-12 gap-2 px-5 py-3.5 bg-[#06241a] border-b border-white/15 text-[11px] font-black uppercase tracking-wider text-[#a0ac96]">
+                    <div class="col-span-5">Date</div>
+                    <div class="col-span-3 text-right">Predicted Revenue</div>
+                    <div class="col-span-4 text-right">80% Prediction Interval</div>
+                </div>
+
+                <!-- Scrollable Body List -->
+                <div class="max-h-72 overflow-y-auto custom-scrollbar divide-y divide-white/5 font-mono text-xs">
+                    {% for item in remaining_forecast_list %}
+                    <div class="grid grid-cols-12 gap-2 px-5 py-3 items-center hover:bg-white/[0.04] transition-colors {% if item.is_sunday %}opacity-60 bg-white/[0.01]{% endif %}">
+                        <div class="col-span-5 text-stone-200 font-sans font-medium whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <span>{{ item.day_name }}</span>
+                                {% if item.day_name == busiest_day_name %}
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/40 font-mono">Peak</span>
                                 {% endif %}
-                            </td>
-                            <td class="px-5 py-3 text-right text-[#a0ac96] whitespace-nowrap">
-                                {% if item.is_sunday %}
-                                <span class="text-stone-500">-</span>
-                                {% else %}
-                                <span class="text-stone-300">₱{{ item.lower_80|floatformat:0 }}</span> <span class="text-stone-500">to</span> <span class="text-emerald-300">₱{{ item.upper_80|floatformat:0 }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="px-5 py-6 text-center text-[#a0ac96] font-sans">
-                                Month-end reached. Model ready for next cycle.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                        <div class="col-span-3 text-right font-bold whitespace-nowrap {% if item.is_sunday %}text-[#a0ac96] font-normal font-sans{% else %}text-[#cca43b]{% endif %}">
+                            {% if item.is_sunday %}
+                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-white/5 text-[#a0ac96]">No Orders</span>
+                            {% else %}
+                            ₱{{ item.predicted_revenue|floatformat:2 }}
+                            {% endif %}
+                        </div>
+                        <div class="col-span-4 text-right text-[#a0ac96] whitespace-nowrap">
+                            {% if item.is_sunday %}
+                            <span class="text-stone-500">-</span>
+                            {% else %}
+                            <span class="text-stone-300">₱{{ item.lower_80|floatformat:0 }}</span> <span class="text-stone-500">to</span> <span class="text-emerald-300">₱{{ item.upper_80|floatformat:0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="px-5 py-6 text-center text-[#a0ac96] font-sans">
+                        Month-end reached. Model ready for next cycle.
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
