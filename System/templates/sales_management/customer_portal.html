@@ -2356,6 +2356,27 @@
         background-color: rgba(204, 164, 59, 0.6);
     }
 </style>
+
+<!-- Clean JSON script tag for products data (eliminates IDE template syntax errors) -->
+<script id="available-products-data" type="application/json">
+[
+    {% for prod in products %}
+    {
+        "id": "{{ prod.id }}",
+        "name": "{{ prod.name|escapejs }}",
+        "species": "{{ prod.species.name|default:'Premium'|escapejs }}",
+        "notes": "{{ prod.notes|escapejs }}",
+        "pricePc": "{{ prod.unit_price|floatformat:0 }}",
+        "priceKg": "{{ prod.price_per_kg|floatformat:0 }}",
+        "piecesPerKg": "{{ prod.pieces_per_kg|default:1 }}",
+        "quantity": "{{ prod.quantity_kg|default:0 }}",
+        "imageUrl": "{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}",
+        "bulkUnit": "{{ prod.bulk_unit_display|default:'kg'|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
 <script>
     function scrollToSection(sectionId) {
         const target = document.getElementById(sectionId);
@@ -2372,22 +2393,16 @@
         "https://images.unsplash.com/photo-1559847844-5315695dadae?q=80&w=800&auto=format&fit=crop"
     ];
 
-    const availableProducts = [
-        {% for prod in products %}
-    {
-        id: "{{ prod.id }}",
-            name: "{{ prod.name|escapejs }}",
-                species: "{{ prod.species.name|default:'Premium'|escapejs }}",
-                    notes: "{{ prod.notes|escapejs }}",
-                        pricePc: "{{ prod.unit_price|floatformat:0 }}",
-                            priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
-                                piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
-                                    quantity: "{{ prod.quantity_kg|default:0 }}",
-                                        imageUrl: "{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}",
-                                        bulkUnit: "{{ prod.bulk_unit_display|default:'kg'|escapejs }}"
-    } {% if not forloop.last %}, {% endif %}
-    {% endfor %}
-    ];
+    let availableProducts = [];
+    try {
+        const prodDataEl = document.getElementById('available-products-data');
+        if (prodDataEl) {
+            availableProducts = JSON.parse(prodDataEl.textContent);
+        }
+    } catch (e) {
+        console.error('Failed to parse available products:', e);
+    }
+
     let currentProductIndex = 0;
     let currentPricingUnit = 'pc';
 
