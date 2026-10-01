@@ -2319,28 +2319,25 @@ def delivery_track_page(request):
 @csrf_exempt
 def rider_location_update(request):
     """API beacon endpoint for rider mobile device to stream live GPS coordinates."""
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'POST required'}, status=405)
-
-    lat = None
-    lng = None
-    delivery_id = None
+    lat = request.GET.get('latitude') or request.GET.get('lat')
+    lng = request.GET.get('longitude') or request.GET.get('lng')
+    delivery_id = request.GET.get('delivery_id')
 
     # Attempt to parse body as JSON first regardless of Content-Type string variants
-    if request.body:
+    if (lat is None or lng is None) and request.body:
         try:
             data = json.loads(request.body.decode('utf-8'))
             lat = data.get('latitude') or data.get('lat')
             lng = data.get('longitude') or data.get('lng')
-            delivery_id = data.get('delivery_id')
+            delivery_id = delivery_id or data.get('delivery_id')
         except Exception:
             pass
 
     # Fallback to form/query parameters
     if lat is None or lng is None:
-        lat = request.POST.get('latitude') or request.POST.get('lat') or request.GET.get('latitude') or request.GET.get('lat')
-        lng = request.POST.get('longitude') or request.POST.get('lng') or request.GET.get('longitude') or request.GET.get('lng')
-        delivery_id = delivery_id or request.POST.get('delivery_id') or request.GET.get('delivery_id')
+        lat = request.POST.get('latitude') or request.POST.get('lat')
+        lng = request.POST.get('longitude') or request.POST.get('lng')
+        delivery_id = delivery_id or request.POST.get('delivery_id')
 
     try:
         lat = float(lat)
@@ -2377,7 +2374,7 @@ def rider_location_update(request):
         rider.last_location_update = now
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
         # Also sync to active delivery records for this rider
-        Delivery.objects.filter(rider=rider, status__in=[Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED]).update(
+        Delivery.objects.filter(rider=rider).update(
             current_latitude=lat,
             current_longitude=lng
         )
@@ -2392,6 +2389,12 @@ def rider_location_update(request):
                 current_latitude=lat,
                 current_longitude=lng
             )
+    else:
+        # Fallback to updating in-transit dispatches
+        Delivery.objects.filter(status=Delivery.Status.IN_TRANSIT).update(
+            current_latitude=lat,
+            current_longitude=lng
+        )
 
     return JsonResponse({
         'success': True,

@@ -671,23 +671,16 @@
     let lastBroadcastCoords = null;
 
     function processStabilizedGps(deliveryId, rawLat, rawLng, accuracy, isUserTriggered) {
-        // Discard poor accuracy fixes if we already have a previous accurate fix
-        if (accuracy && accuracy > 65 && liveRiderCoords) {
-            return;
-        }
-
         let lat = rawLat;
         let lng = rawLng;
 
         if (liveRiderCoords) {
             const dist = calcGpsDistance(liveRiderCoords.lat, liveRiderCoords.lng, rawLat, rawLng);
-            // Ignore sub-4m GPS sensor stationary jitter
-            if (dist < 4 && !isUserTriggered) {
+            if (dist < 2 && !isUserTriggered) {
                 return;
             }
-            // Low-pass exponential moving average smoothing
-            lat = liveRiderCoords.lat * 0.25 + rawLat * 0.75;
-            lng = liveRiderCoords.lng * 0.25 + rawLng * 0.75;
+            lat = liveRiderCoords.lat * 0.2 + rawLat * 0.8;
+            lng = liveRiderCoords.lng * 0.2 + rawLng * 0.8;
         }
 
         liveRiderCoords = { lat, lng };
@@ -711,9 +704,9 @@
                     entry.map.setView([lat, lng], 16);
                 }
 
-                // Only recalculate road route if rider actually traveled at least 25 meters
+                // Recalculate road route if moved 20+ meters
                 const routeDist = lastRoutedCoords ? calcGpsDistance(lastRoutedCoords.lat, lastRoutedCoords.lng, lat, lng) : 999;
-                if (routeDist >= 25) {
+                if (routeDist >= 20) {
                     lastRoutedCoords = { lat, lng };
                     if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
                         fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
@@ -722,10 +715,9 @@
             }
         }
 
-        // Broadcast to server at most once every 2.5s or on 6m+ displacement
+        // Broadcast to server immediately and on 2s interval
         const now = Date.now();
-        const serverDist = lastBroadcastCoords ? calcGpsDistance(lastBroadcastCoords.lat, lastBroadcastCoords.lng, lat, lng) : 999;
-        if (now - lastBroadcastTime > 2500 || serverDist >= 6) {
+        if (now - lastBroadcastTime > 2000 || !lastBroadcastCoords) {
             lastBroadcastTime = now;
             lastBroadcastCoords = { lat, lng };
             syncLocationToServer(deliveryId, lat, lng);
@@ -733,13 +725,14 @@
     }
 
     function syncLocationToServer(deliveryId, lat, lng) {
+        const url = `/sales/rider/location/update/?latitude=${lat}&longitude=${lng}&delivery_id=${encodeURIComponent(deliveryId || '')}`;
         const payload = JSON.stringify({
             delivery_id: deliveryId || null,
             latitude: lat,
             longitude: lng
         });
 
-        fetch('/sales/rider/location/update/', {
+        fetch(url, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -747,10 +740,12 @@
                 'X-CSRFToken': '{{ csrf_token }}'
             },
             body: payload
+        }).then(res => res.json())
+        .then(data => {
+            console.log('GPS broadcast success:', data);
         }).catch(function(err) {
             if (navigator.sendBeacon) {
-                const blob = new Blob([payload], { type: 'application/json' });
-                navigator.sendBeacon('/sales/rider/location/update/', blob);
+                navigator.sendBeacon(url);
             }
         });
     }
