@@ -240,10 +240,34 @@ class SalesOrder(SoftDeleteModel):
             self.order_date = timezone.now().date()
         if not self.order_number:
             from datetime import date
+            import re
             today = self.order_date or date.today()
             prefix = f"SO-{today.strftime('%Y%m%d')}"
-            count = SalesOrder.objects.filter(order_number__startswith=prefix).count() + 1
-            self.order_number = f"{prefix}-{count:04d}"
+            
+            # Query all records (including soft-deleted) to prevent unique constraint collisions
+            existing_numbers = SalesOrder.all_objects.filter(
+                order_number__startswith=prefix
+            ).values_list('order_number', flat=True)
+            
+            max_seq = 0
+            for num in existing_numbers:
+                if num:
+                    match = re.search(r'(\d+)$', str(num))
+                    if match:
+                        try:
+                            seq = int(match.group(1))
+                            if seq > max_seq:
+                                max_seq = seq
+                        except ValueError:
+                            pass
+            
+            next_seq = max_seq + 1
+            candidate = f"{prefix}-{next_seq:04d}"
+            while SalesOrder.all_objects.filter(order_number=candidate).exists():
+                next_seq += 1
+                candidate = f"{prefix}-{next_seq:04d}"
+            
+            self.order_number = candidate
         if not self.price_per_kg:
             if self.product:
                 self.price_per_kg = self.product.price_per_kg or self.product.unit_price or 0

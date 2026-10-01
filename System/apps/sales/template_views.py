@@ -145,10 +145,32 @@ class SalesOrderForm(forms.ModelForm):
 
 def generate_order_number():
     """Generate unique order number"""
+    import datetime
+    import re
     today = datetime.date.today()
     prefix = f"SO-{today.strftime('%Y%m%d')}"
-    count = SalesOrder.objects.filter(order_number__startswith=prefix).count() + 1
-    return f"{prefix}-{count:04d}"
+    existing_numbers = SalesOrder.all_objects.filter(
+        order_number__startswith=prefix
+    ).values_list('order_number', flat=True)
+    
+    max_seq = 0
+    for num in existing_numbers:
+        if num:
+            match = re.search(r'(\d+)$', str(num))
+            if match:
+                try:
+                    seq = int(match.group(1))
+                    if seq > max_seq:
+                        max_seq = seq
+                except ValueError:
+                    pass
+    
+    next_seq = max_seq + 1
+    candidate = f"{prefix}-{next_seq:04d}"
+    while SalesOrder.all_objects.filter(order_number=candidate).exists():
+        next_seq += 1
+        candidate = f"{prefix}-{next_seq:04d}"
+    return candidate
 
 
 def _resolve_customer_profile(request):
