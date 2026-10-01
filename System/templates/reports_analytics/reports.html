@@ -161,7 +161,7 @@
                         data-phone="{% if order.customer and order.customer.phone %}{{ order.customer.phone }}{% else %}09452345235{% endif %}"
                         data-address="{% if order.delivery_address %}{{ order.delivery_address }}{% elif order.customer and order.customer.address %}{{ order.customer.address }}{% else %}N/A{% endif %}"
                         data-approver="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_full_name|default:delivery.created_by.username }}{% elif order.created_by %}{{ order.created_by.get_full_name|default:order.created_by.username }}{% elif order.customer %}{{ order.customer.name }}{% else %}System Admin{% endif %}"
-                        data-approver-role="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_role_display|default:'Staff' }}{% elif order.created_by %}{{ order.created_by.get_role_display|default:'Staff' }}{% else %}Customer{% endif %}"
+                        data-approver-role="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_role_display|default:'Owner' }}{% elif order.created_by %}{{ order.created_by.get_role_display|default:'Owner' }}{% else %}Customer{% endif %}"
                         data-rider="{% if delivery and delivery.rider %}{{ delivery.rider.name }}{% else %}Cris Ma-apni{% endif %}"
                         data-rider-vehicle="{% if delivery and delivery.rider %}{{ delivery.rider.vehicle_type }} ({{ delivery.rider.plate_number|default:'ABC1234' }}){% else %}Motorcycle (ABC1234){% endif %}"
                         data-product="{% if order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
@@ -616,7 +616,7 @@
                 <!-- Approval & Dispatch Info -->
                 <div class="space-y-2 text-left sm:text-right border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
                     <div>
-                        <p class="text-[10px] uppercase font-black tracking-wider text-[#cca43b]">Approved By (Staff):</p>
+                        <p class="text-[10px] uppercase font-black tracking-wider text-[#cca43b]">Approved By (Owner):</p>
                         <p id="receipt-modal-approver" class="font-bold text-white"></p>
                         <span id="receipt-modal-approver-role" class="text-[10px] text-[#a0ac96]"></span>
                     </div>
@@ -1534,7 +1534,7 @@
                         const phone = row.getAttribute('data-phone') || '';
                         const address = row.getAttribute('data-address') || 'N/A';
                         const approver = row.getAttribute('data-approver') || 'Kymer Oriel';
-                        const approverRole = row.getAttribute('data-approver-role') || 'Staff';
+                        const approverRole = row.getAttribute('data-approver-role') || 'Owner';
                         const rider = row.getAttribute('data-rider') || 'Cris Ma-apni';
                         const riderVehicle = row.getAttribute('data-rider-vehicle') || 'Motorcycle (ABC1234)';
                         const product = row.getAttribute('data-product') || 'Breeder Crayfish';
@@ -1605,7 +1605,7 @@
                                     <!-- Approval & Dispatch Info -->
                                     <div class="space-y-2 text-left sm:text-right border-t sm:border-t-0 border-white/10 print:border-black pt-3 sm:pt-0">
                                         <div>
-                                            <p class="text-[10px] uppercase font-black tracking-wider text-[#cca43b] print:text-stone-700">Approved By (Staff):</p>
+                                            <p class="text-[10px] uppercase font-black tracking-wider text-[#cca43b] print:text-stone-700">Approved By (Owner):</p>
                                             <p class="font-bold text-white print:text-black">${approver}</p>
                                             <span class="text-[10px] text-[#a0ac96] print:text-stone-600">(${approverRole})</span>
                                         </div>
@@ -1760,7 +1760,7 @@
             document.getElementById('receipt-modal-phone').textContent = data.customerPhone ? '📞 ' + data.customerPhone : '';
             document.getElementById('receipt-modal-address').textContent = '📍 ' + (data.customerAddress || 'N/A');
 
-            document.getElementById('receipt-modal-approver').textContent = data.approverName || 'Staff';
+            document.getElementById('receipt-modal-approver').textContent = data.approverName || 'Owner';
             document.getElementById('receipt-modal-approver-role').textContent = '(' + (data.approverRole || 'Customer') + ')';
 
             document.getElementById('receipt-modal-rider').textContent = data.riderName || 'Cris Ma-apni';

@@ -175,7 +175,7 @@
     </div>
 
     {% else %}
-    <!-- Admin / Farm Staff View -->
+    <!-- Admin / Farm Owner View -->
     <!-- Priority Alert Cards Grid (4-cols on Desktop) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Azula Sanitization Card -->
@@ -405,7 +405,7 @@
                         <h4 class="text-sm sm:text-base font-bold text-white group-hover:text-[#cca43b] transition-colors truncate">Pending orders require confirmation</h4>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono">10m ago</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Customer orders require staff approval and verification before delivery dispatch.</p>
+                    <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-3">Customer orders require owner approval and verification before delivery dispatch.</p>
                     <div class="flex items-center gap-4">
                         <a href="{% url 'sales:list' %}" class="inline-flex items-center gap-1.5 text-xs font-black text-[#cca43b] hover:text-[#cca43b]/80 uppercase tracking-wider">
                             Review Orders

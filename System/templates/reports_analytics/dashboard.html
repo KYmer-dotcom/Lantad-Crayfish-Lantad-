@@ -878,7 +878,11 @@
     }
 
     function sendToNotifications() {
-        alert('Stock shortfall alert sent to Farm Operations notifications!');
+        if (typeof showToast === 'function') {
+            showToast('Stock shortfall alert sent to Farm Operations notifications!', 'success');
+        } else {
+            alert('Stock shortfall alert sent to Farm Operations notifications!');
+        }
     }
 
     function retrainModel() {
