@@ -465,10 +465,11 @@ function loadDeliveryRoute(deliveryId) {
     // Place Driver Marker if in transit or if rider coordinates are known
     let riderLat = parseFloat(item.rider_lat);
     let riderLng = parseFloat(item.rider_lng);
+    const hasRealCoords = !isNaN(riderLat) && !isNaN(riderLng) && riderLat !== 0 && riderLng !== 0;
 
-    if (item.status === 'in_transit' || (riderLat && riderLng)) {
-        const initRiderLat = (riderLat && !isNaN(riderLat)) ? riderLat : ((FARM_ORIGIN.lat + destLat) / 2);
-        const initRiderLng = (riderLng && !isNaN(riderLng)) ? riderLng : ((FARM_ORIGIN.lng + destLng) / 2);
+    if (item.status === 'in_transit' || hasRealCoords) {
+        const initRiderLat = hasRealCoords ? riderLat : ((FARM_ORIGIN.lat + destLat) / 2);
+        const initRiderLng = hasRealCoords ? riderLng : ((FARM_ORIGIN.lng + destLng) / 2);
         
         driverMarker = L.marker([initRiderLat, initRiderLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
         driverMarker.bindPopup(`<b style="color:#01140e;">🛵 ${item.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS active • En route</span>`);
@@ -479,8 +480,12 @@ function loadDeliveryRoute(deliveryId) {
         trackMap.removeLayer(routePolyline);
     }
 
+    // Route starting origin: Use Rider's live GPS if available, otherwise Farm origin
+    const routeOriginLat = hasRealCoords ? riderLat : FARM_ORIGIN.lat;
+    const routeOriginLng = hasRealCoords ? riderLng : FARM_ORIGIN.lng;
+
     // OSRM Road Turn-by-Turn Routing
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${FARM_ORIGIN.lng},${FARM_ORIGIN.lat};${destLng},${destLat}?overview=full&geometries=geojson`;
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${routeOriginLng},${routeOriginLat};${destLng},${destLat}?overview=full&geometries=geojson`;
 
     fetch(osrmUrl)
         .then(res => res.json())
@@ -489,19 +494,18 @@ function loadDeliveryRoute(deliveryId) {
             if (data && data.routes && data.routes.length > 0) {
                 coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
             } else {
-                coords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
+                coords = [[routeOriginLat, routeOriginLng], [destLat, destLng]];
             }
             currentRouteCoords = coords;
-            simRouteIndex = Math.max(1, Math.floor(coords.length * 0.35));
 
             // Ensure destination marker is at the exact customer coordinates
             if (destMarker) {
                 destMarker.setLatLng([destLat, destLng]);
             }
 
-            // Position driver marker along the actual road route if in transit
-            if (item.status === 'in_transit' && (!riderLat || isNaN(riderLat)) && driverMarker && coords.length > 0) {
-                driverMarker.setLatLng(coords[simRouteIndex]);
+            // If no real GPS was ever provided, place rider at beginning/midpoint
+            if (!hasRealCoords && driverMarker && coords.length > 0) {
+                driverMarker.setLatLng(coords[0]);
             }
 
             routePolyline = L.polyline(coords, {
@@ -515,7 +519,7 @@ function loadDeliveryRoute(deliveryId) {
             trackMap.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
         })
         .catch(() => {
-            const fallbackCoords = [[FARM_ORIGIN.lat, FARM_ORIGIN.lng], [destLat, destLng]];
+            const fallbackCoords = [[routeOriginLat, routeOriginLng], [destLat, destLng]];
             currentRouteCoords = fallbackCoords;
             routePolyline = L.polyline(fallbackCoords, {
                 color: '#6366f1',
@@ -530,7 +534,7 @@ function loadDeliveryRoute(deliveryId) {
 
 function startLiveGpsPolling() {
     if (liveGpsPollTimer) clearInterval(liveGpsPollTimer);
-    liveGpsPollTimer = setInterval(pollCurrentDeliveryGps, 3000);
+    liveGpsPollTimer = setInterval(pollCurrentDeliveryGps, 2500);
 }
 
 function pollCurrentDeliveryGps() {
@@ -548,10 +552,10 @@ function pollCurrentDeliveryGps() {
                 const rLat = parseFloat(data.rider_lat);
                 const rLng = parseFloat(data.rider_lng);
 
-                if (!isNaN(rLat) && !isNaN(rLng)) {
+                if (!isNaN(rLat) && !isNaN(rLng) && rLat !== 0 && rLng !== 0) {
                     if (driverMarker) {
-                        smoothMoveMarker(driverMarker, rLat, rLng, 1400);
-                    } else if (data.status === 'in_transit') {
+                        smoothMoveMarker(driverMarker, rLat, rLng, 1000);
+                    } else {
                         driverMarker = L.marker([rLat, rLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
                     }
 
@@ -562,17 +566,6 @@ function pollCurrentDeliveryGps() {
 
                     if (liveBadge) {
                         liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
-                    }
-                }
-            } else if (data.status === 'in_transit') {
-                // 2. In transit: advance smoothly along route while awaiting next beacon
-                if (currentRouteCoords && currentRouteCoords.length > 2 && driverMarker) {
-                    simRouteIndex = (simRouteIndex + 1) % currentRouteCoords.length;
-                    const nextPt = currentRouteCoords[simRouteIndex];
-                    smoothMoveMarker(driverMarker, nextPt[0], nextPt[1], 2500);
-
-                    if (liveBadge) {
-                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-400"></span><span class="text-amber-300 font-bold">In Transit • Moving to Destination</span>`;
                     }
                 }
             }

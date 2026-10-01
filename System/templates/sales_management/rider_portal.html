@@ -702,14 +702,17 @@
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
                     updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+                    updateRiderPhoneLocation(deliveryId, lat, lng);
                     Object.keys(activeGpsMaps).forEach(delId => {
-                        updateRiderPhoneLocation(delId, lat, lng);
+                        if (delId !== String(deliveryId)) {
+                            updateRiderPhoneLocation(delId, lat, lng);
+                        }
                     });
                 },
                 function (watchErr) {
                     console.warn('watchPosition error:', watchErr);
                 },
-                { enableHighAccuracy: true, maximumAge: 3000, timeout: 15000 }
+                { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
             );
         }
     }
@@ -790,13 +793,18 @@
         // Stream live GPS coordinates to backend for central dispatch map
         fetch('/sales/rider/location/update/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
             body: JSON.stringify({
                 delivery_id: deliveryId,
                 latitude: lat,
                 longitude: lng
             })
-        }).catch(function() {});
+        }).catch(function(err) {
+            console.error('Location sync error:', err);
+        });
     }
 
     function initActiveGpsMap(deliveryId, destAddress, destLat, destLng, customerName, riderLat, riderLng) {
