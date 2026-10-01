@@ -2417,31 +2417,35 @@ def rider_location_update(request):
         except Exception:
             delivery = None
 
-        if delivery and delivery.status == Delivery.Status.IN_TRANSIT:
+        if delivery:
             delivery.current_latitude = lat
             delivery.current_longitude = lng
             delivery.save(update_fields=['current_latitude', 'current_longitude'])
             if not rider and delivery.rider:
                 rider = delivery.rider
+            if delivery.rider:
+                delivery.rider.current_latitude = lat
+                delivery.rider.current_longitude = lng
+                delivery.rider.last_location_update = now
+                delivery.rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
 
     if rider:
         rider.current_latitude = lat
         rider.current_longitude = lng
         rider.last_location_update = now
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
-        # Also sync ONLY to active in-transit delivery records for this rider
         Delivery.objects.filter(rider=rider, status=Delivery.Status.IN_TRANSIT).update(
             current_latitude=lat,
             current_longitude=lng
         )
     elif delivery_id:
         if str(delivery_id).isdigit():
-            Delivery.objects.filter(pk=int(delivery_id), status=Delivery.Status.IN_TRANSIT).update(
+            Delivery.objects.filter(pk=int(delivery_id)).update(
                 current_latitude=lat,
                 current_longitude=lng
             )
         else:
-            Delivery.objects.filter(order__order_number=str(delivery_id), status=Delivery.Status.IN_TRANSIT).update(
+            Delivery.objects.filter(order__order_number=str(delivery_id)).update(
                 current_latitude=lat,
                 current_longitude=lng
             )

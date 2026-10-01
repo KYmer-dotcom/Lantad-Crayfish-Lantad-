@@ -671,16 +671,14 @@
     let lastBroadcastCoords = null;
 
     function processStabilizedGps(deliveryId, rawLat, rawLng, accuracy, isUserTriggered) {
-        let lat = rawLat;
-        let lng = rawLng;
+        if (!rawLat || !rawLng || isNaN(rawLat) || isNaN(rawLng)) return;
+
+        let lat = parseFloat(rawLat);
+        let lng = parseFloat(rawLng);
 
         if (liveRiderCoords) {
-            const dist = calcGpsDistance(liveRiderCoords.lat, liveRiderCoords.lng, rawLat, rawLng);
-            if (dist < 2 && !isUserTriggered) {
-                return;
-            }
-            lat = liveRiderCoords.lat * 0.2 + rawLat * 0.8;
-            lng = liveRiderCoords.lng * 0.2 + rawLng * 0.8;
+            lat = liveRiderCoords.lat * 0.15 + lat * 0.85;
+            lng = liveRiderCoords.lng * 0.15 + lng * 0.85;
         }
 
         liveRiderCoords = { lat, lng };
@@ -717,7 +715,7 @@
 
         // Broadcast to server immediately and on 2s interval
         const now = Date.now();
-        if (now - lastBroadcastTime > 2000 || !lastBroadcastCoords) {
+        if (now - lastBroadcastTime > 1500 || !lastBroadcastCoords) {
             lastBroadcastTime = now;
             lastBroadcastCoords = { lat, lng };
             syncLocationToServer(deliveryId, lat, lng);
@@ -725,35 +723,19 @@
     }
 
     function syncLocationToServer(deliveryId, lat, lng) {
+        if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
         const beaconUrl = `/sales/rider/location/update/?latitude=${lat}&longitude=${lng}&delivery_id=${encodeURIComponent(deliveryId || '')}&_t=${Date.now()}`;
         
-        // 1. Instant GET pixel beacon (zero CORS/CSRF overhead, 100% success on all mobile browsers)
-        const img = new Image();
-        img.src = beaconUrl;
-
-        // 2. Async POST JSON with credentials
-        const payload = JSON.stringify({
-            delivery_id: deliveryId || null,
-            latitude: lat,
-            longitude: lng
-        });
-
-        fetch(beaconUrl, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: payload
-        }).then(res => res.json())
-        .then(data => {
-            console.log('GPS broadcast success:', data);
-        }).catch(function(err) {
-            if (navigator.sendBeacon) {
-                navigator.sendBeacon(beaconUrl);
-            }
-        });
+        // 1. Instant GET pixel beacon
+        fetch(beaconUrl, { method: 'GET', cache: 'no-store' })
+            .then(res => res.json())
+            .then(data => {
+                console.log('GPS Beacon synced successfully:', data);
+            })
+            .catch(() => {
+                const img = new Image();
+                img.src = beaconUrl;
+            });
     }
 
     function requestRiderGps(deliveryId, isUserTriggered) {
@@ -808,6 +790,15 @@
             );
         }
     }
+
+    // Continuous Heartbeat: Syncs GPS beacon to server every 2.5 seconds continuously
+    setInterval(() => {
+        if (liveRiderCoords && activeDeliveryList.length > 0) {
+            activeDeliveryList.forEach(item => {
+                syncLocationToServer(item.id, liveRiderCoords.lat, liveRiderCoords.lng);
+            });
+        }
+    }, 2500);
 
     function fetchRoadRoute(map, entry, originLat, originLng, destLat, destLng) {
         const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson`;
