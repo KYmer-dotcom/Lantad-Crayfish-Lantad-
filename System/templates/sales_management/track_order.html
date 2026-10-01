@@ -551,7 +551,7 @@ function startLiveGpsPolling() {
 function pollCurrentDeliveryGps() {
     if (!currentSelectedId || !trackMap) return;
     
-    fetch(`/sales/delivery/${currentSelectedId}/live-location/`)
+    fetch(`/sales/delivery/${currentSelectedId}/live-location/?_t=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
             if (!data || !data.success) return;
