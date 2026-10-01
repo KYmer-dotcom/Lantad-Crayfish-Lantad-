@@ -45,9 +45,10 @@ class TableEnhancer {
         this.searchQuery = '';
         this.columnFilters = {};
         this.currentSort = { colIndex: -1, direction: 'asc' };
+        this.selectedSortMode = this.options.defaultSort || 'default';
 
         this.initDOM();
-        this.render();
+        this.applyFilters();
     }
 
     destroy() {
@@ -184,13 +185,14 @@ class TableEnhancer {
         if (this.options.sortable) {
             const sortContainer = document.createElement('div');
             sortContainer.className = 'relative';
+            const defaultSort = this.options.defaultSort || 'default';
             sortContainer.innerHTML = `
                 <select class="table-sort-filter rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
-                    <option value="default">Sort: Default</option>
-                    <option value="name_asc">Alphabetical (A - Z)</option>
-                    <option value="name_desc">Alphabetical (Z - A)</option>
-                    <option value="date_desc">Date (Newest First)</option>
-                    <option value="date_asc">Date (Oldest First)</option>
+                    <option value="default" ${defaultSort === 'default' ? 'selected' : ''}>Sort: Default</option>
+                    <option value="date_desc" ${defaultSort === 'date_desc' ? 'selected' : ''}>Date (Newest First)</option>
+                    <option value="date_asc" ${defaultSort === 'date_asc' ? 'selected' : ''}>Date (Oldest First)</option>
+                    <option value="name_asc" ${defaultSort === 'name_asc' ? 'selected' : ''}>Alphabetical (A - Z)</option>
+                    <option value="name_desc" ${defaultSort === 'name_desc' ? 'selected' : ''}>Alphabetical (Z - A)</option>
                 </select>
             `;
             const sortSelect = sortContainer.querySelector('select');

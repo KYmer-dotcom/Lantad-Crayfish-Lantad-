@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.db.models import Sum, Count, Q, Case, When, Value, IntegerField, Prefetch, F
+from django.db.models import Sum, Count, Q, Case, When, Value, IntegerField, Prefetch, F, Max
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -287,11 +287,17 @@ def sales_orders_page(request):
     active_orders = SalesOrder.objects.filter(status__in=active_statuses).select_related('customer', 'product')
     active_orders_prefetch = Prefetch(
         'orders',
-        queryset=SalesOrder.objects.filter(status__in=active_statuses).select_related('product').order_by('-order_date', '-created_at')
+        queryset=SalesOrder.objects.filter(status__in=active_statuses).select_related('product').order_by('-created_at', '-id', '-order_date')
     )
     customers = Customer.objects.filter(orders__status__in=active_statuses).annotate(
-        active_total=Sum('orders__total_amount', filter=Q(orders__status__in=active_statuses))
-    ).prefetch_related(active_orders_prefetch).distinct().order_by('name')
+        active_total=Sum('orders__total_amount', filter=Q(orders__status__in=active_statuses)),
+        latest_order_time=Max('orders__created_at', filter=Q(orders__status__in=active_statuses)),
+        latest_order_id=Max('orders__id', filter=Q(orders__status__in=active_statuses)),
+    ).prefetch_related(active_orders_prefetch).distinct().order_by(
+        F('latest_order_time').desc(nulls_last=True),
+        F('latest_order_id').desc(nulls_last=True),
+        '-created_at'
+    )
 
     total_active_orders = active_orders.count()
     pending_orders = active_orders.filter(status=SalesOrder.Status.PENDING).count()
