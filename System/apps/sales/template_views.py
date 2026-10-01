@@ -1582,7 +1582,7 @@ def customer_checkout_submit(request):
             # Confirm GCash payment with verified reference or uploaded receipt
             ref_label = payment_reference if payment_reference else "Verified Online"
             for order in orders_to_place:
-                order.status = SalesOrder.Status.PENDING
+                order.status = SalesOrder.Status.CONFIRMED
                 order.payment_status = SalesOrder.PaymentStatus.PAID if receipt_bytes else SalesOrder.PaymentStatus.UNPAID
                 order.notes = f"Payment: GCash ({ref_label})".strip()
                 if receipt_bytes:
@@ -1597,7 +1597,7 @@ def customer_checkout_submit(request):
 
         # Cash / Cash on Delivery flow
         for order in orders_to_place:
-            order.status = SalesOrder.Status.PENDING
+            order.status = SalesOrder.Status.CONFIRMED
             order.payment_status = SalesOrder.PaymentStatus.UNPAID
             
             is_pickup = (order.delivery_address and order.delivery_address.upper() == 'PICKUP')
