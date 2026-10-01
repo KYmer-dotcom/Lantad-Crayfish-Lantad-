@@ -53,13 +53,13 @@ def forecast_holt_winters(daily_sales, days_to_predict=10, season_length=7, alph
         for p in ma_preds:
             val = p['predicted_revenue']
             is_sunday = p['date'].weekday() == 6
-            pred_val = 0.0 if is_sunday else val
-            spread = max(pred_val * 0.25, 20.0)
+            pred_val = 0.0 if is_sunday else (val if val > 0 else 50.0)
+            spread = max(pred_val * 0.25, 40.0) if not is_sunday else 0.0
             res.append({
                 'date': p['date'],
                 'predicted_revenue': round(pred_val, 2),
-                'lower_80': round(max(0.0, pred_val - spread), 2),
-                'upper_80': round(pred_val + spread, 2),
+                'lower_80': round(max(0.0, pred_val - spread), 2) if not is_sunday else 0.0,
+                'upper_80': round(pred_val + spread, 2) if not is_sunday else 0.0,
                 'day_name': p['date'].strftime('%a, %b %d'),
                 'is_sunday': is_sunday
             })
@@ -92,6 +92,10 @@ def forecast_holt_winters(daily_sales, days_to_predict=10, season_length=7, alph
     std_error = (sum(r**2 for r in residuals) / max(len(residuals), 1)) ** 0.5
     z_80 = 1.28
 
+    # Calculate baseline floor for intermittent non-peak days
+    active_daily_avg = sum(s for s in series if s > 0) / max(len([s for s in series if s > 0]), 1) if any(s > 0 for s in series) else 100.0
+    baseline_floor = round(max(20.0, active_daily_avg * 0.15), 2)
+
     # 4. Out-of-sample Forecast
     forecasts = []
     for m in range(1, days_to_predict + 1):
@@ -101,13 +105,18 @@ def forecast_holt_winters(daily_sales, days_to_predict=10, season_length=7, alph
         season_idx = (n + m - 1) % season_length
         s_val = seasonals[season_idx]
         
-        pred = level + m * trend + s_val
-        if is_sunday or pred < 0:
+        raw_pred = level + m * trend + s_val
+        if is_sunday:
             pred = 0.0
+        elif raw_pred > 0:
+            pred = raw_pred
+        else:
+            # Baseline smoothing for non-peak business days
+            pred = baseline_floor
 
         horizon_uncertainty = std_error * (1 + 0.12 * m)
-        lower = max(0.0, pred - z_80 * horizon_uncertainty) if pred > 0 else 0.0
-        upper = pred + z_80 * horizon_uncertainty if pred > 0 else 0.0
+        lower = max(0.0, pred - z_80 * horizon_uncertainty) if not is_sunday else 0.0
+        upper = max(pred, pred + z_80 * horizon_uncertainty) if not is_sunday else 0.0
 
         forecasts.append({
             'date': target_date,
