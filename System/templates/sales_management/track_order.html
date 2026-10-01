@@ -217,6 +217,21 @@
             <div class="glass-card relative overflow-hidden rounded-xl border border-white/10 flex flex-col">
                 <div id="live-tracking-gps-map" class="w-full h-[380px] sm:h-[420px] z-0"></div>
 
+                <!-- Live Status Badge (Top-Right of Map) -->
+                <div class="absolute top-3 right-3 z-10 pointer-events-none">
+                    <div id="map-live-status-pill" class="pointer-events-auto inline-flex items-center gap-2 rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-xs font-bold text-stone-200 backdrop-blur-md shadow-lg">
+                        {% if selected_delivery.status == 'delivered' %}
+                            <span class="h-2 w-2 rounded-full bg-emerald-400"></span><span class="text-emerald-300 font-bold">✓ Delivered Successfully</span>
+                        {% elif selected_delivery.status == 'in_transit' %}
+                            <span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span><span class="text-cyan-300 font-bold">In Transit • Live GPS</span>
+                        {% elif selected_delivery.status == 'scheduled' %}
+                            <span class="h-2 w-2 rounded-full bg-amber-400"></span><span class="text-amber-300 font-bold">Scheduled • Awaiting Pickup</span>
+                        {% else %}
+                            <span class="h-2 w-2 rounded-full bg-rose-400"></span><span class="text-rose-300 font-bold">{{ selected_delivery.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- Floating Route Info Legend on Map -->
                 <div class="absolute bottom-3 left-3 right-3 z-10 pointer-events-none flex flex-wrap items-center justify-between gap-2">
                     <div class="pointer-events-auto rounded-xl border border-white/15 bg-[#01140e]/95 px-3 py-1.5 text-[11px] backdrop-blur-md text-stone-200 flex flex-wrap items-center gap-2">
@@ -431,27 +446,39 @@ function loadDeliveryRoute(deliveryId) {
     const destLat = parseFloat(item.lat) || 10.7970;
     const destLng = parseFloat(item.lng) || 122.9755;
 
-    // Remove existing destination & driver markers if present
+    // Remove existing destination & driver markers and polyline if present
     if (destMarker && trackMap) {
         trackMap.removeLayer(destMarker);
+        destMarker = null;
     }
     if (driverMarker && trackMap) {
         trackMap.removeLayer(driverMarker);
         driverMarker = null;
     }
+    if (routePolyline && trackMap) {
+        trackMap.removeLayer(routePolyline);
+        routePolyline = null;
+    }
+    lastDesktopRouteOrigin = null;
 
     // Custom Destination Marker (Customer Drop-off) - SVG Teardrop Pin
+    const isDelivered = item.status === 'delivered';
+    const destColor = isDelivered ? '#10b981' : '#ef4444';
+    const destBadgeText = isDelivered ? 'DELIVERED' : 'DROP-OFF';
+    const destBadgeColor = isDelivered ? '#34d399' : '#f87171';
+    const destBadgeBorder = isDelivered ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)';
+
     const destIcon = L.divIcon({
         className: 'dest-customer-marker',
         html: `
             <div style="position:relative; width:34px; height:44px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45)); cursor:pointer;">
                 <svg viewBox="0 0 34 44" width="34" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="#ef4444"/>
+                    <path d="M17 0C7.611 0 0 7.611 0 17C0 28.5 17 44 17 44C17 44 34 28.5 34 17C34 7.611 26.389 0 17 0Z" fill="${destColor}"/>
                     <circle cx="17" cy="17" r="10" fill="#01140e"/>
-                    <circle cx="17" cy="17" r="7.5" fill="#ef4444"/>
+                    <circle cx="17" cy="17" r="7.5" fill="${destColor}"/>
                     <circle cx="17" cy="17" r="3.5" fill="#ffffff"/>
                 </svg>
-                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:#f87171; border:1px solid rgba(239,68,68,0.5); font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">DROP-OFF</span>
+                <span style="position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:#01140e; color:${destBadgeColor}; border:1px solid ${destBadgeBorder}; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px; white-space:nowrap; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">${destBadgeText}</span>
             </div>
         `,
         iconSize: [34, 44],
@@ -462,36 +489,32 @@ function loadDeliveryRoute(deliveryId) {
     destMarker = L.marker([destLat, destLng], { icon: destIcon }).addTo(trackMap);
     destMarker.bindPopup(`<b style="color:#01140e;">${item.customer_name}</b><br><span style="font-size:11px; color:#4b5563;">${item.delivery_location}</span>`);
 
-    // Place Driver Marker if in transit or if rider coordinates are known
-    let riderLat = parseFloat(item.rider_lat);
-    let riderLng = parseFloat(item.rider_lng);
-    const hasRealCoords = !isNaN(riderLat) && !isNaN(riderLng) && riderLat !== 0 && riderLng !== 0;
+    // Place Driver Marker ONLY if delivery is actively IN_TRANSIT
+    if (item.status === 'in_transit') {
+        let riderLat = parseFloat(item.rider_lat);
+        let riderLng = parseFloat(item.rider_lng);
+        const hasRealCoords = !isNaN(riderLat) && !isNaN(riderLng) && riderLat !== 0 && riderLng !== 0;
 
-    if (item.status === 'in_transit' || hasRealCoords) {
         const initRiderLat = hasRealCoords ? riderLat : FARM_ORIGIN.lat;
         const initRiderLng = hasRealCoords ? riderLng : FARM_ORIGIN.lng;
         
         driverMarker = L.marker([initRiderLat, initRiderLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
         driverMarker.bindPopup(`<b style="color:#01140e;">🛵 ${item.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS active • En route</span>`);
+
+        // Draw live route from rider's current position to destination
+        updateDesktopRoute(initRiderLat, initRiderLng, destLat, destLng, '#6366f1');
+    } else if (item.status === 'delivered') {
+        // Delivered: Completed route from Farm Origin to Drop-off Destination in Emerald Green!
+        updateDesktopRoute(FARM_ORIGIN.lat, FARM_ORIGIN.lng, destLat, destLng, '#10b981');
+    } else {
+        // Scheduled / Pending: Route from Farm Origin to Drop-off Destination in Blue
+        updateDesktopRoute(FARM_ORIGIN.lat, FARM_ORIGIN.lng, destLat, destLng, '#6366f1');
     }
-
-    // Remove previous polyline
-    if (routePolyline && trackMap) {
-        trackMap.removeLayer(routePolyline);
-        routePolyline = null;
-    }
-
-    // Route starting origin: Use Rider's live GPS if available, otherwise Farm origin
-    const routeOriginLat = hasRealCoords ? riderLat : FARM_ORIGIN.lat;
-    const routeOriginLng = hasRealCoords ? riderLng : FARM_ORIGIN.lng;
-
-    // Draw route from rider's live location to destination
-    updateDesktopRoute(routeOriginLat, routeOriginLng, destLat, destLng);
 }
 
 let lastDesktopRouteOrigin = null;
 
-function updateDesktopRoute(originLat, originLng, destLat, destLng) {
+function updateDesktopRoute(originLat, originLng, destLat, destLng, routeColor = '#6366f1') {
     if (lastDesktopRouteOrigin) {
         const d = Math.abs(lastDesktopRouteOrigin.lat - originLat) + Math.abs(lastDesktopRouteOrigin.lng - originLng);
         if (d < 0.0001 && routePolyline) return;
@@ -516,7 +539,7 @@ function updateDesktopRoute(originLat, originLng, destLat, destLng) {
             }
 
             routePolyline = L.polyline(coords, {
-                color: '#6366f1', // Road Blue / Indigo
+                color: routeColor,
                 weight: 5,
                 opacity: 0.95,
                 lineCap: 'round',
@@ -532,7 +555,7 @@ function updateDesktopRoute(originLat, originLng, destLat, destLng) {
                 trackMap.removeLayer(routePolyline);
             }
             routePolyline = L.polyline(fallbackCoords, {
-                color: '#6366f1',
+                color: routeColor,
                 weight: 5,
                 opacity: 0.95,
                 lineCap: 'round',
@@ -550,11 +573,24 @@ function startLiveGpsPolling() {
 
 function pollCurrentDeliveryGps() {
     if (!currentSelectedId || !trackMap) return;
+    const item = allDeliveriesData.find(d => d.id === currentSelectedId);
+    if (!item || item.status !== 'in_transit') {
+        // Do NOT poll or move rider marker for delivered or scheduled shipments
+        return;
+    }
     
     fetch(`/sales/delivery/${currentSelectedId}/live-location/?_t=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
             if (!data || !data.success) return;
+
+            // If delivery transitioned from in_transit to delivered
+            if (data.status !== 'in_transit') {
+                item.status = data.status;
+                item.status_display = data.status_display;
+                selectShipment(currentSelectedId);
+                return;
+            }
 
             const liveBadge = document.getElementById('map-live-status-pill');
 
@@ -564,11 +600,8 @@ function pollCurrentDeliveryGps() {
                 const rLng = parseFloat(data.rider_lng);
 
                 if (!isNaN(rLat) && !isNaN(rLng) && rLat !== 0 && rLng !== 0) {
-                    const item = allDeliveriesData.find(d => d.id === currentSelectedId);
-                    if (item) {
-                        item.rider_lat = rLat;
-                        item.rider_lng = rLng;
-                    }
+                    item.rider_lat = rLat;
+                    item.rider_lng = rLng;
 
                     if (driverMarker) {
                         driverMarker.setLatLng([rLat, rLng]);
@@ -585,7 +618,7 @@ function pollCurrentDeliveryGps() {
 
                     // Dynamically update road route from rider's live position to destination!
                     if (data.dest_lat && data.dest_lng) {
-                        updateDesktopRoute(rLat, rLng, parseFloat(data.dest_lat), parseFloat(data.dest_lng));
+                        updateDesktopRoute(rLat, rLng, parseFloat(data.dest_lat), parseFloat(data.dest_lng), '#6366f1');
                     }
                 }
             }
@@ -646,6 +679,20 @@ function selectShipment(deliveryId) {
         } else {
             payBadge.textContent = 'COD (Collect on Delivery)';
             payBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30';
+        }
+    }
+
+    // Map Live Status Pill
+    const liveBadge = document.getElementById('map-live-status-pill');
+    if (liveBadge) {
+        if (item.status === 'delivered') {
+            liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-400"></span><span class="text-emerald-300 font-bold">✓ Delivered Successfully</span>`;
+        } else if (item.status === 'in_transit') {
+            liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span><span class="text-cyan-300 font-bold">In Transit • Live GPS</span>`;
+        } else if (item.status === 'scheduled') {
+            liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-400"></span><span class="text-amber-300 font-bold">Scheduled • Awaiting Pickup</span>`;
+        } else {
+            liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-400"></span><span class="text-rose-300 font-bold">${item.status_display}</span>`;
         }
     }
 

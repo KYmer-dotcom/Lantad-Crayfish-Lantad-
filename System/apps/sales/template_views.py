@@ -2273,9 +2273,15 @@ def delivery_track_page(request):
         rider_vehicle = f"{d.rider.vehicle_type} • {d.rider.plate_number or 'No plate'}" if d.rider else ''
         prod_name = d.order.product.name if (d.order and d.order.product) else 'Stock Item'
 
-        rider_lat = d.current_latitude or (d.rider.current_latitude if d.rider else None)
-        rider_lng = d.current_longitude or (d.rider.current_longitude if d.rider else None)
-        last_loc = d.rider.last_location_update.strftime('%I:%M:%S %p') if (d.rider and d.rider.last_location_update) else ''
+        # Only attach live rider coordinates if the delivery is actively IN_TRANSIT
+        if d.status == Delivery.Status.IN_TRANSIT:
+            rider_lat = d.current_latitude or (d.rider.current_latitude if d.rider else None)
+            rider_lng = d.current_longitude or (d.rider.current_longitude if d.rider else None)
+            last_loc = d.rider.last_location_update.strftime('%I:%M:%S %p') if (d.rider and d.rider.last_location_update) else ''
+        else:
+            rider_lat = None
+            rider_lng = None
+            last_loc = ''
 
         deliveries_data.append({
             'id': d.id,
@@ -2361,7 +2367,7 @@ def rider_location_update(request):
         except Exception:
             delivery = None
 
-        if delivery:
+        if delivery and delivery.status == Delivery.Status.IN_TRANSIT:
             delivery.current_latitude = lat
             delivery.current_longitude = lng
             delivery.save(update_fields=['current_latitude', 'current_longitude'])
@@ -2373,19 +2379,19 @@ def rider_location_update(request):
         rider.current_longitude = lng
         rider.last_location_update = now
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
-        # Also sync to active delivery records for this rider
-        Delivery.objects.filter(rider=rider).update(
+        # Also sync ONLY to active in-transit delivery records for this rider
+        Delivery.objects.filter(rider=rider, status=Delivery.Status.IN_TRANSIT).update(
             current_latitude=lat,
             current_longitude=lng
         )
     elif delivery_id:
         if str(delivery_id).isdigit():
-            Delivery.objects.filter(pk=int(delivery_id)).update(
+            Delivery.objects.filter(pk=int(delivery_id), status=Delivery.Status.IN_TRANSIT).update(
                 current_latitude=lat,
                 current_longitude=lng
             )
         else:
-            Delivery.objects.filter(order__order_number=str(delivery_id)).update(
+            Delivery.objects.filter(order__order_number=str(delivery_id), status=Delivery.Status.IN_TRANSIT).update(
                 current_latitude=lat,
                 current_longitude=lng
             )
@@ -2415,10 +2421,15 @@ def delivery_live_status(request, delivery_id):
     cust_addr = delivery.delivery_location or (cust.address if cust else '')
     dest_lat, dest_lng = _resolve_coords(cust_addr, cust_lat, cust_lng)
 
-    # Live Rider Coordinates
-    rider_lat = delivery.current_latitude or (delivery.rider.current_latitude if delivery.rider else None)
-    rider_lng = delivery.current_longitude or (delivery.rider.current_longitude if delivery.rider else None)
-    last_update = delivery.rider.last_location_update.strftime('%I:%M:%S %p') if (delivery.rider and delivery.rider.last_location_update) else ''
+    # Live Rider Coordinates only if actively in transit
+    if delivery.status == Delivery.Status.IN_TRANSIT:
+        rider_lat = delivery.current_latitude or (delivery.rider.current_latitude if delivery.rider else None)
+        rider_lng = delivery.current_longitude or (delivery.rider.current_longitude if delivery.rider else None)
+        last_update = delivery.rider.last_location_update.strftime('%I:%M:%S %p') if (delivery.rider and delivery.rider.last_location_update) else ''
+    else:
+        rider_lat = None
+        rider_lng = None
+        last_update = ''
 
     return JsonResponse({
         'success': True,
