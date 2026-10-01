@@ -468,8 +468,8 @@ function loadDeliveryRoute(deliveryId) {
     const hasRealCoords = !isNaN(riderLat) && !isNaN(riderLng) && riderLat !== 0 && riderLng !== 0;
 
     if (item.status === 'in_transit' || hasRealCoords) {
-        const initRiderLat = hasRealCoords ? riderLat : ((FARM_ORIGIN.lat + destLat) / 2);
-        const initRiderLng = hasRealCoords ? riderLng : ((FARM_ORIGIN.lng + destLng) / 2);
+        const initRiderLat = hasRealCoords ? riderLat : FARM_ORIGIN.lat;
+        const initRiderLng = hasRealCoords ? riderLng : FARM_ORIGIN.lng;
         
         driverMarker = L.marker([initRiderLat, initRiderLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
         driverMarker.bindPopup(`<b style="color:#01140e;">🛵 ${item.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS active • En route</span>`);
@@ -478,14 +478,27 @@ function loadDeliveryRoute(deliveryId) {
     // Remove previous polyline
     if (routePolyline && trackMap) {
         trackMap.removeLayer(routePolyline);
+        routePolyline = null;
     }
 
     // Route starting origin: Use Rider's live GPS if available, otherwise Farm origin
     const routeOriginLat = hasRealCoords ? riderLat : FARM_ORIGIN.lat;
     const routeOriginLng = hasRealCoords ? riderLng : FARM_ORIGIN.lng;
 
-    // OSRM Road Turn-by-Turn Routing
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${routeOriginLng},${routeOriginLat};${destLng},${destLat}?overview=full&geometries=geojson`;
+    // Draw route from rider's live location to destination
+    updateDesktopRoute(routeOriginLat, routeOriginLng, destLat, destLng);
+}
+
+let lastDesktopRouteOrigin = null;
+
+function updateDesktopRoute(originLat, originLng, destLat, destLng) {
+    if (lastDesktopRouteOrigin) {
+        const d = Math.abs(lastDesktopRouteOrigin.lat - originLat) + Math.abs(lastDesktopRouteOrigin.lng - originLng);
+        if (d < 0.0001 && routePolyline) return;
+    }
+    lastDesktopRouteOrigin = { lat: originLat, lng: originLng };
+
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson`;
 
     fetch(osrmUrl)
         .then(res => res.json())
@@ -494,22 +507,16 @@ function loadDeliveryRoute(deliveryId) {
             if (data && data.routes && data.routes.length > 0) {
                 coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
             } else {
-                coords = [[routeOriginLat, routeOriginLng], [destLat, destLng]];
+                coords = [[originLat, originLng], [destLat, destLng]];
             }
             currentRouteCoords = coords;
 
-            // Ensure destination marker is at the exact customer coordinates
-            if (destMarker) {
-                destMarker.setLatLng([destLat, destLng]);
-            }
-
-            // If no real GPS was ever provided, place rider at beginning/midpoint
-            if (!hasRealCoords && driverMarker && coords.length > 0) {
-                driverMarker.setLatLng(coords[0]);
+            if (routePolyline && trackMap) {
+                trackMap.removeLayer(routePolyline);
             }
 
             routePolyline = L.polyline(coords, {
-                color: '#6366f1', // Indigo / Road Blue
+                color: '#6366f1', // Road Blue / Indigo
                 weight: 5,
                 opacity: 0.95,
                 lineCap: 'round',
@@ -519,8 +526,11 @@ function loadDeliveryRoute(deliveryId) {
             trackMap.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
         })
         .catch(() => {
-            const fallbackCoords = [[routeOriginLat, routeOriginLng], [destLat, destLng]];
+            const fallbackCoords = [[originLat, originLng], [destLat, destLng]];
             currentRouteCoords = fallbackCoords;
+            if (routePolyline && trackMap) {
+                trackMap.removeLayer(routePolyline);
+            }
             routePolyline = L.polyline(fallbackCoords, {
                 color: '#6366f1',
                 weight: 5,
@@ -570,6 +580,11 @@ function pollCurrentDeliveryGps() {
 
                     if (liveBadge) {
                         liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
+                    }
+
+                    // Dynamically update road route from rider's live position to destination!
+                    if (data.dest_lat && data.dest_lng) {
+                        updateDesktopRoute(rLat, rLng, parseFloat(data.dest_lat), parseFloat(data.dest_lng));
                     }
                 }
             }
