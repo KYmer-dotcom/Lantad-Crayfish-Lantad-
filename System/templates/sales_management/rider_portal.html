@@ -782,13 +782,9 @@
                     entry.riderMarker = L.marker([lat, lng], {
                         icon: riderLiveBeaconIcon,
                         zIndexOffset: 1000,
-                        draggable: true
+                        draggable: false
                     }).addTo(entry.map);
-                    entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
-                    entry.riderMarker.on('dragend', function (e) {
-                        const pos = e.target.getLatLng();
-                        updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
-                    });
+                    entry.riderMarker.bindPopup('<b>🛵 Live Rider GPS</b><br><span style="font-size:11px; color:#06b6d4;">Phone GPS Connected</span>');
                 }
 
                 // Dynamically update road route from Rider's current GPS position to Destination
@@ -897,23 +893,13 @@
                 entry.riderMarker = L.marker([liveRiderCoords.lat, liveRiderCoords.lng], {
                     icon: riderLiveBeaconIcon,
                     zIndexOffset: 1000,
-                    draggable: true
+                    draggable: false
                 }).addTo(map);
-                entry.riderMarker.bindPopup('<b>🛵 Your Location</b> (Tap or drag to update)');
-                entry.riderMarker.on('dragend', function (e) {
-                    const pos = e.target.getLatLng();
-                    updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
-                });
+                entry.riderMarker.bindPopup('<b>🛵 Live Rider GPS</b><br><span style="font-size:11px; color:#06b6d4;">Phone GPS Connected</span>');
                 updateGpsStatusBadge(deliveryId, 'active', 'GPS Ready');
             }
 
             fetchRoadRoute(map, entry, startLat, startLng, targetLat, targetLng);
-
-            // Tap map to set/update position anytime
-            map.on('click', function(e) {
-                updateRiderPhoneLocation(deliveryId, e.latlng.lat, e.latlng.lng);
-                updateGpsStatusBadge(deliveryId, 'active', 'Location Set');
-            });
 
             // Actively request phone GPS
             requestRiderGps(deliveryId, false);
