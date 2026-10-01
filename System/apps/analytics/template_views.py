@@ -157,16 +157,52 @@ def analytics_dashboard(request):
     from django.db.models.functions import TruncDate
 
     now = timezone.now()
-    curr_year = now.year       # 2026
-    active_year = curr_year
-    curr_month = now.month     # 9 (September)
+    today = timezone.localdate()
+
+    all_user_sales = _get_sales_queryset_for_user(request.user)
+    latest_order = all_user_sales.order_by('-order_date').first()
+    default_date = latest_order.order_date if (latest_order and latest_order.order_date) else today
+
+    req_month = request.GET.get('month')
+    req_year = request.GET.get('year')
+
+    try:
+        curr_year = int(req_year) if req_year else default_date.year
+        curr_month = int(req_month) if req_month else default_date.month
+    except (ValueError, TypeError):
+        curr_year = default_date.year
+        curr_month = default_date.month
+
     curr_month_name = calendar.month_name[curr_month]
     curr_month_abbr = calendar.month_abbr[curr_month]
     _, num_days_in_month = calendar.monthrange(curr_year, curr_month)
-    today = now.date()
 
-    all_user_sales = _get_sales_queryset_for_user(request.user)
-    
+    # Build available months for the dropdown selector
+    available_months_qs = all_user_sales.dates('order_date', 'month', order='DESC')
+    available_months = []
+    seen_months = set()
+
+    # Always include current actual month
+    curr_actual_tuple = (today.year, today.month)
+    available_months.append({
+        'year': today.year,
+        'month': today.month,
+        'label': f"{calendar.month_name[today.month]} {today.year}",
+        'is_selected': (today.year == curr_year and today.month == curr_month)
+    })
+    seen_months.add(curr_actual_tuple)
+
+    for d in available_months_qs:
+        tup = (d.year, d.month)
+        if tup not in seen_months:
+            seen_months.add(tup)
+            available_months.append({
+                'year': d.year,
+                'month': d.month,
+                'label': f"{calendar.month_name[d.month]} {d.year}",
+                'is_selected': (d.year == curr_year and d.month == curr_month)
+            })
+
     # Current month sales queryset
     current_month_sales = all_user_sales.filter(
         order_date__year=curr_year,
@@ -233,20 +269,46 @@ def analytics_dashboard(request):
             'orders': info['orders']
         })
 
+    # Build robust training dataset from historical sales leading up to the forecast period
+    history_anchor = datetime.date(curr_year, curr_month, curr_day) if (today.year == curr_year and today.month == curr_month) else datetime.date(curr_year, curr_month, num_days_in_month)
+    history_start = history_anchor - timedelta(days=60)
+    
+    historical_sales_qs = all_user_sales.filter(
+        order_date__gte=history_start,
+        order_date__lte=history_anchor
+    ).annotate(
+        order_day=TruncDate('order_date')
+    ).values('order_day').annotate(
+        total_rev=Sum('total_amount')
+    )
+    
+    historical_map = {row['order_day']: float(row['total_rev'] or 0) for row in historical_sales_qs if row['order_day']}
+    
+    full_history_chrono = []
+    t_day = history_start
+    while t_day <= history_anchor:
+        full_history_chrono.append({
+            'date': t_day,
+            'revenue': historical_map.get(t_day, 0.0)
+        })
+        t_day += timedelta(days=1)
+    
+    training_data = full_history_chrono if any(h['revenue'] > 0 for h in full_history_chrono) else month_sales_chrono
+
     # 2. Holt-Winters Forecast for Remaining Days of the Month
     days_to_forecast = max(0, num_days_in_month - curr_day)
     hw_forecast = forecast_holt_winters(
-        month_sales_chrono,
+        training_data,
         days_to_predict=days_to_forecast if days_to_forecast > 0 else 7,
         season_length=7
     )
 
     # 3. Top KPI Summary Calculations
     revenue_so_far = sum(s['revenue'] for s in month_sales_chrono)
-    remaining_forecast_revenue = sum(f['predicted_revenue'] for f in hw_forecast[:days_to_forecast]) if days_to_forecast > 0 else 0.0
-    projected_month_end = revenue_so_far + remaining_forecast_revenue
+    remaining_forecast_revenue = sum(f['predicted_revenue'] for f in hw_forecast[:days_to_forecast]) if days_to_forecast > 0 else (sum(f['predicted_revenue'] for f in hw_forecast[:7]) if hw_forecast else 0.0)
+    projected_month_end = revenue_so_far + (sum(f['predicted_revenue'] for f in hw_forecast[:days_to_forecast]) if days_to_forecast > 0 else 0.0)
     
-    # Compare with prior month (August)
+    # Compare with prior month
     prev_month = 12 if curr_month == 1 else curr_month - 1
     prev_year = curr_year - 1 if curr_month == 1 else curr_year
     prev_month_rev = all_user_sales.filter(
@@ -261,7 +323,7 @@ def analytics_dashboard(request):
         mom_growth_str = "+12.4%"
 
     # Forecast Accuracy (from backtested model MAPE)
-    model_comparisons = calculate_model_metrics(month_sales_chrono)
+    model_comparisons = calculate_model_metrics(training_data if training_data else month_sales_chrono)
     selected_model = next((m for m in model_comparisons if m['selected']), model_comparisons[1])
     mape_val = selected_model['mape']
     forecast_accuracy_pct = round(100.0 - mape_val, 1)
@@ -299,8 +361,8 @@ def analytics_dashboard(request):
         chart_upper_series.append(f['upper_80'])
 
     # Find busiest predicted day
-    busiest_day_item = max(hw_forecast[:days_to_forecast], key=lambda x: x['predicted_revenue'], default=None) if days_to_forecast > 0 else None
-    busiest_day_name = busiest_day_item['date'].strftime('%b %d') if busiest_day_item else 'Sep 28'
+    busiest_day_item = max(hw_forecast[:days_to_forecast], key=lambda x: x['predicted_revenue'], default=None) if days_to_forecast > 0 else (max(hw_forecast, key=lambda x: x['predicted_revenue'], default=None) if hw_forecast else None)
+    busiest_day_name = busiest_day_item['date'].strftime('%b %d') if busiest_day_item else f"{curr_month_abbr} 15"
 
     forecast_chart_data = {
         'labels': forecast_chart_labels,
@@ -482,8 +544,8 @@ def analytics_dashboard(request):
         'revenue_so_far': revenue_so_far,
         'projected_month_end': projected_month_end,
         'remaining_forecast_revenue': remaining_forecast_revenue,
-        'curr_day_range': f"Sep 1-{curr_day}",
-        'remaining_range_str': f"Sep {curr_day+1} - Sep {num_days_in_month}" if days_to_forecast > 0 else f"Sep {curr_day}",
+        'curr_day_range': f"{curr_month_abbr} 1-{curr_day}",
+        'remaining_range_str': f"{curr_month_abbr} {min(curr_day+1, num_days_in_month)} - {curr_month_abbr} {num_days_in_month}" if days_to_forecast > 0 else f"{curr_month_abbr} {curr_day}",
         'mom_growth_str': mom_growth_str,
         'forecast_accuracy_pct': forecast_accuracy_pct,
         'mape_val': mape_val,
@@ -492,13 +554,14 @@ def analytics_dashboard(request):
         'active_month': curr_month_name,
         'active_year': curr_year,
         'current_month_title': f"{curr_month_name} {curr_year}",
+        'available_months': available_months,
 
         # Stacked Sales Performance Chart
         'stacked_sales_data_json': json.dumps(stacked_sales_chart_data),
         
         # Forecast Analysis
         'forecast_chart_data_json': json.dumps(forecast_chart_data),
-        'remaining_forecast_list': hw_forecast[:days_to_forecast],
+        'remaining_forecast_list': hw_forecast[:days_to_forecast] if days_to_forecast > 0 else hw_forecast[:7],
         'busiest_day_name': busiest_day_name,
         'selected_model_mae': selected_model['mae'],
 
