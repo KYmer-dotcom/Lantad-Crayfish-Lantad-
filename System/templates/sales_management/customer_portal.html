@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- Delivery Method Selector matching PC -->
-                <div class="space-y-2 {% if orders %}hidden{% endif %}">
+                <div class="space-y-2">
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Delivery Method:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setDeliveryMethod('pickup')"
@@ -322,7 +322,7 @@
 
                 <div class="pt-4 space-y-5">
                     <!-- Delivery Method Selection -->
-                    <div class="space-y-2 {% if orders %}hidden{% endif %}">
+                    <div class="space-y-2">
                         <p class="text-white font-bold text-sm tracking-wide">Delivery Method:</p>
                         <div class="flex gap-3">
                             <button type="button" onclick="setDeliveryMethod('pickup')"
@@ -596,13 +596,17 @@
                                             <span
                                                 class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 sm:px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
                                             {% if order.delivery_address|upper == "PICKUP" %}
-                                            <span
-                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🏪
-                                                Pickup</span>
+                                            <button type="button" onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
+                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                                title="Click to switch to Delivery">
+                                                🏪 Pickup <span class="text-[8px] opacity-60">⇄</span>
+                                            </button>
                                             {% else %}
-                                            <span
-                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">🚚
-                                                Delivery</span>
+                                            <button type="button" onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
+                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                                                title="Click to switch to Pickup">
+                                                🚚 Delivery <span class="text-[8px] opacity-60">⇄</span>
+                                            </button>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -2296,6 +2300,7 @@
     <input type="hidden" name="product" id="direct-product-id" value="">
     <input type="hidden" name="quantity_kg" id="direct-quantity" value="">
     <input type="hidden" name="pricing_unit" id="direct-pricing-unit" value="pc">
+    <input type="hidden" name="delivery_method" id="delivery-method-input" value="delivery">
     <input type="hidden" name="delivery_address" id="direct-delivery-address" value="">
     <input type="hidden" name="notes" id="direct-notes" value="">
 </form>
@@ -3096,19 +3101,15 @@
         if (currentProductIndex === -1) currentProductIndex = 0;
         updateDots();
 
-        // Restore saved delivery method or use existing cart order method
-        {% if not orders %}
-        const savedMethod = localStorage.getItem('saved_delivery_method');
-        if (savedMethod) {
-            setDeliveryMethod(savedMethod);
-        }
-        {% else %}
-        const firstOrderMethod = "{% with first_order=orders|first %}{% if first_order %}{% if first_order.delivery_address|upper == 'PICKUP' %}pickup{% else %}delivery{% endif %}{% else %}pickup{% endif %}{% endwith %}";
-        setDeliveryMethod(firstOrderMethod);
-        {% endif %}
+        // Restore saved delivery method or default to delivery
+        const savedMethod = localStorage.getItem('saved_delivery_method') || 'delivery';
+        setDeliveryMethod(savedMethod);
     });
 
+    let currentDeliveryMethod = localStorage.getItem('saved_delivery_method') || 'delivery';
+
     function setDeliveryMethod(method) {
+        currentDeliveryMethod = method;
         localStorage.setItem('saved_delivery_method', method);
 
         const input = document.getElementById('delivery-method-input');
@@ -3212,11 +3213,12 @@
         const qtyInput = document.querySelector('.featured-quantity-input, #featured-quantity-input');
         const qty = qtyInput ? qtyInput.value : 1;
         const methodInput = document.getElementById('delivery-method-input');
-        const method = methodInput ? methodInput.value : 'pickup';
+        const method = currentDeliveryMethod || (methodInput ? methodInput.value : null) || localStorage.getItem('saved_delivery_method') || 'delivery';
 
         document.getElementById('direct-product-id').value = productId;
         document.getElementById('direct-quantity').value = qty;
         document.getElementById('direct-pricing-unit').value = currentPricingUnit;
+        if (methodInput) methodInput.value = method;
 
         const notes = "Delivery Method: " + method.toUpperCase();
         document.getElementById('direct-notes').value = notes;
@@ -3224,10 +3226,32 @@
         if (method === 'pickup') {
             document.getElementById('direct-delivery-address').value = "PICKUP";
         } else {
-            document.getElementById('direct-delivery-address').value = "{{ customer.address|escapejs }}";
+            const rawAddr = "{{ customer.address|default:''|escapejs }}";
+            const customerAddr = (rawAddr && rawAddr.toUpperCase() !== 'PICKUP') ? rawAddr : '';
+            document.getElementById('direct-delivery-address').value = customerAddr || "Delivery";
         }
 
         document.getElementById('direct-add-').submit();
+    }
+
+    function toggleCartItemDeliveryMethod(orderId) {
+        fetch(`/sales/market/orders/${orderId}/toggle-delivery-method/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(err => console.error(err));
     }
 
     (function initCustomerAccountMap() {

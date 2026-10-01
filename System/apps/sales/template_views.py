@@ -1342,8 +1342,19 @@ def customer_order_create(request):
                 if order.quantity_kg >= WHOLESALE_MIN_QTY_KG
                 else SalesOrder.OrderType.RETAIL
             )
-            if not order.delivery_address:
-                order.delivery_address = customer.address
+            delivery_method = request.POST.get('delivery_method', '').strip().lower()
+            submitted_address = request.POST.get('delivery_address', '').strip()
+            
+            if delivery_method == 'pickup' or (submitted_address.upper() == 'PICKUP' and delivery_method != 'delivery'):
+                order.delivery_address = 'PICKUP'
+            else:
+                if submitted_address and submitted_address.upper() != 'PICKUP' and submitted_address != 'Delivery Address Required':
+                    order.delivery_address = submitted_address
+                elif customer and customer.address and customer.address.upper() != 'PICKUP':
+                    order.delivery_address = customer.address
+                else:
+                    order.delivery_address = 'Customer Address Pending'
+
             order.created_by = request.user if request.user.is_authenticated else None
             
             unit_prefix = f"[{pricing_unit.upper()}]"
@@ -1367,6 +1378,48 @@ def customer_order_create(request):
         return render(request, 'sales_management/partials/customer_order_form.html', {'form': form})
 
     return redirect('sales:customer_portal')
+
+
+def customer_order_toggle_delivery_method(request, order_id):
+    if not request.user.is_authenticated:
+        from django.http import JsonResponse
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
+    
+    order = get_object_or_404(SalesOrder, id=order_id)
+    customer = get_customer_profile(request.user)
+    if not customer or order.customer != customer:
+        from django.http import JsonResponse
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+        
+    if request.method == 'POST':
+        try:
+            import json
+            data = json.loads(request.body) if request.body else {}
+            target_method = data.get('delivery_method')
+            
+            if target_method:
+                is_pickup = (target_method.lower() == 'pickup')
+            else:
+                is_pickup = not (order.delivery_address and order.delivery_address.upper() == 'PICKUP')
+                
+            if is_pickup:
+                order.delivery_address = 'PICKUP'
+            else:
+                raw_addr = customer.address if (customer and customer.address and customer.address.upper() != 'PICKUP') else ''
+                order.delivery_address = raw_addr or 'Customer Address Pending'
+            order.save(update_fields=['delivery_address'])
+            from django.http import JsonResponse
+            return JsonResponse({
+                'success': True,
+                'delivery_address': order.delivery_address,
+                'is_pickup': order.delivery_address.upper() == 'PICKUP'
+            })
+        except Exception as e:
+            from django.http import JsonResponse
+            return JsonResponse({'success': False, 'error': str(e)})
+            
+    from django.http import JsonResponse
+    return JsonResponse({'success': False, 'error': 'POST request required'}, status=400)
 
 
 def customer_order_update_quantity(request, order_id):
@@ -1462,7 +1515,7 @@ def customer_checkout_submit(request):
             map_lat = None
             map_lng = None
 
-        if delivery_address:
+        if delivery_address and delivery_address.upper() != 'PICKUP':
             customer.address = delivery_address
         if map_lat and map_lng:
             try:
