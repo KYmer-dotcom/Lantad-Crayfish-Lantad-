@@ -638,6 +638,7 @@
     }
 
     function updateGpsStatusBadge(deliveryId, state, text) {
+        if (!deliveryId) return;
         const dot = document.getElementById(`gps-status-dot-${deliveryId}`);
         const btn = document.getElementById(`recenter-btn-${deliveryId}`);
         if (dot) {
@@ -656,20 +657,23 @@
 
     function requestRiderGps(deliveryId, isUserTriggered) {
         if (!("geolocation" in navigator)) {
-            updateGpsStatusBadge(deliveryId, 'error', 'GPS Unsupported');
+            if (deliveryId) updateGpsStatusBadge(deliveryId, 'error', 'GPS Unsupported');
             return;
         }
 
-        updateGpsStatusBadge(deliveryId, 'acquiring', 'Acquiring GPS...');
+        if (deliveryId) updateGpsStatusBadge(deliveryId, 'acquiring', 'Acquiring GPS...');
 
         function onGpsSuccess(pos) {
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
-            updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+            liveRiderCoords = { lat, lng };
+            if (deliveryId) updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
             updateRiderPhoneLocation(deliveryId, lat, lng);
-            const entry = activeGpsMaps[deliveryId];
-            if (entry && entry.map && isUserTriggered) {
-                entry.map.setView([lat, lng], 16);
+            if (deliveryId) {
+                const entry = activeGpsMaps[deliveryId];
+                if (entry && entry.map && isUserTriggered) {
+                    entry.map.setView([lat, lng], 16);
+                }
             }
         }
 
@@ -678,6 +682,7 @@
             navigator.geolocation.getCurrentPosition(
                 onGpsSuccess,
                 function(fallbackErr) {
+                    if (!deliveryId) return;
                     if (fallbackErr.code === 1) {
                         updateGpsStatusBadge(deliveryId, 'error', 'GPS Blocked • Tap to Allow');
                     } else if (fallbackErr.code === 3) {
@@ -701,7 +706,8 @@
                 function (pos) {
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
-                    updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
+                    liveRiderCoords = { lat, lng };
+                    if (deliveryId) updateGpsStatusBadge(deliveryId, 'active', 'GPS Live');
                     updateRiderPhoneLocation(deliveryId, lat, lng);
                     Object.keys(activeGpsMaps).forEach(delId => {
                         if (delId !== String(deliveryId)) {
@@ -767,32 +773,34 @@
 
     function updateRiderPhoneLocation(deliveryId, lat, lng) {
         liveRiderCoords = { lat, lng };
-        const entry = activeGpsMaps[deliveryId];
-        if (entry && entry.map) {
-            if (entry.riderMarker) {
-                entry.riderMarker.setLatLng([lat, lng]);
-            } else {
-                entry.riderMarker = L.marker([lat, lng], {
-                    icon: riderLiveBeaconIcon,
-                    zIndexOffset: 1000,
-                    draggable: true
-                }).addTo(entry.map);
-                entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
-                entry.riderMarker.on('dragend', function (e) {
-                    const pos = e.target.getLatLng();
-                    updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
-                });
-            }
+        if (deliveryId && activeGpsMaps[deliveryId]) {
+            const entry = activeGpsMaps[deliveryId];
+            if (entry && entry.map) {
+                if (entry.riderMarker) {
+                    entry.riderMarker.setLatLng([lat, lng]);
+                } else {
+                    entry.riderMarker = L.marker([lat, lng], {
+                        icon: riderLiveBeaconIcon,
+                        zIndexOffset: 1000,
+                        draggable: true
+                    }).addTo(entry.map);
+                    entry.riderMarker.bindPopup('<b>🛵 Your Live Location</b> (Phone GPS)');
+                    entry.riderMarker.on('dragend', function (e) {
+                        const pos = e.target.getLatLng();
+                        updateRiderPhoneLocation(deliveryId, pos.lat, pos.lng);
+                    });
+                }
 
-            // Dynamically update road route from Rider's current GPS position to Destination
-            if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
-                fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
+                // Dynamically update road route from Rider's current GPS position to Destination
+                if (entry.destCoords && entry.destCoords.lat && entry.destCoords.lng) {
+                    fetchRoadRoute(entry.map, entry, lat, lng, entry.destCoords.lat, entry.destCoords.lng);
+                }
             }
         }
 
         // Stream live GPS coordinates to backend for central dispatch map
         const payload = JSON.stringify({
-            delivery_id: deliveryId,
+            delivery_id: deliveryId || null,
             latitude: lat,
             longitude: lng
         });

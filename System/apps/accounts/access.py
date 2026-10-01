@@ -33,16 +33,28 @@ def filter_by_pond(user, queryset, pond_lookup="pond"):
 
 
 def get_customer_profile(user):
-    if not is_customer(user):
+    if not user or not user.is_authenticated:
         return None
-    return Customer.objects.filter(user=user).first()
+    from apps.sales.models import Customer
+    cust = Customer.objects.filter(user=user).first()
+    if cust:
+        return cust
+    return Customer.objects.filter(phone=user.username).first()
 
 
 def get_rider_profile(user):
-    if not is_rider(user):
+    if not user or not user.is_authenticated:
         return None
     from apps.sales.models import Rider
-    return Rider.objects.filter(user=user).first() or Rider.objects.filter(phone=user.username).first()
+    rider = Rider.objects.filter(user=user).first()
+    if rider:
+        return rider
+    user_phone = getattr(user, 'phone', None)
+    if user_phone:
+        rider = Rider.objects.filter(phone=user_phone).first()
+        if rider:
+            return rider
+    return Rider.objects.filter(phone=user.username).first()
 
 
 def ensure_not_customer(user):
