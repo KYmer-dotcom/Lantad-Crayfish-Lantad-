@@ -791,19 +791,29 @@
         }
 
         // Stream live GPS coordinates to backend for central dispatch map
+        const payload = JSON.stringify({
+            delivery_id: deliveryId,
+            latitude: lat,
+            longitude: lng
+        });
+
         fetch('/sales/rider/location/update/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({
-                delivery_id: deliveryId,
-                latitude: lat,
-                longitude: lng
-            })
+            body: payload
+        }).then(res => res.json())
+        .then(data => {
+            console.log('GPS Beacon updated on server:', data);
         }).catch(function(err) {
-            console.error('Location sync error:', err);
+            console.error('Location sync fetch failed, trying beacon fallback:', err);
+            if (navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon('/sales/rider/location/update/', blob);
+            }
         });
     }
 
@@ -942,6 +952,11 @@
         {% else %}
         switchTab('active');
         {% endif %}
+
+        // Eagerly acquire phone GPS if active deliveries exist
+        if (activeDeliveryList.length > 0) {
+            requestRiderGps(activeDeliveryList[0].id, false);
+        }
     });
 
     let driverMap = null;

@@ -553,6 +553,12 @@ function pollCurrentDeliveryGps() {
                 const rLng = parseFloat(data.rider_lng);
 
                 if (!isNaN(rLat) && !isNaN(rLng) && rLat !== 0 && rLng !== 0) {
+                    const item = allDeliveriesData.find(d => d.id === currentSelectedId);
+                    if (item) {
+                        item.rider_lat = rLat;
+                        item.rider_lng = rLng;
+                    }
+
                     if (driverMarker) {
                         smoothMoveMarker(driverMarker, rLat, rLng, 1000);
                     } else {
@@ -565,7 +571,7 @@ function pollCurrentDeliveryGps() {
                     }
 
                     if (liveBadge) {
-                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
+                        liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
                     }
                 }
             }

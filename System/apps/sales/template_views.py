@@ -2296,8 +2296,8 @@ def delivery_track_page(request):
             'rider_name': rider_name,
             'rider_phone': rider_phone,
             'rider_vehicle': rider_vehicle,
-            'rider_lat': rider_lat,
-            'rider_lng': rider_lng,
+            'rider_lat': float(rider_lat) if rider_lat is not None else None,
+            'rider_lng': float(rider_lng) if rider_lng is not None else None,
             'last_location_update': last_loc,
             'notes': d.notes or '',
             'lat': lat,
@@ -2326,7 +2326,8 @@ def rider_location_update(request):
     lng = None
     delivery_id = None
 
-    if request.content_type == 'application/json':
+    # Attempt to parse body as JSON first regardless of Content-Type string variants
+    if request.body:
         try:
             data = json.loads(request.body.decode('utf-8'))
             lat = data.get('latitude') or data.get('lat')
@@ -2334,10 +2335,12 @@ def rider_location_update(request):
             delivery_id = data.get('delivery_id')
         except Exception:
             pass
-    else:
-        lat = request.POST.get('latitude') or request.POST.get('lat')
-        lng = request.POST.get('longitude') or request.POST.get('lng')
-        delivery_id = request.POST.get('delivery_id')
+
+    # Fallback to form/query parameters
+    if lat is None or lng is None:
+        lat = request.POST.get('latitude') or request.POST.get('lat') or request.GET.get('latitude') or request.GET.get('lat')
+        lng = request.POST.get('longitude') or request.POST.get('lng') or request.GET.get('longitude') or request.GET.get('lng')
+        delivery_id = delivery_id or request.POST.get('delivery_id') or request.GET.get('delivery_id')
 
     try:
         lat = float(lat)
@@ -2369,6 +2372,11 @@ def rider_location_update(request):
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
         # Also sync to active delivery records for this rider
         Delivery.objects.filter(rider=rider, status__in=[Delivery.Status.IN_TRANSIT, Delivery.Status.SCHEDULED]).update(
+            current_latitude=lat,
+            current_longitude=lng
+        )
+    elif delivery_id:
+        Delivery.objects.filter(pk=delivery_id).update(
             current_latitude=lat,
             current_longitude=lng
         )
@@ -2404,10 +2412,10 @@ def delivery_live_status(request, delivery_id):
         'status_display': delivery.get_status_display(),
         'rider_name': delivery.rider.name if delivery.rider else 'Assigned Courier',
         'rider_phone': delivery.rider.phone if (delivery.rider and delivery.rider.phone) else '',
-        'rider_lat': rider_lat,
-        'rider_lng': rider_lng,
-        'dest_lat': dest_lat,
-        'dest_lng': dest_lng,
+        'rider_lat': float(rider_lat) if rider_lat is not None else None,
+        'rider_lng': float(rider_lng) if rider_lng is not None else None,
+        'dest_lat': float(dest_lat) if dest_lat is not None else None,
+        'dest_lng': float(dest_lng) if dest_lng is not None else None,
         'last_location_update': last_update,
         'total_amount': float(delivery.order.total_amount) if (delivery.order and delivery.order.total_amount) else 0.0,
         'payment_status': delivery.order.payment_status if delivery.order else 'unpaid',
