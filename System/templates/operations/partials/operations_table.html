@@ -61,7 +61,7 @@
                             <tr>
                                 <td class="py-2 w-1/2">
                                     <div class="flex items-center gap-2">
-                                        <span>{% if product.icon == 'shrimp' %}🦐{% elif product.icon == 'lab' %}🧪{% elif product.icon == 'leaf' %}🌿{% elif product.icon == 'insect' or product.icon == 'box' %}🪲{% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱{% else %}🐟{% endif %}</span>
+                                        <span>{% if 'superworm' in product.name|lower or product.icon == 'worm' or product.icon == 'bug' %}🪱{% elif 'azula' in product.name|lower or product.icon == 'leaf' %}🌿{% elif 'crayfish' in product.name|lower or 'crilings' in product.name|lower or product.icon == 'shrimp' or product.category == 'shrimp' %}🦐{% elif product.icon == 'insect' or product.icon == 'box' %}🪲{% elif product.icon == 'lab' %}🧪{% elif product.icon == 'water' %}💧{% else %}🦐{% endif %}</span>
                                         <span class="text-stone-300">{{ product.name }}</span>
                                     </div>
                                 </td>

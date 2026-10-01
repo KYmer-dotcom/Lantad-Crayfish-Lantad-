@@ -610,14 +610,14 @@
                             <td class="py-4 px-6">
                                 <div class="flex items-center gap-3">
                                     <div class="flex h-10 w-10 items-center justify-center rounded-xl font-black text-base shrink-0 border {% if p.accent_color == 'cyan' %}border-cyan-500/30 bg-cyan-500/15 text-cyan-300{% elif p.accent_color == 'emerald' %}border-emerald-500/30 bg-emerald-500/15 text-emerald-300{% elif p.accent_color == 'amber' %}border-amber-500/30 bg-amber-500/15 text-amber-300{% elif p.accent_color == 'rose' %}border-rose-500/30 bg-rose-500/15 text-rose-300{% elif p.accent_color == 'violet' %}border-violet-500/30 bg-violet-500/15 text-violet-300{% elif p.accent_color == 'indigo' %}border-indigo-500/30 bg-indigo-500/15 text-indigo-300{% else %}border-[#cca43b]/30 bg-[#cca43b]/15 text-[#cca43b]{% endif %}">
-                                        {% if p.icon == 'shrimp' %}🦐
-                                        {% elif p.icon == 'lab' %}🧪
-                                        {% elif p.icon == 'leaf' %}🌿
-                                        {% elif p.icon == 'box' %}📦
+                                        {% if 'superworm' in p.name|lower or p.icon == 'worm' or p.icon == 'bug' %}🪱
+                                        {% elif 'azula' in p.name|lower or p.icon == 'leaf' %}🌿
+                                        {% elif 'crayfish' in p.name|lower or 'crilings' in p.name|lower or p.icon == 'shrimp' or p.category == 'shrimp' %}🦐
+                                        {% elif p.icon == 'box' or p.icon == 'package' %}📦
                                         {% elif p.icon == 'water' %}💧
-                                        {% elif p.icon == 'fish' %}🐟
-                                        {% elif p.category == 'shrimp' %}🦐
-                                        {% else %}🐟{% endif %}
+                                        {% elif p.icon == 'lab' %}🧪
+                                        {% elif p.icon == 'insect' %}🪲
+                                        {% else %}🦐{% endif %}
                                     </div>
                                     <div>
                                         <p class="font-bold text-white">{{ p.name }}</p>
@@ -732,12 +732,12 @@
                                 <td class="py-3.5 px-5">
                                     <div class="flex items-center gap-3">
                                         <div class="h-8 w-8 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center text-base shrink-0">
-                                            {% if product.icon == 'fish' %}🐟
-                                            {% elif product.icon == 'shrimp' %}🦐
-                                            {% elif product.icon == 'package' %}📦
-                                            {% elif product.icon == 'box' %}🍱
-                                            {% elif product.icon == 'bug' %}🐛
-                                            {% else %}🐟{% endif %}
+                                            {% if 'superworm' in product.name|lower or product.icon == 'worm' or product.icon == 'bug' %}🪱
+                                            {% elif 'azula' in product.name|lower or product.icon == 'leaf' %}🌿
+                                            {% elif 'crayfish' in product.name|lower or 'crilings' in product.name|lower or product.icon == 'shrimp' or product.category == 'shrimp' %}🦐
+                                            {% elif product.icon == 'package' or product.icon == 'box' %}📦
+                                            {% elif product.icon == 'water' %}💧
+                                            {% else %}🦐{% endif %}
                                         </div>
                                         <div>
                                             <p class="font-bold text-white text-sm leading-tight">{{ product.name }}</p>

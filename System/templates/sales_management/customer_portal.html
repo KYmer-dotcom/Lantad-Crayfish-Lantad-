@@ -260,12 +260,14 @@
                         onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-3.5 rounded-2xl flex items-center gap-3.5 text-left transition-all group cursor-pointer">
                         <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
-                            {% if prod.icon == 'shrimp' %}🦐
-                            {% elif prod.icon == 'lab' %}🧪
-                            {% elif prod.icon == 'leaf' %}🌿
-                            {% elif prod.icon == 'box' %}📦
+                            {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
+                            {% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}🌿
+                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon == 'shrimp' %}🦐
+                            {% elif prod.icon == 'box' or prod.icon == 'package' %}📦
                             {% elif prod.icon == 'water' %}💧
-                            {% else %}🐟{% endif %}
+                            {% elif prod.icon == 'lab' %}🧪
+                            {% elif prod.icon == 'insect' %}🪲
+                            {% else %}🦐{% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-1">
@@ -425,12 +427,14 @@
                     <button onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0 cursor-pointer">
                         <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
-                            {% if prod.icon == 'shrimp' %}🦐
-                            {% elif prod.icon == 'lab' %}🧪
-                            {% elif prod.icon == 'leaf' %}🌿
-                            {% elif prod.icon == 'box' %}📦
+                            {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
+                            {% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}🌿
+                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon == 'shrimp' %}🦐
+                            {% elif prod.icon == 'box' or prod.icon == 'package' %}📦
                             {% elif prod.icon == 'water' %}💧
-                            {% else %}🐟{% endif %}
+                            {% elif prod.icon == 'lab' %}🧪
+                            {% elif prod.icon == 'insect' %}🪲
+                            {% else %}🦐{% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
