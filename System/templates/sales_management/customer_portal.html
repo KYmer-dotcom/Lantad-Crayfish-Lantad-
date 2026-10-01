@@ -140,7 +140,7 @@
                 
                 <!-- Showcase Image Card with interactive navigation overlay -->
                 <div class="relative w-full h-60 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
-                    <img src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                    <img src="{% if 'superworm' in featured_product.name|lower or featured_product.icon == 'worm' or featured_product.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in featured_product.name|lower or featured_product.icon == 'leaf' %}/static/images/products/azula.jpg{% elif featured_product.icon == 'fish' %}/static/images/products/fish.jpg{% elif featured_product.icon == 'insect' %}/static/images/products/insect.jpg{% elif featured_product.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                         class="featured-image-el w-full h-full object-cover transition-all duration-500"
                         alt="Featured Product">
                     
@@ -257,7 +257,7 @@
                 <div class="grid grid-cols-1 gap-2.5">
                     {% for prod in other_products %}
                     <button type="button"
-                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-3.5 rounded-2xl flex items-center gap-3.5 text-left transition-all group cursor-pointer">
                         <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
                             {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
@@ -397,7 +397,7 @@
                     </div>
 
                     <div class="relative w-[580px] h-[580px] xl:w-[620px] xl:h-[620px] rounded-full border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
-                        <img src="{% if 'Superworm' in featured_product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in featured_product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                        <img src="{% if 'superworm' in featured_product.name|lower or featured_product.icon == 'worm' or featured_product.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in featured_product.name|lower or featured_product.icon == 'leaf' %}/static/images/products/azula.jpg{% elif featured_product.icon == 'fish' %}/static/images/products/fish.jpg{% elif featured_product.icon == 'insect' %}/static/images/products/insect.jpg{% elif featured_product.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                             class="featured-image-el w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
                             alt="Featured Dish">
                         <div class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none"></div>
@@ -424,7 +424,7 @@
 
                 <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
                     {% for prod in other_products %}
-                    <button onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                    <button onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0 cursor-pointer">
                         <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
                             {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
@@ -585,7 +585,7 @@
                                     <!-- Product Thumbnail Image -->
                                     <div
                                         class="w-16 h-16 sm:w-20 sm:h-20 min-w-[64px] min-h-[64px] max-w-[80px] max-h-[80px] rounded-2xl overflow-hidden bg-black/40 border border-white/10 shrink-0 relative aspect-square">
-                                        <img src="{% if 'Superworm' in order.product.name %}/static/images/products/superworm.jpg{% elif 'Azula' in order.product.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
+                                        <img src="{% if 'superworm' in order.product.name|lower or order.product.icon == 'worm' or order.product.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in order.product.name|lower or order.product.icon == 'leaf' %}/static/images/products/azula.jpg{% elif order.product.icon == 'fish' %}/static/images/products/fish.jpg{% elif order.product.icon == 'insect' %}/static/images/products/insect.jpg{% elif order.product.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                                             alt="{{ order.product.name }}" class="w-full h-full object-cover">
                                     </div>
 
@@ -2378,7 +2378,7 @@
                             priceKg: "{{ prod.price_per_kg|floatformat:0 }}",
                                 piecesPerKg: "{{ prod.pieces_per_kg|default:1 }}",
                                     quantity: "{{ prod.quantity_kg|default:0 }}",
-                                        imageUrl: "{% if 'Superworm' in prod.name %}/static/images/products/superworm.jpg{% elif 'Azula' in prod.name %}/static/images/products/azula.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}",
+                                        imageUrl: "{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}",
                                         bulkUnit: "{{ prod.bulk_unit_display|default:'kg'|escapejs }}"
     } {% if not forloop.last %}, {% endif %}
     {% endfor %}
