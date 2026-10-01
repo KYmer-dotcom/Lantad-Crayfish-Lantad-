@@ -2355,15 +2355,21 @@ def rider_location_update(request):
         rider = get_rider_profile(request.user)
 
     if delivery_id:
+        delivery = None
         try:
-            delivery = Delivery.objects.get(pk=delivery_id)
+            if str(delivery_id).isdigit():
+                delivery = Delivery.objects.filter(pk=int(delivery_id)).first()
+            if not delivery:
+                delivery = Delivery.objects.filter(order__order_number=str(delivery_id)).first()
+        except Exception:
+            delivery = None
+
+        if delivery:
             delivery.current_latitude = lat
             delivery.current_longitude = lng
             delivery.save(update_fields=['current_latitude', 'current_longitude'])
             if not rider and delivery.rider:
                 rider = delivery.rider
-        except (Delivery.DoesNotExist, ValueError):
-            pass
 
     if rider:
         rider.current_latitude = lat
@@ -2376,10 +2382,16 @@ def rider_location_update(request):
             current_longitude=lng
         )
     elif delivery_id:
-        Delivery.objects.filter(pk=delivery_id).update(
-            current_latitude=lat,
-            current_longitude=lng
-        )
+        if str(delivery_id).isdigit():
+            Delivery.objects.filter(pk=int(delivery_id)).update(
+                current_latitude=lat,
+                current_longitude=lng
+            )
+        else:
+            Delivery.objects.filter(order__order_number=str(delivery_id)).update(
+                current_latitude=lat,
+                current_longitude=lng
+            )
 
     return JsonResponse({
         'success': True,

@@ -547,7 +547,7 @@ function pollCurrentDeliveryGps() {
 
             const liveBadge = document.getElementById('map-live-status-pill');
 
-            // 1. If rider position is received from live phone GPS
+            // If rider position is received from live phone GPS
             if (data.rider_lat && data.rider_lng) {
                 const rLat = parseFloat(data.rider_lat);
                 const rLng = parseFloat(data.rider_lng);
@@ -560,15 +560,13 @@ function pollCurrentDeliveryGps() {
                     }
 
                     if (driverMarker) {
-                        smoothMoveMarker(driverMarker, rLat, rLng, 1000);
+                        driverMarker.setLatLng([rLat, rLng]);
                     } else {
                         driverMarker = L.marker([rLat, rLng], { icon: driverIcon, zIndexOffset: 1000 }).addTo(trackMap);
                     }
 
-                    if (driverMarker) {
-                        const updateTime = data.last_location_update ? `Updated ${data.last_location_update}` : 'Live';
-                        driverMarker.setPopupContent(`<b style="color:#01140e;">🛵 ${data.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS • ${updateTime}</span>`);
-                    }
+                    const updateTime = data.last_location_update ? `Updated ${data.last_location_update}` : 'Live';
+                    driverMarker.bindPopup(`<b style="color:#01140e;">🛵 ${data.rider_name}</b><br><span style="font-size:11px; color:#0891b2;">● Live GPS • ${updateTime}</span>`);
 
                     if (liveBadge) {
                         liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span><span class="text-cyan-300 font-bold">Live GPS: ${data.last_location_update || 'Connected'}</span>`;
