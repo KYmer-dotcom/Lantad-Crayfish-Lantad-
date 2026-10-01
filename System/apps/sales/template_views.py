@@ -608,19 +608,22 @@ def order_payment_update(request, order_id):
     return redirect('sales:list')
 
 
-@login_required
 def order_receipt_view(request, order_id):
     """Serve the raw receipt image from the database with auto MIME detection and safe access"""
     order = get_object_or_404(SalesOrder, pk=order_id)
+    customer, _ = _resolve_customer_profile(request)
     
     user = request.user
     is_authorized = (
-        user.is_superuser or 
-        is_owner(user) or 
-        user.is_staff or 
-        getattr(user, 'role', '') in ['owner', 'admin', 'staff'] or
-        (hasattr(order, 'customer') and order.customer and order.customer.user == user) or
-        (hasattr(order, 'delivery') and order.delivery and order.delivery.rider and order.delivery.rider.user == user)
+        (user.is_authenticated and (
+            user.is_superuser or 
+            is_owner(user) or 
+            user.is_staff or 
+            getattr(user, 'role', '') in ['owner', 'admin', 'staff'] or
+            (hasattr(order, 'customer') and order.customer and order.customer.user == user) or
+            (hasattr(order, 'delivery') and order.delivery and order.delivery.rider and order.delivery.rider.user == user)
+        )) or
+        (customer and order.customer == customer)
     )
     if not is_authorized:
         from django.core.exceptions import PermissionDenied
@@ -671,6 +674,23 @@ def order_receipt_view(request, order_id):
     ext = content_type.split('/')[-1].replace('svg+xml', 'svg')
     response['Content-Disposition'] = f'inline; filename="receipt_{order.order_number}.{ext}"'
     return response
+
+
+def customer_order_upload_receipt(request, order_id):
+    """Allow customer to upload or update receipt image proof for their order."""
+    customer, needs_login = _resolve_customer_profile(request)
+    if not customer:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
+    
+    order = get_object_or_404(SalesOrder, pk=order_id, customer=customer)
+    if request.method == 'POST' and 'receipt_image' in request.FILES:
+        file = request.FILES['receipt_image']
+        order.receipt_image = file.read()
+        order.save(update_fields=['receipt_image'])
+        from django.urls import reverse
+        return JsonResponse({'success': True, 'receipt_url': reverse('sales:order_receipt_view', args=[order.id])})
+    
+    return JsonResponse({'success': False, 'error': 'No file uploaded'}, status=400)
 
 
 class ProductForm(forms.ModelForm):
@@ -1197,7 +1217,11 @@ def customer_orders_page(request):
             current_group['orders'].append(order)
             current_group['total_amount'] += float(order.total_amount)
             current_group['total_items_count'] += 1
+            if order.receipt_image:
+                current_group['has_receipt_image'] = True
+                current_group['receipt_order_id'] = order.id
         else:
+            has_receipt = bool(order.receipt_image)
             current_group = {
                 'id': order.id,
                 'order_number': order.order_number,
@@ -1206,6 +1230,9 @@ def customer_orders_page(request):
                 'status_display': order.get_status_display(),
                 'payment_status': order.payment_status,
                 'payment_status_display': order.get_payment_status_display(),
+                'payment_method': order.payment_method_display,
+                'has_receipt_image': has_receipt,
+                'receipt_order_id': order.id if has_receipt else None,
                 'delivery_address': order.delivery_address or customer.address or 'Pickup',
                 'notes': order.notes or '',
                 'total_amount': float(order.total_amount),

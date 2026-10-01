@@ -1880,8 +1880,8 @@
                             {% endfor %}
                         </div>
 
-                        <!-- Footer: Total Amount & Single Print Receipt Button -->
-                        <div class="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
+                        <!-- Footer: Total Amount & Action Buttons -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-t border-white/10 pt-3 mt-1 gap-3">
                             <div>
                                 <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider block">Total Amount</span>
                                 <span class="font-black text-2xl text-[#cca43b]">₱{{ group.total_amount|floatformat:2 }}</span>
@@ -1889,6 +1889,10 @@
                             <!-- Clean receipt data block: no inline attribute syntax errors -->
                             <script id="receipt-data-{{ group.order_number }}" type="application/json">
                             {
+                                "orderId": "{{ group.id }}",
+                                "receiptOrderId": "{{ group.receipt_order_id|default:group.id }}",
+                                "hasReceiptImage": {{ group.has_receipt_image|yesno:"true,false" }},
+                                "receiptImageUrl": "{% if group.has_receipt_image %}{% url 'sales:order_receipt_view' group.receipt_order_id|default:group.id %}{% endif %}",
                                 "orderNumber": "{{ group.order_number }}",
                                 "date": "{{ group.created_at|date:'M d, Y • h:i A' }}",
                                 "customerName": "{{ customer.name|escapejs }}",
@@ -1896,6 +1900,7 @@
                                 "deliveryAddress": "{{ group.delivery_address|escapejs }}",
                                 "status": "{{ group.status_display }}",
                                 "paymentStatus": "{{ group.payment_status_display }}",
+                                "paymentMethod": "{{ group.payment_method|default:'GCash'|escapejs }}",
                                 "notes": "{{ group.notes|escapejs }}",
                                 "totalAmount": "{{ group.total_amount|floatformat:2 }}",
                                 "items": [
@@ -1911,14 +1916,24 @@
                                 ]
                             }
                             </script>
-                            <button type="button" onclick="openReceiptByOrderNumber('{{ group.order_number }}')"
-                                class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Print Receipt
-                            </button>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button type="button" onclick="openPaymentEvidenceModal('{{ group.order_number }}')"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-[#007DFE]/20 hover:bg-[#007DFE] text-[#38bdf8] hover:text-white px-3.5 sm:px-4 py-2 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border border-[#007DFE]/40 shadow-sm active:scale-95">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Payment Evidence
+                                </button>
+                                <button type="button" onclick="openReceiptByOrderNumber('{{ group.order_number }}')"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-3.5 sm:px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10 active:scale-95">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Print Receipt
+                                </button>
+                            </div>
                         </div>
                     </div>
                     {% empty %}
@@ -2278,6 +2293,332 @@
                 if (!modal) return;
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+            }
+        </script>
+
+        <!-- Official Payment Evidence & Transaction Proof Modal -->
+        <div id="customer-payment-evidence-modal"
+            class="fixed inset-0 z-[500] hidden items-center justify-center bg-black/90 backdrop-blur-xl px-3 sm:px-4 py-4 sm:py-6 overflow-y-auto">
+            <div
+                class="relative w-full max-w-2xl rounded-3xl sm:rounded-[2rem] border border-[#007DFE]/40 bg-[#01140e] p-4 sm:p-8 text-stone-100 transform transition-all space-y-4 sm:space-y-6 my-auto shadow-2xl shadow-[#007DFE]/10">
+                <!-- Close Top-Right Button -->
+                <button type="button" onclick="closePaymentEvidenceModal()"
+                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print" title="Close">
+                    ✕
+                </button>
+
+                <!-- Printable Evidence Slip Area -->
+                <div id="printable-evidence-area"
+                    class="space-y-4 sm:space-y-6 bg-[#021f15] p-4 sm:p-8 rounded-2xl border border-[#007DFE]/30">
+                    
+                    <!-- Evidence Header with Verified Badge -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 sm:pb-6 gap-3 sm:gap-4 pr-6 sm:pr-0">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-xl bg-[#007DFE] flex items-center justify-center text-white font-black text-sm shadow-md">
+                                    G
+                                </div>
+                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">Payment Evidence</h2>
+                            </div>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Verified Electronic Payment & Transaction Record</p>
+                            <p class="text-[10px] sm:text-[11px] text-stone-400">Merchant: Silay Superworm & Crayfish Farm</p>
+                        </div>
+                        <div class="sm:text-right space-y-1">
+                            <span id="evi-status-badge"
+                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#007DFE] bg-[#007DFE]/15 px-3 py-1 rounded-full border border-[#007DFE]/40 inline-flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#007DFE] animate-pulse"></span>
+                                <span id="evi-status-text">PAID & VERIFIED</span>
+                            </span>
+                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="evi-order-number">#SO-0000</p>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]" id="evi-order-date">Date</p>
+                        </div>
+                    </div>
+
+                    <!-- Payment Overview Card -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
+                        <div class="space-y-2">
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Paid Amount</span>
+                                <p class="font-black text-2xl text-emerald-400 font-mono mt-0.5" id="evi-amount">₱0.00</p>
+                            </div>
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Payment Method</span>
+                                <p class="font-bold text-white text-xs mt-0.5 flex items-center gap-1.5" id="evi-payment-method">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-[#007DFE]"></span>
+                                    GCash Instant Transfer
+                                </p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 sm:text-right">
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Customer</span>
+                                <p class="font-bold text-white text-xs mt-0.5" id="evi-cust-name">-</p>
+                                <p class="text-[11px] text-stone-400" id="evi-cust-phone">-</p>
+                            </div>
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Delivery Destination</span>
+                                <p class="font-medium text-white text-[11px] truncate mt-0.5" id="evi-cust-address">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Evidence / Screenshot Proof Section -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] flex items-center gap-1.5">
+                                <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Attached Transaction Proof / Slip
+                            </span>
+                            <span id="evi-proof-status" class="text-[10px] font-bold text-[#a0ac96]"></span>
+                        </div>
+
+                        <!-- Image Display Container -->
+                        <div id="evi-receipt-img-container" class="hidden rounded-xl overflow-hidden border border-white/10 bg-black/60 p-2 text-center max-h-72">
+                            <img id="evi-receipt-img" src="" alt="Payment Receipt Proof" class="mx-auto max-h-64 object-contain rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open(this.src, '_blank')">
+                            <p class="text-[10px] text-[#a0ac96] mt-2 no-print">Click image to open full resolution in new tab</p>
+                        </div>
+
+                        <!-- Digital Certificate Fallback when no image uploaded -->
+                        <div id="evi-no-image-placeholder" class="rounded-xl border border-dashed border-[#007DFE]/40 bg-[#007DFE]/5 p-5 text-center space-y-2">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-[#007DFE]/20 text-[#007DFE] flex items-center justify-center text-xl">
+                                📱
+                            </div>
+                            <p class="text-xs font-bold text-white uppercase tracking-wider">Digital GCash Payment Confirmed</p>
+                            <p class="text-[11px] text-[#a0ac96] max-w-md mx-auto">
+                                Transaction verified via customer portal checkout. You may also upload an optional GCash screenshot slip below.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Upload Proof Box (Customer can attach/change slip anytime) -->
+                    <div class="no-print bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="text-left space-y-0.5">
+                            <span class="text-xs font-bold text-white block">Upload / Change Receipt Screenshot</span>
+                            <span class="text-[10px] text-[#a0ac96] block">Supports JPG, PNG, WEBP transaction screenshots</span>
+                        </div>
+                        <label class="inline-flex items-center gap-2 rounded-xl bg-[#007DFE]/20 hover:bg-[#007DFE] text-[#38bdf8] hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-[#007DFE]/30 shrink-0">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            <span id="evi-upload-btn-text">Select Screenshot</span>
+                            <input type="file" id="evi-file-input" accept="image/*" class="hidden" onchange="handleEvidenceUpload(event)">
+                        </label>
+                    </div>
+
+                    <div class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
+                        Official Electronic Payment Record • Silay Superworm & Crayfish Farm • Negros Occidental
+                    </div>
+                </div>
+
+                <!-- Modal Action Buttons (Hidden when printing) -->
+                <div class="flex items-center justify-between gap-4 border-t border-white/10 pt-3 sm:pt-4 no-print">
+                    <button type="button" onclick="closePaymentEvidenceModal()"
+                        class="rounded-xl border border-white/10 bg-white/5 px-4 sm:px-5 py-2.5 text-xs font-bold text-stone-300 hover:text-white transition-colors cursor-pointer">
+                        Close
+                    </button>
+                    <button type="button" onclick="printPaymentEvidence()"
+                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#007DFE] to-[#0284c7] px-5 sm:px-6 py-2.5 text-xs font-black uppercase tracking-wider text-white hover:opacity-95 transition-all cursor-pointer shadow-lg shadow-[#007DFE]/20 active:scale-95">
+                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print Payment Evidence
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let currentEvidenceData = null;
+
+            function openPaymentEvidenceModal(orderNumber) {
+                const el = document.getElementById('receipt-data-' + orderNumber);
+                if (!el) return;
+                try {
+                    const data = JSON.parse(el.textContent);
+                    currentEvidenceData = data;
+                    
+                    const modal = document.getElementById('customer-payment-evidence-modal');
+                    if (!modal) return;
+
+                    document.getElementById('evi-order-number').textContent = '#' + (data.orderNumber || '0000');
+                    document.getElementById('evi-order-date').textContent = data.date || '';
+                    document.getElementById('evi-cust-name').textContent = data.customerName || 'Customer';
+                    document.getElementById('evi-cust-phone').textContent = data.customerPhone || 'N/A';
+                    document.getElementById('evi-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
+                    document.getElementById('evi-amount').textContent = '₱' + (parseFloat(data.totalAmount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    
+                    const statusText = document.getElementById('evi-status-text');
+                    if (statusText) {
+                        statusText.textContent = (data.paymentStatus || 'PAID').toUpperCase();
+                    }
+
+                    const paymentMethodEl = document.getElementById('evi-payment-method');
+                    if (paymentMethodEl) {
+                        const method = data.paymentMethod || 'GCash';
+                        paymentMethodEl.innerHTML = `<span class="inline-block w-2 h-2 rounded-full ${method.toLowerCase().includes('cash') ? 'bg-amber-400' : 'bg-[#007DFE]'}"></span> ${method}`;
+                    }
+
+                    const imgContainer = document.getElementById('evi-receipt-img-container');
+                    const imgEl = document.getElementById('evi-receipt-img');
+                    const placeholder = document.getElementById('evi-no-image-placeholder');
+                    const proofStatus = document.getElementById('evi-proof-status');
+
+                    if (data.hasReceiptImage && data.receiptImageUrl) {
+                        imgEl.src = data.receiptImageUrl;
+                        imgContainer.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                        if (proofStatus) proofStatus.textContent = 'Attached Slip Available';
+                    } else {
+                        imgEl.src = '';
+                        imgContainer.classList.add('hidden');
+                        placeholder.classList.remove('hidden');
+                        if (proofStatus) proofStatus.textContent = 'Digital Verification Slip';
+                    }
+
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                } catch (e) {
+                    console.error('Failed to open payment evidence modal:', e);
+                }
+            }
+
+            function closePaymentEvidenceModal() {
+                const modal = document.getElementById('customer-payment-evidence-modal');
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            function handleEvidenceUpload(event) {
+                const file = event.target.files && event.target.files[0];
+                if (!file || !currentEvidenceData) return;
+
+                const orderId = currentEvidenceData.receiptOrderId || currentEvidenceData.orderId;
+                if (!orderId) {
+                    alert('Order reference not found.');
+                    return;
+                }
+
+                const btnText = document.getElementById('evi-upload-btn-text');
+                if (btnText) btnText.textContent = 'Uploading...';
+
+                const formData = new FormData();
+                formData.append('receipt_image', file);
+
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                const csrftoken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+                fetch(`/market/orders/${orderId}/upload-receipt/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.receipt_url) {
+                        currentEvidenceData.hasReceiptImage = true;
+                        currentEvidenceData.receiptImageUrl = data.receipt_url;
+                        
+                        // Update JSON script tag as well
+                        const scriptTag = document.getElementById('receipt-data-' + currentEvidenceData.orderNumber);
+                        if (scriptTag) {
+                            try {
+                                const parsed = JSON.parse(scriptTag.textContent);
+                                parsed.hasReceiptImage = true;
+                                parsed.receiptImageUrl = data.receipt_url;
+                                scriptTag.textContent = JSON.stringify(parsed);
+                            } catch(e) {}
+                        }
+
+                        const imgContainer = document.getElementById('evi-receipt-img-container');
+                        const imgEl = document.getElementById('evi-receipt-img');
+                        const placeholder = document.getElementById('evi-no-image-placeholder');
+                        const proofStatus = document.getElementById('evi-proof-status');
+
+                        imgEl.src = data.receipt_url + '?t=' + new Date().getTime();
+                        imgContainer.classList.remove('hidden');
+                        placeholder.classList.add('hidden');
+                        if (proofStatus) proofStatus.textContent = 'Attached Slip Available';
+                        if (btnText) btnText.textContent = 'Replace Screenshot';
+                    } else {
+                        alert(data.error || 'Failed to upload screenshot.');
+                        if (btnText) btnText.textContent = 'Select Screenshot';
+                    }
+                })
+                .catch(err => {
+                    console.error('Evidence upload error:', err);
+                    alert('An error occurred during upload.');
+                    if (btnText) btnText.textContent = 'Select Screenshot';
+                });
+            }
+
+            function printPaymentEvidence() {
+                try {
+                    const evidenceEl = document.getElementById('printable-evidence-area');
+                    if (!evidenceEl) {
+                        window.print();
+                        return;
+                    }
+
+                    const isMobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+                    if (!isMobile) {
+                        const printWin = window.open('', '_blank', 'width=800,height=900');
+                        if (printWin) {
+                            printWin.document.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <title>Payment Evidence - Silay Superworm & Crayfish</title>
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+                                    <style>
+                                        body { background: #ffffff !important; color: #111827 !important; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+                                        .evidence-box { max-width: 650px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
+                                        * { color: #111827 !important; border-color: #e5e7eb !important; }
+                                        .bg-black\\/40, .bg-\\[\\#021f15\\], .bg-white\\/5 { background: #f9fafb !important; }
+                                        img { max-width: 100% !important; height: auto !important; }
+                                        .no-print { display: none !important; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="evidence-box">
+                                        ${evidenceEl.innerHTML}
+                                    </div>
+                                </body>
+                                </html>
+                            `);
+                            printWin.document.close();
+                            printWin.focus();
+                            setTimeout(() => {
+                                printWin.print();
+                                printWin.close();
+                            }, 400);
+                            return;
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Popup print blocked, falling back to window.print()', e);
+                }
+                window.print();
             }
         </script>
         {% endif %}

@@ -43,6 +43,7 @@ urlpatterns = [
     path('market/orders/<int:order_id>/update-quantity/', template_views.customer_order_update_quantity, name='customer_order_update_quantity'),
     path('market/orders/<int:order_id>/toggle-delivery-method/', template_views.customer_order_toggle_delivery_method, name='customer_order_toggle_delivery_method'),
     path('market/orders/<int:order_id>/delete/', template_views.customer_order_delete, name='customer_order_delete'),
+    path('market/orders/<int:order_id>/upload-receipt/', template_views.customer_order_upload_receipt, name='customer_order_upload_receipt'),
 
     path('market/account/', template_views.customer_account_page, name='customer_account_page'),
     path('market/account/location/', template_views.customer_location_update, name='customer_location_update'),
