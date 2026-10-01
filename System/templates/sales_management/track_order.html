@@ -544,6 +544,7 @@ function updateDesktopRoute(originLat, originLng, destLat, destLng) {
 
 function startLiveGpsPolling() {
     if (liveGpsPollTimer) clearInterval(liveGpsPollTimer);
+    pollCurrentDeliveryGps();
     liveGpsPollTimer = setInterval(pollCurrentDeliveryGps, 2500);
 }
 
@@ -733,6 +734,7 @@ function selectShipment(deliveryId) {
 
     // 3. Update Map
     loadDeliveryRoute(deliveryId);
+    pollCurrentDeliveryGps();
 
     // 4. Update browser URL without reload
     const newUrl = new URL(window.location);
