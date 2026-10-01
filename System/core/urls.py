@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
+from django.views.decorators.cache import never_cache
 from . import views
 
 urlpatterns = [
@@ -20,7 +21,7 @@ urlpatterns = [
     # ============================================================
     
     # Authentication
-    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
+    path('login/', never_cache(auth_views.LoginView.as_view(template_name='auth/login.html')), name='login'),
     path('customer/', lambda request: redirect('sales:customer_portal'), name='customer_home'),
     path('customer/market/', lambda request: redirect('sales:customer_portal')),
     path('customer/orders/', lambda request: redirect('sales:customer_orders_page')),

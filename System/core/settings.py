@@ -37,6 +37,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'https://lantadcrayfish.tech',
     'https://www.lantadcrayfish.tech',
+    'https://*.lantadcrayfish.tech',
     'http://lantadcrayfish.tech',
     'http://www.lantadcrayfish.tech',
     'http://187.77.150.222',
@@ -49,6 +50,15 @@ CSRF_TRUSTED_ORIGINS = [
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
+
+# CSRF and Session Security Settings for HTTPS Reverse Proxy
+CSRF_COOKIE_AGE = 31449600  # 1 year
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+
 
 
 # Application definition
