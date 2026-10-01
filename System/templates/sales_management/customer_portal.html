@@ -2662,6 +2662,22 @@
         }
     };
 
+    const specificStreetCoords = {
+        "Silay City": {
+            "Saint Francis Executive Village": { lat: 10.78796, lng: 122.98328 },
+            "Jose Pitong Ledesma Street": { lat: 10.78750, lng: 122.98400 },
+            "McKinley Street": { lat: 10.79850, lng: 122.97300 },
+            "Carmela de Silay Subdivision": { lat: 10.77700, lng: 122.96800 },
+            "Villa Hergon Subdivision": { lat: 10.81200, lng: 122.99000 },
+            "Mangrove Eco-Park Road": { lat: 10.82500, lng: 122.96000 },
+            "Lantad Main Road": { lat: 10.79780, lng: 122.99610 },
+            "Rizal Street": { lat: 10.80150, lng: 122.97700 },
+            "Cinco de Noviembre Street": { lat: 10.80050, lng: 122.97800 },
+            "Gomez Street": { lat: 10.79950, lng: 122.97600 },
+            "Burgos Street": { lat: 10.80100, lng: 122.97550 }
+        }
+    };
+
     const streetsByBarangay = {
         "Silay City": {
             "Bagtic": ["Bagtic Proper", "Crossing Bagtic", "Prk. San Jose", "Prk. Pag-asa", "Prk. Masagana", "Hda. Bagtic Road", "Other / Specific Street"],
@@ -2669,8 +2685,8 @@
             "Barangay I (Poblacion)": ["Rizal Street", "Cinco de Noviembre Street", "Gomez Street", "Burgos Street", "Dr. Trino Montinola St.", "Other / Specific Street"],
             "Barangay II (Poblacion)": ["Cinco de Noviembre Street", "Gomez Street", "Eusebio Street", "Zamora Street", "Locsin Street", "Other / Specific Street"],
             "Barangay III (Poblacion)": ["Rizal Street", "Plaridel Street", "Gomez Street", "Burgos Street", "Other / Specific Street"],
-            "Barangay IV (Poblacion)": ["Mckinley Street", "Gomez Street", "Bonifacio Street", "Gamboa Street", "Other / Specific Street"],
-            "Barangay V (Poblacion)": ["Loney Street", "G. Gaston Street", "Cinco de Noviembre Street", "Other / Specific Street"],
+            "Barangay IV (Poblacion)": ["McKinley Street", "Gomez Street", "Bonifacio Street", "Gamboa Street", "Other / Specific Street"],
+            "Barangay V (Poblacion)": ["Saint Francis Executive Village", "Jose Pitong Ledesma Street", "Lanzones Street", "Sampaguita Street", "Avocado Street", "Loney Street", "G. Gaston Street", "Cinco de Noviembre Street", "Other / Specific Street"],
             "Barangay VI (Poblacion)": ["Rizal Street", "Zamora Street", "Plaridel Street", "Other / Specific Street"],
             "Eustaquio Lopez": ["E. Lopez National Highway", "Hda. Adela Road", "Hda. San Jose Road", "Prk. Centro", "Prk. Mahidaiton", "Other / Specific Street"],
             "Guimbala-on": ["Guimbala-on Main Road", "Hda. Patag Road", "Prk. Proper", "Prk. San Isidro", "Prk. Crossing", "Other / Specific Street"],
@@ -2765,7 +2781,9 @@
         if (selectedStreetToSet) {
             let found = false;
             for (let option of streetSelect.options) {
-                if (option.value.toLowerCase() === selectedStreetToSet.toLowerCase()) {
+                if (option.value.toLowerCase() === selectedStreetToSet.toLowerCase() ||
+                    selectedStreetToSet.toLowerCase().includes(option.value.toLowerCase()) ||
+                    option.value.toLowerCase().includes(selectedStreetToSet.toLowerCase())) {
                     streetSelect.value = option.value;
                     found = true;
                     break;
@@ -2774,7 +2792,10 @@
             if (!found && selectedStreetToSet) {
                 streetSelect.value = "Other / Specific Street";
                 const customInput = document.getElementById('checkout-custom-street-input');
-                if (customInput) customInput.value = selectedStreetToSet;
+                if (customInput) {
+                    customInput.value = selectedStreetToSet;
+                    customInput.classList.remove('hidden');
+                }
             }
         }
 
@@ -2832,22 +2853,26 @@
                 const cityData = citiesAndMunicipalities[city] || citiesAndMunicipalities["Silay City"];
                 let fallback = (cityData && cityData.coords) ? cityData.coords : { lat: 10.7999, lng: 122.9777 };
 
-                // If specific barangay coordinates exist, use exact barangay pin!
-                if (specificBrgyCoords[city] && specificBrgyCoords[city][brgy]) {
+                // 1. If specific street coordinates exist, use exact street pin!
+                if (specificStreetCoords[city] && specificStreetCoords[city][street]) {
+                    fallback = specificStreetCoords[city][street];
+                }
+                // 2. Otherwise if specific barangay coordinates exist, use exact barangay pin!
+                else if (specificBrgyCoords[city] && specificBrgyCoords[city][brgy]) {
                     fallback = specificBrgyCoords[city][brgy];
                 }
 
-                // Move map view & marker when manually picking from dropdowns
-                checkoutMap.setView([fallback.lat, fallback.lng], 16);
+                // Move map view & marker immediately when picking from dropdowns
+                checkoutMap.flyTo([fallback.lat, fallback.lng], 16, { animate: true, duration: 0.5 });
                 checkoutMarker.setLatLng([fallback.lat, fallback.lng]);
                 document.getElementById('checkout-latitude').value = fallback.lat.toFixed(6);
                 document.getElementById('checkout-longitude').value = fallback.lng.toFixed(6);
 
                 const disp = document.getElementById('pin-coords-display');
-                if (disp) disp.textContent = `${fallback.lat.toFixed(5)}, ${fallback.lng.toFixed(5)} (${brgy || city})`;
+                if (disp) disp.textContent = `${fallback.lat.toFixed(5)}, ${fallback.lng.toFixed(5)} (${street && street !== 'Other / Specific Street' ? street : (brgy || city)})`;
 
-                // Online precision street geocoding query
-                const streetQuery = (street && street !== 'Other / Specific Street') ? street : '';
+                // Online precision geocoding query if custom street is typed
+                const streetQuery = (street && street !== 'Other / Specific Street' && (!specificStreetCoords[city] || !specificStreetCoords[city][street])) ? street : '';
                 if (streetQuery) {
                     const query = `${streetQuery}, ${brgy ? brgy + ', ' : ''}${city}, ${province}, Philippines`;
                     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
@@ -2865,7 +2890,7 @@
                         })
                         .catch(() => { });
                 }
-            }, 250);
+            }, 100);
         }
     }
 
@@ -2968,7 +2993,8 @@
                         if (candidate.includes(bLower) || bLower.includes(candidate) ||
                             (candidate.includes('zone 1') && bLower.includes('zone 1')) ||
                             (candidate.includes('zone 2') && bLower.includes('zone 2')) ||
-                            (candidate.includes('zone 3') && bLower.includes('zone 3'))) {
+                            (candidate.includes('zone 3') && bLower.includes('zone 3')) ||
+                            (candidate.includes('saint francis') && bLower.includes('barangay v'))) {
                             detectedBrgy = b;
                             break;
                         }
@@ -2991,8 +3017,8 @@
                     detectedBrgy = findClosestBrgy(activeCity, lat, lng) || (brgys.length > 0 ? brgys[0] : null);
                 }
 
-                // 3. Determine Road / Street
-                const road = addr.road || addr.pedestrian || addr.path || addr.street || '';
+                // 3. Determine Road / Street / Subdivision
+                const road = addr.road || addr.residential || addr.subdivision || addr.neighbourhood || addr.pedestrian || addr.path || addr.street || '';
                 const detectedStreet = road;
 
                 // 4. Update Dropdowns and Fields without resetting map pin
