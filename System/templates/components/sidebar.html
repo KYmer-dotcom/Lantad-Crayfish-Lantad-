@@ -162,6 +162,25 @@
                     <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Harvest Management</span>
                 </a>
 
+            </div>
+
+            <!-- SALES SECTION -->
+            <div class="pb-1.5">
+                <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Sales</p>
+                
+                {% if user.is_owner %}
+                <!-- Sales Management -->
+                <a href="{% url 'sales:list' %}" 
+                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:list' or request.path == '/sales/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
+                    title="Sales Management">
+                    <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Sales Management</span>
+                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Sales Management</span>
+                </a>
+                {% endif %}
+
                 <!-- Orders -->
                 <a href="{% url 'sales:orders_admin' %}" 
                     class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if '/sales/orders' in request.path or 'orders_admin' in current_url or current_url == 'sales:order_create' or current_url == 'sales:order_edit_admin' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
@@ -240,19 +259,6 @@
             <!-- REPORTS SECTION -->
             <div class="pb-1.5">
                 <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Reports</p>
-                
-                {% if user.is_owner %}
-                <!-- Sales Management -->
-                <a href="{% url 'sales:list' %}" 
-                    class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'sales:list' or request.path == '/sales/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
-                    title="Sales Management">
-                    <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="sidebar-text-label whitespace-nowrap overflow-hidden">Sales Management</span>
-                    <span class="sidebar-floating-tooltip pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-xl bg-[#011c14] border border-[#cca43b]/40 text-white text-xs font-bold whitespace-nowrap opacity-0 transition-opacity z-50 group-hover:opacity-100 hidden">Sales Management</span>
-                </a>
-                {% endif %}
 
                 <!-- Audit -->
                 <a href="{% url 'sales:delivery_logs' %}" 
