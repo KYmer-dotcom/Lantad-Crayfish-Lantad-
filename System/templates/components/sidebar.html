@@ -52,9 +52,8 @@
             </div>
             {% else %}
             
-            <!-- MAIN SECTION -->
+            <!-- DASHBOARD LINK -->
             <div class="pb-1.5">
-                <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Main</p>
                 <a href="{% url 'dashboard' %}" 
                     class="sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 text-xs font-bold rounded-xl transition-all {% if current_url == 'dashboard' or request.path == '/' %} bg-[#cca43b]/15 text-[#cca43b] border border-[#cca43b]/30 {% else %} text-[#a0ac96] hover:bg-white/5 hover:text-white border border-transparent {% endif %}"
                     title="Dashboard">
@@ -66,9 +65,9 @@
                 </a>
             </div>
 
-            <!-- MODULES SECTION -->
+            <!-- MANAGEMENT SECTION -->
             <div class="pb-1.5">
-                <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Modules</p>
+                <p class="sidebar-text-label px-3 text-[10px] font-black uppercase tracking-widest text-[#a0ac96]/60 mb-1 mt-1">Management</p>
                 
                 <!-- Stock Monitoring -->
                 <a href="{% url 'stock:list' %}" 
