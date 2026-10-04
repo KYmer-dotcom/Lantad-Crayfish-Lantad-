@@ -12,7 +12,15 @@
         <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
             <td class="px-6 py-4">
                 <div class="font-bold">{{ pond.name }}</div>
-                <div class="text-xs text-[#a0ac96] mt-1">{% if pond.shelf_position %}Position{% else %}Quantity: {{ pond.capacity }}{% endif %}</div>
+                <div class="text-xs text-[#a0ac96] mt-1">
+                    {% if pond.location == 'Breeding Pond' and pond.breeding_type == 'Reproduction' %}
+                        Quantity: {{ pond.female_quantity|default:pond.capacity|default:"0" }} Females
+                    {% elif pond.shelf_position and pond.location == 'Superworm Cabin' %}
+                        Position: {{ pond.shelf_position }}
+                    {% else %}
+                        Quantity: {{ pond.capacity|default:pond.female_quantity|default:"0" }}
+                    {% endif %}
+                </div>
             </td>
             <td class="px-6 py-4 text-center">
                 {% if pond.today_log %}
