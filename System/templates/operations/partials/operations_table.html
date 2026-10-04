@@ -14,11 +14,11 @@
                 <div class="font-bold">{{ pond.name }}</div>
                 <div class="text-xs text-[#a0ac96] mt-1">
                     {% if pond.location == 'Breeding Pond' and pond.breeding_type == 'Reproduction' %}
-                        Quantity: {{ pond.female_quantity|default:pond.capacity|default:"0" }} Females
+                        Qty: {{ pond.female_quantity|default:pond.capacity|default:"0" }} Females
                     {% elif pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
                     {% else %}
-                        Quantity: {{ pond.capacity|default:pond.female_quantity|default:"0" }}
+                        Qty: {{ pond.capacity|default:pond.female_quantity|default:"0" }}
                     {% endif %}
                 </div>
             </td>
