@@ -141,7 +141,10 @@
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
-            <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Maintenance</button>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="openHarvestSidebar('Azula')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Harvest</button>
+                <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Maintenance</button>
+            </div>
         </div>
         <div class="p-6">
             <div class="grid gap-4 min-h-[600px] text-stone-100 font-bold" style="grid-template-columns: 2fr 2fr 1fr 2fr 3fr; grid-template-rows: repeat(10, 1fr);">
@@ -561,6 +564,13 @@
                 <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
                     {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=sw_block3_ponds %}
                 </div>
+            </div>
+        </div>
+
+        <!-- Azula Harvest Table -->
+        <div class="harvest-table-wrapper hidden" data-category="Azula">
+            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=azula_ponds_list is_harvest=True %}
             </div>
         </div>
     </div>

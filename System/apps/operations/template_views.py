@@ -284,6 +284,7 @@ def ponds_list(request):
         'sw_block2_ponds': sw_block2_ponds,
         'sw_block3_ponds': sw_block3_ponds,
         'azula_ponds': azula_ponds,
+        'azula_ponds_list': sorted(azula_ponds_list, key=natural_sort_key),
         'azula_active_ponds': azula_active_ponds,
         'farm_form': FarmForm(),
         'pond_form': PondForm(user=request.user),
