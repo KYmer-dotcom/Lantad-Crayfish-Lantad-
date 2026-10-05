@@ -47,7 +47,7 @@
                     <span class="text-xs text-[#a0ac96]">None</span>
                 {% elif pond.is_harvest_due %}
                     {% if is_transfer %}
-                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onsubmit="return confirm('Confirm transfer of Crilings from {{ pond.name|escapejs }} to Main Pond?');">
+                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onsubmit="return confirm('Confirm transfer from {{ pond.name|escapejs }}?');">
                         {% csrf_token %}
                         <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">
                             Transfer
