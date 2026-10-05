@@ -153,8 +153,13 @@ class PondForm(forms.ModelForm):
         cleaned_data = super().clean()
         category = cleaned_data.get('category')
         capacity = cleaned_data.get('capacity')
+        product_name = cleaned_data.get('product_name')
+        product_name_2 = cleaned_data.get('product_name_2')
         
-        if category == 'Superworm Cabin':
+        if category == 'Breeding Pond':
+            if product_name and product_name_2 and product_name == product_name_2:
+                self.add_error('product_name_2', 'Product 1 and Product 2 cannot be the same product.')
+        elif category == 'Superworm Cabin':
             # Skip standard capacity for Superworm Cabin, handled via shelf_position
             pass
         else:

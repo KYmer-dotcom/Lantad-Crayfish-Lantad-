@@ -47,10 +47,59 @@
 </div>
 
 <script>
+function syncProductOptions(form) {
+    let p1Select = form.querySelector('select[name="product_name"]');
+    let p2Select = form.querySelector('select[name="product_name_2"]');
+    if (!p1Select || !p2Select) return;
+
+    let p1Val = p1Select.value;
+    let p2Val = p2Select.value;
+
+    // Filter p2 options based on p1Val
+    Array.from(p2Select.options).forEach(opt => {
+        if (!opt.value) {
+            opt.hidden = false;
+            opt.disabled = false;
+            return;
+        }
+        if (p1Val && opt.value === p1Val) {
+            opt.hidden = true;
+            opt.disabled = true;
+            if (p2Select.value === opt.value) {
+                p2Select.value = '';
+            }
+        } else {
+            opt.hidden = false;
+            opt.disabled = false;
+        }
+    });
+
+    // Filter p1 options based on p2Val
+    Array.from(p1Select.options).forEach(opt => {
+        if (!opt.value) {
+            opt.hidden = false;
+            opt.disabled = false;
+            return;
+        }
+        if (p2Val && opt.value === p2Val) {
+            opt.hidden = true;
+            opt.disabled = true;
+            if (p1Select.value === opt.value) {
+                p1Select.value = '';
+            }
+        } else {
+            opt.hidden = false;
+            opt.disabled = false;
+        }
+    });
+}
+
 function togglePondFormFields() {
     let forms = document.querySelectorAll('form');
     forms.forEach(form => {
         let categorySelect = form.querySelector('select[name="category"]');
+        let p1Select = form.querySelector('select[name="product_name"]');
+        let p2Select = form.querySelector('select[name="product_name_2"]');
         if (!categorySelect) return;
         
         let updateFields = () => {
@@ -69,6 +118,7 @@ function togglePondFormFields() {
                 if (labelProduct) labelProduct.textContent = 'Product 1 *';
                 if (labelQuantity) labelQuantity.textContent = 'Quantity 1 *';
                 if (capacityInput) capacityInput.placeholder = 'Quantity 1';
+                syncProductOptions(form);
             } else {
                 if (fieldProduct2) fieldProduct2.classList.add('hidden');
                 if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
@@ -100,6 +150,13 @@ function togglePondFormFields() {
 
         categorySelect.removeEventListener('change', updateFields);
         categorySelect.addEventListener('change', updateFields);
+
+        if (p1Select) {
+            p1Select.addEventListener('change', () => syncProductOptions(form));
+        }
+        if (p2Select) {
+            p2Select.addEventListener('change', () => syncProductOptions(form));
+        }
         
         updateFields();
     });
