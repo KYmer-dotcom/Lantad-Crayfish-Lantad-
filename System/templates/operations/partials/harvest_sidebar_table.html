@@ -95,7 +95,7 @@
                                             Transfer
                                         </button>
                                     {% else %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Product 1"|escapejs }}', '{{ pond.capacity|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Product 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
                                     {% endif %}
@@ -123,7 +123,7 @@
                                             Transfer
                                         </button>
                                     {% else %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Product 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Product 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
                                     {% endif %}

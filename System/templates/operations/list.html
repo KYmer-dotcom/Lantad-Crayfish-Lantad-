@@ -723,14 +723,14 @@
                     <!-- Populated dynamically by JavaScript -->
                 </div>
 
-                <!-- Add Another Product Button -->
+                <!-- Add Another Product Button (Main Pond Only) -->
                 <div id="harvest-add-product-btn-wrapper" class="mt-3">
                     <button type="button" onclick="addHarvestAllocationRow()" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#cca43b]/40 hover:border-[#cca43b] bg-[#cca43b]/5 hover:bg-[#cca43b]/10 text-xs font-bold text-[#cca43b] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>+ Add Product from Existing Inventory</span>
                     </button>
                 </div>
-                <p class="text-[11px] text-[#a0ac96] mt-2">
-                    Pre-selected to match pond stock. You can split harvest across up to 2 existing catalog products.
+                <p id="harvest-allocation-hint" class="text-[11px] text-[#a0ac96] mt-2">
+                    Pre-selected to match pond stock.
                 </p>
             </div>
 
@@ -746,6 +746,7 @@
 <script>
     let currentHarvestTotalQty = 0;
     let currentHarvestSourcePondId = '';
+    let currentHarvestSourceLocation = '';
     let currentHarvestDefaultName = '';
 
     const availableSaleProducts = [
@@ -759,19 +760,20 @@
         {% endfor %}
     ];
 
-    function createHarvestAllocationRow(selectedProductId = '', qtyValue = 0, canRemove = false) {
+    function createHarvestAllocationRow(selectedProductId = '', qtyValue = 0, canRemove = false, lockProduct = false) {
         const row = document.createElement('div');
         row.className = 'harvest-alloc-row flex items-center gap-2 p-2.5 rounded-xl border border-white/10 bg-black/40';
 
         let selectOptions = '';
         availableSaleProducts.forEach(p => {
             const isSel = String(p.id) === String(selectedProductId) ? 'selected' : '';
+            if (lockProduct && !isSel) return; // Only allow the intended product when locked
             selectOptions += `<option value="${p.id}" data-name="${p.name}" ${isSel}>${p.name} (Stock: ${p.current_qty} ${p.unit})</option>`;
         });
 
         row.innerHTML = `
             <div class="flex-1 min-w-0">
-                <select name="allocation_product_ids[]" class="harvest-alloc-product w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer" onchange="updateHarvestAllocationSummary()">
+                <select name="allocation_product_ids[]" class="harvest-alloc-product w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer ${lockProduct ? 'pointer-events-none opacity-90' : ''}" onchange="updateHarvestAllocationSummary()">
                     ${selectOptions}
                 </select>
             </div>
@@ -790,6 +792,7 @@
     }
 
     function syncHarvestProductSelects() {
+        if (currentHarvestSourceLocation !== 'Main Pond') return;
         const container = document.getElementById('harvest-allocations-container');
         if (!container) return;
         const selects = Array.from(container.querySelectorAll('.harvest-alloc-product'));
@@ -831,9 +834,9 @@
         const singleDestEl = document.getElementById('harvest-single-destination-product-id');
         const addBtnWrapper = document.getElementById('harvest-add-product-btn-wrapper');
 
-        // Limit to max 2 products: hide Add button when 2 rows are reached
+        // Only show Add button on Main Pond and when rows < 2
         if (addBtnWrapper) {
-            if (rows.length >= 2) {
+            if (currentHarvestSourceLocation !== 'Main Pond' || rows.length >= 2) {
                 addBtnWrapper.classList.add('hidden');
             } else {
                 addBtnWrapper.classList.remove('hidden');
@@ -869,6 +872,7 @@
     }
 
     function addHarvestAllocationRow() {
+        if (currentHarvestSourceLocation !== 'Main Pond') return;
         const container = document.getElementById('harvest-allocations-container');
         if (!container) return;
         const rows = container.querySelectorAll('.harvest-alloc-row');
@@ -878,7 +882,7 @@
         let chosenProd = availableSaleProducts.find(p => !selectedIds.includes(String(p.id)));
         let chosenProdId = chosenProd ? chosenProd.id : (availableSaleProducts[0]?.id || '');
 
-        const newRow = createHarvestAllocationRow(chosenProdId, 0, true);
+        const newRow = createHarvestAllocationRow(chosenProdId, 0, true, false);
         container.appendChild(newRow);
         updateHarvestAllocationSummary();
     }
@@ -928,16 +932,19 @@
         return true;
     }
 
-    function openPondHarvestModal(pondId, pondName, targetProduct, defaultProductName, quantity) {
+    function openPondHarvestModal(pondId, pondName, targetProduct, defaultProductName, quantity, sourceLocation = '') {
         const form = document.getElementById('harvest-pond-form');
         const targetProdEl = document.getElementById('harvest-target-product');
         const sourceNameEl = document.getElementById('harvest-source-pond-name');
         const sourceProdEl = document.getElementById('harvest-source-product-name');
         const sourceQtyEl = document.getElementById('harvest-source-qty');
         const container = document.getElementById('harvest-allocations-container');
+        const addBtnWrapper = document.getElementById('harvest-add-product-btn-wrapper');
+        const hintEl = document.getElementById('harvest-allocation-hint');
 
         currentHarvestTotalQty = parseInt(quantity) || 0;
         currentHarvestSourcePondId = pondId;
+        currentHarvestSourceLocation = sourceLocation || '';
         currentHarvestDefaultName = defaultProductName || '';
 
         if (form) {
@@ -949,6 +956,24 @@
         if (sourceNameEl) sourceNameEl.textContent = pondName || '';
         if (sourceProdEl) sourceProdEl.textContent = defaultProductName || 'Stock';
         if (sourceQtyEl) sourceQtyEl.textContent = quantity || '0';
+
+        const isMainPond = (sourceLocation === 'Main Pond');
+
+        if (addBtnWrapper) {
+            if (isMainPond) {
+                addBtnWrapper.classList.remove('hidden');
+            } else {
+                addBtnWrapper.classList.add('hidden');
+            }
+        }
+
+        if (hintEl) {
+            if (isMainPond) {
+                hintEl.textContent = 'Pre-selected to match pond stock. You can split harvest across up to 2 existing catalog products.';
+            } else {
+                hintEl.textContent = 'Harvest will be credited directly to the intended inventory product.';
+            }
+        }
 
         if (container) {
             container.innerHTML = '';
@@ -975,8 +1000,8 @@
                 }
             }
 
-            // Initial single row starting at 0
-            const initialRow = createHarvestAllocationRow(matchedId, 0, false);
+            // Initial single row starting at 0 (locked if not Main Pond)
+            const initialRow = createHarvestAllocationRow(matchedId, 0, false, !isMainPond);
             container.appendChild(initialRow);
             updateHarvestAllocationSummary();
         }
