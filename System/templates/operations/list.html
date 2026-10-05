@@ -600,7 +600,105 @@
     </div>
 </div>
 
+<!-- Transfer Stock to Main Pond Modal -->
+<div id="transfer-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+                <h3 class="text-lg font-bold text-stone-100">Transfer to Main Pond</h3>
+                <p class="text-xs text-[#a0ac96] mt-0.5">Select a destination Main Pond to receive this stock</p>
+            </div>
+            <button type="button" onclick="closePondTransferModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold cursor-pointer">&times;</button>
+        </div>
+        <form id="transfer-pond-form" method="post" action="{% url 'operations:pond_transfer' %}" class="mt-4 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="source_pond_id" id="transfer-source-pond-id" value="">
+            <input type="hidden" name="target_product" id="transfer-target-product" value="1">
+            
+            <!-- Source Summary Box -->
+            <div class="rounded-xl border border-white/10 bg-black/40 p-4 space-y-2">
+                <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                    <span class="font-medium">Source Pond:</span>
+                    <span id="transfer-source-pond-name" class="font-bold text-white text-sm">-</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                    <span class="font-medium">Product to Transfer:</span>
+                    <span id="transfer-source-product-name" class="font-bold text-[#cca43b]">-</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-[#a0ac96] pt-1 border-t border-white/5">
+                    <span class="font-medium">Available Quantity:</span>
+                    <span id="transfer-source-qty" class="font-black text-white text-sm">-</span>
+                </div>
+            </div>
+
+            <!-- Destination Pond Selector -->
+            <div>
+                <label for="transfer-destination-pond" class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">
+                    Destination Main Pond <span class="text-rose-500">*</span>
+                </label>
+                <select name="destination_pond_id" id="transfer-destination-pond" required class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+                    <option value="">-- Choose Main Pond --</option>
+                    {% for mp in main_ponds %}
+                    <option value="{{ mp.id }}">
+                        {{ mp.name }} {% if mp.status == 'empty' or mp.capacity == 0 %}(Empty / Unused){% else %}(Current: {{ mp.product_name|default:"Stock" }} - {{ mp.capacity }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Transfer Quantity Field -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="transfer-quantity-input" class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96]">
+                        Transfer Quantity <span class="text-rose-500">*</span>
+                    </label>
+                    <span class="text-[11px] text-[#a0ac96]">Max: <strong id="transfer-max-qty" class="text-[#cca43b]">-</strong></span>
+                </div>
+                <input type="number" name="transfer_quantity" id="transfer-quantity-input" required min="1" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="Enter quantity to transfer">
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="mt-6 flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+                <button type="button" onclick="closePondTransferModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-sm font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-5 py-2 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">Confirm Transfer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openPondTransferModal(pondId, pondName, targetProduct, productName, quantity) {
+        const sourceIdEl = document.getElementById('transfer-source-pond-id');
+        const targetProdEl = document.getElementById('transfer-target-product');
+        const sourceNameEl = document.getElementById('transfer-source-pond-name');
+        const sourceProdEl = document.getElementById('transfer-source-product-name');
+        const sourceQtyEl = document.getElementById('transfer-source-qty');
+        const maxQtyEl = document.getElementById('transfer-max-qty');
+        const qtyInput = document.getElementById('transfer-quantity-input');
+        const destSelect = document.getElementById('transfer-destination-pond');
+
+        if (sourceIdEl) sourceIdEl.value = pondId;
+        if (targetProdEl) targetProdEl.value = targetProduct || '1';
+        if (sourceNameEl) sourceNameEl.textContent = pondName || '';
+        if (sourceProdEl) sourceProdEl.textContent = productName || 'Stock';
+        if (sourceQtyEl) sourceQtyEl.textContent = quantity || '0';
+        if (maxQtyEl) maxQtyEl.textContent = quantity || '0';
+        
+        if (qtyInput) {
+            qtyInput.value = quantity || '';
+            qtyInput.max = quantity || '';
+        }
+        
+        if (destSelect) {
+            destSelect.value = '';
+        }
+        
+        showModal('transfer-pond-modal');
+    }
+
+    function closePondTransferModal() {
+        hideModal('transfer-pond-modal');
+    }
     function openDeleteModal(pondId, pondName) {
         const nameEl = document.getElementById('delete-pond-name');
         if (nameEl) {

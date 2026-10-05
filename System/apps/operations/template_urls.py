@@ -11,6 +11,7 @@ urlpatterns = [
     path('map/', template_views.pond_geomap, name='geomap'),
     path('farm/create/', template_views.farm_create, name='farm_create'),
     path('pond/create/', template_views.pond_create, name='pond_create'),
+    path('pond/transfer/', template_views.pond_transfer, name='pond_transfer'),
     path('pond/<int:pond_id>/edit/', template_views.pond_edit, name='pond_edit'),
     path('pond/<int:pond_id>/sanitize/', template_views.mark_pond_sanitized, name='pond_sanitize'),
     path('farm/<int:farm_id>/remove/', template_views.farm_remove, name='farm_remove'),

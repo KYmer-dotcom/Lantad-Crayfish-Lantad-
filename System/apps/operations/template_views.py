@@ -14,6 +14,7 @@ from django.contrib import messages
 from django import forms
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
+from django.utils import timezone
 import json
 
 from apps.accounts.access import get_accessible_farms, get_accessible_ponds, is_owner, ensure_not_customer
@@ -601,6 +602,101 @@ def record_azula_sanitization(request):
         })
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+@require_POST
+def pond_transfer(request):
+    """Transfer stock from one pond (e.g. Breeding Pond) to a destination pond (e.g. Main Pond)."""
+    ensure_not_customer(request.user)
+    accessible_ponds = get_accessible_ponds(request.user)
+    
+    source_pond_id = request.POST.get('source_pond_id')
+    dest_pond_id = request.POST.get('destination_pond_id')
+    target_product = request.POST.get('target_product', '1')
+    transfer_qty_str = request.POST.get('transfer_quantity')
+    
+    referer = request.META.get('HTTP_REFERER')
+    redirect_target = referer if referer else 'ponds:list'
+    
+    if not source_pond_id or not dest_pond_id:
+        messages.error(request, "Please select both a source pond and a destination Main Pond.")
+        return redirect(redirect_target)
+        
+    source_pond = get_object_or_404(accessible_ponds, id=source_pond_id)
+    dest_pond = get_object_or_404(accessible_ponds, id=dest_pond_id)
+    
+    if source_pond.id == dest_pond.id:
+        messages.error(request, "Source and destination ponds cannot be the same.")
+        return redirect(redirect_target)
+        
+    # Determine which product and available quantity
+    if target_product == '2':
+        prod_name = source_pond.product_name_2 or "Crilings"
+        available_qty = source_pond.capacity_2 or 0
+    else:
+        prod_name = source_pond.product_name or "Stock"
+        available_qty = source_pond.capacity or 0
+        
+    try:
+        transfer_qty = int(transfer_qty_str) if transfer_qty_str else available_qty
+    except ValueError:
+        transfer_qty = available_qty
+        
+    if transfer_qty <= 0:
+        messages.error(request, "Transfer quantity must be greater than 0.")
+        return redirect(redirect_target)
+        
+    if transfer_qty > available_qty:
+        messages.error(request, f"Cannot transfer {transfer_qty}. Only {available_qty} available in {source_pond.name}.")
+        return redirect(redirect_target)
+        
+    # Deduct from source pond
+    if target_product == '2':
+        source_pond.capacity_2 -= transfer_qty
+        if source_pond.capacity_2 <= 0:
+            source_pond.capacity_2 = 0
+            source_pond.product_name_2 = ''
+        source_pond.save()
+    else:
+        source_pond.capacity -= transfer_qty
+        if source_pond.capacity <= 0:
+            if source_pond.product_name_2 and source_pond.capacity_2:
+                source_pond.product_name = source_pond.product_name_2
+                source_pond.capacity = source_pond.capacity_2
+                source_pond.product_name_2 = ''
+                source_pond.capacity_2 = 0
+            else:
+                source_pond.capacity = 0
+                source_pond.status = Pond.Status.EMPTY
+                source_pond.transfer_date = None
+        source_pond.save()
+        
+    # Add to destination pond
+    dest_pond.product_name = prod_name
+    dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
+    dest_pond.status = Pond.Status.ACTIVE
+    dest_pond.transfer_date = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
+    dest_pond.save()
+    
+    # Audit log if available
+    try:
+        from apps.sales.models import InputLog
+        InputLog.log(
+            user=request.user,
+            module='Operations',
+            action='transferred',
+            target_entity=f"{source_pond.name} -> {dest_pond.name}",
+            change_details=f"Transferred {transfer_qty} {prod_name} from {source_pond.name} to {dest_pond.name}."
+        )
+    except Exception:
+        pass
+    
+    messages.success(
+        request, 
+        f"Successfully transferred {transfer_qty} {prod_name} from {source_pond.name} to {dest_pond.name}!"
+    )
+    return redirect(redirect_target)
 
 
 
