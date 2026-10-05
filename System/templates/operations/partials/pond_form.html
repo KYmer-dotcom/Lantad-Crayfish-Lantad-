@@ -47,51 +47,64 @@
 </div>
 
 <script>
+const CATEGORY_ALLOWED_PRODUCTS = {
+    'Main Pond': ['Crayfish', 'Crilings'],
+    'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
+    'Superworm Cabin': ['Superworm'],
+    'Azula': ['Azula']
+};
+
 function syncProductOptions(form) {
+    let categorySelect = form.querySelector('select[name="category"]');
     let p1Select = form.querySelector('select[name="product_name"]');
     let p2Select = form.querySelector('select[name="product_name_2"]');
-    if (!p1Select || !p2Select) return;
+    if (!p1Select) return;
+
+    let category = categorySelect ? categorySelect.value : 'Main Pond';
+    let allowed = CATEGORY_ALLOWED_PRODUCTS[category] || [];
 
     let p1Val = p1Select.value;
-    let p2Val = p2Select.value;
+    let p2Val = p2Select ? p2Select.value : '';
 
-    // Filter p2 options based on p1Val
-    Array.from(p2Select.options).forEach(opt => {
-        if (!opt.value) {
-            opt.hidden = false;
-            opt.disabled = false;
-            return;
-        }
-        if (p1Val && opt.value === p1Val) {
-            opt.hidden = true;
-            opt.disabled = true;
-            if (p2Select.value === opt.value) {
-                p2Select.value = '';
-            }
-        } else {
-            opt.hidden = false;
-            opt.disabled = false;
-        }
-    });
-
-    // Filter p1 options based on p2Val
+    // Filter p1 options based on category and p2Val (if in Breeding Pond)
     Array.from(p1Select.options).forEach(opt => {
         if (!opt.value) {
             opt.hidden = false;
             opt.disabled = false;
             return;
         }
-        if (p2Val && opt.value === p2Val) {
-            opt.hidden = true;
-            opt.disabled = true;
-            if (p1Select.value === opt.value) {
-                p1Select.value = '';
-            }
-        } else {
-            opt.hidden = false;
-            opt.disabled = false;
+        let isAllowed = allowed.includes(opt.value);
+        if (category === 'Breeding Pond' && p2Val && opt.value === p2Val) {
+            isAllowed = false;
         }
+        opt.hidden = !isAllowed;
+        opt.disabled = !isAllowed;
     });
+
+    if (p1Select.value && !allowed.includes(p1Select.value)) {
+        p1Select.value = '';
+    }
+
+    // Filter p2 options based on category and p1Val
+    if (p2Select) {
+        Array.from(p2Select.options).forEach(opt => {
+            if (!opt.value) {
+                opt.hidden = false;
+                opt.disabled = false;
+                return;
+            }
+            let isAllowed = allowed.includes(opt.value);
+            if (category === 'Breeding Pond' && p1Select.value && opt.value === p1Select.value) {
+                isAllowed = false;
+            }
+            opt.hidden = !isAllowed;
+            opt.disabled = !isAllowed;
+        });
+
+        if (p2Select.value && (!allowed.includes(p2Select.value) || (category === 'Breeding Pond' && p2Select.value === p1Select.value))) {
+            p2Select.value = '';
+        }
+    }
 }
 
 function togglePondFormFields() {
@@ -123,7 +136,6 @@ function togglePondFormFields() {
                 if (labelProduct) labelProduct.textContent = 'Product 1 *';
                 if (labelQuantity) labelQuantity.textContent = 'Quantity 1 *';
                 if (capacityInput) capacityInput.placeholder = 'Quantity 1';
-                syncProductOptions(form);
             } else if (category === 'Main Pond') {
                 if (fieldProduct2) fieldProduct2.classList.add('hidden');
                 if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
@@ -156,6 +168,8 @@ function togglePondFormFields() {
                     labelDate.textContent = 'Date Transferred';
                 }
             }
+
+            syncProductOptions(form);
         };
 
         categorySelect.removeEventListener('change', updateFields);

@@ -148,11 +148,30 @@ class PondForm(forms.ModelForm):
         product_name = cleaned_data.get('product_name')
         product_name_2 = cleaned_data.get('product_name_2')
         
+        category_allowed_products = {
+            'Main Pond': ['Crayfish', 'Crilings'],
+            'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
+            'Superworm Cabin': ['Superworm'],
+            'Azula': ['Azula'],
+        }
+        
+        allowed = category_allowed_products.get(category, [])
+        if allowed:
+            if product_name and product_name not in allowed:
+                self.add_error('product_name', f'"{product_name}" cannot be used in {category}.')
+            if category == 'Breeding Pond':
+                if product_name_2 and product_name_2 not in allowed:
+                    self.add_error('product_name_2', f'"{product_name_2}" cannot be used in {category}.')
+                if product_name and product_name_2 and product_name == product_name_2:
+                    self.add_error('product_name_2', 'Product 1 and Product 2 cannot be the same product.')
+
         if category == 'Breeding Pond':
-            if product_name and product_name_2 and product_name == product_name_2:
-                self.add_error('product_name_2', 'Product 1 and Product 2 cannot be the same product.')
+            if capacity is None:
+                self.add_error('capacity', 'Quantity 1 is required.')
         elif category == 'Superworm Cabin':
-            # Skip standard capacity for Superworm Cabin, handled via shelf_position
+            pass
+        elif category == 'Main Pond':
+            # Main Pond capacity is aggregated from transfer batches, standard field not required
             pass
         else:
             if capacity is None:
