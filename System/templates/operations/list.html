@@ -654,7 +654,7 @@
                     </label>
                     <span class="text-[11px] text-[#a0ac96]">Max: <strong id="transfer-max-qty" class="text-[#cca43b]">-</strong></span>
                 </div>
-                <input type="number" name="transfer_quantity" id="transfer-quantity-input" required min="1" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="Enter quantity to transfer">
+                <input type="number" name="transfer_quantity" id="transfer-quantity-input" required min="1" value="0" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="0">
             </div>
 
             <!-- Modal Action Buttons -->
@@ -685,7 +685,7 @@
         if (maxQtyEl) maxQtyEl.textContent = quantity || '0';
         
         if (qtyInput) {
-            qtyInput.value = quantity || '';
+            qtyInput.value = '0';
             qtyInput.max = quantity || '';
         }
         
