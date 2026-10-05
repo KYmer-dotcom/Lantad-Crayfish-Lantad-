@@ -789,7 +789,25 @@
         return row;
     }
 
+    function syncHarvestProductSelects() {
+        const container = document.getElementById('harvest-allocations-container');
+        if (!container) return;
+        const selects = Array.from(container.querySelectorAll('.harvest-alloc-product'));
+        const selectedIds = selects.map(s => s.value).filter(Boolean);
+
+        selects.forEach(select => {
+            const currentVal = select.value;
+            Array.from(select.options).forEach(opt => {
+                if (!opt.value) return;
+                const isSelectedElsewhere = selectedIds.includes(opt.value) && opt.value !== currentVal;
+                opt.hidden = isSelectedElsewhere;
+                opt.disabled = isSelectedElsewhere;
+            });
+        });
+    }
+
     function updateHarvestAllocationSummary() {
+        syncHarvestProductSelects();
         const container = document.getElementById('harvest-allocations-container');
         if (!container) return;
         const rows = container.querySelectorAll('.harvest-alloc-row');
@@ -856,9 +874,8 @@
         const rows = container.querySelectorAll('.harvest-alloc-row');
         if (rows.length >= 2) return; // Strict limit to 2
 
-        const firstRowSelect = rows[0]?.querySelector('.harvest-alloc-product');
-        const firstSelectedId = firstRowSelect ? firstRowSelect.value : '';
-        let chosenProd = availableSaleProducts.find(p => String(p.id) !== String(firstSelectedId));
+        const selectedIds = Array.from(container.querySelectorAll('.harvest-alloc-product')).map(s => s.value);
+        let chosenProd = availableSaleProducts.find(p => !selectedIds.includes(String(p.id)));
         let chosenProdId = chosenProd ? chosenProd.id : (availableSaleProducts[0]?.id || '');
 
         const newRow = createHarvestAllocationRow(chosenProdId, 0, true);
