@@ -97,6 +97,12 @@ class Pond(models.Model):
         return None
 
     @property
+    def superworm_count(self):
+        if self.location == 'Superworm Cabin':
+            return (self.capacity or 0) * 200
+        return self.capacity or 0
+
+    @property
     def est_harvest_date(self):
         from datetime import timedelta
         if self.transfer_date and self.location == 'Main Pond':

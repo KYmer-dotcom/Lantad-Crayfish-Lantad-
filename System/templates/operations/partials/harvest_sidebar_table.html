@@ -16,6 +16,8 @@
                 <div class="text-xs text-[#a0ac96] mt-1">
                     {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
+                        <span class="ml-2">Beetles: {{ pond.capacity|default:"0" }}</span>
+                        <span class="ml-2 text-emerald-400 font-bold">Worms: {{ pond.superworm_count }}</span>
                     {% elif pond.location == 'Breeding Pond' %}
                         <span>PROD 1: {{ pond.capacity|default:"0" }}</span>
                         {% if pond.capacity_2 %}
@@ -81,7 +83,12 @@
                                     {{ pond.transfer_date|date:"M. d, Y"|default:"-" }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <span class="font-black text-sm text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
+                                    {% if pond.location == 'Superworm Cabin' %}
+                                        <div class="font-black text-sm text-[#cca43b]">{{ pond.superworm_count }}</div>
+                                        <div class="text-[10px] text-[#a0ac96]">({{ pond.capacity|default:"0" }} Beetles)</div>
+                                    {% else %}
+                                        <span class="font-black text-sm text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
+                                    {% endif %}
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     {% if pond.status == 'empty' or pond.capacity == 0 %}
@@ -93,6 +100,10 @@
                                     {% elif is_transfer %}
                                         <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"PROD 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
+                                        </button>
+                                    {% elif pond.location == 'Superworm Cabin' %}
+                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Superworm"|escapejs }}', '{{ pond.superworm_count }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                            Harvest
                                         </button>
                                     {% else %}
                                         <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Product 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
