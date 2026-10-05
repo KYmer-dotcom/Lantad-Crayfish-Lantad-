@@ -630,6 +630,10 @@ def pond_transfer(request):
         messages.error(request, "Source and destination ponds cannot be the same.")
         return redirect(redirect_target)
         
+    if source_pond.location == 'Breeding Pond' and target_product == '1':
+        messages.error(request, "Product 1 (Breeder stock) in Breeding Ponds cannot be transferred.")
+        return redirect(redirect_target)
+        
     # Determine which product and available quantity
     if target_product == '2':
         prod_name = source_pond.product_name_2 or "Crilings"

@@ -346,6 +346,10 @@ def pond_harvest(request, pond_id):
     
     is_transfer = request.POST.get('is_transfer') == 'true' or request.POST.get('action_type') == 'transfer'
     
+    if is_transfer and pond.location == 'Breeding Pond' and request.POST.get('target_product') == '1':
+        messages.error(request, "Product 1 (Breeder stock) in Breeding Ponds cannot be transferred.")
+        return redirect(redirect_target)
+        
     if not is_transfer and not pond.is_harvest_due:
         days_left = pond.days_until_harvest
         messages.error(
