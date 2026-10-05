@@ -117,7 +117,7 @@
     </div>
     {% endif %}
 
-    {% if not request.GET.type or request.GET.type == 'cabin' %}
+    {% if request.GET.type == 'cabin' %}
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Superworm Cabin</h2>
