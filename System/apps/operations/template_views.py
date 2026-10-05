@@ -718,18 +718,21 @@ def pond_transfer(request):
             source_pond.product_name_2 = ''
         source_pond.save()
     else:
-        source_pond.capacity -= transfer_qty
-        if source_pond.capacity <= 0:
-            if source_pond.product_name_2 and source_pond.capacity_2:
-                source_pond.product_name = source_pond.product_name_2
-                source_pond.capacity = source_pond.capacity_2
-                source_pond.product_name_2 = ''
-                source_pond.capacity_2 = 0
-            else:
-                source_pond.capacity = 0
-                source_pond.status = Pond.Status.EMPTY
-                source_pond.transfer_date = None
-        source_pond.save()
+        if source_pond.transfer_batches.exists():
+            source_pond.deduct_stock(transfer_qty)
+        else:
+            source_pond.capacity -= transfer_qty
+            if source_pond.capacity <= 0:
+                if source_pond.product_name_2 and source_pond.capacity_2:
+                    source_pond.product_name = source_pond.product_name_2
+                    source_pond.capacity = source_pond.capacity_2
+                    source_pond.product_name_2 = ''
+                    source_pond.capacity_2 = 0
+                else:
+                    source_pond.capacity = 0
+                    source_pond.status = Pond.Status.EMPTY
+                    source_pond.transfer_date = None
+            source_pond.save()
         
     transfer_date_today = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
     

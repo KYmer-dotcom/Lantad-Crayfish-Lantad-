@@ -185,14 +185,53 @@ class Pond(models.Model):
             return False
         return days >= self.harvest_due_target_days
 
-    @property
-    def days_until_harvest(self):
-        if not self.transfer_date:
-            return None
-        target = self.harvest_due_target_days
-        days = self.days_since_transfer or 0
-        remaining = target - days
-        return max(0, remaining)
+    def deduct_stock(self, quantity):
+        """
+        Deducts quantity from this pond. If transfer batches exist (e.g. in Main Pond),
+        always deducts in FIFO order from the oldest transferred batch first.
+        """
+        if quantity <= 0:
+            return 0
+
+        actual_deducted = 0
+        remaining = quantity
+
+        if self.transfer_batches.exists():
+            for batch in self.transfer_batches.order_by('transfer_date', 'created_at', 'id'):
+                if remaining <= 0:
+                    break
+                if batch.quantity <= remaining:
+                    remaining -= batch.quantity
+                    actual_deducted += batch.quantity
+                    batch.delete()
+                else:
+                    batch.quantity -= remaining
+                    actual_deducted += remaining
+                    batch.save(update_fields=['quantity'])
+                    remaining = 0
+
+            remaining_batch_total = sum(b.quantity for b in self.transfer_batches.all())
+            self.capacity = remaining_batch_total
+            if self.capacity <= 0:
+                self.capacity = 0
+                self.status = Pond.Status.EMPTY
+                self.transfer_date = None
+            else:
+                earliest = self.transfer_batches.order_by('transfer_date', 'created_at').first()
+                if earliest and earliest.transfer_date:
+                    self.transfer_date = earliest.transfer_date
+            self.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])
+        else:
+            to_deduct = min(self.capacity or 0, quantity)
+            self.capacity = max(0, (self.capacity or 0) - to_deduct)
+            actual_deducted = to_deduct
+            if self.capacity <= 0:
+                self.capacity = 0
+                self.status = Pond.Status.EMPTY
+                self.transfer_date = None
+            self.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])
+
+        return actual_deducted
 
 
 class PondFeedingLog(models.Model):
