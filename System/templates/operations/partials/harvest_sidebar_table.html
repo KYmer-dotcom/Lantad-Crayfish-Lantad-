@@ -9,9 +9,13 @@
     </thead>
     <tbody class="divide-y divide-white/10">
         {% for pond in harvest_ponds %}
-        <tr class="harvest-row hover:bg-white/5 transition-colors">
+        <!-- Clickable Main Row -->
+        <tr class="harvest-row hover:bg-white/5 transition-colors cursor-pointer select-none" onclick="toggleHarvestPondRow(this)">
             <td class="px-6 py-4">
-                <div class="font-bold">{{ pond.name }}</div>
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-white">{{ pond.name }}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-[#cca43b] font-semibold">Click to view</span>
+                </div>
                 <div class="text-xs text-[#a0ac96] mt-1">
                     {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
@@ -30,7 +34,7 @@
                 {% if pond.product_name_2 %}
                 <div class="text-xs text-[#cca43b]">{{ pond.product_name_2 }}</div>
                 {% elif pond.transfer_date %}
-                <div class="text-xs text-[#a0ac96] font-mono">Date: {{ pond.transfer_date }}</div>
+                <div class="text-xs text-[#a0ac96] font-mono">Date: {{ pond.transfer_date|date:"M. d, Y" }}</div>
                 {% endif %}
             </td>
             <td class="px-6 py-4 text-center">
@@ -43,29 +47,108 @@
                 {% endif %}
             </td>
             <td class="px-6 py-4 text-right">
-                {% if pond.status == 'empty' or pond.capacity == 0 and not pond.capacity_2 %}
-                    <span class="text-xs text-[#a0ac96]">None</span>
-                {% elif pond.is_harvest_due %}
-                    {% if is_transfer %}
-                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onsubmit="return confirm('Confirm transfer from {{ pond.name|escapejs }}?');">
-                        {% csrf_token %}
-                        <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">
-                            Transfer
-                        </button>
-                    </form>
-                    {% else %}
-                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onsubmit="return confirm('Confirm harvest and reset for {{ pond.name|escapejs }}?');">
-                        {% csrf_token %}
-                        <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">
-                            Harvest
-                        </button>
-                    </form>
-                    {% endif %}
-                {% else %}
-                    <button type="button" disabled title="Locked until estimated cycle date ({{ pond.days_until_harvest }} days remaining)" class="rounded-lg bg-white/5 border border-white/10 px-3 py-1 text-xs font-bold text-stone-500 cursor-not-allowed uppercase">
-                        Locked
-                    </button>
-                {% endif %}
+                <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-[#cca43b] transition-all">
+                    <span>Products</span>
+                    <svg class="h-3.5 w-3.5 harvest-chevron transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </td>
+        </tr>
+
+        <!-- Expandable Product Details Row -->
+        <tr class="harvest-detail-row hidden bg-black/40 border-b border-white/10">
+            <td colspan="4" class="p-4 sm:p-5">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold uppercase tracking-wider text-[#cca43b]">
+                            {{ pond.name }} — Available Products &amp; Quantities
+                        </p>
+                        {% if pond.is_harvest_due and pond.product_name_2 %}
+                        <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full {% if is_transfer %}transfer{% else %}harvest{% endif %} and reset for {{ pond.name|escapejs }}?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="target_product" value="all">
+                            <button type="submit" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
+                                {% if is_transfer %}Transfer All{% else %}Harvest All{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <div class="grid grid-cols-1 {% if pond.product_name_2 or pond.capacity_2 %}sm:grid-cols-2{% endif %} gap-3">
+                        <!-- Product 1 Card -->
+                        <div class="rounded-xl border border-white/10 bg-[#021f15] p-4 flex flex-col justify-between gap-3 shadow-inner">
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-[#a0ac96] font-semibold uppercase tracking-wider">
+                                    <span>Product 1</span>
+                                    <span class="font-mono text-stone-400">Qty</span>
+                                </div>
+                                <div class="mt-1.5 flex items-baseline justify-between">
+                                    <h4 class="text-base font-bold text-white">{{ pond.product_name|default:"Standard Stock" }}</h4>
+                                    <span class="text-xl font-black text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                                <span class="text-xs text-[#a0ac96]">
+                                    {% if pond.transfer_date %}Date: {{ pond.transfer_date|date:"M. d, Y" }}{% else %}No transfer date{% endif %}
+                                </span>
+                                {% if pond.status == 'empty' or pond.capacity == 0 %}
+                                    <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
+                                {% elif pond.is_harvest_due %}
+                                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.product_name|default:"Product 1"|escapejs }} ({{ pond.capacity }}) from {{ pond.name|escapejs }}?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="target_product" value="1">
+                                        <button type="submit" class="rounded-lg bg-[#cca43b] px-4 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                            {% if is_transfer %}Transfer{% else %}Harvest{% endif %}
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" disabled title="Locked until estimated cycle date ({{ pond.days_until_harvest }} days remaining)" class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-bold text-stone-500 cursor-not-allowed uppercase">
+                                        Locked ({{ pond.days_until_harvest }}d)
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Product 2 Card -->
+                        {% if pond.product_name_2 or pond.capacity_2 %}
+                        <div class="rounded-xl border border-white/10 bg-[#021f15] p-4 flex flex-col justify-between gap-3 shadow-inner">
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-[#a0ac96] font-semibold uppercase tracking-wider">
+                                    <span>Product 2</span>
+                                    <span class="font-mono text-stone-400">Qty</span>
+                                </div>
+                                <div class="mt-1.5 flex items-baseline justify-between">
+                                    <h4 class="text-base font-bold text-white">{{ pond.product_name_2|default:"Secondary Stock" }}</h4>
+                                    <span class="text-xl font-black text-[#cca43b]">{{ pond.capacity_2|default:"0" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                                <span class="text-xs text-[#a0ac96]">
+                                    {% if pond.transfer_date %}Date: {{ pond.transfer_date|date:"M. d, Y" }}{% else %}No transfer date{% endif %}
+                                </span>
+                                {% if pond.status == 'empty' or pond.capacity_2 == 0 %}
+                                    <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
+                                {% elif pond.is_harvest_due %}
+                                    <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.product_name_2|default:"Product 2"|escapejs }} ({{ pond.capacity_2 }}) from {{ pond.name|escapejs }}?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="target_product" value="2">
+                                        <button type="submit" class="rounded-lg bg-[#cca43b] px-4 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                            {% if is_transfer %}Transfer{% else %}Harvest{% endif %}
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" disabled title="Locked until estimated cycle date ({{ pond.days_until_harvest }} days remaining)" class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-bold text-stone-500 cursor-not-allowed uppercase">
+                                        Locked ({{ pond.days_until_harvest }}d)
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
             </td>
         </tr>
         {% empty %}

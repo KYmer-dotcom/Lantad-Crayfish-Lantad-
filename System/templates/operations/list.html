@@ -759,6 +759,23 @@
         if (el) el.classList.add('translate-x-full');
     }
 
+    function toggleHarvestPondRow(row) {
+        const detailRow = row.nextElementSibling;
+        if (!detailRow || !detailRow.classList.contains('harvest-detail-row')) return;
+        
+        const isCurrentlyHidden = detailRow.classList.contains('hidden');
+        detailRow.classList.toggle('hidden');
+        
+        const chevron = row.querySelector('.harvest-chevron');
+        if (isCurrentlyHidden) {
+            row.classList.add('bg-white/[0.06]');
+            if (chevron) chevron.classList.add('rotate-180');
+        } else {
+            row.classList.remove('bg-white/[0.06]');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+    }
+
     function toggleFedStatus(pondId, isChecked) {
         const card = document.getElementById('pond-card-' + pondId);
         const badge = document.getElementById('fed-badge-' + pondId);
