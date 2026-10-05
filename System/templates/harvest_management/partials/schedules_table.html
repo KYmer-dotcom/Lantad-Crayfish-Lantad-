@@ -15,7 +15,6 @@
                     {% if schedules and schedules.0.location == 'Superworm Cabin' %}Darkling Beetles{% else %}Quantity / Capacity{% endif %}
                 </th>
                 <th class="px-6 py-4 font-black text-white">Status</th>
-                <th class="px-6 py-4 font-black text-white text-right">Action</th>
             </tr>
         </thead>
         {% endif %}
@@ -33,16 +32,20 @@
                         {% endif %}
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ schedule.location|default:schedule.breeding_type|default:"-" }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-medium">{{ schedule.product_name|default:"-" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96]">{{ schedule.location|default:"-" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-medium">
+                    <div>{{ schedule.product_name|default:"-" }}</div>
+                    {% if schedule.product_name_2 %}
+                    <div class="text-xs text-[#cca43b]">{{ schedule.product_name_2 }}</div>
+                    {% endif %}
+                </td>
                 {% if schedule.location != 'Main Pond' %}
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-mono">{{ schedule.transfer_date|default:"-" }}</td>
                 {% endif %}
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold font-mono">
-                    {% if schedule.location == 'Breeding Pond' and schedule.breeding_type == 'Reproduction' %}
-                        <span class="text-[#cca43b]">{{ schedule.female_quantity|default:"0" }}</span> <span class="text-[#a0ac96] font-normal">F</span>
-                    {% else %}
-                        <span class="text-[#cca43b]">{{ schedule.capacity|default:"0" }}</span>
+                    <span class="text-[#cca43b]">{{ schedule.capacity|default:"0" }}</span>
+                    {% if schedule.capacity_2 %}
+                    <span class="text-[#a0ac96] text-xs font-normal ml-1">/</span> <span class="text-[#cca43b]">{{ schedule.capacity_2 }}</span>
                     {% endif %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -50,43 +53,20 @@
                         {{ schedule.get_status_display }}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right" onclick="event.stopPropagation();">
-                    {% if schedule.status == 'empty' or schedule.capacity == 0 and not schedule.female_quantity %}
-                        <span class="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 text-stone-400 border border-white/10 font-bold uppercase tracking-wider">Empty</span>
-                    {% elif schedule.is_harvest_due %}
-                        <button type="button" onclick="openHarvestModal('{{ schedule.id }}', '{{ schedule.name|escapejs }}', '{% url 'harvest:pond_harvest' schedule.id %}');" class="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-[#cca43b] text-[#01140e] font-black uppercase tracking-wider hover:bg-[#cca43b]/90 shadow-md transition-colors cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Harvest</span>
-                        </button>
-                    {% else %}
-                        <button type="button" disabled title="Harvest is locked until estimated harvest date is reached ({{ schedule.days_until_harvest }} days remaining)" class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-lg bg-white/5 text-stone-500 border border-white/10 font-black uppercase cursor-not-allowed opacity-60">
-                            <svg class="w-3 h-3 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                            <span>Locked ({{ schedule.days_until_harvest }}d)</span>
-                        </button>
-                    {% endif %}
-                </td>
             </tr>
             <tr id="details-{{ schedule.id }}" class="hidden bg-black/30">
-                <td colspan="7" class="px-6 py-4 border-t border-white/5">
+                <td colspan="6" class="px-6 py-4 border-t border-white/5">
                     <div class="rounded-xl border border-white/10 bg-black/40 p-4 w-full md:w-3/4">
                         <table class="w-full text-xs text-left">
                             <thead>
                                 <tr class="text-[#a0ac96] border-b border-white/10 text-[10px] uppercase font-bold tracking-wider">
-                                    {% if schedule.breeding_type == 'Reproduction' or schedule.location == 'Superworm Cabin' %}
+                                    {% if schedule.location == 'Superworm Cabin' %}
                                     <th class="font-bold pb-2 text-white">Production Date</th>
                                     <th class="font-bold pb-2 text-white">Days Since Production</th>
-                                        {% if schedule.breeding_type == 'Reproduction' %}
-                                        <th class="font-bold pb-2 text-white">Estimated Transfer Date</th>
-                                        {% endif %}
-                                        {% if schedule.location == 'Superworm Cabin' %}
-                                        <th class="font-bold pb-2 text-white">Estimated Harvest Date</th>
-                                        {% endif %}
+                                    <th class="font-bold pb-2 text-white">Estimated Harvest Date</th>
                                     {% else %}
                                     <th class="font-bold pb-2 text-white">Transfer Date</th>
                                     <th class="font-bold pb-2 text-white">Days Since Transfer</th>
-                                        {% if schedule.breeding_type == 'Crilings' %}
-                                        <th class="font-bold pb-2 text-white">Pond Transfer Date</th>
-                                        {% endif %}
                                     {% endif %}
                                     {% if schedule.location == 'Main Pond' or schedule.location == 'Azula' %}
                                     <th class="font-bold pb-2 text-white">Estimated Harvest Date</th>
@@ -105,28 +85,10 @@
                                             N/A
                                         {% endif %}
                                     </td>
-                                    {% if schedule.breeding_type == 'Reproduction' %}
-                                    <td class="pt-3 text-[#cca43b] font-medium">
-                                        {% if schedule.est_transfer_date %}
-                                            {{ schedule.est_transfer_date }}
-                                        {% else %}
-                                            N/A
-                                        {% endif %}
-                                    </td>
-                                    {% endif %}
                                     {% if schedule.location == 'Superworm Cabin' %}
                                     <td class="pt-3 text-[#cca43b] font-medium est-harvest-date-cell px-2 transition-all duration-300">
                                         {% if schedule.est_sw_harvest_date %}
                                             {{ schedule.est_sw_harvest_date }}
-                                        {% else %}
-                                            N/A
-                                        {% endif %}
-                                    </td>
-                                    {% endif %}
-                                    {% if schedule.breeding_type == 'Crilings' %}
-                                    <td class="pt-3 text-[#cca43b] font-medium">
-                                        {% if schedule.est_pond_transfer_date %}
-                                            {{ schedule.est_pond_transfer_date }}
                                         {% else %}
                                             N/A
                                         {% endif %}
@@ -157,7 +119,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-sm text-[#a0ac96] font-medium">No schedules found</td>
+                <td colspan="6" class="px-6 py-8 text-center text-sm text-[#a0ac96] font-medium">No schedules found</td>
             </tr>
             {% endfor %}
         </tbody>
