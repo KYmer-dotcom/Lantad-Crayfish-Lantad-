@@ -85,7 +85,7 @@
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Breeding Pond</h2>
             <div class="flex items-center gap-2">
-                <a href="{% url 'harvest:list' %}" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Harvest</a>
+                <button type="button" onclick="openHarvestSidebar('Breeding Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors cursor-pointer">Harvest</button>
                 {% if breeding_pond_recorded_today %}
                 <button type="button" disabled class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
                 {% else %}
@@ -102,7 +102,7 @@
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Main Pond</h2>
             <div class="flex items-center gap-2">
-                <a href="{% url 'harvest:list' %}" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Harvest</a>
+                <button type="button" onclick="openHarvestSidebar('Main Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors cursor-pointer">Harvest</button>
                 {% if main_pond_recorded_today %}
                 <button type="button" disabled class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
                 {% else %}
@@ -121,7 +121,7 @@
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Superworm Cabin</h2>
             <div class="flex items-center gap-2">
-                <a href="{% url 'harvest:list' %}" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Harvest</a>
+                <button type="button" onclick="openHarvestSidebar('Superworm Cabin')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors cursor-pointer">Harvest</button>
                 {% if superworm_cabin_recorded_today %}
                 <button type="button" disabled class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
                 {% else %}
@@ -498,6 +498,58 @@
     </div>
 </div>
 
+<!-- Harvest Sidebar (Half-Screen Slide-Over) -->
+<div id="harvest-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+        <div>
+            <h2 id="harvest-sidebar-title" class="text-xl font-bold text-stone-100">Harvest Data</h2>
+            <p id="harvest-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Detailed harvest metrics and actions</p>
+        </div>
+        <button type="button" onclick="closeHarvestSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer text-xl font-bold">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6">
+        <!-- Breeding Pond Harvest Table -->
+        <div class="harvest-table-wrapper hidden" data-category="Breeding Pond">
+            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_ponds %}
+            </div>
+        </div>
+
+        <!-- Main Pond Harvest Table -->
+        <div class="harvest-table-wrapper hidden" data-category="Main Pond">
+            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=main_ponds %}
+            </div>
+        </div>
+
+        <!-- Superworm Cabin Harvest Tables -->
+        <div class="harvest-table-wrapper hidden" data-category="Superworm Cabin">
+            <div class="mb-8">
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider mb-3">Left Shelf</h3>
+                <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=sw_block1_ponds %}
+                </div>
+            </div>
+            <div class="mb-8">
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider mb-3">Right Shelf</h3>
+                <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=sw_block2_ponds %}
+                </div>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider mb-3">Back Shelf</h3>
+                <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                    {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=sw_block3_ponds %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add Pond Modal -->
 <div id="add-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div class="w-full max-w-2xl rounded-xl bg-[#021f15] border border-white/10 p-6">
@@ -638,6 +690,41 @@
     function closeOperationsSidebar() {
         let el = document.getElementById('operations-sidebar');
         el.classList.add('translate-x-full');
+    }
+
+    // Harvest Sidebar Toggle
+    function openHarvestSidebar(category) {
+        closeOperationsSidebar();
+        let title = "Harvest Data";
+        const titleEl = document.getElementById('harvest-sidebar-title');
+        const subtitleEl = document.getElementById('harvest-sidebar-subtitle');
+        if (category) {
+            title = category + " Harvest";
+            if (subtitleEl) subtitleEl.textContent = "Production status, cycles, and harvest actions";
+        }
+        if (titleEl) titleEl.textContent = title;
+
+        if (category) {
+            document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
+                if (wrapper.dataset.category === category) {
+                    wrapper.classList.remove('hidden');
+                } else {
+                    wrapper.classList.add('hidden');
+                }
+            });
+        } else {
+            document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('hidden');
+            });
+        }
+
+        let el = document.getElementById('harvest-sidebar');
+        if (el) el.classList.remove('translate-x-full');
+    }
+
+    function closeHarvestSidebar() {
+        let el = document.getElementById('harvest-sidebar');
+        if (el) el.classList.add('translate-x-full');
     }
 
     function toggleFedStatus(pondId, isChecked) {
