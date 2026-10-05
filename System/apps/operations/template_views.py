@@ -222,6 +222,7 @@ def ponds_list(request):
     """List all farms and ponds"""
     PondTransferBatch.objects.filter(pond__capacity__lte=0).delete()
     PondTransferBatch.objects.filter(quantity__lte=0).delete()
+    Pond.objects.filter(capacity__lte=0, capacity_2__lte=0).exclude(status='empty').update(status='empty', transfer_date=None)
     
     farms = get_accessible_farms(request.user)
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')

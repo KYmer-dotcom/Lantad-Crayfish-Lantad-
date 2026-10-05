@@ -856,12 +856,19 @@
         const rows = container.querySelectorAll('.harvest-alloc-row');
         if (rows.length >= 2) return; // Strict limit to 2
 
+        let totalAllocated = 0;
+        rows.forEach(r => {
+            const qtyEl = r.querySelector('.harvest-alloc-qty');
+            totalAllocated += qtyEl ? (parseInt(qtyEl.value) || 0) : 0;
+        });
+        const remaining = Math.max(0, currentHarvestTotalQty - totalAllocated);
+
         const firstRowSelect = rows[0]?.querySelector('.harvest-alloc-product');
         const firstSelectedId = firstRowSelect ? firstRowSelect.value : '';
         let chosenProd = availableSaleProducts.find(p => String(p.id) !== String(firstSelectedId));
         let chosenProdId = chosenProd ? chosenProd.id : (availableSaleProducts[0]?.id || '');
 
-        const newRow = createHarvestAllocationRow(chosenProdId, 0, true);
+        const newRow = createHarvestAllocationRow(chosenProdId, remaining, true);
         container.appendChild(newRow);
         updateHarvestAllocationSummary();
     }
@@ -958,8 +965,8 @@
                 }
             }
 
-            // Initial single row starting at 0
-            const initialRow = createHarvestAllocationRow(matchedId, 0, false);
+            // Initial single row with full harvest quantity
+            const initialRow = createHarvestAllocationRow(matchedId, currentHarvestTotalQty, false);
             container.appendChild(initialRow);
             updateHarvestAllocationSummary();
         }
