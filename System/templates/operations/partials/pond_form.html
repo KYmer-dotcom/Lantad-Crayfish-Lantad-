@@ -112,16 +112,28 @@ function togglePondFormFields() {
             let labelDate = form.querySelector('#label-date');
             let capacityInput = form.querySelector('input[name="capacity"]');
             
+            let fieldQuantity = form.querySelector('#field-quantity');
+            
             if (category === 'Breeding Pond') {
                 if (fieldProduct2) fieldProduct2.classList.remove('hidden');
                 if (fieldQuantity2) fieldQuantity2.classList.remove('hidden');
+                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
                 if (labelProduct) labelProduct.textContent = 'Product 1 *';
                 if (labelQuantity) labelQuantity.textContent = 'Quantity 1 *';
                 if (capacityInput) capacityInput.placeholder = 'Quantity 1';
                 syncProductOptions(form);
+            } else if (category === 'Main Pond') {
+                if (fieldProduct2) fieldProduct2.classList.add('hidden');
+                if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
+                if (fieldQuantity) {
+                    fieldQuantity.classList.add('hidden');
+                    if (capacityInput && !capacityInput.value) capacityInput.value = '0';
+                }
+                if (labelProduct) labelProduct.textContent = 'Product';
             } else {
                 if (fieldProduct2) fieldProduct2.classList.add('hidden');
                 if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
+                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
                 if (labelProduct) labelProduct.textContent = 'Product *';
                 
                 if (category === 'Superworm Cabin') {
