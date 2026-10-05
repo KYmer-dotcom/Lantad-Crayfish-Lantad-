@@ -281,6 +281,7 @@ def ponds_list(request):
         'farm_form': FarmForm(),
         'pond_form': PondForm(user=request.user),
         'feed_types': FeedType.objects.filter(is_active=True).order_by('category', 'name'),
+        'sale_products': Product.objects.filter(is_active=True).order_by('name'),
         'main_pond_recorded_today': main_pond_recorded_today,
         'breeding_pond_recorded_today': breeding_pond_recorded_today,
         'superworm_cabin_recorded_today': superworm_cabin_recorded_today,

@@ -675,7 +675,121 @@
     </div>
 </div>
 
+<!-- Harvest Stock to Inventory Modal -->
+<div id="harvest-pond-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+                <h3 class="text-lg font-bold text-stone-100">Harvest to Inventory</h3>
+                <p class="text-xs text-[#a0ac96] mt-0.5">Confirm harvest and choose inventory product to credit</p>
+            </div>
+            <button type="button" onclick="closePondHarvestModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold cursor-pointer">&times;</button>
+        </div>
+        <form id="harvest-pond-form" method="post" action="" class="mt-4 space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="target_product" id="harvest-target-product" value="1">
+            
+            <!-- Source Summary Box -->
+            <div class="rounded-xl border border-white/10 bg-black/40 p-4 space-y-2">
+                <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                    <span class="font-medium">Source Pond:</span>
+                    <span id="harvest-source-pond-name" class="font-bold text-white text-sm">-</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                    <span class="font-medium">Pond Stock:</span>
+                    <span id="harvest-source-product-name" class="font-bold text-[#cca43b]">-</span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-[#a0ac96] pt-1 border-t border-white/5">
+                    <span class="font-medium">Harvest Quantity:</span>
+                    <span id="harvest-source-qty" class="font-black text-white text-sm">-</span>
+                </div>
+            </div>
+
+            <!-- Destination Product Dropdown -->
+            <div>
+                <label for="harvest-destination-product" class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">
+                    Credit to Inventory Product <span class="text-rose-500">*</span>
+                </label>
+                <select name="destination_product_id" id="harvest-destination-product" required class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+                    {% for prod in sale_products %}
+                    <option value="{{ prod.id }}" data-name="{{ prod.name }}">
+                        {{ prod.name }} (Current: {{ prod.quantity_kg|default:"0" }} {{ prod.get_unit_type_display|default:"pcs" }})
+                    </option>
+                    {% empty %}
+                    <option value="">No products available in catalog</option>
+                    {% endfor %}
+                </select>
+                <p class="text-[11px] text-[#a0ac96] mt-1.5">
+                    Pre-selected to match pond stock. You can switch to any other product if you wish to classify it differently.
+                </p>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="mt-6 flex items-center justify-end gap-3 border-t border-white/10 pt-4">
+                <button type="button" onclick="closePondHarvestModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-sm font-bold text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-5 py-2 text-sm font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">Confirm Harvest</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openPondHarvestModal(pondId, pondName, targetProduct, defaultProductName, quantity) {
+        const form = document.getElementById('harvest-pond-form');
+        const targetProdEl = document.getElementById('harvest-target-product');
+        const sourceNameEl = document.getElementById('harvest-source-pond-name');
+        const sourceProdEl = document.getElementById('harvest-source-product-name');
+        const sourceQtyEl = document.getElementById('harvest-source-qty');
+        const productSelect = document.getElementById('harvest-destination-product');
+
+        if (form) {
+            const baseUrl = "{% url 'harvest:pond_harvest' 0 %}";
+            form.action = baseUrl.replace('/0/', `/${pondId}/`);
+        }
+
+        if (targetProdEl) targetProdEl.value = targetProduct || '1';
+        if (sourceNameEl) sourceNameEl.textContent = pondName || '';
+        if (sourceProdEl) sourceProdEl.textContent = defaultProductName || 'Stock';
+        if (sourceQtyEl) sourceQtyEl.textContent = quantity || '0';
+
+        if (productSelect && productSelect.options.length > 0) {
+            const cleanSearch = (defaultProductName || '').trim().toLowerCase();
+            let selectedIdx = -1;
+
+            // 1. Exact match first
+            for (let i = 0; i < productSelect.options.length; i++) {
+                const optName = (productSelect.options[i].getAttribute('data-name') || '').trim().toLowerCase();
+                if (optName && optName === cleanSearch) {
+                    selectedIdx = i;
+                    break;
+                }
+            }
+
+            // 2. Substring match fallback
+            if (selectedIdx === -1 && cleanSearch) {
+                for (let i = 0; i < productSelect.options.length; i++) {
+                    const optName = (productSelect.options[i].getAttribute('data-name') || '').trim().toLowerCase();
+                    if (optName && (optName.includes(cleanSearch) || cleanSearch.includes(optName))) {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+            }
+
+            if (selectedIdx !== -1) {
+                productSelect.selectedIndex = selectedIdx;
+            } else {
+                productSelect.selectedIndex = 0;
+            }
+        }
+
+        showModal('harvest-pond-modal');
+    }
+
+    function closePondHarvestModal() {
+        hideModal('harvest-pond-modal');
+    }
+
     function openPondTransferModal(pondId, pondName, targetProduct, productName, quantity, sourceLocation = '') {
         const sourceIdEl = document.getElementById('transfer-source-pond-id');
         const targetProdEl = document.getElementById('transfer-target-product');
