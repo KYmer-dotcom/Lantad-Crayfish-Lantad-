@@ -10,7 +10,7 @@
     </div>
 
     {% if pond.location == 'Azula' or 'Azula' in pond.name %}
-    <div class="rounded-3xl border border-[#cca43b]/30 bg-[#cca43b]/10 backdrop-blur-sm p-5 flex flex-wrap items-center justify-between gap-4">
+    <div class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 backdrop-blur-sm p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="inline-block h-2 w-2 rounded-full {% if pond.is_sanitization_due %}bg-rose-500 animate-pulse{% else %}bg-emerald-400{% endif %}"></span>
@@ -31,12 +31,12 @@
         {% if pond.is_sanitization_due %}
         <form method="post" action="{% url 'operations:pond_sanitize' pond.id %}" class="inline">
             {% csrf_token %}
-            <button type="submit" class="rounded-2xl bg-[#cca43b] px-5 py-2 text-xs font-black uppercase tracking-wider text-[#021f15] hover:bg-[#b08d33] transition-colors shadow-sm cursor-pointer">
+            <button type="submit" class="rounded-lg bg-[#cca43b] px-5 py-2 text-xs font-black uppercase tracking-wider text-[#021f15] hover:bg-[#b08d33] transition-colors shadow-sm cursor-pointer">
                 ✓ Mark Sanitized
             </button>
         </form>
         {% else %}
-        <button type="button" disabled class="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-stone-500 cursor-not-allowed flex items-center gap-1.5" title="Sanitization is locked until the 15-day cycle expires">
+        <button type="button" disabled class="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-stone-500 cursor-not-allowed flex items-center gap-1.5" title="Sanitization is locked until the 15-day cycle expires">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -46,18 +46,18 @@
     </div>
     {% endif %}
 
-    <div class="rounded-3xl border border-white/10 bg-[#021f15]/80 backdrop-blur-sm p-6">
+    <div class="rounded-xl border border-white/10 bg-[#021f15]/80 backdrop-blur-sm p-6">
         <form method="post" action="{% url 'operations:pond_edit' pond.id %}{% if current_op_type %}?type={{ current_op_type }}{% endif %}" class="space-y-4">
             {% csrf_token %}
             {% include 'operations/partials/pond_form.html' with form=form %}
             
             <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-6">
                 <!-- Delete Button for CRUD -->
-                <button type="button" onclick="openDeleteModal()" class="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-5 py-2 text-sm font-semibold text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">Delete</button>
+                <button type="button" onclick="openDeleteModal()" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-5 py-2 text-sm font-semibold text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">Delete</button>
                 
                 <div class="flex gap-3">
-                    <a href="{{ cancel_url|default:'/operations/' }}" class="rounded-2xl border border-white/10 bg-black/20 px-5 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</a>
-                    <button type="submit" class="rounded-2xl bg-[#cca43b] px-5 py-2 text-sm font-bold text-[#021f15] hover:bg-[#b08d33] transition-colors">Save Changes</button>
+                    <a href="{{ cancel_url|default:'/operations/' }}" class="rounded-lg border border-white/10 bg-black/20 px-5 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</a>
+                    <button type="submit" class="rounded-lg bg-[#cca43b] px-5 py-2 text-sm font-bold text-[#021f15] hover:bg-[#b08d33] transition-colors">Save Changes</button>
                 </div>
             </div>
         </form>
@@ -66,7 +66,7 @@
 
 <!-- Delete Pond Modal -->
 <div id="delete-pond-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
-    <div class="w-full max-w-md rounded-3xl bg-[#021f15] border border-white/10 p-6">
+    <div class="w-full max-w-md rounded-xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-stone-100">Remove Record</h3>
             <button type="button" onclick="closeDeleteModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold">&times;</button>
@@ -74,8 +74,8 @@
         <p class="mt-4 text-sm text-[#a0ac96]">Are you sure you want to delete <span class="font-bold text-stone-100">{{ pond.name }}</span>?</p>
         <form method="post" action="{% url 'operations:pond_remove' pond.id %}" class="mt-6 flex items-center justify-end gap-3">
             {% csrf_token %}
-            <button type="button" onclick="closeDeleteModal()" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
-            <button type="submit" class="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 -rose-500/20 transition-colors">Remove</button>
+            <button type="button" onclick="closeDeleteModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-sm font-semibold text-[#a0ac96] hover:text-stone-100 transition-colors">Cancel</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-500 transition-colors">Remove</button>
         </form>
     </div>
 </div>
