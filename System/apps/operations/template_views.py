@@ -45,6 +45,42 @@ class FarmForm(forms.ModelForm):
         }
 
 
+def get_category_product_rules(current_pond_id=None):
+    """
+    Dynamically computes allowed products for each category:
+    Any product currently used in other categories/tables is excluded.
+    Unused/new products are allowed across all categories until assigned.
+    """
+    from apps.sales.models import Product
+    from .models import Pond
+    
+    categories = ['Main Pond', 'Breeding Pond', 'Superworm Cabin', 'Azula']
+    all_products = list(Product.objects.filter(is_active=True).values_list('name', flat=True))
+    
+    category_used_map = {cat: set() for cat in categories}
+    ponds = Pond.objects.all()
+    if current_pond_id:
+        ponds = ponds.exclude(pk=current_pond_id)
+        
+    for p in ponds:
+        loc = p.location or 'Main Pond'
+        if loc in category_used_map:
+            if p.product_name:
+                category_used_map[loc].add(p.product_name)
+            if p.product_name_2:
+                category_used_map[loc].add(p.product_name_2)
+                
+    allowed_map = {}
+    for cat in categories:
+        other_used = set()
+        for other_cat, used_set in category_used_map.items():
+            if other_cat != cat:
+                other_used.update(used_set)
+        allowed_map[cat] = [p for p in all_products if p not in other_used]
+        
+    return allowed_map
+
+
 class PondForm(forms.ModelForm):
     transfer_date = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -134,6 +170,10 @@ class PondForm(forms.ModelForm):
         product_choices = [('', '---------')] + [(p.name, p.name) for p in products]
         self.fields['product_name'].choices = product_choices
         self.fields['product_name_2'].choices = product_choices
+        
+        current_pond_id = self.instance.pk if self.instance else None
+        self.category_allowed_map = get_category_product_rules(current_pond_id)
+        self.category_allowed_map_json = json.dumps(self.category_allowed_map)
 
     def clean_name(self):
         return self.cleaned_data.get('name', '').upper()
@@ -148,12 +188,8 @@ class PondForm(forms.ModelForm):
         product_name = cleaned_data.get('product_name')
         product_name_2 = cleaned_data.get('product_name_2')
         
-        category_allowed_products = {
-            'Main Pond': ['Crayfish'],
-            'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
-            'Superworm Cabin': ['Superworm'],
-            'Azula': ['Azula'],
-        }
+        current_pond_id = self.instance.pk if self.instance else None
+        category_allowed_products = get_category_product_rules(current_pond_id)
         
         allowed = category_allowed_products.get(category, [])
         if allowed:

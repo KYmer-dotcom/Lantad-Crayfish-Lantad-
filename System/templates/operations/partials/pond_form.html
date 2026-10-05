@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div class="space-y-4" data-category-rules='{{ form.category_allowed_map_json|default:"{}"|safe }}'>
     <div id="field-category">
         <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Category *</label>
         {{ form.category }}
@@ -47,21 +47,31 @@
 </div>
 
 <script>
-const CATEGORY_ALLOWED_PRODUCTS = {
-    'Main Pond': ['Crayfish'],
-    'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
-    'Superworm Cabin': ['Superworm'],
-    'Azula': ['Azula']
-};
-
 function syncProductOptions(form) {
     let categorySelect = form.querySelector('select[name="category"]');
     let p1Select = form.querySelector('select[name="product_name"]');
     let p2Select = form.querySelector('select[name="product_name_2"]');
     if (!p1Select) return;
 
+    let categoryRules = {
+        'Main Pond': ['Crayfish'],
+        'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
+        'Superworm Cabin': ['Superworm'],
+        'Azula': ['Azula']
+    };
+
+    let container = form.querySelector('[data-category-rules]') || form.closest('[data-category-rules]');
+    if (container && container.getAttribute('data-category-rules')) {
+        try {
+            let parsed = JSON.parse(container.getAttribute('data-category-rules'));
+            if (parsed && Object.keys(parsed).length > 0) {
+                categoryRules = parsed;
+            }
+        } catch(e) {}
+    }
+
     let category = categorySelect ? categorySelect.value : 'Main Pond';
-    let allowed = CATEGORY_ALLOWED_PRODUCTS[category] || [];
+    let allowed = categoryRules[category] || [];
 
     let p1Val = p1Select.value;
     let p2Val = p2Select ? p2Select.value : '';
