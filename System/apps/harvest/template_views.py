@@ -370,6 +370,8 @@ def pond_harvest(request, pond_id):
 
     # Clear pond stock and mark as empty
     pond.capacity = 0
+    pond.capacity_2 = 0
+    pond.product_name_2 = ''
     pond.male_quantity = 0
     pond.female_quantity = 0
     pond.status = Pond.Status.EMPTY

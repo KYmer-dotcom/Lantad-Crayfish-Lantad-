@@ -513,17 +513,17 @@
         </button>
     </div>
     <div class="flex-1 overflow-y-auto p-6">
-        <!-- Breeding Pond Transfer Table (Crilings only) -->
+        <!-- Breeding Pond Transfer Table -->
         <div class="harvest-table-wrapper hidden" data-category="Breeding Pond Transfer">
             <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
-                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_crilings_ponds is_transfer=True %}
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_ponds is_transfer=True %}
             </div>
         </div>
 
-        <!-- Breeding Pond Harvest Table (Reproduction only) -->
+        <!-- Breeding Pond Harvest Table -->
         <div class="harvest-table-wrapper hidden" data-category="Breeding Pond Harvest">
             <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
-                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_reproduction_ponds is_harvest=True %}
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_ponds is_harvest=True %}
             </div>
         </div>
 

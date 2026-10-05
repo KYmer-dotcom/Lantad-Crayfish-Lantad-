@@ -2,7 +2,7 @@
     <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
         <tr>
             <th class="px-6 py-4">Name / ID</th>
-            <th class="px-6 py-4">Product / Type</th>
+            <th class="px-6 py-4">Product / Stock</th>
             <th class="px-6 py-4 text-center">Status</th>
             <th class="px-6 py-4 text-right">Action</th>
         </tr>
@@ -13,25 +13,28 @@
             <td class="px-6 py-4">
                 <div class="font-bold">{{ pond.name }}</div>
                 <div class="text-xs text-[#a0ac96] mt-1">
-                    {% if pond.location == 'Breeding Pond' and pond.breeding_type == 'Reproduction' %}
-                        Qty: {{ pond.female_quantity|default:pond.capacity|default:"0" }} Females
-                    {% elif pond.shelf_position and pond.location == 'Superworm Cabin' %}
+                    {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
+                    {% elif pond.location == 'Breeding Pond' %}
+                        <span>Qty 1: {{ pond.capacity|default:"0" }}</span>
+                        {% if pond.capacity_2 %}
+                        <span class="ml-2">Qty 2: {{ pond.capacity_2 }}</span>
+                        {% endif %}
                     {% else %}
-                        Qty: {{ pond.capacity|default:pond.female_quantity|default:"0" }}
+                        Qty: {{ pond.capacity|default:"0" }}
                     {% endif %}
                 </div>
             </td>
             <td class="px-6 py-4">
                 <div class="text-sm font-medium text-stone-200">{{ pond.product_name|default:"-" }}</div>
-                {% if pond.breeding_type %}
-                <div class="text-xs text-[#a0ac96]">{{ pond.breeding_type }}</div>
+                {% if pond.product_name_2 %}
+                <div class="text-xs text-[#cca43b]">{{ pond.product_name_2 }}</div>
                 {% elif pond.transfer_date %}
                 <div class="text-xs text-[#a0ac96] font-mono">Date: {{ pond.transfer_date }}</div>
                 {% endif %}
             </td>
             <td class="px-6 py-4 text-center">
-                {% if pond.status == 'empty' or pond.capacity == 0 and not pond.female_quantity %}
+                {% if pond.status == 'empty' or pond.capacity == 0 and not pond.capacity_2 %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-white/5 text-stone-400 border border-white/10 uppercase">Empty</span>
                 {% elif pond.is_harvest_due %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Ready</span>
@@ -40,10 +43,10 @@
                 {% endif %}
             </td>
             <td class="px-6 py-4 text-right">
-                {% if pond.status == 'empty' or pond.capacity == 0 and not pond.female_quantity %}
+                {% if pond.status == 'empty' or pond.capacity == 0 and not pond.capacity_2 %}
                     <span class="text-xs text-[#a0ac96]">None</span>
                 {% elif pond.is_harvest_due %}
-                    {% if pond.breeding_type == 'Crilings' or pond.product_name == 'Crilings' %}
+                    {% if is_transfer %}
                     <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onsubmit="return confirm('Confirm transfer of Crilings from {{ pond.name|escapejs }} to Main Pond?');">
                         {% csrf_token %}
                         <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider">

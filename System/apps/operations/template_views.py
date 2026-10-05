@@ -61,6 +61,23 @@ class PondForm(forms.ModelForm):
         }),
         label="Product"
     )
+    product_name_2 = forms.ChoiceField(
+        choices=[],
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none'
+        }),
+        label="Product 2"
+    )
+    capacity_2 = forms.IntegerField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none',
+            'placeholder': 'Quantity 2',
+            'min': 0,
+        }),
+        label="Quantity 2"
+    )
     category = forms.ChoiceField(
         choices=[
             ('Main Pond', 'Main Pond'),
@@ -113,7 +130,7 @@ class PondForm(forms.ModelForm):
     )
     class Meta:
         model = Pond
-        fields = ['name', 'capacity', 'product_name', 'transfer_date', 'breeding_type', 'female_quantity', 'shelf_position', 'status']
+        fields = ['name', 'capacity', 'product_name', 'capacity_2', 'product_name_2', 'transfer_date', 'breeding_type', 'female_quantity', 'shelf_position', 'status']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none uppercase',
@@ -131,12 +148,16 @@ class PondForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['capacity'].min_value = 0
         self.fields['capacity'].required = False
+        self.fields['capacity_2'].min_value = 0
+        self.fields['capacity_2'].required = False
         from django.utils import timezone
         today_str = timezone.localdate().strftime('%Y-%m-%d')
         self.fields['transfer_date'].widget.attrs['min'] = today_str
         from apps.sales.models import Product
         products = Product.objects.filter(is_active=True).order_by('name')
-        self.fields['product_name'].choices = [('', '---------')] + [(p.name, p.name) for p in products]
+        product_choices = [('', '---------')] + [(p.name, p.name) for p in products]
+        self.fields['product_name'].choices = product_choices
+        self.fields['product_name_2'].choices = product_choices
 
     def clean_name(self):
         return self.cleaned_data.get('name', '').upper()
@@ -153,21 +174,9 @@ class PondForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         category = cleaned_data.get('category')
-        breeding_type = cleaned_data.get('breeding_type')
         capacity = cleaned_data.get('capacity')
-        female_quantity = cleaned_data.get('female_quantity')
         
-        if category == 'Breeding Pond':
-            if not breeding_type:
-                self.add_error('breeding_type', 'Type is required for Breeding Ponds.')
-            
-            if breeding_type == 'Reproduction':
-                if female_quantity is None:
-                    self.add_error('female_quantity', 'Female quantity is required for Reproduction ponds.')
-            else:
-                if capacity is None:
-                    self.add_error('capacity', 'Quantity is required.')
-        elif category == 'Superworm Cabin':
+        if category == 'Superworm Cabin':
             # Skip standard capacity for Superworm Cabin, handled via shelf_position
             pass
         else:
@@ -293,11 +302,12 @@ def pond_create(request):
         category = form.cleaned_data.get('category') or 'Main Pond'
         pond.location = category
         pond.capacity = pond.capacity or 0
+        pond.capacity_2 = pond.capacity_2 or 0
         pond.female_quantity = pond.female_quantity or 0
         pond.size = pond.size or 0
         pond.depth = pond.depth or 0
         if not pond.status:
-            pond.status = Pond.Status.ACTIVE if pond.capacity > 0 else Pond.Status.EMPTY
+            pond.status = Pond.Status.ACTIVE if (pond.capacity > 0 or pond.capacity_2 > 0) else Pond.Status.EMPTY
 
         farm = get_accessible_farms(request.user).first()
         if not farm:

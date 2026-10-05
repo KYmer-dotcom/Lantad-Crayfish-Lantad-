@@ -59,11 +59,13 @@ class Pond(models.Model):
     
     # Dynamic form fields
     product_name = models.CharField(max_length=100, blank=True)
+    product_name_2 = models.CharField(max_length=100, blank=True, help_text="Second product name for dual tracking (e.g. Crilings)")
     transfer_date = models.DateField(null=True, blank=True)
     last_sanitized_date = models.DateField(null=True, blank=True, help_text="Date when this pond or tank was last sanitized")
     breeding_type = models.CharField(max_length=50, blank=True, help_text="e.g. Reproduction, Crilings")
     male_quantity = models.IntegerField(null=True, blank=True, default=0)
     female_quantity = models.IntegerField(null=True, blank=True, default=0)
+    capacity_2 = models.IntegerField(null=True, blank=True, default=0, help_text="Quantity for second product")
     shelf_position = models.CharField(max_length=50, blank=True, help_text="For Superworm Cabin, e.g. Left-1-1")
 
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.EMPTY)

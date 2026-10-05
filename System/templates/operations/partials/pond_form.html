@@ -8,28 +8,24 @@
         {{ form.name }}
     </div>
     <div id="field-product">
-        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product *</label>
+        <label id="label-product" class="block text-xs font-semibold text-[#a0ac96] mb-1">Product *</label>
         {{ form.product_name }}
     </div>
-    
-    <!-- Breeding Type Field -->
-    <div id="field-type" class="hidden">
-        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Type *</label>
-        {{ form.breeding_type }}
-    </div>
 
-    <!-- Female Field -->
-    <div id="field-gender" class="hidden grid grid-cols-1 gap-4">
-        <div>
-            <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Female Quantity *</label>
-            {{ form.female_quantity }}
-        </div>
-    </div>
-
-    <!-- Standard Quantity Field -->
+    <!-- Standard / Product 1 Quantity Field -->
     <div id="field-quantity">
         <label id="label-quantity" class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity *</label>
         {{ form.capacity }}
+    </div>
+
+    <!-- Product 2 & Quantity 2 (Only for Breeding Pond) -->
+    <div id="field-product-2" class="hidden">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product 2 (Crilings / Dual Tracking)</label>
+        {{ form.product_name_2 }}
+    </div>
+    <div id="field-quantity-2" class="hidden">
+        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity 2</label>
+        {{ form.capacity_2 }}
     </div>
 
     <!-- Date Transferred Field -->
@@ -55,57 +51,38 @@ function togglePondFormFields() {
     let forms = document.querySelectorAll('form');
     forms.forEach(form => {
         let categorySelect = form.querySelector('select[name="category"]');
-        let typeSelect = form.querySelector('select[name="breeding_type"]');
-        
         if (!categorySelect) return;
         
         let updateFields = () => {
             let category = categorySelect.value;
-            let type = typeSelect ? typeSelect.value : '';
             
-            let fieldType = form.querySelector('#field-type');
-            let fieldGender = form.querySelector('#field-gender');
-            let fieldQuantity = form.querySelector('#field-quantity');
-            let fieldProduct = form.querySelector('#field-product');
-            
-            if (!fieldType) return;
+            let fieldProduct2 = form.querySelector('#field-product-2');
+            let fieldQuantity2 = form.querySelector('#field-quantity-2');
+            let labelProduct = form.querySelector('#label-product');
+            let labelQuantity = form.querySelector('#label-quantity');
+            let labelDate = form.querySelector('#label-date');
+            let capacityInput = form.querySelector('input[name="capacity"]');
             
             if (category === 'Breeding Pond') {
-                fieldType.classList.remove('hidden');
-                if (type === 'Reproduction') {
-                    if (fieldQuantity) fieldQuantity.classList.add('hidden');
-                    if (fieldGender) fieldGender.classList.remove('hidden');
-                } else if (type === 'Crilings') {
-                    if (fieldQuantity) fieldQuantity.classList.remove('hidden');
-                    if (fieldGender) fieldGender.classList.add('hidden');
-                } else {
-                    // If no type selected yet, show quantity by default
-                    if (fieldQuantity) fieldQuantity.classList.remove('hidden');
-                    if (fieldGender) fieldGender.classList.add('hidden');
-                }
-            } else if (category === 'Superworm Cabin') {
-                fieldType.classList.add('hidden');
-                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
-                if (fieldGender) fieldGender.classList.add('hidden');
+                if (fieldProduct2) fieldProduct2.classList.remove('hidden');
+                if (fieldQuantity2) fieldQuantity2.classList.remove('hidden');
+                if (labelProduct) labelProduct.textContent = 'Product 1 *';
+                if (labelQuantity) labelQuantity.textContent = 'Quantity 1 *';
+                if (capacityInput) capacityInput.placeholder = 'Quantity 1';
             } else {
-                fieldType.classList.add('hidden');
-                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
-                if (fieldGender) fieldGender.classList.add('hidden');
-            }
-            
-            let capacityInput = form.querySelector('input[name="capacity"]');
-            let labelQuantity = form.querySelector('#label-quantity');
-            if (labelQuantity) {
+                if (fieldProduct2) fieldProduct2.classList.add('hidden');
+                if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
+                if (labelProduct) labelProduct.textContent = 'Product *';
+                
                 if (category === 'Superworm Cabin') {
-                    labelQuantity.textContent = 'Darkling Beetles *';
+                    if (labelQuantity) labelQuantity.textContent = 'Darkling Beetles *';
                     if (capacityInput) capacityInput.placeholder = 'Darkling Beetles';
                 } else {
-                    labelQuantity.textContent = 'Quantity *';
+                    if (labelQuantity) labelQuantity.textContent = 'Quantity *';
                     if (capacityInput) capacityInput.placeholder = 'Quantity';
                 }
             }
             
-            let labelDate = form.querySelector('#label-date');
             if (labelDate) {
                 if (category === 'Superworm Cabin') {
                     labelDate.textContent = 'Production Date';
@@ -123,10 +100,6 @@ function togglePondFormFields() {
 
         categorySelect.removeEventListener('change', updateFields);
         categorySelect.addEventListener('change', updateFields);
-        if (typeSelect) {
-            typeSelect.removeEventListener('change', updateFields);
-            typeSelect.addEventListener('change', updateFields);
-        }
         
         updateFields();
     });

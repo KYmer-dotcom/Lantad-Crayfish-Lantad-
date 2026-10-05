@@ -40,9 +40,20 @@
             </div>
         </div>
         <p class="mt-4 text-base font-bold text-stone-100">{{ pond.name }}</p>
-        {% if pond.product_name %}
-        <p class="mt-1 text-xs text-[#a0ac96]">Product: {{ pond.product_name }}</p>
+        
+        {% if pond.location == 'Breeding Pond' %}
+            {% if pond.product_name %}
+            <p class="mt-1 text-xs text-[#a0ac96] truncate">Product 1: <span class="text-stone-300 font-medium">{{ pond.product_name }}</span></p>
+            {% endif %}
+            {% if pond.product_name_2 %}
+            <p class="mt-0.5 text-xs text-[#a0ac96] truncate">Product 2: <span class="text-stone-300 font-medium">{{ pond.product_name_2 }}</span></p>
+            {% endif %}
+        {% else %}
+            {% if pond.product_name %}
+            <p class="mt-1 text-xs text-[#a0ac96]">Product: {{ pond.product_name }}</p>
+            {% endif %}
         {% endif %}
+
         {% if pond.transfer_date %}
             {% if pond.location == 'Superworm Cabin' %}
             <p class="mt-0.5 text-xs text-[#a0ac96]">Produced: {{ pond.transfer_date }}</p>
@@ -50,15 +61,19 @@
             <p class="mt-0.5 text-xs text-[#a0ac96]">Transferred: {{ pond.transfer_date }}</p>
             {% endif %}
         {% endif %}
-        {% if pond.breeding_type %}
-        <p class="mt-0.5 text-xs text-[#a0ac96]">Type: {{ pond.breeding_type }}</p>
-        {% endif %}
         
         <div class="mt-4 flex flex-col gap-1 text-xs text-[#a0ac96]">
-            {% if pond.location == 'Breeding Pond' and pond.breeding_type == 'Reproduction' %}
-            <div class="flex items-center gap-2">
-                <span class="font-bold text-[#cca43b]">{{ pond.female_quantity|default:"0" }}</span> <span>Females</span>
+            {% if pond.location == 'Breeding Pond' %}
+            <div class="flex items-center justify-between border-t border-white/5 pt-2 mt-1">
+                <span>{{ pond.product_name|default:"Product 1" }}:</span>
+                <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
             </div>
+            {% if pond.product_name_2 or pond.capacity_2 %}
+            <div class="flex items-center justify-between">
+                <span>{{ pond.product_name_2|default:"Product 2" }}:</span>
+                <span class="font-bold text-[#cca43b]">{{ pond.capacity_2|default:"0" }}</span>
+            </div>
+            {% endif %}
             {% elif pond.location == 'Superworm Cabin' %}
             <div class="flex items-center gap-2">
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>Darkling Beetles</span>
@@ -81,4 +96,3 @@
         <p class="mt-3 text-sm font-bold">Add Record +</p>
     </button>
 </div>
-
