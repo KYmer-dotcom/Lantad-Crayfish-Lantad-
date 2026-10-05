@@ -362,6 +362,17 @@ def pond_harvest(request, pond_id):
             allocations = json.loads(allocations_raw)
         except Exception:
             allocations = []
+            
+    if not allocations:
+        prod_ids = request.POST.getlist('allocation_product_ids[]') or request.POST.getlist('allocation_product_ids')
+        qtys = request.POST.getlist('allocation_quantities[]') or request.POST.getlist('allocation_quantities')
+        for pid, q in zip(prod_ids, qtys):
+            try:
+                q_int = int(q)
+                if q_int > 0 and pid:
+                    allocations.append({'product_id': pid, 'quantity': q_int})
+            except (ValueError, TypeError):
+                pass
     
     def credit_to_inventory(stock_name, qty):
         if is_transfer or qty <= 0:
@@ -401,12 +412,21 @@ def pond_harvest(request, pond_id):
         
     if total_allocated_qty > 0:
         harvested_qty = total_allocated_qty
+    elif request.POST.get('harvest_quantity'):
+        try:
+            harvested_qty = int(request.POST.get('harvest_quantity'))
+        except (ValueError, TypeError):
+            harvested_qty = 0
     elif target_product == '2':
         harvested_qty = pond.capacity_2 or 0
     elif target_product == '1':
         harvested_qty = pond.capacity or 0
     else:
         harvested_qty = (pond.capacity or 0) + (pond.capacity_2 or 0)
+
+    if harvested_qty <= 0:
+        messages.error(request, "Please enter a valid harvest quantity greater than 0.")
+        return redirect(redirect_target)
 
     prod_name = pond.product_name_2 if target_product == '2' else (pond.product_name or "Stock")
     credited_label = credit_to_inventory(prod_name, harvested_qty)

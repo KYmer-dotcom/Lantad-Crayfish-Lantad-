@@ -771,12 +771,12 @@
 
         row.innerHTML = `
             <div class="flex-1 min-w-0">
-                <select class="harvest-alloc-product w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer" onchange="updateHarvestAllocationSummary()">
+                <select name="allocation_product_ids[]" class="harvest-alloc-product w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer" onchange="updateHarvestAllocationSummary()">
                     ${selectOptions}
                 </select>
             </div>
             <div class="w-24 shrink-0">
-                <input type="number" min="0" max="${currentHarvestTotalQty}" value="${qtyValue}" oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 bg-black/60 px-2.5 py-2 text-xs font-mono font-bold text-center text-white focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
+                <input type="number" name="allocation_quantities[]" min="0" max="${currentHarvestTotalQty}" value="${qtyValue}" oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 bg-black/60 px-2.5 py-2 text-xs font-mono font-bold text-center text-white focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
             </div>
             <div class="w-8 shrink-0 flex justify-center">
                 ${canRemove ? `
