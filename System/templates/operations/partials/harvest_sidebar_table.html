@@ -59,21 +59,6 @@
                 <div class="rounded-lg border border-white/10 overflow-hidden bg-[#021f15]/90">
                     <div class="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
                         <span class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ pond.name }} — Product Details</span>
-                        {% if not is_transfer and pond.product_name_2 %}
-                            {% if pond.location == 'Main Pond' %}
-                            <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', 'all', '{{ pond.product_name|escapejs }}', '{{ pond.capacity|add:pond.capacity_2|default:"0" }}')" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
-                                Harvest All
-                            </button>
-                            {% else %}
-                            <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full harvest of {{ pond.name|escapejs }}?');">
-                                {% csrf_token %}
-                                <input type="hidden" name="target_product" value="all">
-                                <button type="submit" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
-                                    Harvest All
-                                </button>
-                            </form>
-                            {% endif %}
-                        {% endif %}
                     </div>
                     
                     <table class="w-full text-left text-xs text-stone-100">
