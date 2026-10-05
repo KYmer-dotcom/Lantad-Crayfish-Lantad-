@@ -54,7 +54,16 @@
             {% endif %}
         {% endif %}
 
-        {% if pond.transfer_date %}
+        {% if pond.location == 'Main Pond' and pond.transfer_batches.exists %}
+            <div class="mt-2 space-y-1 border-t border-white/5 pt-2">
+                {% for batch in pond.transfer_batches.all %}
+                <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                    <span>Transferred: {{ batch.transfer_date|date:"M. d, Y"|default:"-" }}</span>
+                    <span class="font-bold text-[#cca43b]">{{ batch.quantity }} Qty</span>
+                </div>
+                {% endfor %}
+            </div>
+        {% elif pond.transfer_date %}
             {% if pond.location == 'Superworm Cabin' %}
             <p class="mt-0.5 text-xs text-[#a0ac96]">Produced: {{ pond.transfer_date }}</p>
             {% else %}
@@ -65,12 +74,12 @@
         <div class="mt-4 flex flex-col gap-1 text-xs text-[#a0ac96]">
             {% if pond.location == 'Breeding Pond' %}
             <div class="flex items-center justify-between">
-                <span>{{ pond.product_name|default:"Product 1" }}:</span>
+                <span>{{ pond.product_name|default:"PROD 1" }}:</span>
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
             </div>
             {% if pond.product_name_2 or pond.capacity_2 %}
             <div class="flex items-center justify-between">
-                <span>{{ pond.product_name_2|default:"Product 2" }}:</span>
+                <span>{{ pond.product_name_2|default:"PROD 2" }}:</span>
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity_2|default:"0" }}</span>
             </div>
             {% endif %}
@@ -80,7 +89,7 @@
             </div>
             {% else %}
             <div class="flex items-center gap-2">
-                <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>Quantity</span>
+                <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>{% if pond.location == 'Main Pond' and pond.transfer_batches.count > 1 %}Total Quantity{% else %}Quantity{% endif %}</span>
             </div>
             {% endif %}
         </div>

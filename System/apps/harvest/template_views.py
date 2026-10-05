@@ -425,6 +425,7 @@ def pond_harvest(request, pond_id):
         pond.status = Pond.Status.EMPTY
         pond.transfer_date = None
         pond.save()
+        pond.transfer_batches.all().delete()
 
         messages.success(request, f"Successfully {action_verb} and cleared {pond_name}! Quantity has been cleared and pond reset to Empty.")
         return redirect(redirect_target)

@@ -21,7 +21,7 @@ from apps.accounts.access import get_accessible_farms, get_accessible_ponds, is_
 from apps.accounts.models import User
 from apps.stock.models import Species
 from apps.feed.models import FeedType
-from .models import Farm, Pond, PondFeedingLog
+from .models import Farm, Pond, PondFeedingLog, PondTransferBatch
 
 
 class FarmForm(forms.ModelForm):
@@ -676,12 +676,35 @@ def pond_transfer(request):
                 source_pond.transfer_date = None
         source_pond.save()
         
+    transfer_date_today = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
+    
+    # If dest_pond already had previous stock without batch tracking, preserve initial batch
+    if not dest_pond.transfer_batches.exists() and (dest_pond.capacity or 0) > 0 and dest_pond.transfer_date:
+        PondTransferBatch.objects.create(
+            pond=dest_pond,
+            product_name=dest_pond.product_name or prod_name,
+            quantity=dest_pond.capacity,
+            transfer_date=dest_pond.transfer_date,
+            notes="Initial stock"
+        )
+
     # Add to destination pond
     dest_pond.product_name = prod_name
     dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
     dest_pond.status = Pond.Status.ACTIVE
-    dest_pond.transfer_date = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
+    dest_pond.transfer_date = transfer_date_today
     dest_pond.save()
+    
+    # Create new transfer batch record
+    PondTransferBatch.objects.create(
+        pond=dest_pond,
+        source_pond=source_pond,
+        product_name=prod_name,
+        quantity=transfer_qty,
+        transfer_date=transfer_date_today,
+        transferred_by=request.user,
+        notes=f"Transferred from {source_pond.name}"
+    )
     
     # Audit log if available
     try:

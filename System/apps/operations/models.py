@@ -210,3 +210,23 @@ class PondFeedingLog(models.Model):
 
     def __str__(self):
         return f"{self.pond.name} - Fed: {self.fed} at {self.recorded_at.strftime('%Y-%m-%d %H:%M')}"
+
+
+class PondTransferBatch(models.Model):
+    """Tracks individual transfer batches and dates into a pond (e.g. from Breeding Pond to Main Pond)."""
+    pond = models.ForeignKey(Pond, on_delete=models.CASCADE, related_name='transfer_batches')
+    source_pond = models.ForeignKey(Pond, on_delete=models.SET_NULL, null=True, blank=True, related_name='outgoing_transfers')
+    product_name = models.CharField(max_length=100, default='Crilings')
+    quantity = models.IntegerField(default=0)
+    transfer_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    transferred_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Pond Transfer Batch'
+        verbose_name_plural = 'Pond Transfer Batches'
+        ordering = ['transfer_date', 'created_at']
+
+    def __str__(self):
+        return f"{self.pond.name} - {self.quantity} {self.product_name} on {self.transfer_date}"
