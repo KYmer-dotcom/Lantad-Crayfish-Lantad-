@@ -633,16 +633,25 @@
 
             <!-- Destination Pond Selector -->
             <div>
-                <label for="transfer-destination-pond" class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">
-                    Destination Main Pond <span class="text-rose-500">*</span>
+                <label id="transfer-destination-label" for="transfer-destination-pond" class="block text-xs font-bold uppercase tracking-wider text-[#a0ac96] mb-1.5">
+                    Destination Pond <span class="text-rose-500">*</span>
                 </label>
                 <select name="destination_pond_id" id="transfer-destination-pond" required class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none cursor-pointer">
-                    <option value="">-- Choose Main Pond --</option>
-                    {% for mp in main_ponds %}
-                    <option value="{{ mp.id }}">
-                        {{ mp.name }} {% if mp.status == 'empty' or mp.capacity == 0 %}(Empty / Unused){% else %}(Current: {{ mp.product_name|default:"Stock" }} - {{ mp.capacity }}){% endif %}
-                    </option>
-                    {% endfor %}
+                    <option value="">-- Choose Destination Pond --</option>
+                    <optgroup id="dest-group-main" label="Main Ponds">
+                        {% for mp in main_ponds %}
+                        <option value="{{ mp.id }}" data-category="Main Pond">
+                            {{ mp.name }} {% if mp.status == 'empty' or mp.capacity == 0 %}(Empty / Unused){% else %}(Current: {{ mp.product_name|default:"Stock" }} - {{ mp.capacity }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </optgroup>
+                    <optgroup id="dest-group-breeding" label="Breeding Ponds">
+                        {% for bp in breeding_ponds %}
+                        <option value="{{ bp.id }}" data-category="Breeding Pond">
+                            {{ bp.name }} {% if bp.status == 'empty' or bp.capacity == 0 %}(Empty / Unused){% else %}(Current PROD 1: {{ bp.product_name|default:"Breeder Crayfish" }} - {{ bp.capacity|default:"0" }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </optgroup>
                 </select>
             </div>
 
@@ -667,7 +676,7 @@
 </div>
 
 <script>
-    function openPondTransferModal(pondId, pondName, targetProduct, productName, quantity) {
+    function openPondTransferModal(pondId, pondName, targetProduct, productName, quantity, sourceLocation = '') {
         const sourceIdEl = document.getElementById('transfer-source-pond-id');
         const targetProdEl = document.getElementById('transfer-target-product');
         const sourceNameEl = document.getElementById('transfer-source-pond-name');
@@ -676,6 +685,25 @@
         const maxQtyEl = document.getElementById('transfer-max-qty');
         const qtyInput = document.getElementById('transfer-quantity-input');
         const destSelect = document.getElementById('transfer-destination-pond');
+        const modalTitleEl = document.querySelector('#transfer-pond-modal h3');
+        const modalSubtitleEl = document.querySelector('#transfer-pond-modal p');
+        const destLabelEl = document.getElementById('transfer-destination-label');
+        const mainGroup = document.getElementById('dest-group-main');
+        const breedingGroup = document.getElementById('dest-group-breeding');
+
+        if (sourceLocation === 'Main Pond') {
+            if (modalTitleEl) modalTitleEl.textContent = 'Transfer to Breeding Pond';
+            if (modalSubtitleEl) modalSubtitleEl.textContent = 'Select a destination Breeding Pond to receive this stock (as Breeder stock)';
+            if (destLabelEl) destLabelEl.innerHTML = 'Destination Breeding Pond <span class="text-rose-500">*</span>';
+            if (mainGroup) mainGroup.classList.add('hidden');
+            if (breedingGroup) breedingGroup.classList.remove('hidden');
+        } else {
+            if (modalTitleEl) modalTitleEl.textContent = 'Transfer to Main Pond';
+            if (modalSubtitleEl) modalSubtitleEl.textContent = 'Select a destination Main Pond to receive this stock';
+            if (destLabelEl) destLabelEl.innerHTML = 'Destination Main Pond <span class="text-rose-500">*</span>';
+            if (mainGroup) mainGroup.classList.remove('hidden');
+            if (breedingGroup) breedingGroup.classList.add('hidden');
+        }
 
         if (sourceIdEl) sourceIdEl.value = pondId;
         if (targetProdEl) targetProdEl.value = targetProduct || '1';
@@ -690,6 +718,21 @@
         }
         
         if (destSelect) {
+            Array.from(destSelect.options).forEach(opt => {
+                if (!opt.value) {
+                    opt.hidden = false;
+                    opt.disabled = false;
+                    return;
+                }
+                if (opt.value === pondId) {
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    return;
+                }
+                let isAllowed = sourceLocation === 'Main Pond' ? (opt.dataset.category === 'Breeding Pond') : (opt.dataset.category === 'Main Pond');
+                opt.hidden = !isAllowed;
+                opt.disabled = !isAllowed;
+            });
             destSelect.value = '';
         }
         

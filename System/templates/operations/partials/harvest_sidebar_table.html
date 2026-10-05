@@ -102,7 +102,7 @@
                                             Locked
                                         </button>
                                     {% elif is_transfer %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"PROD 1"|escapejs }}', '{{ pond.capacity|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"PROD 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
                                     {% elif pond.is_harvest_due %}
@@ -138,7 +138,7 @@
                                     {% if pond.status == 'empty' or pond.capacity_2 == 0 %}
                                         <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
                                     {% elif is_transfer %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"PROD 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"PROD 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
                                     {% elif pond.is_harvest_due %}

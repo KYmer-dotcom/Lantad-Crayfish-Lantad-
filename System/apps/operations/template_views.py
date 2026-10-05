@@ -736,33 +736,44 @@ def pond_transfer(request):
         
     transfer_date_today = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
     
-    # If dest_pond already had previous stock without batch tracking, preserve initial batch
-    if not dest_pond.transfer_batches.exists() and (dest_pond.capacity or 0) > 0 and dest_pond.transfer_date:
+    if dest_pond.location == 'Breeding Pond':
+        # Main Pond stock transferred into Breeding Pond becomes Product 1 (Breeder Crayfish)
+        dest_prod_name = 'Breeder Crayfish'
+        dest_pond.product_name = dest_prod_name
+        dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
+        dest_pond.status = Pond.Status.ACTIVE
+        dest_pond.transfer_date = transfer_date_today
+        dest_pond.save()
+    else:
+        # Stock transferred into Main Pond
+        dest_prod_name = 'Crayfish'
+        # If dest_pond already had previous stock without batch tracking, preserve initial batch
+        if not dest_pond.transfer_batches.exists() and (dest_pond.capacity or 0) > 0 and dest_pond.transfer_date:
+            PondTransferBatch.objects.create(
+                pond=dest_pond,
+                product_name=dest_pond.product_name or dest_prod_name,
+                quantity=dest_pond.capacity,
+                transfer_date=dest_pond.transfer_date,
+                notes="Initial stock"
+            )
+
+        # Add to destination Main Pond
+        dest_pond.product_name = dest_prod_name
+        dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
+        dest_pond.status = Pond.Status.ACTIVE
+        dest_pond.transfer_date = transfer_date_today
+        dest_pond.save()
+        
+        # Create new transfer batch record for Main Pond
         PondTransferBatch.objects.create(
             pond=dest_pond,
-            product_name=dest_pond.product_name or prod_name,
-            quantity=dest_pond.capacity,
-            transfer_date=dest_pond.transfer_date,
-            notes="Initial stock"
+            source_pond=source_pond,
+            product_name=dest_prod_name,
+            quantity=transfer_qty,
+            transfer_date=transfer_date_today,
+            transferred_by=request.user,
+            notes=f"Transferred from {source_pond.name}"
         )
-
-    # Add to destination pond
-    dest_pond.product_name = prod_name
-    dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
-    dest_pond.status = Pond.Status.ACTIVE
-    dest_pond.transfer_date = transfer_date_today
-    dest_pond.save()
-    
-    # Create new transfer batch record
-    PondTransferBatch.objects.create(
-        pond=dest_pond,
-        source_pond=source_pond,
-        product_name=prod_name,
-        quantity=transfer_qty,
-        transfer_date=transfer_date_today,
-        transferred_by=request.user,
-        notes=f"Transferred from {source_pond.name}"
-    )
     
     # Audit log if available
     try:
