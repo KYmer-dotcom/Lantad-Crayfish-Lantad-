@@ -52,8 +52,6 @@
 
 <script>
 function togglePondFormFields() {
-    // Attempt to find dropdowns within the current form
-    // Since this partial is used in modals and pages, we should look within its closest form
     let forms = document.querySelectorAll('form');
     forms.forEach(form => {
         let categorySelect = form.querySelector('select[name="category"]');
@@ -70,41 +68,37 @@ function togglePondFormFields() {
             let fieldQuantity = form.querySelector('#field-quantity');
             let fieldProduct = form.querySelector('#field-product');
             
-            if (!fieldType) return; // safeguard
-            
-            // Default visibility
-            fieldType.classList.add('hidden');
-            fieldGender.classList.add('hidden');
-            fieldQuantity.classList.remove('hidden');
-            fieldProduct.classList.remove('hidden');
+            if (!fieldType) return;
             
             if (category === 'Breeding Pond') {
                 fieldType.classList.remove('hidden');
                 if (type === 'Reproduction') {
-                    fieldQuantity.classList.add('hidden');
-                    fieldGender.classList.remove('hidden');
+                    if (fieldQuantity) fieldQuantity.classList.add('hidden');
+                    if (fieldGender) fieldGender.classList.remove('hidden');
                 } else if (type === 'Crilings') {
-                    fieldQuantity.classList.remove('hidden');
-                    fieldGender.classList.add('hidden');
+                    if (fieldQuantity) fieldQuantity.classList.remove('hidden');
+                    if (fieldGender) fieldGender.classList.add('hidden');
                 } else {
-                    fieldQuantity.classList.add('hidden');
+                    // If no type selected yet, show quantity by default
+                    if (fieldQuantity) fieldQuantity.classList.remove('hidden');
+                    if (fieldGender) fieldGender.classList.add('hidden');
                 }
             } else if (category === 'Superworm Cabin') {
                 fieldType.classList.add('hidden');
-                fieldQuantity.classList.remove('hidden');
-                fieldGender.classList.add('hidden');
+                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
+                if (fieldGender) fieldGender.classList.add('hidden');
+            } else {
+                fieldType.classList.add('hidden');
+                if (fieldQuantity) fieldQuantity.classList.remove('hidden');
+                if (fieldGender) fieldGender.classList.add('hidden');
             }
             
             let capacityInput = form.querySelector('input[name="capacity"]');
-            
             let labelQuantity = form.querySelector('#label-quantity');
             if (labelQuantity) {
                 if (category === 'Superworm Cabin') {
                     labelQuantity.textContent = 'Darkling Beetles *';
                     if (capacityInput) capacityInput.placeholder = 'Darkling Beetles';
-                } else if (category === 'Azula') {
-                    labelQuantity.textContent = 'Quantity *';
-                    if (capacityInput) capacityInput.placeholder = 'Quantity';
                 } else {
                     labelQuantity.textContent = 'Quantity *';
                     if (capacityInput) capacityInput.placeholder = 'Quantity';
@@ -118,6 +112,8 @@ function togglePondFormFields() {
                 } else {
                     labelDate.textContent = 'Date Transferred';
                 }
+            }
+
             let dateInput = form.querySelector('input[name="transfer_date"]');
             if (dateInput) {
                 let todayStr = new Date().toISOString().split('T')[0];
@@ -125,16 +121,17 @@ function togglePondFormFields() {
             }
         };
 
+        categorySelect.removeEventListener('change', updateFields);
         categorySelect.addEventListener('change', updateFields);
-        if (typeSelect) typeSelect.addEventListener('change', updateFields);
+        if (typeSelect) {
+            typeSelect.removeEventListener('change', updateFields);
+            typeSelect.addEventListener('change', updateFields);
+        }
         
-        // Initial setup
         updateFields();
     });
 }
 
-// Run initially
 document.addEventListener("DOMContentLoaded", togglePondFormFields);
-// Also run when called by HTMX or modals
 togglePondFormFields();
 </script>
