@@ -220,9 +220,11 @@ class PondForm(forms.ModelForm):
 @login_required
 def ponds_list(request):
     """List all farms and ponds"""
+    from django.db.models import Q
     PondTransferBatch.objects.filter(pond__capacity__lte=0).delete()
     PondTransferBatch.objects.filter(quantity__lte=0).delete()
-    Pond.objects.filter(capacity__lte=0, capacity_2__lte=0).exclude(status='empty').update(status='empty', transfer_date=None)
+    Pond.objects.filter(capacity__lte=0, capacity_2__lte=0).exclude(status__in=['empty', 'maintenance']).update(status='empty', transfer_date=None)
+    Pond.objects.filter(Q(capacity__gt=0) | Q(capacity_2__gt=0), status='empty').update(status='active')
     
     farms = get_accessible_farms(request.user)
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
@@ -402,6 +404,11 @@ def pond_edit(request, pond_id):
         if form.is_valid():
             pond = form.save(commit=False)
             pond.location = form.cleaned_data.get('category', 'Main Pond')
+            if (pond.capacity or 0) <= 0 and (pond.capacity_2 or 0) <= 0 and pond.status != Pond.Status.MAINTENANCE:
+                pond.status = Pond.Status.EMPTY
+                pond.transfer_date = None
+            elif ((pond.capacity or 0) > 0 or (pond.capacity_2 or 0) > 0) and pond.status != Pond.Status.MAINTENANCE:
+                pond.status = Pond.Status.ACTIVE
             pond.save()
             messages.success(request, f'Record "{pond.name}" updated successfully!')
             if pond.location == 'Azula':
