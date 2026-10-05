@@ -143,90 +143,180 @@
             </button>
         </div>
 
-        <!-- Detail Table with Enhanced Table (DataTables Search, Entries, Info) -->
-        <div class="mt-8 overflow-hidden rounded-lg border border-white/10 bg-black/20">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-[#a0ac96] enhanced-table">
-                    <thead class="border-b border-white/10 bg-white/5 text-xs uppercase font-black tracking-wider text-[#a0ac96]">
-                        <tr>
-                            <th scope="col" class="px-6 py-4 font-black text-white">Product</th>
-                            <th scope="col" class="px-6 py-4 font-black text-white">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        {% for product in products %}
-                        <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-{{ product.id }}')">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    {% if product.accent_color == 'cyan' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-800/50 bg-cyan-900/20 text-lg">
-                                    {% elif product.accent_color == 'emerald' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-800/50 bg-emerald-900/20 text-lg">
-                                    {% elif product.accent_color == 'amber' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-amber-800/50 bg-amber-900/20 text-lg">
-                                    {% elif product.accent_color == 'rose' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-800/50 bg-rose-900/20 text-lg">
-                                    {% elif product.accent_color == 'violet' %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-violet-800/50 bg-violet-900/20 text-lg">
-                                    {% else %}
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-lg">
-                                    {% endif %}
-                                        {% if product.icon == 'shrimp' %}🦐
-                                        {% elif product.icon == 'lab' %}🧪
-                                        {% elif product.icon == 'leaf' %}🌿
-                                        {% elif product.icon == 'insect' or product.icon == 'box' %}🪲
-                                        {% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱
-                                        {% else %}🐟{% endif %}
+        <!-- Dual Tables Beside Each Other -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <!-- Table 1 (Left) -->
+            <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-[#a0ac96] enhanced-table">
+                        <thead class="border-b border-white/10 bg-white/5 text-xs uppercase font-black tracking-wider text-[#a0ac96]">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 font-black text-white">Product</th>
+                                <th scope="col" class="px-6 py-4 font-black text-white">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for product in products %}
+                            <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-1-{{ product.id }}')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        {% if product.accent_color == 'cyan' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-800/50 bg-cyan-900/20 text-lg">
+                                        {% elif product.accent_color == 'emerald' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-800/50 bg-emerald-900/20 text-lg">
+                                        {% elif product.accent_color == 'amber' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-amber-800/50 bg-amber-900/20 text-lg">
+                                        {% elif product.accent_color == 'rose' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-800/50 bg-rose-900/20 text-lg">
+                                        {% elif product.accent_color == 'violet' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-violet-800/50 bg-violet-900/20 text-lg">
+                                        {% else %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-lg">
+                                        {% endif %}
+                                            {% if product.icon == 'shrimp' %}🦐
+                                            {% elif product.icon == 'lab' %}🧪
+                                            {% elif product.icon == 'leaf' %}🌿
+                                            {% elif product.icon == 'insect' or product.icon == 'box' %}🪲
+                                            {% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱
+                                            {% else %}🐟{% endif %}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-medium text-stone-100">{{ product.name }}</span>
+                                            <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="font-medium text-stone-100">{{ product.name }}</span>
-                                        <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
+                                </td>
+                                <td class="px-6 py-4">{{ product.notes|default:"No description provided." }}</td>
+                            </tr>
+                            <tr id="sub-table-1-{{ product.id }}" class="bg-black/20 hidden">
+                                <td colspan="2" class="px-6 py-3">
+                                    <div class="rounded-lg border border-white/5 bg-black/40 p-3">
+                                        <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Operations Using This Product</p>
+                                        <table class="w-full text-xs text-[#a0ac96]">
+                                            <thead class="border-b border-white/5 text-left text-[10px] uppercase">
+                                                <tr>
+                                                    <th class="py-2 font-medium text-white">Operation</th>
+                                                    <th class="py-2 text-center font-medium text-white">Quantity</th>
+                                                    <th class="py-2 text-right font-medium text-white">Transferred</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/5 font-mono">
+                                                {% for op in product.used_in_operations %}
+                                                <tr>
+                                                    <td class="py-2">
+                                                        <div class="font-bold text-stone-300">{{ op.name }}</div>
+                                                        <div class="text-[10px] text-[#a0ac96]">{{ op.location }}</div>
+                                                    </td>
+                                                    <td class="py-2 text-center text-[#cca43b] font-bold">{{ op.capacity }}</td>
+                                                    <td class="py-2 text-right text-[#a0ac96]">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="3" class="py-2 text-center font-medium text-stone-500 italic font-sans">Not used in any operations</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">{{ product.notes|default:"No description provided." }}</td>
-                        </tr>
-                        <tr id="sub-table-{{ product.id }}" class="bg-black/20 hidden">
-                            <td colspan="2" class="px-6 py-3">
-                                <div class="rounded-lg border border-white/5 bg-black/40 p-3">
-                                    <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Operations Using This Product</p>
-                                    <table class="w-full text-xs text-[#a0ac96]">
-                                        <thead class="border-b border-white/5 text-left text-[10px] uppercase">
-                                            <tr>
-                                                <th class="py-2 font-medium text-white">Operation</th>
-                                                <th class="py-2 text-center font-medium text-white">Quantity</th>
-                                                <th class="py-2 text-right font-medium text-white">Transferred</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-white/5 font-mono">
-                                            {% for op in product.used_in_operations %}
-                                            <tr>
-                                                <td class="py-2">
-                                                    <div class="font-bold text-stone-300">{{ op.name }}</div>
-                                                    <div class="text-[10px] text-[#a0ac96]">{{ op.location }}</div>
-                                                </td>
-                                                <td class="py-2 text-center text-[#cca43b] font-bold">{{ op.capacity }}</td>
-                                                <td class="py-2 text-right text-[#a0ac96]">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="3" class="py-2 text-center font-medium text-stone-500 italic font-sans">Not used in any operations</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2" class="px-6 py-8 text-center text-[#a0ac96]">
-                                No products yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="px-6 py-8 text-center text-[#a0ac96]">
+                                    No products yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table 2 (Right) -->
+            <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-[#a0ac96] enhanced-table">
+                        <thead class="border-b border-white/10 bg-white/5 text-xs uppercase font-black tracking-wider text-[#a0ac96]">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 font-black text-white">Product</th>
+                                <th scope="col" class="px-6 py-4 font-black text-white">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for product in products %}
+                            <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="toggleSubTable('sub-table-2-{{ product.id }}')">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        {% if product.accent_color == 'cyan' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-800/50 bg-cyan-900/20 text-lg">
+                                        {% elif product.accent_color == 'emerald' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-800/50 bg-emerald-900/20 text-lg">
+                                        {% elif product.accent_color == 'amber' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-amber-800/50 bg-amber-900/20 text-lg">
+                                        {% elif product.accent_color == 'rose' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-800/50 bg-rose-900/20 text-lg">
+                                        {% elif product.accent_color == 'violet' %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-violet-800/50 bg-violet-900/20 text-lg">
+                                        {% else %}
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-lg">
+                                        {% endif %}
+                                            {% if product.icon == 'shrimp' %}🦐
+                                            {% elif product.icon == 'lab' %}🧪
+                                            {% elif product.icon == 'leaf' %}🌿
+                                            {% elif product.icon == 'insect' or product.icon == 'box' %}🪲
+                                            {% elif product.icon == 'worm' or product.icon == 'water' or product.icon == 'bug' %}🪱
+                                            {% else %}🐟{% endif %}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-medium text-stone-100">{{ product.name }}</span>
+                                            <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.total_operations_quantity }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">{{ product.notes|default:"No description provided." }}</td>
+                            </tr>
+                            <tr id="sub-table-2-{{ product.id }}" class="bg-black/20 hidden">
+                                <td colspan="2" class="px-6 py-3">
+                                    <div class="rounded-lg border border-white/5 bg-black/40 p-3">
+                                        <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Operations Using This Product</p>
+                                        <table class="w-full text-xs text-[#a0ac96]">
+                                            <thead class="border-b border-white/5 text-left text-[10px] uppercase">
+                                                <tr>
+                                                    <th class="py-2 font-medium text-white">Operation</th>
+                                                    <th class="py-2 text-center font-medium text-white">Quantity</th>
+                                                    <th class="py-2 text-right font-medium text-white">Transferred</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/5 font-mono">
+                                                {% for op in product.used_in_operations %}
+                                                <tr>
+                                                    <td class="py-2">
+                                                        <div class="font-bold text-stone-300">{{ op.name }}</div>
+                                                        <div class="text-[10px] text-[#a0ac96]">{{ op.location }}</div>
+                                                    </td>
+                                                    <td class="py-2 text-center text-[#cca43b] font-bold">{{ op.capacity }}</td>
+                                                    <td class="py-2 text-right text-[#a0ac96]">{{ op.transfer_date|date:"M d, Y"|default:"-" }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="3" class="py-2 text-center font-medium text-stone-500 italic font-sans">Not used in any operations</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="px-6 py-8 text-center text-[#a0ac96]">
+                                    No products yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

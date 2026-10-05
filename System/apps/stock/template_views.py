@@ -144,12 +144,24 @@ def products_list(request):
                         'capacity': 0,
                         'transfer_date': p.transfer_date
                     }
-                qty = p.female_quantity if (p.female_quantity and (p.breeding_type == 'Reproduction' or p.location == 'Breeding Pond')) else p.capacity
-                if qty is None:
-                    qty = 0
+                qty = p.capacity or 0
                 pond_aggregates[p.name]['capacity'] += qty
                 
                 # Keep the most recent transfer date
+                if p.transfer_date and (not pond_aggregates[p.name]['transfer_date'] or p.transfer_date > pond_aggregates[p.name]['transfer_date']):
+                    pond_aggregates[p.name]['transfer_date'] = p.transfer_date
+
+            if p.product_name_2 == product.name:
+                if p.name not in pond_aggregates:
+                    pond_aggregates[p.name] = {
+                        'name': p.name,
+                        'location': p.location or 'All Locations',
+                        'capacity': 0,
+                        'transfer_date': p.transfer_date
+                    }
+                qty2 = p.capacity_2 or 0
+                pond_aggregates[p.name]['capacity'] += qty2
+                
                 if p.transfer_date and (not pond_aggregates[p.name]['transfer_date'] or p.transfer_date > pond_aggregates[p.name]['transfer_date']):
                     pond_aggregates[p.name]['transfer_date'] = p.transfer_date
 
