@@ -760,7 +760,7 @@
         {% endfor %}
     ];
 
-    function createHarvestAllocationRow(selectedProductId = '', qtyValue = 0, canRemove = false, lockProduct = false) {
+    function createHarvestAllocationRow(selectedProductId = '', qtyValue = 0, canRemove = false, lockProduct = false, lockQty = false) {
         const row = document.createElement('div');
         row.className = 'harvest-alloc-row flex items-center gap-2 p-2.5 rounded-xl border border-white/10 bg-black/40';
 
@@ -778,7 +778,7 @@
                 </select>
             </div>
             <div class="w-24 shrink-0">
-                <input type="number" name="allocation_quantities[]" min="0" max="${currentHarvestTotalQty}" value="${qtyValue}" oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 bg-black/60 px-2.5 py-2 text-xs font-mono font-bold text-center text-white focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
+                <input type="number" name="allocation_quantities[]" min="0" max="${currentHarvestTotalQty}" value="${qtyValue}" ${lockQty ? 'readonly' : ''} oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 ${lockQty ? 'bg-black/80 font-black text-[#cca43b] cursor-default' : 'bg-black/60 font-bold text-white'} px-2.5 py-2 text-xs font-mono text-center focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
             </div>
             <div class="w-8 shrink-0 flex justify-center">
                 ${canRemove ? `
@@ -970,6 +970,8 @@
         if (hintEl) {
             if (isMainPond) {
                 hintEl.textContent = 'Pre-selected to match pond stock. You can split harvest across up to 2 existing catalog products.';
+            } else if (sourceLocation === 'Superworm Cabin') {
+                hintEl.textContent = `Full batch harvest of ${currentHarvestTotalQty} Superworms into inventory.`;
             } else {
                 hintEl.textContent = 'Harvest will be credited directly to the intended inventory product.';
             }
@@ -1000,8 +1002,9 @@
                 }
             }
 
-            // Initial single row starting at 0 (locked if not Main Pond)
-            const initialRow = createHarvestAllocationRow(matchedId, 0, false, !isMainPond);
+            const isCabin = (sourceLocation === 'Superworm Cabin');
+            const initialQty = isCabin ? currentHarvestTotalQty : 0;
+            const initialRow = createHarvestAllocationRow(matchedId, initialQty, false, !isMainPond, isCabin);
             container.appendChild(initialRow);
             updateHarvestAllocationSummary();
         }
