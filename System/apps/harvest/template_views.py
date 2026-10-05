@@ -352,14 +352,37 @@ def pond_harvest(request, pond_id):
         
     target_product = request.POST.get('target_product', 'all')
     destination_product_id = request.POST.get('destination_product_id')
+    allocations_raw = request.POST.get('allocations_json')
     pond_name = pond.name
     action_verb = "transferred" if is_transfer else "harvested"
     
+    allocations = []
+    if allocations_raw:
+        try:
+            allocations = json.loads(allocations_raw)
+        except Exception:
+            allocations = []
+    
     def credit_to_inventory(stock_name, qty):
         if is_transfer or qty <= 0:
-            return None
+            return ""
         from apps.sales.models import Product
         from decimal import Decimal
+        
+        if allocations and len(allocations) > 0:
+            credited_items = []
+            for item in allocations:
+                pid = item.get('product_id')
+                item_qty = Decimal(str(item.get('quantity', 0)))
+                if item_qty > 0:
+                    prod = Product.objects.filter(id=pid, is_active=True).first()
+                    if prod:
+                        prod.quantity_kg = (prod.quantity_kg or Decimal('0')) + item_qty
+                        prod.save(update_fields=['quantity_kg', 'updated_at'])
+                        credited_items.append(f"{prod.name} ({item_qty})")
+            if credited_items:
+                return f" into {', '.join(credited_items)}"
+        
         market_prod = None
         if destination_product_id:
             market_prod = Product.objects.filter(id=destination_product_id, is_active=True).first()
@@ -368,7 +391,8 @@ def pond_harvest(request, pond_id):
         if market_prod:
             market_prod.quantity_kg = (market_prod.quantity_kg or Decimal('0')) + Decimal(str(qty))
             market_prod.save(update_fields=['quantity_kg', 'updated_at'])
-        return market_prod
+            return f" into {market_prod.name}"
+        return ""
     
     if target_product == '2' and pond.product_name_2:
         prod_name = pond.product_name_2
@@ -377,8 +401,7 @@ def pond_harvest(request, pond_id):
         pond.capacity_2 = 0
         pond.save(update_fields=['product_name_2', 'capacity_2', 'updated_at'])
         
-        credited_prod = credit_to_inventory(prod_name, harvested_qty)
-        credited_label = f" into {credited_prod.name}" if (credited_prod and credited_prod.name != prod_name) else ""
+        credited_label = credit_to_inventory(prod_name, harvested_qty)
         messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}{credited_label}!")
         return redirect(redirect_target)
         
@@ -403,8 +426,7 @@ def pond_harvest(request, pond_id):
             pond.transfer_date = None
             pond.save()
 
-        credited_prod = credit_to_inventory(prod_name, harvested_qty)
-        credited_label = f" into {credited_prod.name}" if (credited_prod and credited_prod.name != prod_name) else ""
+        credited_label = credit_to_inventory(prod_name, harvested_qty)
         messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}{credited_label}!")
         return redirect(redirect_target)
     
@@ -429,8 +451,7 @@ def pond_harvest(request, pond_id):
             active_batch.is_active = False
             active_batch.save(update_fields=['current_quantity', 'is_active', 'updated_at'])
 
-        credited_prod = credit_to_inventory(prod_name, harvested_qty)
-        credited_label = f" into {credited_prod.name}" if (credited_prod and credited_prod.name != prod_name) else ""
+        credited_label = credit_to_inventory(prod_name, harvested_qty)
 
         # Clear pond stock and mark as empty
         pond.capacity = 0

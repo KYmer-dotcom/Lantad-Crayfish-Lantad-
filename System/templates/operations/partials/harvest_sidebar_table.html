@@ -60,9 +60,19 @@
                     <div class="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
                         <span class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ pond.name }} — Product Details</span>
                         {% if not is_transfer and pond.product_name_2 %}
-                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', 'all', '{{ pond.product_name|escapejs }}', '{{ pond.capacity|add:pond.capacity_2|default:"0" }}')" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
-                            Harvest All
-                        </button>
+                            {% if pond.location == 'Main Pond' %}
+                            <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', 'all', '{{ pond.product_name|escapejs }}', '{{ pond.capacity|add:pond.capacity_2|default:"0" }}')" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
+                                Harvest All
+                            </button>
+                            {% else %}
+                            <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full harvest of {{ pond.name|escapejs }}?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="target_product" value="all">
+                                <button type="submit" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
+                                    Harvest All
+                                </button>
+                            </form>
+                            {% endif %}
                         {% endif %}
                     </div>
                     
@@ -99,10 +109,18 @@
                                         <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"PROD 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
-                                    {% else %}
+                                    {% elif pond.location == 'Main Pond' %}
                                         <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Product 1"|escapejs }}', '{{ pond.capacity|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
+                                    {% else %}
+                                        <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm harvest of {{ pond.product_name|default:"Product 1"|escapejs }} ({{ pond.capacity }}) from {{ pond.name|escapejs }}?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="target_product" value="1">
+                                            <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                                Harvest
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -127,10 +145,18 @@
                                         <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"PROD 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
-                                    {% else %}
+                                    {% elif pond.location == 'Main Pond' %}
                                         <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Product 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
+                                    {% else %}
+                                        <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm harvest of {{ pond.product_name_2|default:"Product 2"|escapejs }} ({{ pond.capacity_2 }}) from {{ pond.name|escapejs }}?');">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="target_product" value="2">
+                                            <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                                Harvest
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </td>
                             </tr>
