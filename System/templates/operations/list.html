@@ -724,13 +724,13 @@
                 </div>
 
                 <!-- Add Another Product Button -->
-                <div class="mt-3">
+                <div id="harvest-add-product-btn-wrapper" class="mt-3">
                     <button type="button" onclick="addHarvestAllocationRow()" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#cca43b]/40 hover:border-[#cca43b] bg-[#cca43b]/5 hover:bg-[#cca43b]/10 text-xs font-bold text-[#cca43b] transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>+ Add Product from Existing Inventory</span>
                     </button>
                 </div>
                 <p class="text-[11px] text-[#a0ac96] mt-2">
-                    Pre-selected to match pond stock. Use "+ Add Product" to split harvest among multiple existing catalog items.
+                    Pre-selected to match pond stock. You can split harvest across up to 2 existing catalog products.
                 </p>
             </div>
 
@@ -776,7 +776,7 @@
                 </select>
             </div>
             <div class="w-24 shrink-0">
-                <input type="number" min="1" max="${currentHarvestTotalQty}" value="${qtyValue}" oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 bg-black/60 px-2.5 py-2 text-xs font-mono font-bold text-center text-white focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
+                <input type="number" min="0" max="${currentHarvestTotalQty}" value="${qtyValue}" oninput="updateHarvestAllocationSummary()" class="harvest-alloc-qty w-full rounded-lg border border-white/10 bg-black/60 px-2.5 py-2 text-xs font-mono font-bold text-center text-white focus:border-[#cca43b] focus:outline-none" placeholder="Qty">
             </div>
             <div class="w-8 shrink-0 flex justify-center">
                 ${canRemove ? `
@@ -811,6 +811,16 @@
         const submitBtn = document.getElementById('harvest-submit-btn');
         const jsonEl = document.getElementById('harvest-allocations-json');
         const singleDestEl = document.getElementById('harvest-single-destination-product-id');
+        const addBtnWrapper = document.getElementById('harvest-add-product-btn-wrapper');
+
+        // Limit to max 2 products: hide Add button when 2 rows are reached
+        if (addBtnWrapper) {
+            if (rows.length >= 2) {
+                addBtnWrapper.classList.add('hidden');
+            } else {
+                addBtnWrapper.classList.remove('hidden');
+            }
+        }
 
         if (summaryEl) {
             summaryEl.textContent = `Allocated: ${totalAllocated} / ${currentHarvestTotalQty}`;
@@ -844,6 +854,8 @@
         const container = document.getElementById('harvest-allocations-container');
         if (!container) return;
         const rows = container.querySelectorAll('.harvest-alloc-row');
+        if (rows.length >= 2) return; // Strict limit to 2
+
         let totalAllocated = 0;
         rows.forEach(r => {
             const qtyEl = r.querySelector('.harvest-alloc-qty');
@@ -851,7 +863,11 @@
         });
 
         const remaining = Math.max(0, currentHarvestTotalQty - totalAllocated);
-        let chosenProdId = availableSaleProducts.length > 0 ? availableSaleProducts[0].id : '';
+        const firstRowSelect = rows[0]?.querySelector('.harvest-alloc-product');
+        const firstSelectedId = firstRowSelect ? firstRowSelect.value : '';
+        let chosenProd = availableSaleProducts.find(p => String(p.id) !== String(firstSelectedId));
+        let chosenProdId = chosenProd ? chosenProd.id : (availableSaleProducts[0]?.id || '');
+
         const newRow = createHarvestAllocationRow(chosenProdId, remaining, true);
         container.appendChild(newRow);
         updateHarvestAllocationSummary();
