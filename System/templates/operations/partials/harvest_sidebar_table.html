@@ -39,10 +39,8 @@
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-white/5 text-stone-400 border border-white/10 uppercase">Empty</span>
                 {% elif is_transfer %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Available</span>
-                {% elif pond.is_harvest_due %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Ready</span>
                 {% else %}
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#cca43b]/10 text-[#cca43b] border border-[#cca43b]/20 uppercase">Cycle ({{ pond.days_until_harvest }}d)</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Ready</span>
                 {% endif %}
             </td>
             <td class="px-6 py-4 text-right">
@@ -61,7 +59,7 @@
                 <div class="rounded-lg border border-white/10 overflow-hidden bg-[#021f15]/90">
                     <div class="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
                         <span class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ pond.name }} — Product Details</span>
-                        {% if not is_transfer and pond.is_harvest_due and pond.product_name_2 %}
+                        {% if not is_transfer and pond.product_name_2 %}
                         <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full harvest of {{ pond.name|escapejs }}?');">
                             {% csrf_token %}
                             <input type="hidden" name="target_product" value="all">
@@ -105,7 +103,7 @@
                                         <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"PROD 1"|escapejs }}', '{{ pond.capacity|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
-                                    {% elif pond.is_harvest_due %}
+                                    {% else %}
                                         <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm harvest of {{ pond.product_name|default:"Product 1"|escapejs }} ({{ pond.capacity }}) from {{ pond.name|escapejs }}?');">
                                             {% csrf_token %}
                                             <input type="hidden" name="target_product" value="1">
@@ -113,10 +111,6 @@
                                                 Harvest
                                             </button>
                                         </form>
-                                    {% else %}
-                                        <button type="button" disabled title="Locked until estimated cycle date ({{ pond.days_until_harvest }} days remaining)" class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-bold text-stone-500 cursor-not-allowed uppercase">
-                                            Locked ({{ pond.days_until_harvest }}d)
-                                        </button>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -141,7 +135,7 @@
                                         <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"PROD 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
-                                    {% elif pond.is_harvest_due %}
+                                    {% else %}
                                         <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm harvest of {{ pond.product_name_2|default:"Product 2"|escapejs }} ({{ pond.capacity_2 }}) from {{ pond.name|escapejs }}?');">
                                             {% csrf_token %}
                                             <input type="hidden" name="target_product" value="2">
@@ -149,10 +143,6 @@
                                                 Harvest
                                             </button>
                                         </form>
-                                    {% else %}
-                                        <button type="button" disabled title="Locked until estimated cycle date ({{ pond.days_until_harvest }} days remaining)" class="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-bold text-stone-500 cursor-not-allowed uppercase">
-                                            Locked ({{ pond.days_until_harvest }}d)
-                                        </button>
                                     {% endif %}
                                 </td>
                             </tr>

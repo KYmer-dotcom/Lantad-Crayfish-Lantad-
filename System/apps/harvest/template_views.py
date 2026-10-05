@@ -350,14 +350,6 @@ def pond_harvest(request, pond_id):
         messages.error(request, "Product 1 (Breeder stock) in Breeding Ponds cannot be transferred.")
         return redirect(redirect_target)
         
-    if not is_transfer and not pond.is_harvest_due:
-        days_left = pond.days_until_harvest
-        messages.error(
-            request, 
-            f"Cannot harvest {pond.name} yet. Harvest is locked until due date ({days_left} days remaining)."
-        )
-        return redirect(redirect_target)
-    
     target_product = request.POST.get('target_product', 'all')
     pond_name = pond.name
     action_verb = "transferred" if is_transfer else "harvested"
