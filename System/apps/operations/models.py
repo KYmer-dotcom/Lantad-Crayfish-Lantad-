@@ -217,6 +217,7 @@ class Pond(models.Model):
                 self.status = Pond.Status.EMPTY
                 self.transfer_date = None
             else:
+                self.status = Pond.Status.ACTIVE
                 earliest = self.transfer_batches.order_by('transfer_date', 'created_at').first()
                 if earliest and earliest.transfer_date:
                     self.transfer_date = earliest.transfer_date
@@ -229,6 +230,8 @@ class Pond(models.Model):
                 self.capacity = 0
                 self.status = Pond.Status.EMPTY
                 self.transfer_date = None
+            else:
+                self.status = Pond.Status.ACTIVE
             self.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])
 
         return actual_deducted
