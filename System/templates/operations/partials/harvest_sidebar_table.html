@@ -37,6 +37,8 @@
             <td class="px-6 py-4 text-center">
                 {% if pond.status == 'empty' or pond.capacity == 0 and not pond.capacity_2 %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-white/5 text-stone-400 border border-white/10 uppercase">Empty</span>
+                {% elif is_transfer %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Available</span>
                 {% elif pond.is_harvest_due %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">Ready</span>
                 {% else %}
@@ -59,14 +61,17 @@
                 <div class="rounded-lg border border-white/10 overflow-hidden bg-[#021f15]/90">
                     <div class="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
                         <span class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ pond.name }} — Product Details</span>
-                        {% if pond.is_harvest_due and pond.product_name_2 %}
-                        <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.name|escapejs }}?');">
-                            {% csrf_token %}
-                            <input type="hidden" name="target_product" value="all">
-                            <button type="submit" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
-                                {% if is_transfer %}Transfer All{% else %}Harvest All{% endif %}
-                            </button>
-                        </form>
+                        {% if pond.product_name_2 and pond.status != 'empty' %}
+                            {% if is_transfer or pond.is_harvest_due %}
+                            <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm full {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.name|escapejs }}?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="target_product" value="all">
+                                {% if is_transfer %}<input type="hidden" name="is_transfer" value="true">{% endif %}
+                                <button type="submit" class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-colors uppercase tracking-wider cursor-pointer">
+                                    {% if is_transfer %}Transfer All{% else %}Harvest All{% endif %}
+                                </button>
+                            </form>
+                            {% endif %}
                         {% endif %}
                     </div>
                     
@@ -95,10 +100,11 @@
                                 <td class="px-4 py-3 text-right">
                                     {% if pond.status == 'empty' or pond.capacity == 0 %}
                                         <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
-                                    {% elif pond.is_harvest_due %}
+                                    {% elif is_transfer or pond.is_harvest_due %}
                                         <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.product_name|default:"Product 1"|escapejs }} ({{ pond.capacity }}) from {{ pond.name|escapejs }}?');">
                                             {% csrf_token %}
                                             <input type="hidden" name="target_product" value="1">
+                                            {% if is_transfer %}<input type="hidden" name="is_transfer" value="true">{% endif %}
                                             <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                                 {% if is_transfer %}Transfer{% else %}Harvest{% endif %}
                                             </button>
@@ -127,10 +133,11 @@
                                 <td class="px-4 py-3 text-right">
                                     {% if pond.status == 'empty' or pond.capacity_2 == 0 %}
                                         <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
-                                    {% elif pond.is_harvest_due %}
+                                    {% elif is_transfer or pond.is_harvest_due %}
                                         <form method="post" action="{% url 'harvest:pond_harvest' pond.id %}" class="inline" onclick="event.stopPropagation();" onsubmit="return confirm('Confirm {% if is_transfer %}transfer{% else %}harvest{% endif %} of {{ pond.product_name_2|default:"Product 2"|escapejs }} ({{ pond.capacity_2 }}) from {{ pond.name|escapejs }}?');">
                                             {% csrf_token %}
                                             <input type="hidden" name="target_product" value="2">
+                                            {% if is_transfer %}<input type="hidden" name="is_transfer" value="true">{% endif %}
                                             <button type="submit" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                                 {% if is_transfer %}Transfer{% else %}Harvest{% endif %}
                                             </button>

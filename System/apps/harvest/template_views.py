@@ -336,7 +336,7 @@ def record_create(request):
 @login_required
 @require_POST
 def pond_harvest(request, pond_id):
-    """Harvest and clear a pond or specific product once its estimated harvest/transfer date is due."""
+    """Harvest and clear a pond or specific product once its estimated harvest/transfer date is due, or immediately on transfer."""
     ensure_not_customer(request.user)
     accessible_ponds = get_accessible_ponds(request.user)
     pond = get_object_or_404(accessible_ponds, id=pond_id)
@@ -344,7 +344,9 @@ def pond_harvest(request, pond_id):
     referer = request.META.get('HTTP_REFERER')
     redirect_target = referer if referer else 'operations:pond_list'
     
-    if not pond.is_harvest_due:
+    is_transfer = request.POST.get('is_transfer') == 'true' or request.POST.get('action_type') == 'transfer'
+    
+    if not is_transfer and not pond.is_harvest_due:
         days_left = pond.days_until_harvest
         messages.error(
             request, 
@@ -354,6 +356,7 @@ def pond_harvest(request, pond_id):
     
     target_product = request.POST.get('target_product', 'all')
     pond_name = pond.name
+    action_verb = "transferred" if is_transfer else "harvested"
     
     if target_product == '2' and pond.product_name_2:
         prod_name = pond.product_name_2
@@ -361,7 +364,7 @@ def pond_harvest(request, pond_id):
         pond.product_name_2 = ''
         pond.capacity_2 = 0
         pond.save(update_fields=['product_name_2', 'capacity_2', 'updated_at'])
-        messages.success(request, f"Successfully processed {prod_name} (Qty: {harvested_qty}) from {pond_name}!")
+        messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}!")
         return redirect(redirect_target)
         
     elif target_product == '1':
@@ -375,7 +378,7 @@ def pond_harvest(request, pond_id):
             pond.product_name_2 = ''
             pond.capacity_2 = 0
             pond.save(update_fields=['product_name', 'capacity', 'product_name_2', 'capacity_2', 'updated_at'])
-            messages.success(request, f"Successfully processed {prod_name} (Qty: {harvested_qty}) from {pond_name}!")
+            messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}!")
             return redirect(redirect_target)
         else:
             pond.capacity = 0
@@ -386,16 +389,16 @@ def pond_harvest(request, pond_id):
             pond.status = Pond.Status.EMPTY
             pond.transfer_date = None
             pond.save()
-            messages.success(request, f"Successfully processed {prod_name} (Qty: {harvested_qty}) from {pond_name}! Pond is now empty.")
+            messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}! Pond is now empty.")
             return redirect(redirect_target)
     
     else:
-        # Full pond harvest
+        # Full pond harvest / transfer
         harvested_qty = (pond.capacity or 0) + (pond.capacity_2 or 0)
         
-        # Auto-log to HarvestRecord if there are active stock batches
+        # Auto-log to HarvestRecord if there are active stock batches and not just transfer
         active_batch = pond.stock_batches.filter(is_active=True).first()
-        if active_batch:
+        if active_batch and not is_transfer:
             HarvestRecord.objects.create(
                 stock_batch=active_batch,
                 harvest_date=timezone.localdate(),
@@ -419,6 +422,6 @@ def pond_harvest(request, pond_id):
         pond.transfer_date = None
         pond.save()
 
-        messages.success(request, f"Successfully harvested and cleared {pond_name}! Quantity has been cleared and pond reset to Empty.")
+        messages.success(request, f"Successfully {action_verb} and cleared {pond_name}! Quantity has been cleared and pond reset to Empty.")
         return redirect(redirect_target)
 
