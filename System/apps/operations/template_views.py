@@ -192,6 +192,8 @@ def ponds_list(request):
     sw_block3_ponds = sorted(list(superworm_ponds.filter(shelf_position='Back Shelf')), key=natural_sort_key)
 
     breeding_ponds = sorted(list(ponds.filter(location='Breeding Pond')), key=natural_sort_key)
+    breeding_crilings_ponds = [p for p in breeding_ponds if p.breeding_type == 'Crilings']
+    breeding_reproduction_ponds = [p for p in breeding_ponds if p.breeding_type != 'Crilings']
     main_ponds = sorted(list(ponds.filter(location='Main Pond') | ponds.filter(location='')), key=natural_sort_key)
     azula_ponds_list = list(ponds.filter(location='Azula'))
     azula_ponds = {p.shelf_position: p for p in azula_ponds_list}
@@ -227,6 +229,8 @@ def ponds_list(request):
         'ponds': ponds, # all ponds
         'main_ponds': main_ponds,
         'breeding_ponds': breeding_ponds,
+        'breeding_crilings_ponds': breeding_crilings_ponds,
+        'breeding_reproduction_ponds': breeding_reproduction_ponds,
         'outdoor_ponds_count': outdoor_ponds_count,
         'cabin_ponds_count': cabin_ponds_count,
         'azula_ponds_count': azula_ponds_count,

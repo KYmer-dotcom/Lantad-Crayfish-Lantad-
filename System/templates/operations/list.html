@@ -85,6 +85,7 @@
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
             <h2 class="text-lg font-black tracking-tight text-white">Breeding Pond</h2>
             <div class="flex items-center gap-2">
+                <button type="button" onclick="openTransferSidebar('Breeding Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors cursor-pointer">Transfer</button>
                 <button type="button" onclick="openHarvestSidebar('Breeding Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors cursor-pointer">Harvest</button>
                 {% if breeding_pond_recorded_today %}
                 <button type="button" disabled class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 cursor-not-allowed opacity-80">Recorded Today</button>
@@ -512,10 +513,17 @@
         </button>
     </div>
     <div class="flex-1 overflow-y-auto p-6">
-        <!-- Breeding Pond Harvest Table -->
-        <div class="harvest-table-wrapper hidden" data-category="Breeding Pond">
+        <!-- Breeding Pond Transfer Table (Crilings only) -->
+        <div class="harvest-table-wrapper hidden" data-category="Breeding Pond Transfer">
             <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
-                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_ponds %}
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_crilings_ponds is_transfer=True %}
+            </div>
+        </div>
+
+        <!-- Breeding Pond Harvest Table (Reproduction only) -->
+        <div class="harvest-table-wrapper hidden" data-category="Breeding Pond Harvest">
+            <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+                {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=breeding_reproduction_ponds is_harvest=True %}
             </div>
         </div>
 
@@ -692,31 +700,47 @@
         el.classList.add('translate-x-full');
     }
 
+    // Transfer Sidebar Toggle (for Crilings)
+    function openTransferSidebar(category) {
+        closeOperationsSidebar();
+        let title = category + " Transfer";
+        const titleEl = document.getElementById('harvest-sidebar-title');
+        const subtitleEl = document.getElementById('harvest-sidebar-subtitle');
+        if (titleEl) titleEl.textContent = title;
+        if (subtitleEl) subtitleEl.textContent = "Crilings transfer staging and actions to Main Pond";
+
+        let targetCategory = category === 'Breeding Pond' ? 'Breeding Pond Transfer' : category;
+
+        document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
+            if (wrapper.dataset.category === targetCategory) {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        });
+
+        let el = document.getElementById('harvest-sidebar');
+        if (el) el.classList.remove('translate-x-full');
+    }
+
     // Harvest Sidebar Toggle
     function openHarvestSidebar(category) {
         closeOperationsSidebar();
-        let title = "Harvest Data";
+        let title = category + " Harvest";
         const titleEl = document.getElementById('harvest-sidebar-title');
         const subtitleEl = document.getElementById('harvest-sidebar-subtitle');
-        if (category) {
-            title = category + " Harvest";
-            if (subtitleEl) subtitleEl.textContent = "Production status, cycles, and harvest actions";
-        }
         if (titleEl) titleEl.textContent = title;
+        if (subtitleEl) subtitleEl.textContent = "Production status, cycles, and harvest actions";
 
-        if (category) {
-            document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
-                if (wrapper.dataset.category === category) {
-                    wrapper.classList.remove('hidden');
-                } else {
-                    wrapper.classList.add('hidden');
-                }
-            });
-        } else {
-            document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
+        let targetCategory = category === 'Breeding Pond' ? 'Breeding Pond Harvest' : category;
+
+        document.querySelectorAll('.harvest-table-wrapper').forEach(wrapper => {
+            if (wrapper.dataset.category === targetCategory) {
                 wrapper.classList.remove('hidden');
-            });
-        }
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        });
 
         let el = document.getElementById('harvest-sidebar');
         if (el) el.classList.remove('translate-x-full');
