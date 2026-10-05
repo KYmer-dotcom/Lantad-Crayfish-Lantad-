@@ -220,6 +220,9 @@ class PondForm(forms.ModelForm):
 @login_required
 def ponds_list(request):
     """List all farms and ponds"""
+    PondTransferBatch.objects.filter(pond__capacity__lte=0).delete()
+    PondTransferBatch.objects.filter(quantity__lte=0).delete()
+    
     farms = get_accessible_farms(request.user)
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone

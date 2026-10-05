@@ -394,47 +394,66 @@ def pond_harvest(request, pond_id):
             return f" into {market_prod.name}"
         return ""
     
-    if target_product == '2' and pond.product_name_2:
-        prod_name = pond.product_name_2
+    # Determine harvested quantity
+    total_allocated_qty = 0
+    if allocations:
+        total_allocated_qty = sum(int(item.get('quantity', 0)) for item in allocations)
+        
+    if total_allocated_qty > 0:
+        harvested_qty = total_allocated_qty
+    elif target_product == '2':
         harvested_qty = pond.capacity_2 or 0
-        pond.product_name_2 = ''
-        pond.capacity_2 = 0
+    elif target_product == '1':
+        harvested_qty = pond.capacity or 0
+    else:
+        harvested_qty = (pond.capacity or 0) + (pond.capacity_2 or 0)
+
+    prod_name = pond.product_name_2 if target_product == '2' else (pond.product_name or "Stock")
+    credited_label = credit_to_inventory(prod_name, harvested_qty)
+    
+    if target_product == '2' and pond.product_name_2:
+        if total_allocated_qty > 0:
+            pond.capacity_2 = max(0, (pond.capacity_2 or 0) - total_allocated_qty)
+            if pond.capacity_2 == 0:
+                pond.product_name_2 = ''
+        else:
+            pond.capacity_2 = 0
+            pond.product_name_2 = ''
         pond.save(update_fields=['product_name_2', 'capacity_2', 'updated_at'])
         
-        credited_label = credit_to_inventory(prod_name, harvested_qty)
         messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}{credited_label}!")
         return redirect(redirect_target)
         
     elif target_product == '1':
-        prod_name = pond.product_name or "Product 1"
-        harvested_qty = pond.capacity or 0
+        # Use pond.deduct_stock for FIFO batch deduction on Main Pond
+        pond.deduct_stock(harvested_qty)
         
-        # If product 2 also exists, shift product 2 into product 1
-        if pond.product_name_2 or pond.capacity_2:
-            pond.product_name = pond.product_name_2
-            pond.capacity = pond.capacity_2
-            pond.product_name_2 = ''
-            pond.capacity_2 = 0
-            pond.save(update_fields=['product_name', 'capacity', 'product_name_2', 'capacity_2', 'updated_at'])
-        else:
-            pond.capacity = 0
-            pond.capacity_2 = 0
-            pond.product_name_2 = ''
-            pond.male_quantity = 0
-            pond.female_quantity = 0
-            pond.status = Pond.Status.EMPTY
-            pond.transfer_date = None
-            pond.save()
+        # If product 1 was fully depleted
+        if (pond.capacity or 0) <= 0:
+            if pond.product_name_2 or pond.capacity_2:
+                pond.product_name = pond.product_name_2
+                pond.capacity = pond.capacity_2
+                pond.product_name_2 = ''
+                pond.capacity_2 = 0
+                pond.status = Pond.Status.ACTIVE if pond.capacity > 0 else Pond.Status.EMPTY
+                pond.save(update_fields=['product_name', 'capacity', 'product_name_2', 'capacity_2', 'status', 'updated_at'])
+            else:
+                pond.capacity = 0
+                pond.capacity_2 = 0
+                pond.product_name = ''
+                pond.product_name_2 = ''
+                pond.male_quantity = 0
+                pond.female_quantity = 0
+                pond.status = Pond.Status.EMPTY
+                pond.transfer_date = None
+                pond.save()
+                pond.transfer_batches.all().delete()
 
-        credited_label = credit_to_inventory(prod_name, harvested_qty)
         messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}{credited_label}!")
         return redirect(redirect_target)
     
     else:
         # Full pond harvest / transfer
-        harvested_qty = (pond.capacity or 0) + (pond.capacity_2 or 0)
-        prod_name = pond.product_name or "Stock"
-        
         # Auto-log to HarvestRecord if there are active stock batches and not just transfer
         active_batch = pond.stock_batches.filter(is_active=True).first()
         if active_batch and not is_transfer:
@@ -451,11 +470,10 @@ def pond_harvest(request, pond_id):
             active_batch.is_active = False
             active_batch.save(update_fields=['current_quantity', 'is_active', 'updated_at'])
 
-        credited_label = credit_to_inventory(prod_name, harvested_qty)
-
         # Clear pond stock and mark as empty
         pond.capacity = 0
         pond.capacity_2 = 0
+        pond.product_name = ''
         pond.product_name_2 = ''
         pond.male_quantity = 0
         pond.female_quantity = 0
@@ -464,6 +482,6 @@ def pond_harvest(request, pond_id):
         pond.save()
         pond.transfer_batches.all().delete()
 
-        messages.success(request, f"Successfully {action_verb} and cleared {pond_name}! Quantity has been cleared and pond reset to Empty.")
+        messages.success(request, f"Successfully {action_verb} {harvested_qty} stock from {pond_name}{credited_label}!")
         return redirect(redirect_target)
 

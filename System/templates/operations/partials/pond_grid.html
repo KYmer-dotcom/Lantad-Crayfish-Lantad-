@@ -54,7 +54,7 @@
             {% endif %}
         {% endif %}
 
-        {% if pond.location == 'Main Pond' and pond.transfer_batches.exists %}
+        {% if pond.location == 'Main Pond' and pond.transfer_batches.exists and pond.capacity > 0 and pond.status != 'empty' %}
             <div class="mt-1 space-y-1">
                 {% for batch in pond.transfer_batches.all %}
                 <div class="flex items-center justify-between text-xs text-[#a0ac96]">
@@ -63,7 +63,7 @@
                 </div>
                 {% endfor %}
             </div>
-        {% elif pond.transfer_date %}
+        {% elif pond.transfer_date and pond.capacity > 0 and pond.status != 'empty' %}
             {% if pond.location == 'Superworm Cabin' %}
             <p class="mt-0.5 text-xs text-[#a0ac96]">Produced: {{ pond.transfer_date }}</p>
             {% else %}
