@@ -17,12 +17,12 @@
                     {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
                     {% elif pond.location == 'Breeding Pond' %}
-                        <span>Qty 1: {{ pond.capacity|default:"0" }}</span>
+                        <span>PROD 1: {{ pond.capacity|default:"0" }}</span>
                         {% if pond.capacity_2 %}
-                        <span class="ml-2">Qty 2: {{ pond.capacity_2 }}</span>
+                        <span class="ml-2">PROD 2: {{ pond.capacity_2 }}</span>
                         {% endif %}
                     {% else %}
-                        Qty: {{ pond.capacity|default:"0" }}
+                        PROD: {{ pond.capacity|default:"0" }}
                     {% endif %}
                 </div>
             </td>
@@ -83,7 +83,7 @@
                             <!-- Product 1 Row -->
                             <tr class="hover:bg-white/[0.02] transition-colors">
                                 <td class="px-4 py-3">
-                                    <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] block">Product 1</span>
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] block">PROD 1</span>
                                     <span class="font-bold text-white text-sm">{{ pond.product_name|default:"Standard Stock" }}</span>
                                 </td>
                                 <td class="px-4 py-3 text-stone-300 font-mono">
@@ -115,7 +115,7 @@
                             {% if pond.product_name_2 or pond.capacity_2 %}
                             <tr class="hover:bg-white/[0.02] transition-colors">
                                 <td class="px-4 py-3">
-                                    <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] block">Product 2</span>
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] block">PROD 2</span>
                                     <span class="font-bold text-white text-sm">{{ pond.product_name_2|default:"Secondary Stock" }}</span>
                                 </td>
                                 <td class="px-4 py-3 text-stone-300 font-mono">
