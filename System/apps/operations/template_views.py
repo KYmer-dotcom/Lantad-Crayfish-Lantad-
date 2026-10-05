@@ -128,9 +128,6 @@ class PondForm(forms.ModelForm):
         self.fields['capacity'].required = False
         self.fields['capacity_2'].min_value = 0
         self.fields['capacity_2'].required = False
-        from django.utils import timezone
-        today_str = timezone.localdate().strftime('%Y-%m-%d')
-        self.fields['transfer_date'].widget.attrs['min'] = today_str
         from apps.sales.models import Product
         products = Product.objects.filter(is_active=True).order_by('name')
         product_choices = [('', '---------')] + [(p.name, p.name) for p in products]
@@ -141,13 +138,7 @@ class PondForm(forms.ModelForm):
         return self.cleaned_data.get('name', '').upper()
 
     def clean_transfer_date(self):
-        transfer_date = self.cleaned_data.get('transfer_date')
-        if transfer_date:
-            from django.utils import timezone
-            today = timezone.localdate()
-            if transfer_date < today:
-                raise forms.ValidationError("Transfer/production date cannot be set to a past date. Please select today or a future date.")
-        return transfer_date
+        return self.cleaned_data.get('transfer_date')
 
     def clean(self):
         cleaned_data = super().clean()

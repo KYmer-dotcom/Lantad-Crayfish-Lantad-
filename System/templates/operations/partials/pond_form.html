@@ -140,12 +140,6 @@ function togglePondFormFields() {
                     labelDate.textContent = 'Date Transferred';
                 }
             }
-
-            let dateInput = form.querySelector('input[name="transfer_date"]');
-            if (dateInput) {
-                let todayStr = new Date().toISOString().split('T')[0];
-                dateInput.setAttribute('min', todayStr);
-            }
         };
 
         categorySelect.removeEventListener('change', updateFields);
