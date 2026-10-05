@@ -103,6 +103,16 @@ class Pond(models.Model):
         return self.capacity or 0
 
     @property
+    def current_azula_quantity(self):
+        if self.location == 'Azula':
+            if self.status == 'empty' or (self.capacity or 0) <= 0:
+                return 0
+            days = self.days_since_transfer or 0
+            return (self.capacity or 0) + (days * 2)
+        return self.capacity or 0
+
+
+    @property
     def est_harvest_date(self):
         from datetime import timedelta
         if self.transfer_date and self.location == 'Main Pond':

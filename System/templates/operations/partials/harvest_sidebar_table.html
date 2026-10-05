@@ -23,6 +23,8 @@
                         {% if pond.capacity_2 %}
                         <span class="ml-2">PROD 2: {{ pond.capacity_2 }}</span>
                         {% endif %}
+                    {% elif pond.location == 'Azula' %}
+                        <span>PROD: {{ pond.current_azula_quantity }}</span>
                     {% else %}
                         PROD: {{ pond.capacity|default:"0" }}
                     {% endif %}
@@ -86,6 +88,11 @@
                                     {% if pond.location == 'Superworm Cabin' %}
                                         <div class="font-black text-sm text-[#cca43b]">{{ pond.superworm_count }}</div>
                                         <div class="text-[10px] text-[#a0ac96]">({{ pond.capacity|default:"0" }} Beetles)</div>
+                                    {% elif pond.location == 'Azula' %}
+                                        <div class="font-black text-sm text-[#cca43b]">{{ pond.current_azula_quantity }}</div>
+                                        {% if pond.days_since_transfer %}
+                                        <div class="text-[10px] text-[#a0ac96]">(+{{ pond.days_since_transfer|add:pond.days_since_transfer }} growth)</div>
+                                        {% endif %}
                                     {% else %}
                                         <span class="font-black text-sm text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
                                     {% endif %}
@@ -103,6 +110,10 @@
                                         </button>
                                     {% elif pond.location == 'Superworm Cabin' %}
                                         <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Superworm"|escapejs }}', '{{ pond.superworm_count }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                            Harvest
+                                        </button>
+                                    {% elif pond.location == 'Azula' %}
+                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '1', '{{ pond.product_name|default:"Azula"|escapejs }}', '{{ pond.current_azula_quantity }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
                                     {% else %}
