@@ -149,7 +149,7 @@ class PondForm(forms.ModelForm):
         product_name_2 = cleaned_data.get('product_name_2')
         
         category_allowed_products = {
-            'Main Pond': ['Crayfish', 'Crilings'],
+            'Main Pond': ['Crayfish'],
             'Breeding Pond': ['Breeder Crayfish', 'Crilings'],
             'Superworm Cabin': ['Superworm'],
             'Azula': ['Azula'],
