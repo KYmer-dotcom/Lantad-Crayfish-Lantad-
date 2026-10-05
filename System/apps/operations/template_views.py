@@ -90,28 +90,6 @@ class PondForm(forms.ModelForm):
         }),
         label="Category"
     )
-    breeding_type = forms.ChoiceField(
-        choices=[
-            ('', '---------'),
-            ('Reproduction', 'Reproduction'),
-            ('Crilings', 'Crilings')
-        ],
-        required=False,
-        widget=forms.Select(attrs={
-            'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none'
-        }),
-        label="Type"
-    )
-
-    female_quantity = forms.IntegerField(
-        required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none',
-            'placeholder': 'Female Quantity',
-            'min': 0,
-        }),
-        label="Female Quantity"
-    )
     shelf_position = forms.CharField(
         required=False,
         widget=forms.HiddenInput()
@@ -130,7 +108,7 @@ class PondForm(forms.ModelForm):
     )
     class Meta:
         model = Pond
-        fields = ['name', 'capacity', 'product_name', 'capacity_2', 'product_name_2', 'transfer_date', 'breeding_type', 'female_quantity', 'shelf_position', 'status']
+        fields = ['name', 'capacity', 'product_name', 'capacity_2', 'product_name_2', 'transfer_date', 'shelf_position', 'status']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none uppercase',
