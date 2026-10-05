@@ -21,6 +21,7 @@ from apps.accounts.access import get_accessible_farms, get_accessible_ponds, is_
 from apps.accounts.models import User
 from apps.stock.models import Species
 from apps.feed.models import FeedType
+from apps.sales.models import Product
 from .models import Farm, Pond, PondFeedingLog, PondTransferBatch
 
 
