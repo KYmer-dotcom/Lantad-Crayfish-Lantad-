@@ -17,20 +17,21 @@ class Command(BaseCommand):
             deducted_kg = abs(mov.delta_kg)
             curr_kg = (feed.quantity_sacks or 0) * feed.kg_per_sack
             new_sacks = (curr_kg + deducted_kg) / feed.kg_per_sack
-            # If near integer (within 0.05 sacks), snap to exact integer
-            if abs(float(new_sacks) - round(float(new_sacks))) < 0.05:
-                new_sacks = round(float(new_sacks))
+            rounded = round(float(new_sacks))
+            if float(new_sacks) > rounded and (float(new_sacks) - rounded) < 0.001:
+                new_sacks = rounded
             feed.quantity_sacks = new_sacks
             feed.save(update_fields=['quantity_sacks'])
             self.stdout.write(self.style.SUCCESS(f"Restored {deducted_kg}kg to {feed.name} (Now {feed.quantity_sacks} sacks)"))
         
         deleted_movements, _ = movements.delete()
         
-        # 2. Snap any existing feed types with fractional overshoots (e.g. 3.0002 -> 3)
+        # 2. Snap any existing feed types with fractional overshoots above full capacity (e.g. 3.0002 -> 3)
         for feed in FeedType.objects.all():
             curr_sacks = float(feed.quantity_sacks or 0)
-            if curr_sacks > 0 and abs(curr_sacks - round(curr_sacks)) < 0.05:
-                feed.quantity_sacks = round(curr_sacks)
+            rounded = round(curr_sacks)
+            if curr_sacks > rounded and (curr_sacks - rounded) < 0.001:
+                feed.quantity_sacks = rounded
                 feed.save(update_fields=['quantity_sacks'])
         
         # 3. Delete today's feeding logs
