@@ -263,17 +263,22 @@ def ponds_list(request):
     cabin_ponds_count = superworm_ponds.count()
     azula_ponds_count = len(azula_ponds)
 
-    # Calculate active product totals for Feed Allocation tables
+    # Calculate active product totals and grams to feed for Feed Allocation tables
     active_breeding_ponds = [p for p in breeding_ponds if p.status not in ['empty', 'maintenance']]
     breeding_total_breeders = sum(p.capacity or 0 for p in active_breeding_ponds)
     breeding_total_crilings = sum(p.crilings_count or 0 for p in active_breeding_ponds)
+    breeding_total_breeders_grams = round(breeding_total_breeders * 2.0, 1)
+    breeding_total_crilings_grams = round(breeding_total_crilings * 0.02, 1)
 
     active_sw_ponds = [p for p in superworm_ponds if p.status not in ['empty', 'maintenance']]
     sw_total_breeders = sum(p.capacity or 0 for p in active_sw_ponds)
     sw_total_yield = sum(p.superworm_count or 0 for p in active_sw_ponds)
+    sw_total_breeders_grams = round(sw_total_breeders * 0.1, 1)
+    sw_total_yield_grams = round(sw_total_yield * 0.05, 1)
 
     active_main_ponds = [p for p in main_ponds if p.status not in ['empty', 'maintenance']]
     main_total_stock = sum(p.capacity or 0 for p in active_main_ponds)
+    main_total_stock_grams = round(main_total_stock * 2.5, 1)
 
     # Check if operations have already been recorded today for each category (fully complete for all ponds)
     main_pond_recorded_today = len(main_ponds) > 0 and all(
@@ -300,9 +305,14 @@ def ponds_list(request):
         'breeding_reproduction_ponds': breeding_reproduction_ponds,
         'breeding_total_breeders': breeding_total_breeders,
         'breeding_total_crilings': breeding_total_crilings,
+        'breeding_total_breeders_grams': breeding_total_breeders_grams,
+        'breeding_total_crilings_grams': breeding_total_crilings_grams,
         'sw_total_breeders': sw_total_breeders,
         'sw_total_yield': sw_total_yield,
+        'sw_total_breeders_grams': sw_total_breeders_grams,
+        'sw_total_yield_grams': sw_total_yield_grams,
         'main_total_stock': main_total_stock,
+        'main_total_stock_grams': main_total_stock_grams,
         'outdoor_ponds_count': outdoor_ponds_count,
         'cabin_ponds_count': cabin_ponds_count,
         'azula_ponds_count': azula_ponds_count,
@@ -584,22 +594,32 @@ def operations_data(request):
     active_breeding_ponds = [p for p in breeding_ponds if p.status not in ['empty', 'maintenance']]
     breeding_total_breeders = sum(p.capacity or 0 for p in active_breeding_ponds)
     breeding_total_crilings = sum(p.crilings_count or 0 for p in active_breeding_ponds)
+    breeding_total_breeders_grams = round(breeding_total_breeders * 2.0, 1)
+    breeding_total_crilings_grams = round(breeding_total_crilings * 0.02, 1)
 
     active_sw_ponds = [p for p in superworm_ponds if p.status not in ['empty', 'maintenance']]
     sw_total_breeders = sum(p.capacity or 0 for p in active_sw_ponds)
     sw_total_yield = sum(p.superworm_count or 0 for p in active_sw_ponds)
+    sw_total_breeders_grams = round(sw_total_breeders * 0.1, 1)
+    sw_total_yield_grams = round(sw_total_yield * 0.05, 1)
 
     active_main_ponds = [p for p in main_ponds if p.status not in ['empty', 'maintenance']]
     main_total_stock = sum(p.capacity or 0 for p in active_main_ponds)
+    main_total_stock_grams = round(main_total_stock * 2.5, 1)
 
     context = {
         'main_ponds': sorted(list(main_ponds), key=natural_sort_key),
         'breeding_ponds': sorted(list(breeding_ponds), key=natural_sort_key),
         'breeding_total_breeders': breeding_total_breeders,
         'breeding_total_crilings': breeding_total_crilings,
+        'breeding_total_breeders_grams': breeding_total_breeders_grams,
+        'breeding_total_crilings_grams': breeding_total_crilings_grams,
         'sw_total_breeders': sw_total_breeders,
         'sw_total_yield': sw_total_yield,
+        'sw_total_breeders_grams': sw_total_breeders_grams,
+        'sw_total_yield_grams': sw_total_yield_grams,
         'main_total_stock': main_total_stock,
+        'main_total_stock_grams': main_total_stock_grams,
         'sw_block1_ponds': sorted(list(sw_block1_ponds), key=natural_sort_key),
         'sw_block2_ponds': sorted(list(sw_block2_ponds), key=natural_sort_key),
         'sw_block3_ponds': sorted(list(sw_block3_ponds), key=natural_sort_key),
