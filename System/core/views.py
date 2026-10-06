@@ -447,19 +447,28 @@ def inventory_overview(request):
                 'sack_index': i + 1,
                 'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",
                 'weight_kg': kg_sack,
-                'package_type': f"Standard {int(kg_sack) if kg_sack == int(kg_sack) else kg_sack}kg Sack",
-                'status': 'Full / Sealed',
+                'status': 'High Stock',
                 'status_color': 'emerald',
             })
         if fraction > 0:
             partial_kg = Decimal(str(round(fraction * float(kg_sack), 2)))
+            pct = round(fraction * 100)
+            if pct >= 70:
+                p_status = 'High Stock'
+                p_color = 'emerald'
+            elif pct >= 30:
+                p_status = 'Medium Stock'
+                p_color = 'amber'
+            else:
+                p_status = 'Low Stock'
+                p_color = 'rose'
+
             sacks_list.append({
                 'sack_index': sacks_count + 1,
                 'sack_code': f"SCK-{feed_type.id:03d}-{sacks_count+1:02d}",
                 'weight_kg': partial_kg,
-                'package_type': f"Partial Sack ({round(fraction*100)}%)",
-                'status': f"Open / {partial_kg}kg Left",
-                'status_color': 'amber',
+                'status': p_status,
+                'status_color': p_color,
             })
 
         feed_inventory.append({

@@ -174,7 +174,7 @@
                                                         {{ sack.weight_kg|floatformat:"2" }} kg
                                                     </td>
                                                     <td class="px-4 py-2 text-center font-sans text-xs">
-                                                        <span class="text-emerald-400 font-medium">{{ sack.status }}</span>
+                                                        <span class="{% if sack.status_color == 'emerald' %}text-emerald-400{% elif sack.status_color == 'amber' %}text-amber-400{% else %}text-rose-400{% endif %} font-medium">{{ sack.status }}</span>
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
