@@ -247,11 +247,6 @@
                 </div>
             </div>
 
-            <!-- Dynamic calculation helper -->
-            <div class="flex items-center justify-between rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-xs">
-                <span class="text-[#a0ac96] font-medium">Computed Total Weight:</span>
-                <span id="feed-calc-total-preview" class="font-mono font-black text-[#cca43b] text-sm">0.00 kg</span>
-            </div>
 
             <div>
                 <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Description</label>
@@ -362,19 +357,6 @@ function toggleSacksSubtable(rowId, chevronId) {
     }
 }
 
-function updateFeedCalcPreview() {
-    const sacks = parseFloat(document.getElementById('feed-quantity-sacks').value) || 0;
-    const kgPerSack = parseFloat(document.getElementById('feed-kg-per-sack').value) || 0;
-    const total = (sacks * kgPerSack).toFixed(2);
-    const previewEl = document.getElementById('feed-calc-total-preview');
-    if (previewEl) {
-        previewEl.textContent = `${total} kg (${sacks} sacks × ${kgPerSack} kg)`;
-    }
-}
-
-document.getElementById('feed-quantity-sacks')?.addEventListener('input', updateFeedCalcPreview);
-document.getElementById('feed-kg-per-sack')?.addEventListener('input', updateFeedCalcPreview);
-
 function selectFeedAccent(accentValue) {
     const val = accentValue || 'cyan';
     document.querySelectorAll('.feed-accent-swatch').forEach(b => {
@@ -419,7 +401,6 @@ function showFeedModal() {
     
     document.getElementById('feed-quantity-sacks').value = '0';
     document.getElementById('feed-kg-per-sack').value = '0';
-    updateFeedCalcPreview();
 
     selectFeedAccent('cyan');
     selectFeedIcon('box');
@@ -439,7 +420,6 @@ function editFeedModal(id, name, category, description, accent_color, icon, quan
     document.getElementById('feed-quantity-sacks').value = quantity_sacks !== undefined && quantity_sacks !== '' ? quantity_sacks : '0';
     document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '0';
     
-    updateFeedCalcPreview();
     selectFeedAccent(accent_color || 'cyan');
     selectFeedIcon(icon || 'box');
     
