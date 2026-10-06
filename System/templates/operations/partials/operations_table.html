@@ -39,13 +39,13 @@
             <tbody class="divide-y divide-white/5 text-xs font-mono">
                 {% if pond.location == 'Breeding Pond' %}
                     <!-- Breeding Pond Product 1: Breeder Crayfish -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Breeder Crayfish' }}">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Breeder Crayfish' }}" data-quantity="{{ pond.capacity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:"Breeder Crayfish" }}
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.breeder_feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ pond.breeder_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_breeder_log %}
@@ -67,13 +67,13 @@
                     </tr>
 
                     <!-- Breeding Pond Product 2: Crilings -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name_2|default:'Crilings' }}">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name_2|default:'Crilings' }}" data-quantity="{{ pond.crilings_count|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name_2|default:"Crilings" }}
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.crilings_count|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.crilings_feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ pond.crilings_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_crilings_log %}
@@ -96,13 +96,13 @@
 
                 {% elif pond.location == 'Superworm Cabin' %}
                     <!-- Superworm Cabin Product 1: Darkling Beetles -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Darkling Beetles">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Darkling Beetles" data-quantity="{{ pond.capacity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             Darkling Beetles
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.sw_breeder_feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ pond.sw_breeder_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_sw_breeder_log %}
@@ -124,13 +124,13 @@
                     </tr>
 
                     <!-- Superworm Cabin Product 2: Superworms -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Superworms">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Superworms" data-quantity="{{ pond.superworm_count|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             Superworms
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.superworm_count|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.sw_yield_feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ pond.sw_yield_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_sw_yield_log %}
@@ -154,13 +154,13 @@
                 {% elif pond.location == 'Main Pond' and pond.transfer_batches.exists %}
                     <!-- Main Pond Multiple Batches -->
                     {% for batch in pond.transfer_batches.all %}
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Crayfish' }} (Batch #{{ forloop.counter }})">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Crayfish' }} (Batch #{{ forloop.counter }})" data-quantity="{{ batch.quantity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:"Crayfish" }}
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ batch.quantity }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ batch.feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ batch.feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_log %}
@@ -184,13 +184,13 @@
 
                 {% else %}
                     <!-- General / Single Product Pond -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:pond.name }}">
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:pond.name }}" data-quantity="{{ pond.capacity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:pond.name }}
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.main_crayfish_feed_grams }} g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">{{ pond.main_crayfish_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_log %}

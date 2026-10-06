@@ -124,13 +124,35 @@
         });
     }
 
-    function recalcGramsFromQty(productName, ratePerUnit) {
+    function syncGramsForProduct(productName) {
         const qtyInput = document.querySelector('.master-feed-qty[data-product="' + productName + '"]');
         const gramsInput = document.querySelector('.master-feed-grams[data-product="' + productName + '"]');
-        if (qtyInput && gramsInput) {
-            const qty = parseFloat(qtyInput.value) || 0;
-            gramsInput.value = (qty * ratePerUnit).toFixed(1);
-        }
+        if (!qtyInput || !gramsInput) return;
+
+        const baseQty = parseFloat(qtyInput.value) || 0;
+        const baseGrams = parseFloat(gramsInput.value) || 0;
+        const ratePerUnit = baseQty > 0 ? (baseGrams / baseQty) : 0;
+
+        const allRows = document.querySelectorAll('.operation-row');
+        allRows.forEach(row => {
+            const rowProd = (row.getAttribute('data-product-name') || '').trim();
+            let matches = false;
+            if (rowProd === productName || rowProd.startsWith(productName)) {
+                matches = true;
+            } else if (productName === 'Crayfish' && rowProd.toLowerCase().includes('crayfish') && !rowProd.toLowerCase().includes('breeder')) {
+                matches = true;
+            }
+
+            if (matches) {
+                const rowQty = parseFloat(row.getAttribute('data-quantity')) || 0;
+                const calculatedGrams = (rowQty * ratePerUnit);
+                const gramsEl = row.querySelector('.op-row-grams');
+                if (gramsEl) {
+                    gramsEl.textContent = (ratePerUnit > 0 ? calculatedGrams.toFixed(1) : '0.0') + ' g';
+                }
+                row.setAttribute('data-computed-grams', calculatedGrams.toFixed(2));
+            }
+        });
     }
 
     function initMasterFeeds() {
@@ -138,6 +160,12 @@
             const productName = sel.getAttribute('data-product');
             if (sel.value) {
                 updateMasterFeed(productName, sel.value, sel);
+            }
+        });
+        document.querySelectorAll('.master-feed-qty').forEach(qtyInput => {
+            const prod = qtyInput.getAttribute('data-product');
+            if (prod) {
+                syncGramsForProduct(prod);
             }
         });
     }
@@ -173,8 +201,9 @@
             const productName = row.getAttribute('data-product-name') || '';
             const feedSelect = row.querySelector('.op-feed-select');
             
-            const gramsInput = document.querySelector('.master-feed-grams[data-product="' + productName + '"]');
-            const gramsVal = gramsInput && gramsInput.value ? parseFloat(gramsInput.value) : null;
+            const computedGrams = row.getAttribute('data-computed-grams');
+            const gramsText = row.querySelector('.op-row-grams')?.textContent?.replace('g', '').trim();
+            const gramsVal = (computedGrams !== null && computedGrams !== '') ? parseFloat(computedGrams) : (gramsText ? parseFloat(gramsText) : null);
             
             if (pondId) {
                 logs.push({
