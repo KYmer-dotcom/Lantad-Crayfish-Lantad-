@@ -9,29 +9,29 @@
     <tbody class="divide-y divide-white/10">
         {% for pond in table_ponds %}
         {% if pond.status != 'empty' and pond.status != 'maintenance' %}
+        <!-- Pond Header / Operation Row -->
         <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
             <td class="px-6 py-4">
-                <div class="font-bold">{{ pond.name }}</div>
-                <div class="text-xs text-[#a0ac96] mt-1">
+                <div class="font-bold text-white text-base">{{ pond.name }}</div>
+                <div class="text-xs text-[#a0ac96] mt-0.5 font-mono">
                     {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
                         Position: {{ pond.shelf_position }}
                     {% elif pond.location == 'Breeding Pond' %}
-                        Breeders: {{ pond.capacity|default:"0" }}{% if pond.crilings_count %} | Crilings: {{ pond.crilings_count }}{% endif %}
+                        Breeders: {{ pond.capacity|default:"0" }} | Crilings: {{ pond.crilings_count|default:"0" }}
+                    {% elif pond.location == 'Main Pond' %}
+                        Total Quantity: {{ pond.capacity|default:"0" }} pcs
                     {% else %}
-                        PROD: {{ pond.capacity|default:"0" }}
+                        Stock: {{ pond.capacity|default:"0" }}
                     {% endif %}
                 </div>
             </td>
             <td class="px-6 py-4 text-center">
                 {% if pond.today_log %}
                 <div class="flex flex-col items-center gap-1 justify-center recorded-badge">
-                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-black text-emerald-400 border border-emerald-500/20">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                        </svg>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-400 border border-emerald-500/30">
                         Recorded
                     </span>
-                    <span class="text-[9px] text-[#a0ac96]">{% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}</span>
+                    <span class="text-[10px] text-[#a0ac96] font-medium">{% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}</span>
                 </div>
                 {% else %}
                 <input type="checkbox" checked onchange="toggleFedStatus('{{ pond.id }}', this.checked)" class="op-fed-checkbox h-5 w-5 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
@@ -39,50 +39,132 @@
             </td>
             <td class="px-6 py-4">
                 {% if pond.today_log %}
-                <div class="text-sm font-bold text-stone-300">
+                <div class="text-sm font-bold text-stone-200">
                     {% if pond.today_log.feed_type %}
-                        {% if pond.today_log.feed_type.icon == 'wheat' %}🌾{% elif pond.today_log.feed_type.icon == 'bug' %}🐛{% elif pond.today_log.feed_type.icon == 'corn' %}🌽{% elif pond.today_log.feed_type.icon == 'leaf' %}🥬{% elif pond.today_log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ pond.today_log.feed_type.name }}
+                        {{ pond.today_log.feed_type.name }}
                     {% else %}
                         No Feed (Skip)
                     {% endif %}
                 </div>
                 {% else %}
-                <select class="op-feed-select w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                <select class="op-feed-select w-full rounded-xl border border-white/10 bg-black/30 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
                     <option value="">Select feed...</option>
                     {% for feed in feed_types %}
                     <option value="{{ feed.id }}">
-                        {% if feed.icon == 'wheat' %}🌾{% elif feed.icon == 'bug' %}🐛{% elif feed.icon == 'corn' %}🌽{% elif feed.icon == 'leaf' %}🥬{% elif feed.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ feed.name }}
+                        {{ feed.name }}
                     </option>
                     {% endfor %}
                 </select>
                 {% endif %}
             </td>
         </tr>
-        {% if pond.product_set.all %}
-        <tr class="bg-black/20">
+
+        <!-- Dedicated Products Subtable for Pond -->
+        <tr class="bg-black/30 border-b border-white/5">
             <td colspan="3" class="px-6 py-3">
-                <div class="rounded-xl border border-white/5 bg-black/40 p-3">
-                    <p class="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[#a0ac96]">Current Products</p>
-                    <table class="w-full text-xs text-[#a0ac96]">
-                        <tbody class="divide-y divide-white/5">
-                            {% for product in pond.product_set.all %}
-                            <tr>
-                                <td class="py-2 w-1/2">
-                                    <div class="flex items-center gap-2">
-                                        <span>{% if 'superworm' in product.name|lower or product.icon == 'worm' or product.icon == 'bug' %}🪱{% elif 'azula' in product.name|lower or product.icon == 'leaf' %}🌿{% elif 'crayfish' in product.name|lower or 'crilings' in product.name|lower or product.icon == 'shrimp' or product.category == 'shrimp' %}🦐{% elif product.icon == 'insect' or product.icon == 'box' %}🪲{% elif product.icon == 'lab' %}🧪{% elif product.icon == 'water' %}💧{% else %}🦐{% endif %}</span>
-                                        <span class="text-stone-300">{{ product.name }}</span>
-                                    </div>
-                                </td>
-                                <td class="py-2 text-center w-1/4">{{ product.get_category_display }}</td>
-                                <td class="py-2 text-right w-1/4 font-medium text-stone-300">{{ product.quantity_kg }} kg</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs text-[#a0ac96]">
+                        <span class="font-bold uppercase tracking-wider text-[#cca43b]">Products Inside ({{ pond.name }})</span>
+                        {% if pond.transfer_date %}
+                        <span class="font-mono text-[11px]">Transferred: {{ pond.transfer_date|date:"M. d, Y"|default:pond.transfer_date }}</span>
+                        {% elif pond.location == 'Superworm Cabin' and pond.shelf_position %}
+                        <span class="font-mono text-[11px]">Shelf Position: {{ pond.shelf_position }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                        <table class="w-full text-left text-xs text-[#a0ac96]">
+                            <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
+                                <tr>
+                                    <th class="px-4 py-2 text-white font-bold">Product Name</th>
+                                    <th class="px-4 py-2 text-center text-white font-bold">Role / Stage</th>
+                                    <th class="px-4 py-2 text-right text-white font-bold">Current Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 font-mono">
+                                {% if pond.location == 'Breeding Pond' %}
+                                    <!-- Breeding Pond Dual Products -->
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            {{ pond.product_name|default:"Breeder Crayfish" }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            Product 1 (Breeder)
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ pond.capacity|default:"0" }} pcs
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            {{ pond.product_name_2|default:"Crilings" }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            Product 2 (Offspring)
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ pond.crilings_count|default:"0" }} pcs
+                                        </td>
+                                    </tr>
+                                {% elif pond.location == 'Superworm Cabin' %}
+                                    <!-- Superworm Cabin Dual Products -->
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            Darkling Beetles
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            Product 1 (Breeders)
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ pond.capacity|default:"0" }} pcs
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            Superworms
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            Product 2 (Yield)
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ pond.superworm_count|default:"0" }} pcs
+                                        </td>
+                                    </tr>
+                                {% elif pond.location == 'Main Pond' and pond.transfer_batches.exists %}
+                                    <!-- Main Pond Multiple Batches -->
+                                    {% for batch in pond.transfer_batches.all %}
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            {{ pond.product_name|default:"Crayfish" }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            Batch #{{ forloop.counter }} (Transferred: {{ batch.transfer_date|date:"M. d, Y"|default:"-" }})
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ batch.quantity }} pcs
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- General Pond Product -->
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
+                                            {{ pond.product_name|default:pond.name }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
+                                            {{ pond.location|default:"Stock" }}
+                                        </td>
+                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
+                                            {{ pond.capacity|default:"0" }} pcs
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </td>
         </tr>
-        {% endif %}
         {% endif %}
         {% empty %}
         <tr>
