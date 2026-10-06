@@ -357,8 +357,9 @@
     <div class="flex-1 overflow-y-auto p-6">
         <!-- Main Pond Table -->
         <div class="op-table-wrapper hidden" data-category="Main Pond">
+            {% include "operations/partials/feed_allocation_table.html" with allocation_category="Main Pond" %}
             <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Main Pond</h3>
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Main Pond Operations</h3>
                 <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                     Record
                 </button>
@@ -370,8 +371,9 @@
         
         <!-- Breeding Pond Table -->
         <div class="op-table-wrapper hidden" data-category="Breeding Pond">
+            {% include "operations/partials/feed_allocation_table.html" with allocation_category="Breeding Pond" %}
             <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Breeding Pond</h3>
+                <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Breeding Pond Operations</h3>
                 <button onclick="submitPondOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
                     Record
                 </button>
@@ -383,6 +385,7 @@
         
         <!-- Superworm Cabin Tables -->
         <div class="op-table-wrapper hidden" data-category="Superworm Cabin">
+            {% include "operations/partials/feed_allocation_table.html" with allocation_category="Superworm Cabin" %}
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Left Shelf</h3>
@@ -1158,6 +1161,51 @@
         });
     });
 
+    // Master Feed Allocation Sync
+    function updateMasterFeed(productName, feedId, selectEl) {
+        if (selectEl) {
+            const selectedOption = selectEl.options[selectEl.selectedIndex];
+            const stockKg = selectedOption ? selectedOption.getAttribute('data-stock') : '0';
+            const sacks = selectedOption ? selectedOption.getAttribute('data-sacks') : '0';
+            const row = selectEl.closest('tr');
+            if (row) {
+                const displayEl = row.querySelector('.feed-stock-display');
+                if (displayEl) {
+                    if (feedId && parseFloat(stockKg) > 0) {
+                        displayEl.textContent = stockKg + ' kg (' + sacks + ' sacks)';
+                        displayEl.className = 'feed-stock-display text-emerald-400 font-bold';
+                    } else if (feedId) {
+                        displayEl.textContent = '0.00 kg (Out of Stock)';
+                        displayEl.className = 'feed-stock-display text-rose-400 font-bold';
+                    } else {
+                        displayEl.textContent = '-- kg';
+                        displayEl.className = 'feed-stock-display text-[#a0ac96]';
+                    }
+                }
+            }
+        }
+
+        // Synchronize all pond rows below matching this product
+        const matchingRows = document.querySelectorAll('.operation-row[data-product-name="' + productName + '"]');
+        matchingRows.forEach(opRow => {
+            const feedSelect = opRow.querySelector('.op-feed-select');
+            if (feedSelect) {
+                feedSelect.value = feedId;
+            }
+        });
+    }
+
+    function initMasterFeeds() {
+        document.querySelectorAll('.master-feed-select').forEach(sel => {
+            const productName = sel.getAttribute('data-product');
+            if (sel.value) {
+                updateMasterFeed(productName, sel.value, sel);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initMasterFeeds);
+
     // Operations Sidebar Toggle
     function openOperationsSidebar(category) {
         let title = "Operations Data";
@@ -1192,6 +1240,7 @@
         
         let el = document.getElementById('operations-sidebar');
         el.classList.remove('translate-x-full');
+        initMasterFeeds();
     }
 
     function closeOperationsSidebar() {

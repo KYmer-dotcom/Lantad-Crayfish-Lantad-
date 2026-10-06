@@ -263,6 +263,18 @@ def ponds_list(request):
     cabin_ponds_count = superworm_ponds.count()
     azula_ponds_count = len(azula_ponds)
 
+    # Calculate active product totals for Feed Allocation tables
+    active_breeding_ponds = [p for p in breeding_ponds if p.status not in ['empty', 'maintenance']]
+    breeding_total_breeders = sum(p.capacity or 0 for p in active_breeding_ponds)
+    breeding_total_crilings = sum(p.crilings_count or 0 for p in active_breeding_ponds)
+
+    active_sw_ponds = [p for p in superworm_ponds if p.status not in ['empty', 'maintenance']]
+    sw_total_breeders = sum(p.capacity or 0 for p in active_sw_ponds)
+    sw_total_yield = sum(p.superworm_count or 0 for p in active_sw_ponds)
+
+    active_main_ponds = [p for p in main_ponds if p.status not in ['empty', 'maintenance']]
+    main_total_stock = sum(p.capacity or 0 for p in active_main_ponds)
+
     # Check if operations have already been recorded today for each category (fully complete for all ponds)
     main_pond_recorded_today = len(main_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
@@ -286,6 +298,11 @@ def ponds_list(request):
         'breeding_ponds': breeding_ponds,
         'breeding_crilings_ponds': breeding_crilings_ponds,
         'breeding_reproduction_ponds': breeding_reproduction_ponds,
+        'breeding_total_breeders': breeding_total_breeders,
+        'breeding_total_crilings': breeding_total_crilings,
+        'sw_total_breeders': sw_total_breeders,
+        'sw_total_yield': sw_total_yield,
+        'main_total_stock': main_total_stock,
         'outdoor_ponds_count': outdoor_ponds_count,
         'cabin_ponds_count': cabin_ponds_count,
         'azula_ponds_count': azula_ponds_count,
@@ -564,9 +581,25 @@ def operations_data(request):
     sw_block2_ponds = superworm_ponds.filter(shelf_position='Right Shelf')
     sw_block3_ponds = superworm_ponds.filter(shelf_position='Back Shelf')
 
+    active_breeding_ponds = [p for p in breeding_ponds if p.status not in ['empty', 'maintenance']]
+    breeding_total_breeders = sum(p.capacity or 0 for p in active_breeding_ponds)
+    breeding_total_crilings = sum(p.crilings_count or 0 for p in active_breeding_ponds)
+
+    active_sw_ponds = [p for p in superworm_ponds if p.status not in ['empty', 'maintenance']]
+    sw_total_breeders = sum(p.capacity or 0 for p in active_sw_ponds)
+    sw_total_yield = sum(p.superworm_count or 0 for p in active_sw_ponds)
+
+    active_main_ponds = [p for p in main_ponds if p.status not in ['empty', 'maintenance']]
+    main_total_stock = sum(p.capacity or 0 for p in active_main_ponds)
+
     context = {
         'main_ponds': sorted(list(main_ponds), key=natural_sort_key),
         'breeding_ponds': sorted(list(breeding_ponds), key=natural_sort_key),
+        'breeding_total_breeders': breeding_total_breeders,
+        'breeding_total_crilings': breeding_total_crilings,
+        'sw_total_breeders': sw_total_breeders,
+        'sw_total_yield': sw_total_yield,
+        'main_total_stock': main_total_stock,
         'sw_block1_ponds': sorted(list(sw_block1_ponds), key=natural_sort_key),
         'sw_block2_ponds': sorted(list(sw_block2_ponds), key=natural_sort_key),
         'sw_block3_ponds': sorted(list(sw_block3_ponds), key=natural_sort_key),

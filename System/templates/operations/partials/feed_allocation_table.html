@@ -1,0 +1,127 @@
+<!-- Product & Feed Allocation Master Configuration -->
+<div class="mb-6 rounded-xl border border-[#cca43b]/20 bg-black/30 p-4">
+    <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+        <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-[#cca43b]">Feed & Product Allocation</h4>
+            <p class="text-[11px] text-[#a0ac96] mt-0.5">Identify product availability, available feed stock, and select the feed type to automatically apply across all ponds below.</p>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-stone-100">
+            <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
+                <tr>
+                    <th class="px-4 py-2.5 text-white">Product Available</th>
+                    <th class="px-4 py-2.5 text-center text-white">Role / Stage</th>
+                    <th class="px-4 py-2.5 text-right text-white">Total Population</th>
+                    <th class="px-4 py-2.5 text-left text-white min-w-[220px]">Feed Type to Use</th>
+                    <th class="px-4 py-2.5 text-right text-white min-w-[150px]">Available Feed Stock</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 font-mono">
+                {% if allocation_category == 'Breeding Pond' %}
+                    <!-- Breeder Crayfish -->
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Breeder Crayfish</td>
+                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 1 (Breeder)</td>
+                        <td class="px-4 py-3 text-right font-bold text-[#cca43b]">{{ breeding_total_breeders|default:"0" }} pcs</td>
+                        <td class="px-4 py-3 font-sans">
+                            <select onchange="updateMasterFeed('Breeder Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Breeder Crayfish">
+                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}" {% if feed.name == 'PO2' or feed.name == 'Integra 1' or feed.category == 'grower' or feed.category == 'specialty' %}selected{% endif %}>
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#a0ac96]">
+                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
+                        </td>
+                    </tr>
+
+                    <!-- Crilings -->
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Crilings</td>
+                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 2 (Offspring)</td>
+                        <td class="px-4 py-3 text-right font-bold text-[#cca43b]">{{ breeding_total_crilings|default:"0" }} pcs</td>
+                        <td class="px-4 py-3 font-sans">
+                            <select onchange="updateMasterFeed('Crilings', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crilings">
+                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}" {% if feed.category == 'starter' or feed.name == 'PO1' %}selected{% endif %}>
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#a0ac96]">
+                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
+                        </td>
+                    </tr>
+
+                {% elif allocation_category == 'Superworm Cabin' %}
+                    <!-- Darkling Beetles -->
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Darkling Beetles</td>
+                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 1 (Breeders)</td>
+                        <td class="px-4 py-3 text-right font-bold text-[#cca43b]">{{ sw_total_breeders|default:"0" }} pcs</td>
+                        <td class="px-4 py-3 font-sans">
+                            <select onchange="updateMasterFeed('Darkling Beetles', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Darkling Beetles">
+                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#a0ac96]">
+                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
+                        </td>
+                    </tr>
+
+                    <!-- Superworms -->
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Superworms</td>
+                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 2 (Yield)</td>
+                        <td class="px-4 py-3 text-right font-bold text-[#cca43b]">{{ sw_total_yield|default:"0" }} pcs</td>
+                        <td class="px-4 py-3 font-sans">
+                            <select onchange="updateMasterFeed('Superworms', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Superworms">
+                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#a0ac96]">
+                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
+                        </td>
+                    </tr>
+
+                {% else %}
+                    <!-- Main Pond Stock -->
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Crayfish</td>
+                        <td class="px-4 py-3 text-center font-sans text-stone-400">Main Stock</td>
+                        <td class="px-4 py-3 text-right font-bold text-[#cca43b]">{{ main_total_stock|default:"0" }} pcs</td>
+                        <td class="px-4 py-3 font-sans">
+                            <select onchange="updateMasterFeed('Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crayfish">
+                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#a0ac96]">
+                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
