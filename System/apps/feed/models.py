@@ -28,7 +28,9 @@ class FeedType(SoftDeleteModel):
     accent_color = models.CharField(max_length=20, default='cyan')
     icon = models.CharField(max_length=20, default='box')
     protein_content = models.DecimalField(max_digits=5, decimal_places=2, help_text="Protein percentage")
-    price_per_kg = models.DecimalField(max_digits=10, decimal_places=2)
+    price_per_kg = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    quantity_sacks = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Number of sacks")
+    kg_per_sack = models.DecimalField(max_digits=10, decimal_places=2, default=50.00, help_text="Weight in kg per sack")
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,8 +45,15 @@ class FeedType(SoftDeleteModel):
         return f"{self.name} ({self.get_category_display()})"
 
     @property
+    def total_kg(self):
+        return (self.quantity_sacks or 0) * (self.kg_per_sack or 0)
+
+    @property
     def current_stock_kg(self):
-        return FeedStockMovement.available_stock(self)
+        movement_stock = FeedStockMovement.available_stock(self)
+        if movement_stock > 0:
+            return movement_stock
+        return self.total_kg
 
 
 class FeedInventory(models.Model):

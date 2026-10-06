@@ -17,16 +17,47 @@
         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Farm Inventory Overview</h1>
     </div>
 
-    <!-- Metric Card (Full Line Width) -->
-    <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-        <div>
-            <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Feed Types</p>
+    <!-- Metric Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+        <!-- Feed Types -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Feed Types</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_types|default:"0" }}</p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                    <span>Feed varieties</span>
+                </div>
+            </div>
         </div>
-        <div class="mt-2">
-            <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_types|default:"0" }}</p>
-            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                <span>Supply items tracked</span>
+
+        <!-- Total Sacks -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Sacks</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">{{ total_feed_sacks|floatformat:"-2"|default:"0" }} <span class="text-sm font-bold text-[#a0ac96]">sacks</span></p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span>Total bags in stock</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Weight -->
+        <div class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Weight</p>
+            </div>
+            <div class="mt-2">
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_weight_kg|floatformat:"2"|default:"0.00" }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
+                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                    <span>Gross feed supply</span>
+                </div>
             </div>
         </div>
     </div>
@@ -53,6 +84,9 @@
                             <th scope="col" class="px-6 py-4 w-16"></th>
                             <th scope="col" class="px-6 py-4 font-black text-white">Feed Name</th>
                             <th scope="col" class="px-6 py-4 font-black text-white">Category</th>
+                            <th scope="col" class="px-6 py-4 font-black text-white text-center">Quantity (Sacks)</th>
+                            <th scope="col" class="px-6 py-4 font-black text-white text-center">Weight / Sack</th>
+                            <th scope="col" class="px-6 py-4 font-black text-white text-right">Total Weight</th>
                             <th scope="col" class="px-6 py-4 text-right font-black text-white">Actions</th>
                         </tr>
                     </thead>
@@ -71,9 +105,20 @@
                             </td>
                             <td class="px-6 py-4 font-medium text-stone-100">{{ feed.name }}</td>
                             <td class="px-6 py-4 text-[#a0ac96]">{{ feed.category }}</td>
+                            <td class="px-6 py-4 text-center font-mono font-bold text-white">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-bold text-white">
+                                    {{ feed.quantity_sacks|floatformat:"-2" }} <span class="ml-1 text-[11px] text-[#a0ac96] font-normal">sacks</span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center font-mono text-[#a0ac96]">
+                                {{ feed.kg_per_sack|floatformat:"-2" }} <span class="text-xs">kg/sack</span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-mono font-black text-[#cca43b]">
+                                {{ feed.total_kg|floatformat:"2" }} <span class="text-xs font-bold text-[#cca43b]/80">kg</span>
+                            </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
+                                    <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}', '{{ feed.quantity_sacks }}', '{{ feed.kg_per_sack }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
@@ -88,7 +133,7 @@
                         </tr>
                         {% empty %}
                         <tr class="empty-table-row">
-                            <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96]">No feed types found.</td>
+                            <td colspan="7" class="px-6 py-8 text-center text-[#a0ac96]">No feed types found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -115,13 +160,13 @@
             
             <div>
                 <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Feed Name *</label>
-                <input type="text" name="name" placeholder="e.g. Starter Crumble" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
+                <input type="text" name="name" id="feed-name-input" placeholder="e.g. Starter Crumble" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
             </div>
 
             <div class="grid grid-cols-1 gap-4">
                 <div>
                     <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Category *</label>
-                    <select name="category" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer" required>
+                    <select name="category" id="feed-category-select" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer" required>
                         <option value="starter">Starter Feed</option>
                         <option value="grower">Grower Feed</option>
                         <option value="finisher">Finisher Feed</option>
@@ -130,9 +175,29 @@
                 </div>
             </div>
 
+            <!-- Quantity in Sacks and kg per sack -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Quantity (Sacks) *</label>
+                    <input type="number" name="quantity_sacks" id="feed-quantity-sacks" min="0" step="1" value="0" placeholder="e.g. 10" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
+                    <p class="mt-1 text-[10px] text-[#a0ac96]">Number of sacks in stock</p>
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Weight / Sack (kg) *</label>
+                    <input type="number" name="kg_per_sack" id="feed-kg-per-sack" min="0.01" step="0.01" value="50" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
+                    <p class="mt-1 text-[10px] text-[#a0ac96]">kg weight per each sack</p>
+                </div>
+            </div>
+
+            <!-- Dynamic calculation helper -->
+            <div class="flex items-center justify-between rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-3.5 py-2 text-xs">
+                <span class="text-[#a0ac96] font-medium">Computed Total Weight:</span>
+                <span id="feed-calc-total-preview" class="font-mono font-black text-[#cca43b] text-sm">0.00 kg</span>
+            </div>
+
             <div>
                 <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Description</label>
-                <textarea rows="3" name="description" placeholder="Brief description of this feed..." class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none"></textarea>
+                <textarea rows="3" name="description" id="feed-description-input" placeholder="Brief description of this feed..." class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none"></textarea>
             </div>
 
             <div>
@@ -220,6 +285,19 @@ const feedIconNames = {
     'meat': 'Meat / Protein 🥩'
 };
 
+function updateFeedCalcPreview() {
+    const sacks = parseFloat(document.getElementById('feed-quantity-sacks').value) || 0;
+    const kgPerSack = parseFloat(document.getElementById('feed-kg-per-sack').value) || 0;
+    const total = (sacks * kgPerSack).toFixed(2);
+    const previewEl = document.getElementById('feed-calc-total-preview');
+    if (previewEl) {
+        previewEl.textContent = `${total} kg (${sacks} sacks × ${kgPerSack} kg)`;
+    }
+}
+
+document.getElementById('feed-quantity-sacks')?.addEventListener('input', updateFeedCalcPreview);
+document.getElementById('feed-kg-per-sack')?.addEventListener('input', updateFeedCalcPreview);
+
 function selectFeedAccent(accentValue) {
     const val = accentValue || 'cyan';
     document.querySelectorAll('.feed-accent-swatch').forEach(b => {
@@ -235,8 +313,6 @@ function selectFeedAccent(accentValue) {
         const check = swatch.querySelector('.swatch-check');
         if (check) check.classList.remove('hidden');
     }
-    const label = document.getElementById('selected-feed-accent-name');
-    if (label) label.textContent = feedAccentNames[val] || val;
     document.getElementById('feed-accent').value = val;
 }
 
@@ -255,8 +331,6 @@ function selectFeedIcon(iconValue) {
         swatch.style.boxShadow = '0 0 12px rgba(204, 164, 59, 0.35)';
         swatch.classList.add('scale-105');
     }
-    const label = document.getElementById('selected-feed-icon-name');
-    if (label) label.textContent = feedIconNames[val] || val;
     document.getElementById('feed-icon').value = val;
 }
 
@@ -266,6 +340,10 @@ function showFeedModal() {
     document.getElementById('feed-form').reset();
     document.getElementById('feed-submit-btn').textContent = 'Create Feed';
     
+    document.getElementById('feed-quantity-sacks').value = '0';
+    document.getElementById('feed-kg-per-sack').value = '50';
+    updateFeedCalcPreview();
+
     selectFeedAccent('cyan');
     selectFeedIcon('box');
 
@@ -273,15 +351,18 @@ function showFeedModal() {
     document.getElementById('feed-modal').classList.add('flex');
 }
 
-function editFeedModal(id, name, category, description, accent_color, icon) {
+function editFeedModal(id, name, category, description, accent_color, icon, quantity_sacks, kg_per_sack) {
     document.getElementById('feed-modal-title').textContent = 'Edit Feed Type';
     document.getElementById('feed-form').action = `/feed/types/${id}/edit/`;
     document.getElementById('feed-submit-btn').textContent = 'Save Changes';
     
-    document.querySelector('#feed-form input[name="name"]').value = name;
-    document.querySelector('#feed-form select[name="category"]').value = category;
-    document.querySelector('#feed-form textarea[name="description"]').value = description;
+    document.getElementById('feed-name-input').value = name;
+    document.getElementById('feed-category-select').value = category;
+    document.getElementById('feed-description-input').value = description;
+    document.getElementById('feed-quantity-sacks').value = quantity_sacks !== undefined && quantity_sacks !== '' ? quantity_sacks : '0';
+    document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '50';
     
+    updateFeedCalcPreview();
     selectFeedAccent(accent_color || 'cyan');
     selectFeedIcon(icon || 'box');
     

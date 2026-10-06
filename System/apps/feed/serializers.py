@@ -11,11 +11,13 @@ class FeedTypeSerializer(serializers.ModelSerializer):
     
     category_display = serializers.CharField(source='get_category_display', read_only=True)
     current_stock_kg = serializers.ReadOnlyField()
+    total_kg = serializers.ReadOnlyField()
     
     class Meta:
         model = FeedType
         fields = ['id', 'name', 'brand', 'category', 'category_display',
-                  'protein_content', 'price_per_kg', 'current_stock_kg', 'description', 'is_active',
+                  'protein_content', 'price_per_kg', 'quantity_sacks', 'kg_per_sack', 'total_kg',
+                  'current_stock_kg', 'description', 'is_active',
                   'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 

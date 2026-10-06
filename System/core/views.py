@@ -427,25 +427,36 @@ def inventory_overview(request):
         })
     species_inventory.sort(key=lambda item: item['species_name'])
 
-    feed_inventory = [
-        {
+    feed_inventory = []
+    total_feed_sacks = Decimal('0')
+    total_feed_weight_kg = Decimal('0.00')
+    for feed_type in FeedType.objects.filter(is_active=True).order_by('category', 'name'):
+        sacks = feed_type.quantity_sacks or Decimal('0')
+        kg_sack = feed_type.kg_per_sack or Decimal('0')
+        total_kg = feed_type.total_kg
+        total_feed_sacks += sacks
+        total_feed_weight_kg += total_kg
+        feed_inventory.append({
             'id': feed_type.id,
             'name': feed_type.name,
             'category': feed_type.get_category_display(),
             'raw_category': feed_type.category,
             'price_per_kg': feed_type.price_per_kg,
+            'quantity_sacks': sacks,
+            'kg_per_sack': kg_sack,
+            'total_kg': total_kg,
             'description': feed_type.description,
             'accent_color': feed_type.accent_color,
             'icon': feed_type.icon,
-        }
-        for feed_type in FeedType.objects.filter(is_active=True).order_by('category', 'name')
-    ]
+        })
 
     context = {
         'species_inventory': species_inventory,
         'feed_inventory': feed_inventory,
         'total_species_types': len(species_inventory),
         'total_feed_types': len(feed_inventory),
+        'total_feed_sacks': total_feed_sacks,
+        'total_feed_weight_kg': total_feed_weight_kg,
     }
     return render(request, 'inventory_management/list.html', context)
 

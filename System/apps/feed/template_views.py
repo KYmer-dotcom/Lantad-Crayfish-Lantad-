@@ -73,7 +73,7 @@ class FeedStockForm(forms.Form):
 class FeedTypeForm(forms.ModelForm):
     class Meta:
         model = FeedType
-        fields = ['name', 'brand', 'category', 'price_per_kg', 'description', 'accent_color', 'icon']
+        fields = ['name', 'brand', 'category', 'price_per_kg', 'quantity_sacks', 'kg_per_sack', 'description', 'accent_color', 'icon']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
@@ -90,6 +90,18 @@ class FeedTypeForm(forms.ModelForm):
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
                 'placeholder': 'Price per kg',
                 'step': '0.01'
+            }),
+            'quantity_sacks': forms.NumberInput(attrs={
+                'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
+                'placeholder': 'Quantity in sacks',
+                'step': '1',
+                'min': '0'
+            }),
+            'kg_per_sack': forms.NumberInput(attrs={
+                'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
+                'placeholder': 'kg per sack',
+                'step': '0.01',
+                'min': '0.01'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 placeholder:text-stone-500 focus:border-[#cca43b] focus:outline-none',
