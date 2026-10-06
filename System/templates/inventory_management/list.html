@@ -170,7 +170,6 @@
                                                 <tr>
                                                     <th class="px-4 py-2.5 text-white font-bold">Sack #</th>
                                                     <th class="px-4 py-2.5 text-right text-white font-bold">Weight (kg)</th>
-                                                    <th class="px-4 py-2.5 text-center text-white font-bold">Packaging</th>
                                                     <th class="px-4 py-2.5 text-center text-white font-bold">Stock Status</th>
                                                 </tr>
                                             </thead>
@@ -182,9 +181,6 @@
                                                     </td>
                                                     <td class="px-4 py-2.5 text-right font-black text-white">
                                                         {{ sack.weight_kg|floatformat:"2" }} <span class="text-[10px] text-[#a0ac96] font-normal">kg</span>
-                                                    </td>
-                                                    <td class="px-4 py-2.5 text-center text-[11px] text-[#a0ac96] font-sans">
-                                                        {{ sack.package_type }}
                                                     </td>
                                                     <td class="px-4 py-2.5 text-center font-sans">
                                                         {% if sack.status_color == 'emerald' %}
