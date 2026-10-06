@@ -645,6 +645,7 @@ def record_operations(request):
             product_name = (log.get('product_name') or '').strip()
             fed = log.get('fed', False)
             feed_type_id = log.get('feed_type_id') or None
+            quantity_grams = log.get('quantity_grams')
             
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
             
@@ -659,6 +660,7 @@ def record_operations(request):
                 pond=pond,
                 product_name=product_name,
                 feed_type_id=feed_type_id,
+                quantity_grams=quantity_grams if quantity_grams is not None else None,
                 fed=fed,
                 recorded_by=request.user
             )

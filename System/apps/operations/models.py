@@ -264,6 +264,7 @@ class PondFeedingLog(models.Model):
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE, related_name='feeding_logs')
     product_name = models.CharField(max_length=100, blank=True, default='')
     feed_type = models.ForeignKey('feed.FeedType', on_delete=models.SET_NULL, null=True, blank=True)
+    quantity_grams = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Amount fed in grams")
     fed = models.BooleanField(default=False)
     recorded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     recorded_at = models.DateTimeField(auto_now_add=True)

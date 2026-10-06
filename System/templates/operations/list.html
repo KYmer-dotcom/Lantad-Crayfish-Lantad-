@@ -1349,12 +1349,16 @@
             const fedCheckbox = row.querySelector('.op-fed-checkbox');
             const feedSelect = row.querySelector('.op-feed-select');
             
+            const gramsInput = document.querySelector('.master-feed-grams[data-product="' + productName + '"]');
+            const gramsVal = gramsInput && gramsInput.value ? parseFloat(gramsInput.value) : null;
+            
             if (pondId && fedCheckbox) {
                 logs.push({
                     pond_id: parseInt(pondId),
                     product_name: productName,
                     fed: fedCheckbox.checked,
-                    feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null
+                    feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null,
+                    quantity_grams: gramsVal
                 });
             }
         });
