@@ -1195,6 +1195,15 @@
         });
     }
 
+    function recalcGramsFromQty(productName, ratePerUnit) {
+        const qtyInput = document.querySelector('.master-feed-qty[data-product="' + productName + '"]');
+        const gramsInput = document.querySelector('.master-feed-grams[data-product="' + productName + '"]');
+        if (qtyInput && gramsInput) {
+            const qty = parseFloat(qtyInput.value) || 0;
+            gramsInput.value = (qty * ratePerUnit).toFixed(1);
+        }
+    }
+
     function initMasterFeeds() {
         document.querySelectorAll('.master-feed-select').forEach(sel => {
             const productName = sel.getAttribute('data-product');
