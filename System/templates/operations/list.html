@@ -1221,9 +1221,11 @@
         });
     }
 
-    function syncGramsForProduct(productName) {
-        const qtyInput = document.querySelector('.master-feed-qty[data-product="' + productName + '"]');
-        const gramsInput = document.querySelector('.master-feed-grams[data-product="' + productName + '"]');
+    function syncGramsForProduct(productName, triggerEl) {
+        const wrapper = triggerEl ? triggerEl.closest('.op-table-wrapper') : null;
+        const scope = wrapper || document;
+        const qtyInput = scope.querySelector('.master-feed-qty[data-product="' + productName + '"]');
+        const gramsInput = scope.querySelector('.master-feed-grams[data-product="' + productName + '"]');
         if (!qtyInput || !gramsInput) return;
 
         const baseQty = parseFloat(qtyInput.value) || 0;
@@ -1231,7 +1233,7 @@
         const ratePerUnit = baseQty > 0 ? (baseGrams / baseQty) : 0;
 
         let totalProductGrams = 0;
-        const allRows = document.querySelectorAll('.operation-row');
+        const allRows = scope.querySelectorAll('.operation-row');
         allRows.forEach(row => {
             const rowProd = row.getAttribute('data-product-name') || '';
             if (isFeedProductMatch(rowProd, productName)) {
@@ -1247,8 +1249,8 @@
         });
 
         // Update total required in master table
-        const totalGramsEl = document.querySelector('.master-total-grams[data-product="' + productName + '"]');
-        const totalKgEl = document.querySelector('.master-total-kg[data-product="' + productName + '"]');
+        const totalGramsEl = scope.querySelector('.master-total-grams[data-product="' + productName + '"]');
+        const totalKgEl = scope.querySelector('.master-total-kg[data-product="' + productName + '"]');
         if (totalGramsEl) {
             totalGramsEl.textContent = (totalProductGrams > 0 ? totalProductGrams.toFixed(1) : '0.0') + ' g';
         }
@@ -1257,23 +1259,31 @@
             totalKgEl.textContent = '(' + (kgVal >= 1 ? kgVal.toFixed(2) : (kgVal > 0 ? kgVal.toFixed(3) : '0.00')) + ' kg)';
         }
 
-        updateGrandTotalFeed();
+        updateGrandTotalFeed(wrapper);
     }
 
-    function updateGrandTotalFeed() {
-        let grandGrams = 0;
-        document.querySelectorAll('.operation-row').forEach(row => {
-            const computed = row.getAttribute('data-computed-grams');
-            if (computed) {
-                grandGrams += parseFloat(computed) || 0;
-            }
-        });
-        const grandDisplay = document.getElementById('grand-total-feed-display');
-        if (grandDisplay) {
+    function updateGrandTotalFeed(targetWrapper) {
+        const wrappers = targetWrapper ? [targetWrapper] : document.querySelectorAll('.op-table-wrapper');
+        wrappers.forEach(w => {
+            let grandGrams = 0;
+            w.querySelectorAll('.operation-row').forEach(row => {
+                const computed = row.getAttribute('data-computed-grams');
+                if (computed) {
+                    grandGrams += parseFloat(computed) || 0;
+                }
+            });
             const grandKg = grandGrams / 1000;
             const kgText = grandKg >= 1 ? grandKg.toFixed(2) : (grandKg > 0 ? grandKg.toFixed(3) : '0.00');
-            grandDisplay.textContent = (grandGrams > 0 ? grandGrams.toFixed(1) : '0.0') + ' g (' + kgText + ' kg)';
-        }
+            const displayText = (grandGrams > 0 ? grandGrams.toFixed(1) : '0.0') + ' g (' + kgText + ' kg)';
+
+            w.querySelectorAll('.grand-total-feed-display').forEach(displayEl => {
+                displayEl.textContent = displayText;
+            });
+            const oldIdEl = w.querySelector('#grand-total-feed-display');
+            if (oldIdEl) {
+                oldIdEl.textContent = displayText;
+            }
+        });
     }
 
     function initMasterFeeds() {
@@ -1286,7 +1296,7 @@
         document.querySelectorAll('.master-feed-qty').forEach(qtyInput => {
             const prod = qtyInput.getAttribute('data-product');
             if (prod) {
-                syncGramsForProduct(prod);
+                syncGramsForProduct(prod, qtyInput);
             }
         });
     }
