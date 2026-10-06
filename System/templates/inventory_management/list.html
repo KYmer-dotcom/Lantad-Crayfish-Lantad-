@@ -176,7 +176,6 @@
                                             <thead class="bg-white/5 text-[10px] uppercase font-black tracking-wider text-[#a0ac96] border-b border-white/10">
                                                 <tr>
                                                     <th class="px-4 py-2.5 text-white font-bold">Sack #</th>
-                                                    <th class="px-4 py-2.5 text-white font-bold">Tracking ID</th>
                                                     <th class="px-4 py-2.5 text-right text-white font-bold">Weight (kg)</th>
                                                     <th class="px-4 py-2.5 text-center text-white font-bold">Packaging</th>
                                                     <th class="px-4 py-2.5 text-center text-white font-bold">Stock Status</th>
@@ -187,9 +186,6 @@
                                                 <tr class="hover:bg-white/5 transition-colors">
                                                     <td class="px-4 py-2.5 font-bold text-[#cca43b]">
                                                         Sack #{{ sack.sack_index }}
-                                                    </td>
-                                                    <td class="px-4 py-2.5 text-stone-200 font-bold">
-                                                        {{ sack.sack_code }}
                                                     </td>
                                                     <td class="px-4 py-2.5 text-right font-black text-white">
                                                         {{ sack.weight_kg|floatformat:"2" }} <span class="text-[10px] text-[#a0ac96] font-normal">kg</span>
