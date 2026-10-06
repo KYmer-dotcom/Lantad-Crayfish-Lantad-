@@ -101,8 +101,13 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/40 text-xs font-bold font-mono text-[#cca43b]">
-                                        {{ feed.name|slice:":2"|upper }}
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-xl {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400 {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400 {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400 {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400 {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400 {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400 {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
+                                        {% if feed.icon == 'wheat' %}🌾
+                                        {% elif feed.icon == 'bug' %}🐛
+                                        {% elif feed.icon == 'corn' %}🌽
+                                        {% elif feed.icon == 'leaf' %}🥬
+                                        {% elif feed.icon == 'meat' %}🥩
+                                        {% else %}📦{% endif %}
                                     </div>
                                 </div>
                             </td>
