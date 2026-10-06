@@ -5,15 +5,20 @@
             <h4 class="text-xs font-bold uppercase tracking-wider text-[#cca43b]">Feed & Product Allocation</h4>
             <p class="text-[11px] text-[#a0ac96] mt-0.5">Input target quantity and specific grams, check available feed stock, and select the feed type to automatically apply across all ponds below.</p>
         </div>
+        <div class="text-right">
+            <span class="text-[10px] uppercase font-bold text-[#a0ac96] block">Total Allocation</span>
+            <span id="grand-total-feed-display" class="text-xs font-bold text-[#cca43b] font-mono">0.0 g (0.00 kg)</span>
+        </div>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-left text-xs text-stone-100">
             <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
                 <tr>
                     <th class="px-4 py-2.5 text-white">Product Available</th>
-                    <th class="px-4 py-2.5 text-right text-white min-w-[130px]">Quantity</th>
-                    <th class="px-4 py-2.5 text-right text-white min-w-[140px]">Specific Grams</th>
-                    <th class="px-4 py-2.5 text-left text-white min-w-[220px]">Feed Type to Use</th>
+                    <th class="px-4 py-2.5 text-right text-white min-w-[120px]">Quantity</th>
+                    <th class="px-4 py-2.5 text-right text-white min-w-[130px]">Specific Grams</th>
+                    <th class="px-4 py-2.5 text-right text-white min-w-[140px]">Total Required</th>
+                    <th class="px-4 py-2.5 text-left text-white min-w-[200px]">Feed Type to Use</th>
                     <th class="px-4 py-2.5 text-right text-white min-w-[140px]">Available Feed Stock</th>
                 </tr>
             </thead>
@@ -33,6 +38,10 @@
                                 <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Breeder Crayfish')" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Breeder Crayfish" placeholder="0.0">
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Breeder Crayfish">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Breeder Crayfish">(0.00 kg)</div>
                         </td>
                         <td class="px-4 py-3 font-sans">
                             <select onchange="updateMasterFeed('Breeder Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Breeder Crayfish">
@@ -63,6 +72,10 @@
                                 <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Crilings')" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Crilings" placeholder="0.0">
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Crilings">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Crilings">(0.00 kg)</div>
                         </td>
                         <td class="px-4 py-3 font-sans">
                             <select onchange="updateMasterFeed('Crilings', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crilings">
@@ -95,6 +108,10 @@
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
                         </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Darkling Beetles">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Darkling Beetles">(0.00 kg)</div>
+                        </td>
                         <td class="px-4 py-3 font-sans">
                             <select onchange="updateMasterFeed('Darkling Beetles', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Darkling Beetles">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
@@ -124,6 +141,10 @@
                                 <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Superworms')" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Superworms" placeholder="0.0">
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Superworms">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Superworms">(0.00 kg)</div>
                         </td>
                         <td class="px-4 py-3 font-sans">
                             <select onchange="updateMasterFeed('Superworms', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Superworms">
@@ -155,6 +176,10 @@
                                 <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Crayfish')" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Crayfish" placeholder="0.0">
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Crayfish">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Crayfish">(0.00 kg)</div>
                         </td>
                         <td class="px-4 py-3 font-sans">
                             <select onchange="updateMasterFeed('Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crayfish">

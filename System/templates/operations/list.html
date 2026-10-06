@@ -1204,6 +1204,7 @@
         const baseGrams = parseFloat(gramsInput.value) || 0;
         const ratePerUnit = baseQty > 0 ? (baseGrams / baseQty) : 0;
 
+        let totalProductGrams = 0;
         const allRows = document.querySelectorAll('.operation-row');
         allRows.forEach(row => {
             const rowProd = (row.getAttribute('data-product-name') || '').trim();
@@ -1217,6 +1218,7 @@
             if (matches) {
                 const rowQty = parseFloat(row.getAttribute('data-quantity')) || 0;
                 const calculatedGrams = (rowQty * ratePerUnit);
+                totalProductGrams += calculatedGrams;
                 const gramsEl = row.querySelector('.op-row-grams');
                 if (gramsEl) {
                     gramsEl.textContent = (ratePerUnit > 0 ? calculatedGrams.toFixed(1) : '0.0') + ' g';
@@ -1224,6 +1226,35 @@
                 row.setAttribute('data-computed-grams', calculatedGrams.toFixed(2));
             }
         });
+
+        // Update total required in master table
+        const totalGramsEl = document.querySelector('.master-total-grams[data-product="' + productName + '"]');
+        const totalKgEl = document.querySelector('.master-total-kg[data-product="' + productName + '"]');
+        if (totalGramsEl) {
+            totalGramsEl.textContent = (totalProductGrams > 0 ? totalProductGrams.toFixed(1) : '0.0') + ' g';
+        }
+        if (totalKgEl) {
+            const kgVal = totalProductGrams / 1000;
+            totalKgEl.textContent = '(' + (kgVal >= 1 ? kgVal.toFixed(2) : (kgVal > 0 ? kgVal.toFixed(3) : '0.00')) + ' kg)';
+        }
+
+        updateGrandTotalFeed();
+    }
+
+    function updateGrandTotalFeed() {
+        let grandGrams = 0;
+        document.querySelectorAll('.operation-row').forEach(row => {
+            const computed = row.getAttribute('data-computed-grams');
+            if (computed) {
+                grandGrams += parseFloat(computed) || 0;
+            }
+        });
+        const grandDisplay = document.getElementById('grand-total-feed-display');
+        if (grandDisplay) {
+            const grandKg = grandGrams / 1000;
+            const kgText = grandKg >= 1 ? grandKg.toFixed(2) : (grandKg > 0 ? grandKg.toFixed(3) : '0.00');
+            grandDisplay.textContent = (grandGrams > 0 ? grandGrams.toFixed(1) : '0.0') + ' g (' + kgText + ' kg)';
+        }
     }
 
     function initMasterFeeds() {
