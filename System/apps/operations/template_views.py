@@ -230,7 +230,7 @@ def ponds_list(request):
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone
     today = timezone.now().date()
-    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today).select_related('feed_type')
+    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today, feed_type__isnull=False, fed=True).select_related('feed_type')
     today_logs = {log.pond_id: log for log in today_logs_qs}
     today_product_logs = {(log.pond_id, log.product_name): log for log in today_logs_qs}
     
@@ -568,7 +568,7 @@ def operations_data(request):
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone
     today = timezone.now().date()
-    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today).select_related('feed_type')
+    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today, feed_type__isnull=False, fed=True).select_related('feed_type')
     today_logs = {log.pond_id: log for log in today_logs_qs}
     today_product_logs = {(log.pond_id, log.product_name): log for log in today_logs_qs}
     for pond in ponds:

@@ -1429,12 +1429,15 @@
             const gramsText = row.querySelector('.op-row-grams')?.textContent?.replace('g', '').trim();
             const gramsVal = (computedGrams !== null && computedGrams !== '') ? parseFloat(computedGrams) : (gramsText ? parseFloat(gramsText) : null);
             
-            if (pondId) {
+            const hasFeed = feedSelect && feedSelect.value;
+            const hasGrams = gramsVal && gramsVal > 0;
+
+            if (pondId && (hasFeed || hasGrams)) {
                 logs.push({
                     pond_id: parseInt(pondId),
                     product_name: productName,
                     fed: true,
-                    feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null,
+                    feed_type_id: hasFeed ? parseInt(feedSelect.value) : null,
                     quantity_grams: gramsVal
                 });
             }
