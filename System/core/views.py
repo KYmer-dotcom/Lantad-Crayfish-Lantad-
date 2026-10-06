@@ -438,38 +438,22 @@ def inventory_overview(request):
     for feed_type in FeedType.objects.filter(is_active=True).order_by('category', 'name'):
         sacks = feed_type.quantity_sacks or Decimal('0')
         kg_sack = feed_type.kg_per_sack or Decimal('0')
-        total_kg = feed_type.total_kg
+        total_kg = max(Decimal('0.00'), feed_type.total_kg)
         total_feed_sacks += sacks
         total_feed_weight_kg += total_kg
-        
-        # Calculate total initial capacity including deductions
-        total_out_kg = Decimal('0.00')
-        out_movements = FeedStockMovement.objects.filter(feed_type=feed_type, movement_type=FeedStockMovement.MovementType.OUT)
-        if out_movements.exists():
-            out_agg = out_movements.aggregate(Sum('delta_kg'))['delta_kg__sum']
-            if out_agg:
-                total_out_kg = abs(Decimal(str(out_agg)))
-        
-        total_initial_capacity = total_kg + total_out_kg
-        if kg_sack > 0:
-            sacks_count = int(math.ceil(float(total_initial_capacity) / float(kg_sack)))
-        else:
-            sacks_count = int(math.ceil(float(sacks))) if float(sacks) > 0 else 0
-            
-        if sacks_count == 0 and float(sacks) > 0:
-            sacks_count = int(math.ceil(float(sacks)))
 
         # Build individual sack items list (FIFO: deduct starting from Sack #1 until depleted, then proceed to next sack)
         sacks_list = []
-        if sacks_count > 0 and kg_sack > 0:
-            total_capacity = Decimal(str(sacks_count)) * kg_sack
-            total_consumed = max(Decimal('0.00'), total_capacity - total_kg)
-            
+        if total_kg > 0 and kg_sack > 0:
+            sacks_count = int(math.ceil(float(total_kg) / float(kg_sack)))
             for i in range(sacks_count):
-                preceding_cap = Decimal(str(i)) * kg_sack
-                consumed_in_sack = max(Decimal('0.00'), min(kg_sack, total_consumed - preceding_cap))
-                sack_remaining_kg = max(Decimal('0.00'), kg_sack - consumed_in_sack)
-                
+                if i == 0:
+                    # Active/open sack currently being consumed first (FIFO)
+                    sack_remaining_kg = max(Decimal('0.00'), total_kg - Decimal(str(sacks_count - 1)) * kg_sack)
+                else:
+                    # Unopened full sealed sacks
+                    sack_remaining_kg = kg_sack
+
                 pct = round((float(sack_remaining_kg) / float(kg_sack)) * 100) if float(kg_sack) > 0 else 0
                 if sack_remaining_kg <= Decimal('0.00'):
                     p_status = 'Depleted'
@@ -483,7 +467,7 @@ def inventory_overview(request):
                 else:
                     p_status = 'Low Stock'
                     p_color = 'rose'
-                
+
                 sacks_list.append({
                     'sack_index': i + 1,
                     'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",

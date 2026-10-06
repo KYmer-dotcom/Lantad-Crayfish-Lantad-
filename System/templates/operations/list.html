@@ -1161,6 +1161,20 @@
         });
     });
 
+    // Helper for matching row product names with master product categories
+    function isFeedProductMatch(rowProdName, targetProdName) {
+        if (!rowProdName || !targetProdName) return false;
+        const r = rowProdName.trim().toLowerCase();
+        const t = targetProdName.trim().toLowerCase();
+        if (r === t || r.startsWith(t) || t.startsWith(r)) return true;
+        if (t === 'breeder crayfish' && r.includes('breeder')) return true;
+        if (t === 'crilings' && r.includes('criling')) return true;
+        if (t === 'darkling beetles' && (r.includes('beetle') || r.includes('darkling'))) return true;
+        if (t === 'superworms' && r.includes('superworm') && !r.includes('beetle')) return true;
+        if (t === 'crayfish' && r.includes('crayfish') && !r.includes('breeder')) return true;
+        return false;
+    }
+
     // Master Feed Allocation Sync
     function updateMasterFeed(productName, feedId, selectEl) {
         if (selectEl) {
@@ -1186,11 +1200,13 @@
         }
 
         // Synchronize all pond rows below matching this product
-        const matchingRows = document.querySelectorAll('.operation-row[data-product-name="' + productName + '"]');
-        matchingRows.forEach(opRow => {
-            const feedSelect = opRow.querySelector('.op-feed-select');
-            if (feedSelect) {
-                feedSelect.value = feedId;
+        document.querySelectorAll('.operation-row').forEach(opRow => {
+            const rowProd = opRow.getAttribute('data-product-name') || '';
+            if (isFeedProductMatch(rowProd, productName)) {
+                const feedSelect = opRow.querySelector('.op-feed-select');
+                if (feedSelect) {
+                    feedSelect.value = feedId;
+                }
             }
         });
     }
@@ -1207,15 +1223,8 @@
         let totalProductGrams = 0;
         const allRows = document.querySelectorAll('.operation-row');
         allRows.forEach(row => {
-            const rowProd = (row.getAttribute('data-product-name') || '').trim();
-            let matches = false;
-            if (rowProd === productName || rowProd.startsWith(productName)) {
-                matches = true;
-            } else if (productName === 'Crayfish' && rowProd.toLowerCase().includes('crayfish') && !rowProd.toLowerCase().includes('breeder')) {
-                matches = true;
-            }
-
-            if (matches) {
+            const rowProd = row.getAttribute('data-product-name') || '';
+            if (isFeedProductMatch(rowProd, productName)) {
                 const rowQty = parseFloat(row.getAttribute('data-quantity')) || 0;
                 const calculatedGrams = (rowQty * ratePerUnit);
                 totalProductGrams += calculatedGrams;
