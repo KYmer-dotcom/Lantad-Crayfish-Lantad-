@@ -120,25 +120,26 @@ class Product(SoftDeleteModel):
 
     @property
     def unit_display(self):
+        """Primary inventory and stock count unit is always pcs/pieces."""
+        return 'pcs'
+
+    @property
+    def bulk_unit_display(self):
+        """Measurement unit for bulk/secondary packaging & pricing (e.g. Pack, Tub, Pair, Crate, kg). Defaults to kg if unit_type is pcs or empty."""
         if not self.unit_type:
-            return 'kg' if self.price_per_kg > 0 else 'pc'
+            return 'kg'
         val = str(self.unit_type).strip().lower()
+        if val in ['pcs', 'pc', 'piece', 'pieces', 'pieces (pcs)']:
+            return 'kg'
         legacy_labels = {
-            'pcs': 'pc',
-            'pc': 'pc',
-            'piece': 'pc',
-            'pieces': 'pc',
-            'pieces (pcs)': 'pc',
-            'kg': 'kg',
-            'kilograms (kg)': 'kg',
-            'kilogram': 'kg',
-            'kilograms': 'kg',
             'tub': 'Tub',
             'tubs': 'Tubs',
             'pair': 'Pair',
             'pairs': 'Pairs',
             'pack': 'Pack',
             'packs': 'Packs',
+            'crate': 'Crate',
+            'crates': 'Crates',
             'head': 'Head',
             'heads': 'Heads',
             'box': 'Box',
@@ -147,18 +148,12 @@ class Product(SoftDeleteModel):
             'sacks': 'Sacks',
             'bottle': 'Bottle',
             'bottles': 'Bottles',
+            'kg': 'kg',
+            'kilograms': 'kg',
+            'kilogram': 'kg',
+            'kilograms (kg)': 'kg',
         }
         return legacy_labels.get(val, self.unit_type)
-
-    @property
-    def bulk_unit_display(self):
-        """Measurement unit for bulk/secondary pricing (e.g. Pack, Tub, Pair, kg). Defaults to kg if unit_type is pcs or empty."""
-        if not self.unit_type:
-            return 'kg'
-        val = str(self.unit_type).strip().lower()
-        if val in ['pcs', 'pc', 'piece', 'pieces', 'pieces (pcs)']:
-            return 'kg'
-        return self.unit_display
 
     @property
     def is_low_stock(self):
