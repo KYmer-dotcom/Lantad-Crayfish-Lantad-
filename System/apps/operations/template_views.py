@@ -652,21 +652,47 @@ def record_operations(request):
             
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
             
-            # Prevent double entries for the same pond + product + today
+            # Find existing entry for today if any
             existing_qs = PondFeedingLog.objects.filter(pond=pond, recorded_at__date=today)
             if product_name:
                 existing_qs = existing_qs.filter(product_name=product_name)
-            if existing_qs.exists():
-                continue
+            
+            existing_log = existing_qs.first()
+            if existing_log:
+                # If updating, reverse any previous deduction from this log
+                if existing_log.feed_type and existing_log.quantity_grams:
+                    try:
+                        old_qty_g = Decimal(str(existing_log.quantity_grams))
+                        if old_qty_g > 0 and existing_log.feed_type.kg_per_sack and existing_log.feed_type.kg_per_sack > 0:
+                            old_qty_kg = old_qty_g / Decimal('1000')
+                            curr_kg = (existing_log.feed_type.quantity_sacks or Decimal('0')) * existing_log.feed_type.kg_per_sack
+                            existing_log.feed_type.quantity_sacks = (curr_kg + old_qty_kg) / existing_log.feed_type.kg_per_sack
+                            existing_log.feed_type.save(update_fields=['quantity_sacks'])
+                    except Exception:
+                        pass
                 
-            feeding_log = PondFeedingLog.objects.create(
-                pond=pond,
-                product_name=product_name,
-                feed_type_id=feed_type_id,
-                quantity_grams=quantity_grams if quantity_grams is not None else None,
-                fed=fed,
-                recorded_by=request.user
-            )
+                # Delete past movement for this log today
+                FeedStockMovement.objects.filter(
+                    feed_type=existing_log.feed_type,
+                    notes__icontains=f"{product_name} in {pond.name}",
+                    moved_at__date=today
+                ).delete()
+
+                existing_log.feed_type_id = feed_type_id
+                existing_log.quantity_grams = quantity_grams if quantity_grams is not None else None
+                existing_log.fed = fed
+                existing_log.recorded_by = request.user
+                existing_log.save()
+                feeding_log = existing_log
+            else:
+                feeding_log = PondFeedingLog.objects.create(
+                    pond=pond,
+                    product_name=product_name,
+                    feed_type_id=feed_type_id,
+                    quantity_grams=quantity_grams if quantity_grams is not None else None,
+                    fed=fed,
+                    recorded_by=request.user
+                )
 
             # Deduct feed inventory if feed_type was selected and quantity_grams is specified
             if feed_type_id and quantity_grams:

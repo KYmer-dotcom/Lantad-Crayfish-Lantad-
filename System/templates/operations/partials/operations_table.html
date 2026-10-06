@@ -48,21 +48,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_breeder_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_breeder_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_breeder_log and pond.today_breeder_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_breeder_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
 
@@ -76,21 +74,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_crilings_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_crilings_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_crilings_log and pond.today_crilings_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_crilings_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
 
@@ -105,21 +101,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_sw_breeder_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_sw_breeder_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_sw_breeder_log and pond.today_sw_breeder_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_sw_breeder_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
 
@@ -133,21 +127,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_sw_yield_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_sw_yield_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_sw_yield_log and pond.today_sw_yield_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_sw_yield_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
 
@@ -163,21 +155,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_log and pond.today_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -193,21 +183,19 @@
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
-                            {% if pond.today_log %}
                             <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-stone-200">{{ pond.today_log.feed_type.name|default:"No Feed (Skip)" }}</span>
-                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select feed...</option>
+                                    {% for feed in feed_types %}
+                                    <option value="{{ feed.id }}" {% if pond.today_log and pond.today_log.feed_type_id == feed.id %}selected{% endif %}>
+                                        {{ feed.name }} ({{ feed.get_category_display }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if pond.today_log %}
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
+                                {% endif %}
                             </div>
-                            {% else %}
-                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                            {% endif %}
                         </td>
                     </tr>
                 {% endif %}
