@@ -19,9 +19,9 @@
                         <span class="ml-2">Beetles: {{ pond.capacity|default:"0" }}</span>
                         <span class="ml-2 text-emerald-400 font-bold">Worms: {{ pond.superworm_count }}</span>
                     {% elif pond.location == 'Breeding Pond' %}
-                        <span>PROD 1: {{ pond.capacity|default:"0" }}</span>
-                        {% if pond.capacity_2 %}
-                        <span class="ml-2">PROD 2: {{ pond.capacity_2 }}</span>
+                        <span>Breeders: {{ pond.capacity|default:"0" }}</span>
+                        {% if pond.crilings_count %}
+                        <span class="ml-2 text-emerald-400 font-bold">Crilings: {{ pond.crilings_count }}</span>
                         {% endif %}
                     {% elif pond.location == 'Azula' %}
                         <span>PROD: {{ pond.current_azula_quantity }}</span>
@@ -125,27 +125,28 @@
                             </tr>
 
                             <!-- Product 2 Row (if exists) -->
-                            {% if pond.product_name_2 or pond.capacity_2 %}
+                            {% if pond.location == 'Breeding Pond' or pond.product_name_2 or pond.capacity_2 %}
                             <tr class="hover:bg-white/[0.02] transition-colors">
                                 <td class="px-4 py-3">
                                     <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] block">PROD 2</span>
-                                    <span class="font-bold text-white text-sm">{{ pond.product_name_2|default:"Secondary Stock" }}</span>
+                                    <span class="font-bold text-white text-sm">{{ pond.product_name_2|default:"Crilings" }}</span>
                                 </td>
                                 <td class="px-4 py-3 text-stone-300 font-mono">
                                     {{ pond.transfer_date|date:"M. d, Y"|default:"-" }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <span class="font-black text-sm text-[#cca43b]">{{ pond.capacity_2|default:"0" }}</span>
+                                    <div class="font-black text-sm text-[#cca43b]">{{ pond.crilings_count }}</div>
+                                    <div class="text-[10px] text-[#a0ac96]">({{ pond.capacity|default:"0" }} Breeders × 250)</div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    {% if pond.status == 'empty' or pond.capacity_2 == 0 %}
+                                    {% if pond.status == 'empty' or pond.crilings_count == 0 %}
                                         <span class="text-xs font-bold text-stone-500 uppercase">Empty</span>
                                     {% elif is_transfer %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"PROD 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondTransferModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Crilings"|escapejs }}', '{{ pond.crilings_count }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Transfer
                                         </button>
                                     {% else %}
-                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Product 2"|escapejs }}', '{{ pond.capacity_2|default:"0" }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
+                                        <button type="button" onclick="event.stopPropagation(); openPondHarvestModal('{{ pond.id }}', '{{ pond.name|escapejs }}', '2', '{{ pond.product_name_2|default:"Crilings"|escapejs }}', '{{ pond.crilings_count }}', '{{ pond.location|escapejs }}')" class="rounded-lg bg-[#cca43b] px-3.5 py-1.5 text-xs font-black text-[#01140e] hover:bg-[#cca43b]/90 transition-colors cursor-pointer uppercase tracking-wider shadow-sm">
                                             Harvest
                                         </button>
                                     {% endif %}

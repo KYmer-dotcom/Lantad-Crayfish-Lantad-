@@ -18,14 +18,10 @@
         {{ form.capacity }}
     </div>
 
-    <!-- Product 2 & Quantity 2 (Only for Breeding Pond) -->
+    <!-- Product 2 (Only for Breeding Pond) -->
     <div id="field-product-2" class="hidden">
         <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product 2 (Crilings / Dual Tracking)</label>
         {{ form.product_name_2 }}
-    </div>
-    <div id="field-quantity-2" class="hidden">
-        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity 2</label>
-        {{ form.capacity_2 }}
     </div>
 
     <!-- Date Transferred Field -->
@@ -129,7 +125,6 @@ function togglePondFormFields() {
             let category = categorySelect.value;
             
             let fieldProduct2 = form.querySelector('#field-product-2');
-            let fieldQuantity2 = form.querySelector('#field-quantity-2');
             let labelProduct = form.querySelector('#label-product');
             let labelQuantity = form.querySelector('#label-quantity');
             let labelDate = form.querySelector('#label-date');
@@ -140,15 +135,13 @@ function togglePondFormFields() {
             
             if (category === 'Breeding Pond') {
                 if (fieldProduct2) fieldProduct2.classList.remove('hidden');
-                if (fieldQuantity2) fieldQuantity2.classList.remove('hidden');
                 if (fieldQuantity) fieldQuantity.classList.remove('hidden');
                 if (fieldDate) fieldDate.classList.remove('hidden');
-                if (labelProduct) labelProduct.textContent = 'Product 1 *';
-                if (labelQuantity) labelQuantity.textContent = 'Quantity 1 *';
-                if (capacityInput) capacityInput.placeholder = 'Quantity 1';
+                if (labelProduct) labelProduct.textContent = 'Product 1 (Breeder Crayfish) *';
+                if (labelQuantity) labelQuantity.textContent = 'Quantity 1 (Breeders) *';
+                if (capacityInput) capacityInput.placeholder = 'Breeder Quantity';
             } else if (category === 'Main Pond') {
                 if (fieldProduct2) fieldProduct2.classList.add('hidden');
-                if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
                 if (fieldQuantity) {
                     fieldQuantity.classList.add('hidden');
                     if (capacityInput && !capacityInput.value) capacityInput.value = '0';
@@ -157,7 +150,6 @@ function togglePondFormFields() {
                 if (labelProduct) labelProduct.textContent = 'Product';
             } else {
                 if (fieldProduct2) fieldProduct2.classList.add('hidden');
-                if (fieldQuantity2) fieldQuantity2.classList.add('hidden');
                 if (fieldQuantity) fieldQuantity.classList.remove('hidden');
                 if (fieldDate) fieldDate.classList.remove('hidden');
                 if (labelProduct) labelProduct.textContent = 'Product *';

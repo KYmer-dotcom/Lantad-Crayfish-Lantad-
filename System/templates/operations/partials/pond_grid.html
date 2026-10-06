@@ -77,10 +77,10 @@
                 <span>{{ pond.product_name|default:"PROD 1" }}:</span>
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
             </div>
-            {% if pond.product_name_2 or pond.capacity_2 %}
+            {% if pond.product_name_2 or pond.crilings_count %}
             <div class="flex items-center justify-between">
-                <span>{{ pond.product_name_2|default:"PROD 2" }}:</span>
-                <span class="font-bold text-[#cca43b]">{{ pond.capacity_2|default:"0" }}</span>
+                <span>{{ pond.product_name_2|default:"Crilings" }}:</span>
+                <span class="font-bold text-[#cca43b]">{{ pond.crilings_count }}</span>
             </div>
             {% endif %}
             {% elif pond.location == 'Superworm Cabin' %}

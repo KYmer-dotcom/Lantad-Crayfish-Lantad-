@@ -44,7 +44,11 @@
                 {% endif %}
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold font-mono">
                     <span class="text-[#cca43b]">{{ schedule.capacity|default:"0" }}</span>
-                    {% if schedule.capacity_2 %}
+                    {% if schedule.location == 'Breeding Pond' and schedule.crilings_count %}
+                    <span class="text-[#a0ac96] text-xs font-normal ml-1">/</span> <span class="text-[#cca43b]">{{ schedule.crilings_count }} Crilings</span>
+                    {% elif schedule.location == 'Superworm Cabin' %}
+                    <span class="text-[#a0ac96] text-xs font-normal ml-1">/</span> <span class="text-emerald-400">{{ schedule.superworm_count }} Worms</span>
+                    {% elif schedule.capacity_2 %}
                     <span class="text-[#a0ac96] text-xs font-normal ml-1">/</span> <span class="text-[#cca43b]">{{ schedule.capacity_2 }}</span>
                     {% endif %}
                 </td>

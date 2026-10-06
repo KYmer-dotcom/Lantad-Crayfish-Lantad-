@@ -103,6 +103,12 @@ class Pond(models.Model):
         return self.capacity or 0
 
     @property
+    def crilings_count(self):
+        if self.location == 'Breeding Pond':
+            return (self.capacity or 0) * 250
+        return self.capacity_2 or 0
+
+    @property
     def current_azula_quantity(self):
         if self.location == 'Azula':
             if self.status == 'empty' or (self.capacity or 0) <= 0:

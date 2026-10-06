@@ -341,7 +341,12 @@ def pond_create(request):
         category = form.cleaned_data.get('category') or 'Main Pond'
         pond.location = category
         pond.capacity = pond.capacity or 0
-        pond.capacity_2 = pond.capacity_2 or 0
+        if category == 'Breeding Pond':
+            pond.capacity_2 = (pond.capacity or 0) * 250
+            if not pond.product_name_2 and (pond.capacity or 0) > 0:
+                pond.product_name_2 = 'Crilings'
+        else:
+            pond.capacity_2 = 0
         pond.female_quantity = pond.female_quantity or 0
         pond.size = pond.size or 0
         pond.depth = pond.depth or 0
@@ -405,6 +410,12 @@ def pond_edit(request, pond_id):
         if form.is_valid():
             pond = form.save(commit=False)
             pond.location = form.cleaned_data.get('category', 'Main Pond')
+            if pond.location == 'Breeding Pond':
+                pond.capacity_2 = (pond.capacity or 0) * 250
+                if not pond.product_name_2 and (pond.capacity or 0) > 0:
+                    pond.product_name_2 = 'Crilings'
+            elif pond.location != 'Breeding Pond':
+                pond.capacity_2 = 0
             if (pond.capacity or 0) <= 0 and (pond.capacity_2 or 0) <= 0 and pond.status != Pond.Status.MAINTENANCE:
                 pond.status = Pond.Status.EMPTY
                 pond.transfer_date = None
