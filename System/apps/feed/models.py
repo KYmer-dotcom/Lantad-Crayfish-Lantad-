@@ -29,7 +29,7 @@ class FeedType(SoftDeleteModel):
     icon = models.CharField(max_length=20, default='box')
     protein_content = models.DecimalField(max_digits=5, decimal_places=2, help_text="Protein percentage")
     price_per_kg = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    quantity_sacks = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Number of sacks")
+    quantity_sacks = models.DecimalField(max_digits=12, decimal_places=4, default=0, help_text="Number of sacks")
     kg_per_sack = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Weight in kg per sack")
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
@@ -50,9 +50,6 @@ class FeedType(SoftDeleteModel):
 
     @property
     def current_stock_kg(self):
-        movement_stock = FeedStockMovement.available_stock(self)
-        if movement_stock > 0:
-            return movement_stock
         return self.total_kg
 
 
