@@ -43,8 +43,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:"Breeder Crayfish" }}
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ pond.capacity|default:"0" }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.breeder_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_breeder_log %}
@@ -70,8 +71,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name_2|default:"Crilings" }}
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ pond.crilings_count|default:"0" }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ pond.crilings_count|default:"0" }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.crilings_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_crilings_log %}
@@ -98,8 +100,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             Darkling Beetles
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ pond.capacity|default:"0" }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.sw_breeder_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_sw_breeder_log %}
@@ -125,8 +128,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             Superworms
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ pond.superworm_count|default:"0" }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ pond.superworm_count|default:"0" }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.sw_yield_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_sw_yield_log %}
@@ -154,8 +158,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:"Crayfish" }}
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ batch.quantity }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ batch.quantity }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ batch.feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_log %}
@@ -183,8 +188,9 @@
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:pond.name }}
                         </td>
-                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
-                            {{ pond.capacity|default:"0" }} pcs
+                        <td class="px-6 py-3 text-right">
+                            <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5">{{ pond.main_crayfish_feed_grams }} g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
                             {% if pond.today_log %}

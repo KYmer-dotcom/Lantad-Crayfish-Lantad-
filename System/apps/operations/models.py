@@ -109,6 +109,26 @@ class Pond(models.Model):
         return self.capacity_2 or 0
 
     @property
+    def breeder_feed_grams(self):
+        return round((self.capacity or 0) * 2.0, 1)
+
+    @property
+    def crilings_feed_grams(self):
+        return round((self.crilings_count or 0) * 0.02, 1)
+
+    @property
+    def sw_breeder_feed_grams(self):
+        return round((self.capacity or 0) * 0.1, 1)
+
+    @property
+    def sw_yield_feed_grams(self):
+        return round((self.superworm_count or 0) * 0.05, 1)
+
+    @property
+    def main_crayfish_feed_grams(self):
+        return round((self.capacity or 0) * 2.5, 1)
+
+    @property
     def current_azula_quantity(self):
         if self.location == 'Azula':
             if self.status == 'empty' or (self.capacity or 0) <= 0:
@@ -297,3 +317,7 @@ class PondTransferBatch(models.Model):
 
     def __str__(self):
         return f"{self.pond.name} - {self.quantity} {self.product_name} on {self.transfer_date}"
+
+    @property
+    def feed_grams(self):
+        return round((self.quantity or 0) * 2.5, 1)
