@@ -230,7 +230,9 @@ def ponds_list(request):
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone
     today = timezone.now().date()
-    today_logs = {log.pond_id: log for log in PondFeedingLog.objects.filter(recorded_at__date=today)}
+    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today).select_related('feed_type')
+    today_logs = {log.pond_id: log for log in today_logs_qs}
+    today_product_logs = {(log.pond_id, log.product_name): log for log in today_logs_qs}
     
     superworm_ponds = ponds.filter(location='Superworm Cabin')
     sw_block1_ponds = sorted(list(superworm_ponds.filter(shelf_position='Left Shelf')), key=natural_sort_key)
@@ -245,10 +247,17 @@ def ponds_list(request):
     azula_ponds = {p.shelf_position: p for p in azula_ponds_list}
     azula_active_ponds = sorted([p for p in azula_ponds_list if p.status == 'active'], key=natural_sort_key)
 
-    # Attach today_log to all finalized list elements in Python
+    # Attach today_log and product logs to all finalized list elements in Python
     all_finalized = sw_block1_ponds + sw_block2_ponds + sw_block3_ponds + breeding_ponds + main_ponds + azula_ponds_list
     for p in all_finalized:
         p.today_log = today_logs.get(p.id)
+        breeder_name = p.product_name or 'Breeder Crayfish'
+        crilings_name = p.product_name_2 or 'Crilings'
+        p.today_breeder_log = today_product_logs.get((p.id, breeder_name)) or today_product_logs.get((p.id, 'Breeder Crayfish')) or (p.today_log if p.today_log and not p.today_log.product_name else None)
+        p.today_crilings_log = today_product_logs.get((p.id, crilings_name)) or today_product_logs.get((p.id, 'Crilings'))
+        p.today_sw_breeder_log = today_product_logs.get((p.id, 'Darkling Beetles')) or (p.today_log if p.today_log and not p.today_log.product_name else None)
+        p.today_sw_yield_log = today_product_logs.get((p.id, 'Superworms'))
+        p.today_logs_map = {log.product_name: log for log in today_logs_qs if log.pond_id == p.id}
 
     outdoor_ponds_count = len(main_ponds) + len(breeding_ponds)
     cabin_ponds_count = superworm_ponds.count()
@@ -532,9 +541,18 @@ def operations_data(request):
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone
     today = timezone.now().date()
-    today_logs = {log.pond_id: log for log in PondFeedingLog.objects.filter(recorded_at__date=today)}
+    today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today).select_related('feed_type')
+    today_logs = {log.pond_id: log for log in today_logs_qs}
+    today_product_logs = {(log.pond_id, log.product_name): log for log in today_logs_qs}
     for pond in ponds:
         pond.today_log = today_logs.get(pond.id)
+        breeder_name = pond.product_name or 'Breeder Crayfish'
+        crilings_name = pond.product_name_2 or 'Crilings'
+        pond.today_breeder_log = today_product_logs.get((pond.id, breeder_name)) or today_product_logs.get((pond.id, 'Breeder Crayfish')) or (pond.today_log if pond.today_log and not pond.today_log.product_name else None)
+        pond.today_crilings_log = today_product_logs.get((pond.id, crilings_name)) or today_product_logs.get((pond.id, 'Crilings'))
+        pond.today_sw_breeder_log = today_product_logs.get((pond.id, 'Darkling Beetles')) or (pond.today_log if pond.today_log and not pond.today_log.product_name else None)
+        pond.today_sw_yield_log = today_product_logs.get((pond.id, 'Superworms'))
+        pond.today_logs_map = {log.product_name: log for log in today_logs_qs if log.pond_id == pond.id}
     
     # "first is the Pond below that is the superworm cabin"
     # We group Main Pond and Breeding Pond under "Pond", and Superworm Cabin separately.
@@ -561,7 +579,7 @@ def operations_data(request):
 @login_required
 @require_POST
 def record_operations(request):
-    """Save pond operations logs"""
+    """Save pond operations logs (supports per-product or per-pond logs)"""
     try:
         from django.utils import timezone
         today = timezone.now().date()
@@ -571,17 +589,22 @@ def record_operations(request):
         recorded_count = 0
         for log in logs:
             pond_id = log.get('pond_id')
+            product_name = (log.get('product_name') or '').strip()
             fed = log.get('fed', False)
             feed_type_id = log.get('feed_type_id') or None
             
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
             
-            # Prevent double entries for the same day
-            if PondFeedingLog.objects.filter(pond=pond, recorded_at__date=today).exists():
+            # Prevent double entries for the same pond + product + today
+            existing_qs = PondFeedingLog.objects.filter(pond=pond, recorded_at__date=today)
+            if product_name:
+                existing_qs = existing_qs.filter(product_name=product_name)
+            if existing_qs.exists():
                 continue
                 
             PondFeedingLog.objects.create(
                 pond=pond,
+                product_name=product_name,
                 feed_type_id=feed_type_id,
                 fed=fed,
                 recorded_by=request.user

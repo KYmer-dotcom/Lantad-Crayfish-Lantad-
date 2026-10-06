@@ -115,12 +115,14 @@
         
         rows.forEach(row => {
             const pondId = row.getAttribute('data-pond-id');
+            const productName = row.getAttribute('data-product-name') || '';
             const fedCheckbox = row.querySelector('.op-fed-checkbox');
             const feedSelect = row.querySelector('.op-feed-select');
             
             if (pondId && fedCheckbox) {
                 logs.push({
                     pond_id: parseInt(pondId),
+                    product_name: productName,
                     fed: fedCheckbox.checked,
                     feed_type_id: feedSelect && feedSelect.value ? parseInt(feedSelect.value) : null
                 });

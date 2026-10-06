@@ -1,175 +1,313 @@
-<table class="w-full text-left text-sm text-stone-100">
-    <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
-        <tr>
-            <th class="px-6 py-4">Name / ID</th>
-            <th class="px-6 py-4 text-center">Status</th>
-            <th class="px-6 py-4">Type of Feed</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-white/10">
-        {% for pond in table_ponds %}
-        {% if pond.status != 'empty' and pond.status != 'maintenance' %}
-        <!-- Pond Header / Operation Row -->
-        <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}">
-            <td class="px-6 py-4">
-                <div class="font-bold text-white text-base">{{ pond.name }}</div>
-                <div class="text-xs text-[#a0ac96] mt-0.5 font-mono">
-                    {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
-                        Position: {{ pond.shelf_position }}
-                    {% elif pond.location == 'Breeding Pond' %}
-                        Breeders: {{ pond.capacity|default:"0" }} | Crilings: {{ pond.crilings_count|default:"0" }}
-                    {% elif pond.location == 'Main Pond' %}
-                        Total Quantity: {{ pond.capacity|default:"0" }} pcs
-                    {% else %}
-                        Stock: {{ pond.capacity|default:"0" }}
-                    {% endif %}
-                </div>
-            </td>
-            <td class="px-6 py-4 text-center">
-                {% if pond.today_log %}
-                <div class="flex flex-col items-center gap-1 justify-center recorded-badge">
-                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-400 border border-emerald-500/30">
-                        Recorded
-                    </span>
-                    <span class="text-[10px] text-[#a0ac96] font-medium">{% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}</span>
-                </div>
+{% for pond in table_ponds %}
+{% if pond.status != 'empty' and pond.status != 'maintenance' %}
+<div class="border-b border-white/10 last:border-b-0 bg-black/20">
+    <!-- Pond Header Bar -->
+    <div class="px-6 py-3 bg-black/40 border-b border-white/5 flex flex-wrap items-center justify-between gap-2">
+        <div>
+            <span class="font-bold text-white text-base tracking-wide">{{ pond.name }}</span>
+            <span class="text-xs text-[#a0ac96] ml-3 font-mono">
+                {% if pond.shelf_position and pond.location == 'Superworm Cabin' %}
+                    Position: {{ pond.shelf_position }}
+                {% elif pond.location == 'Breeding Pond' %}
+                    Breeders: {{ pond.capacity|default:"0" }} pcs | Crilings: {{ pond.crilings_count|default:"0" }} pcs
+                {% elif pond.location == 'Main Pond' %}
+                    Total Stock: {{ pond.capacity|default:"0" }} pcs
                 {% else %}
-                <input type="checkbox" checked onchange="toggleFedStatus('{{ pond.id }}', this.checked)" class="op-fed-checkbox h-5 w-5 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                    Stock: {{ pond.capacity|default:"0" }} pcs
                 {% endif %}
-            </td>
-            <td class="px-6 py-4">
-                {% if pond.today_log %}
-                <div class="text-sm font-bold text-stone-200">
-                    {% if pond.today_log.feed_type %}
-                        {{ pond.today_log.feed_type.name }}
-                    {% else %}
-                        No Feed (Skip)
-                    {% endif %}
-                </div>
-                {% else %}
-                <select class="op-feed-select w-full rounded-xl border border-white/10 bg-black/30 px-3.5 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                    <option value="">Select feed...</option>
-                    {% for feed in feed_types %}
-                    <option value="{{ feed.id }}">
-                        {{ feed.name }}
-                    </option>
+            </span>
+        </div>
+        <div>
+            {% if pond.transfer_date %}
+            <span class="text-[11px] font-mono text-[#a0ac96]">Transferred: {{ pond.transfer_date|date:"M. d, Y"|default:pond.transfer_date }}</span>
+            {% elif pond.shelf_position and pond.location == 'Superworm Cabin' %}
+            <span class="text-[11px] font-mono text-[#a0ac96]">Shelf: {{ pond.shelf_position }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Products Subtable with Per-Product Feeding -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-stone-100">
+            <thead class="bg-white/5 text-[10px] uppercase tracking-wider text-[#a0ac96] border-b border-white/10 font-bold">
+                <tr>
+                    <th class="px-6 py-2.5 text-white">Product Name</th>
+                    <th class="px-6 py-2.5 text-center text-white">Role / Stage</th>
+                    <th class="px-6 py-2.5 text-right text-white">Current Quantity</th>
+                    <th class="px-6 py-2.5 text-center text-white w-28">Status</th>
+                    <th class="px-6 py-2.5 text-left text-white min-w-[200px]">Type of Feed</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 text-xs font-mono">
+                {% if pond.location == 'Breeding Pond' %}
+                    <!-- Breeding Pond Product 1: Breeder Crayfish -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Breeder Crayfish' }}">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            {{ pond.product_name|default:"Breeder Crayfish" }}
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            Product 1 (Breeder)
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ pond.capacity|default:"0" }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_breeder_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_breeder_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_breeder_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_breeder_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" {% if feed.name == 'PO2' or feed.name == 'Integra 1' or feed.category == 'grower' or feed.category == 'specialty' %}selected{% endif %}>
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Breeding Pond Product 2: Crilings -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name_2|default:'Crilings' }}">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            {{ pond.product_name_2|default:"Crilings" }}
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            Product 2 (Offspring)
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ pond.crilings_count|default:"0" }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_crilings_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_crilings_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_crilings_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_crilings_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}" {% if feed.category == 'starter' or feed.name == 'PO1' %}selected{% endif %}>
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% elif pond.location == 'Superworm Cabin' %}
+                    <!-- Superworm Cabin Product 1: Darkling Beetles -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Darkling Beetles">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            Darkling Beetles
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            Product 1 (Breeders)
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ pond.capacity|default:"0" }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_sw_breeder_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_sw_breeder_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_sw_breeder_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_sw_breeder_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Superworm Cabin Product 2: Superworms -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Superworms">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            Superworms
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            Product 2 (Yield)
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ pond.superworm_count|default:"0" }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_sw_yield_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_sw_yield_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_sw_yield_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_sw_yield_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% elif pond.location == 'Main Pond' and pond.transfer_batches.exists %}
+                    <!-- Main Pond Multiple Batches -->
+                    {% for batch in pond.transfer_batches.all %}
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Crayfish' }} (Batch #{{ forloop.counter }})">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            {{ pond.product_name|default:"Crayfish" }}
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            Batch #{{ forloop.counter }} (Transferred: {{ batch.transfer_date|date:"M. d, Y"|default:"-" }})
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ batch.quantity }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
-                </select>
+
+                {% else %}
+                    <!-- General / Single Product Pond -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:pond.name }}">
+                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
+                            {{ pond.product_name|default:pond.name }}
+                        </td>
+                        <td class="px-6 py-3 text-center font-sans text-stone-400">
+                            {{ pond.location|default:"Stock" }}
+                        </td>
+                        <td class="px-6 py-3 text-right font-bold text-[#cca43b]">
+                            {{ pond.capacity|default:"0" }} pcs
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            {% if pond.today_log %}
+                            <div class="flex flex-col items-center justify-center">
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+                                    Recorded
+                                </span>
+                                <span class="text-[10px] text-[#a0ac96] font-medium font-sans mt-0.5">
+                                    {% if pond.today_log.fed %}Fed{% else %}Not Fed{% endif %}
+                                </span>
+                            </div>
+                            {% else %}
+                            <input type="checkbox" checked class="op-fed-checkbox h-4 w-4 rounded border-white/20 bg-black/30 text-[#cca43b] focus:ring-[#cca43b] focus:ring-offset-0 cursor-pointer">
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 font-sans">
+                            {% if pond.today_log %}
+                            <div class="text-xs font-bold text-stone-200">
+                                {{ pond.today_log.feed_type.name|default:"No Feed (Skip)" }}
+                            </div>
+                            {% else %}
+                            <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select feed...</option>
+                                {% for feed in feed_types %}
+                                <option value="{{ feed.id }}">
+                                    {{ feed.name }} ({{ feed.get_category_display }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% endif %}
-            </td>
-        </tr>
-
-        <!-- Dedicated Products Subtable for Pond -->
-        <tr class="bg-black/30 border-b border-white/5">
-            <td colspan="3" class="px-6 py-3">
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between text-xs text-[#a0ac96]">
-                        <span class="font-bold uppercase tracking-wider text-[#cca43b]">Products Inside ({{ pond.name }})</span>
-                        {% if pond.transfer_date %}
-                        <span class="font-mono text-[11px]">Transferred: {{ pond.transfer_date|date:"M. d, Y"|default:pond.transfer_date }}</span>
-                        {% elif pond.location == 'Superworm Cabin' and pond.shelf_position %}
-                        <span class="font-mono text-[11px]">Shelf Position: {{ pond.shelf_position }}</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
-                        <table class="w-full text-left text-xs text-[#a0ac96]">
-                            <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
-                                <tr>
-                                    <th class="px-4 py-2 text-white font-bold">Product Name</th>
-                                    <th class="px-4 py-2 text-center text-white font-bold">Role / Stage</th>
-                                    <th class="px-4 py-2 text-right text-white font-bold">Current Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5 font-mono">
-                                {% if pond.location == 'Breeding Pond' %}
-                                    <!-- Breeding Pond Dual Products -->
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            {{ pond.product_name|default:"Breeder Crayfish" }}
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            Product 1 (Breeder)
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ pond.capacity|default:"0" }} pcs
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            {{ pond.product_name_2|default:"Crilings" }}
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            Product 2 (Offspring)
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ pond.crilings_count|default:"0" }} pcs
-                                        </td>
-                                    </tr>
-                                {% elif pond.location == 'Superworm Cabin' %}
-                                    <!-- Superworm Cabin Dual Products -->
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            Darkling Beetles
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            Product 1 (Breeders)
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ pond.capacity|default:"0" }} pcs
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            Superworms
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            Product 2 (Yield)
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ pond.superworm_count|default:"0" }} pcs
-                                        </td>
-                                    </tr>
-                                {% elif pond.location == 'Main Pond' and pond.transfer_batches.exists %}
-                                    <!-- Main Pond Multiple Batches -->
-                                    {% for batch in pond.transfer_batches.all %}
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            {{ pond.product_name|default:"Crayfish" }}
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            Batch #{{ forloop.counter }} (Transferred: {{ batch.transfer_date|date:"M. d, Y"|default:"-" }})
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ batch.quantity }} pcs
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <!-- General Pond Product -->
-                                    <tr class="hover:bg-white/5 transition-colors">
-                                        <td class="px-4 py-2 text-stone-200 font-sans font-medium">
-                                            {{ pond.product_name|default:pond.name }}
-                                        </td>
-                                        <td class="px-4 py-2 text-center text-stone-400 font-sans">
-                                            {{ pond.location|default:"Stock" }}
-                                        </td>
-                                        <td class="px-4 py-2 text-right font-bold text-[#cca43b]">
-                                            {{ pond.capacity|default:"0" }} pcs
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {% endif %}
-        {% empty %}
-        <tr>
-            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No operations data found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% empty %}
+<div class="px-6 py-8 text-center text-[#a0ac96]">No operations data found.</div>
+{% endfor %}

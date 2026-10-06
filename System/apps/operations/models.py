@@ -262,6 +262,7 @@ class Pond(models.Model):
 class PondFeedingLog(models.Model):
     """Logs feeding operations for a pond."""
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE, related_name='feeding_logs')
+    product_name = models.CharField(max_length=100, blank=True, default='')
     feed_type = models.ForeignKey('feed.FeedType', on_delete=models.SET_NULL, null=True, blank=True)
     fed = models.BooleanField(default=False)
     recorded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -273,7 +274,8 @@ class PondFeedingLog(models.Model):
         ordering = ['-recorded_at']
 
     def __str__(self):
-        return f"{self.pond.name} - Fed: {self.fed} at {self.recorded_at.strftime('%Y-%m-%d %H:%M')}"
+        prod = f" ({self.product_name})" if self.product_name else ""
+        return f"{self.pond.name}{prod} - Fed: {self.fed} at {self.recorded_at.strftime('%Y-%m-%d %H:%M')}"
 
 
 class PondTransferBatch(models.Model):
