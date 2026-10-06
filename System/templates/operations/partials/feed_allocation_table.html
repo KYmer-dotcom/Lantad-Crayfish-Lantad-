@@ -47,7 +47,7 @@
                             <select onchange="updateMasterFeed('Breeder Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Breeder Crayfish">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
@@ -81,7 +81,7 @@
                             <select onchange="updateMasterFeed('Crilings', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crilings">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
@@ -116,7 +116,7 @@
                             <select onchange="updateMasterFeed('Darkling Beetles', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Darkling Beetles">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
@@ -150,7 +150,7 @@
                             <select onchange="updateMasterFeed('Superworms', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Superworms">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
@@ -185,7 +185,7 @@
                             <select onchange="updateMasterFeed('Crayfish', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Crayfish">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:2 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
+                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}

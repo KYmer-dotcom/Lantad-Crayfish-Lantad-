@@ -109,7 +109,7 @@ class FeedStockMovement(models.Model):
 
     feed_type = models.ForeignKey(FeedType, on_delete=models.CASCADE, related_name='stock_movements')
     movement_type = models.CharField(max_length=20, choices=MovementType.choices)
-    delta_kg = models.DecimalField(max_digits=10, decimal_places=2, help_text="Signed stock change in kg")
+    delta_kg = models.DecimalField(max_digits=12, decimal_places=4, help_text="Signed stock change in kg")
     moved_at = models.DateTimeField(auto_now_add=True)
     moved_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     notes = models.TextField(blank=True)

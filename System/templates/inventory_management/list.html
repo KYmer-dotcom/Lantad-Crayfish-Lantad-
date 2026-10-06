@@ -127,7 +127,7 @@
                                 {{ feed.kg_per_sack|floatformat:"-2" }} <span class="text-xs">kg/sack</span>
                             </td>
                             <td class="px-6 py-4 text-right font-mono font-black text-[#cca43b]">
-                                {{ feed.total_kg|floatformat:"2" }} <span class="text-xs font-bold text-[#cca43b]/80">kg</span>
+                                {{ feed.total_kg|floatformat:"3" }} <span class="text-xs font-bold text-[#cca43b]/80">kg</span>
                             </td>
                             <td class="px-6 py-4" onclick="event.stopPropagation()">
                                 <div class="flex items-center justify-end gap-2">
@@ -171,7 +171,7 @@
                                                         Sack #{{ sack.sack_index }}
                                                     </td>
                                                     <td class="px-4 py-2 text-right text-white">
-                                                        {{ sack.weight_kg|floatformat:"2" }} kg
+                                                        {{ sack.weight_kg|floatformat:"3" }} kg
                                                     </td>
                                                     <td class="px-4 py-2 text-center font-sans text-xs">
                                                         <span class="{% if sack.status_color == 'emerald' %}text-emerald-400{% elif sack.status_color == 'amber' %}text-amber-400{% else %}text-rose-400{% endif %} font-medium">{{ sack.status }}</span>

@@ -1167,11 +1167,21 @@
         const r = rowProdName.trim().toLowerCase();
         const t = targetProdName.trim().toLowerCase();
         if (r === t || r.startsWith(t) || t.startsWith(r)) return true;
-        if (t === 'breeder crayfish' && r.includes('breeder')) return true;
-        if (t === 'crilings' && r.includes('criling')) return true;
-        if (t === 'darkling beetles' && (r.includes('beetle') || r.includes('darkling'))) return true;
-        if (t === 'superworms' && r.includes('superworm') && !r.includes('beetle')) return true;
-        if (t === 'crayfish' && r.includes('crayfish') && !r.includes('breeder')) return true;
+        if (t === 'breeder crayfish') {
+            return r.includes('breeder');
+        }
+        if (t === 'crilings') {
+            return r.includes('criling') || r.includes('fingerling') || r.includes('crilings');
+        }
+        if (t === 'darkling beetles') {
+            return r.includes('beetle') || r.includes('darkling');
+        }
+        if (t === 'superworms') {
+            return (r.includes('superworm') || r === 'superworms' || r === 'superworm') && !r.includes('beetle') && !r.includes('darkling');
+        }
+        if (t === 'crayfish') {
+            return (r.includes('crayfish') || r.includes('redclaw') || r.includes('stock') || r.includes('growout') || r.includes('grow out') || r.includes('pond')) && !r.includes('breeder') && !r.includes('criling');
+        }
         return false;
     }
 
