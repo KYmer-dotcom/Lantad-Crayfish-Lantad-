@@ -25,6 +25,12 @@ def consume_feed(feed_type, quantity_kg, user, feeding_log=None):
             f"Available: {available_stock}kg, required: {quantity_kg}kg."
         )
 
+    if feed_type.kg_per_sack and feed_type.kg_per_sack > 0:
+        curr_total_kg = (feed_type.quantity_sacks or Decimal('0')) * feed_type.kg_per_sack
+        new_total_kg = max(Decimal('0.00'), curr_total_kg - quantity_kg)
+        feed_type.quantity_sacks = new_total_kg / feed_type.kg_per_sack
+        feed_type.save(update_fields=['quantity_sacks'])
+
     return FeedStockMovement.objects.create(
         feed_type=feed_type,
         movement_type=FeedStockMovement.MovementType.OUT,

@@ -640,6 +640,9 @@ def record_operations(request):
         data = json.loads(request.body)
         logs = data.get('logs', [])
         recorded_count = 0
+        from decimal import Decimal
+        from apps.feed.models import FeedType, FeedStockMovement
+
         for log in logs:
             pond_id = log.get('pond_id')
             product_name = (log.get('product_name') or '').strip()
@@ -656,7 +659,7 @@ def record_operations(request):
             if existing_qs.exists():
                 continue
                 
-            PondFeedingLog.objects.create(
+            feeding_log = PondFeedingLog.objects.create(
                 pond=pond,
                 product_name=product_name,
                 feed_type_id=feed_type_id,
@@ -664,6 +667,31 @@ def record_operations(request):
                 fed=fed,
                 recorded_by=request.user
             )
+
+            # Deduct feed inventory if feed_type was selected and quantity_grams is specified
+            if feed_type_id and quantity_grams:
+                try:
+                    qty_g = Decimal(str(quantity_grams))
+                    if qty_g > 0:
+                        qty_kg = qty_g / Decimal('1000')
+                        feed_obj = FeedType.objects.filter(pk=feed_type_id).first()
+                        if feed_obj:
+                            if feed_obj.kg_per_sack and feed_obj.kg_per_sack > 0:
+                                curr_total_kg = (feed_obj.quantity_sacks or Decimal('0')) * feed_obj.kg_per_sack
+                                new_total_kg = max(Decimal('0.00'), curr_total_kg - qty_kg)
+                                feed_obj.quantity_sacks = new_total_kg / feed_obj.kg_per_sack
+                                feed_obj.save(update_fields=['quantity_sacks'])
+                            
+                            FeedStockMovement.objects.create(
+                                feed_type=feed_obj,
+                                movement_type=FeedStockMovement.MovementType.OUT,
+                                delta_kg=Decimal('0.00') - qty_kg,
+                                moved_by=request.user,
+                                notes=f"Feed used for {product_name} in {pond.name} ({quantity_grams}g)",
+                            )
+                except Exception:
+                    pass
+
             recorded_count += 1
         return JsonResponse({'status': 'success', 'recorded_count': recorded_count})
     except Exception as e:
