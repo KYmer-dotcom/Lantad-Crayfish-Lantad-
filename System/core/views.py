@@ -445,36 +445,36 @@ def inventory_overview(request):
         # Build individual sack items list (FIFO: deduct starting from Sack #1 until depleted, then proceed to next sack)
         sacks_list = []
         if total_kg > 0 and kg_sack > 0:
-            sacks_count = int(math.ceil(float(total_kg) / float(kg_sack)))
-            for i in range(sacks_count):
-                if i == 0:
-                    # Active/open sack currently being consumed first (FIFO)
-                    sack_remaining_kg = max(Decimal('0.00'), total_kg - Decimal(str(sacks_count - 1)) * kg_sack)
-                else:
-                    # Unopened full sealed sacks
-                    sack_remaining_kg = kg_sack
+            sacks_count = int(math.ceil(float(sacks))) if float(sacks) > 0 else int(math.ceil(float(total_kg) / float(kg_sack)))
+            if sacks_count > 0:
+                total_capacity = Decimal(str(sacks_count)) * kg_sack
+                total_consumed = max(Decimal('0.00'), total_capacity - total_kg)
 
-                pct = round((float(sack_remaining_kg) / float(kg_sack)) * 100) if float(kg_sack) > 0 else 0
-                if sack_remaining_kg <= Decimal('0.00'):
-                    p_status = 'Depleted'
-                    p_color = 'rose'
-                elif pct >= 70:
-                    p_status = 'High Stock'
-                    p_color = 'emerald'
-                elif pct >= 30:
-                    p_status = 'Medium Stock'
-                    p_color = 'amber'
-                else:
-                    p_status = 'Low Stock'
-                    p_color = 'rose'
+                for i in range(sacks_count):
+                    consumed_in_sack = max(Decimal('0.00'), min(kg_sack, total_consumed - Decimal(str(i)) * kg_sack))
+                    sack_remaining_kg = max(Decimal('0.00'), kg_sack - consumed_in_sack)
 
-                sacks_list.append({
-                    'sack_index': i + 1,
-                    'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",
-                    'weight_kg': sack_remaining_kg,
-                    'status': p_status,
-                    'status_color': p_color,
-                })
+                    pct = round((float(sack_remaining_kg) / float(kg_sack)) * 100) if float(kg_sack) > 0 else 0
+                    if sack_remaining_kg <= Decimal('0.00'):
+                        p_status = 'Depleted'
+                        p_color = 'rose'
+                    elif pct >= 70:
+                        p_status = 'High Stock'
+                        p_color = 'emerald'
+                    elif pct >= 30:
+                        p_status = 'Medium Stock'
+                        p_color = 'amber'
+                    else:
+                        p_status = 'Low Stock'
+                        p_color = 'rose'
+
+                    sacks_list.append({
+                        'sack_index': i + 1,
+                        'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",
+                        'weight_kg': sack_remaining_kg,
+                        'status': p_status,
+                        'status_color': p_color,
+                    })
 
         feed_inventory.append({
             'id': feed_type.id,

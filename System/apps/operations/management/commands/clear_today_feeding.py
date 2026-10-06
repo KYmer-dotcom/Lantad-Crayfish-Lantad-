@@ -14,13 +14,15 @@ class Command(BaseCommand):
         movements = FeedStockMovement.objects.filter(moved_at__date=today, movement_type=FeedStockMovement.MovementType.OUT)
         for mov in movements:
             feed = mov.feed_type
-            if feed and feed.kg_per_sack and feed.kg_per_sack > 0:
-                # delta_kg is negative (e.g. -0.50), so abs(delta_kg) is what was deducted
                 deducted_kg = abs(mov.delta_kg)
                 curr_kg = (feed.quantity_sacks or 0) * feed.kg_per_sack
-                feed.quantity_sacks = (curr_kg + deducted_kg) / feed.kg_per_sack
+                new_sacks = (curr_kg + deducted_kg) / feed.kg_per_sack
+                # If near integer (within 0.01 sacks), snap to exact integer
+                if abs(float(new_sacks) - round(float(new_sacks))) < 0.01:
+                    new_sacks = round(float(new_sacks))
+                feed.quantity_sacks = new_sacks
                 feed.save(update_fields=['quantity_sacks'])
-                self.stdout.write(self.style.SUCCESS(f"Restored {deducted_kg}kg to {feed.name}"))
+                self.stdout.write(self.style.SUCCESS(f"Restored {deducted_kg}kg to {feed.name} (Now {feed.quantity_sacks} sacks)"))
         
         deleted_movements, _ = movements.delete()
         
