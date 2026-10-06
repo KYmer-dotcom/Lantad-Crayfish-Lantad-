@@ -143,40 +143,11 @@
                         </td>
                     </tr>
 
-                {% elif pond.location == 'Main Pond' and pond.transfer_batches.exists %}
-                    <!-- Main Pond Multiple Batches -->
-                    {% for batch in pond.transfer_batches.all %}
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Crayfish' }} (Batch #{{ forloop.counter }})" data-quantity="{{ batch.quantity|default:'0' }}">
+                {% else %}
+                    <!-- Main Pond / General Single Product Pond -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:'Crayfish' }}" data-quantity="{{ pond.capacity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
                             {{ pond.product_name|default:"Crayfish" }}
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <div class="font-bold text-[#cca43b]">{{ batch.quantity }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
-                        </td>
-                        <td class="px-6 py-3 font-sans">
-                            <div class="flex items-center gap-2">
-                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                    <option value="">Select feed...</option>
-                                    {% for feed in feed_types %}
-                                    <option value="{{ feed.id }}" {% if pond.today_log and pond.today_log.feed_type_id == feed.id %}selected{% endif %}>
-                                        {{ feed.name }} ({{ feed.get_category_display }})
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                {% if pond.today_log %}
-                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-
-                {% else %}
-                    <!-- General / Single Product Pond -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:pond.name }}" data-quantity="{{ pond.capacity|default:'0' }}">
-                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
-                            {{ pond.product_name|default:pond.name }}
                         </td>
                         <td class="px-6 py-3 text-right">
                             <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
