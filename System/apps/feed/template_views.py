@@ -101,7 +101,7 @@ class FeedTypeForm(forms.ModelForm):
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
                 'placeholder': 'kg per sack',
                 'step': '0.01',
-                'min': '0.01'
+                'min': '0'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 placeholder:text-stone-500 focus:border-[#cca43b] focus:outline-none',

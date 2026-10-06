@@ -30,7 +30,7 @@ class FeedType(SoftDeleteModel):
     protein_content = models.DecimalField(max_digits=5, decimal_places=2, help_text="Protein percentage")
     price_per_kg = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     quantity_sacks = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Number of sacks")
-    kg_per_sack = models.DecimalField(max_digits=10, decimal_places=2, default=50.00, help_text="Weight in kg per sack")
+    kg_per_sack = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Weight in kg per sack")
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

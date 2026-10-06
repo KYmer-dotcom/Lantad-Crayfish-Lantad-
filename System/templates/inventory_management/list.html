@@ -242,7 +242,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Weight / Sack (kg) *</label>
-                    <input type="number" name="kg_per_sack" id="feed-kg-per-sack" min="0.01" step="0.01" value="50" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
+                    <input type="number" name="kg_per_sack" id="feed-kg-per-sack" min="0" step="0.01" value="0" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
                     <p class="mt-1 text-[10px] text-[#a0ac96]">kg weight per each sack</p>
                 </div>
             </div>
@@ -418,7 +418,7 @@ function showFeedModal() {
     document.getElementById('feed-submit-btn').textContent = 'Create Feed';
     
     document.getElementById('feed-quantity-sacks').value = '0';
-    document.getElementById('feed-kg-per-sack').value = '50';
+    document.getElementById('feed-kg-per-sack').value = '0';
     updateFeedCalcPreview();
 
     selectFeedAccent('cyan');
@@ -437,7 +437,7 @@ function editFeedModal(id, name, category, description, accent_color, icon, quan
     document.getElementById('feed-category-select').value = category;
     document.getElementById('feed-description-input').value = description;
     document.getElementById('feed-quantity-sacks').value = quantity_sacks !== undefined && quantity_sacks !== '' ? quantity_sacks : '0';
-    document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '50';
+    document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '0';
     
     updateFeedCalcPreview();
     selectFeedAccent(accent_color || 'cyan');
