@@ -92,21 +92,43 @@
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         {% for feed in feed_inventory %}
-                        <tr class="hover:bg-white/5 transition-colors">
+                        <!-- Main Feed Row -->
+                        <tr class="hover:bg-white/5 transition-colors cursor-pointer group" onclick="toggleSacksSubtable('sacks-row-{{ feed.id }}', 'chevron-{{ feed.id }}')">
                             <td class="px-6 py-4">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-xl {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400 {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400 {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400 {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400 {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400 {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400 {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
-                                    {% if feed.icon == 'wheat' %}🌾
-                                    {% elif feed.icon == 'bug' %}🐛
-                                    {% elif feed.icon == 'corn' %}🌽
-                                    {% elif feed.icon == 'leaf' %}🥬
-                                    {% elif feed.icon == 'meat' %}🥩
-                                    {% else %}📦{% endif %}
+                                <div class="flex items-center gap-2">
+                                    <button type="button" class="text-[#a0ac96] hover:text-[#cca43b] transition-transform duration-200 focus:outline-none" title="Toggle Individual Sacks">
+                                        <svg id="chevron-{{ feed.id }}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-xl {% if feed.accent_color == 'cyan' %}border-cyan-500/50 text-cyan-400 {% elif feed.accent_color == 'emerald' %}border-emerald-500/50 text-emerald-400 {% elif feed.accent_color == 'amber' %}border-amber-500/50 text-amber-400 {% elif feed.accent_color == 'rose' %}border-rose-500/50 text-rose-400 {% elif feed.accent_color == 'violet' %}border-violet-500/50 text-violet-400 {% elif feed.accent_color == 'indigo' %}border-indigo-500/50 text-indigo-400 {% else %}border-[#cca43b]/50 text-[#cca43b]{% endif %}">
+                                        {% if feed.icon == 'wheat' %}🌾
+                                        {% elif feed.icon == 'bug' %}🐛
+                                        {% elif feed.icon == 'corn' %}🌽
+                                        {% elif feed.icon == 'leaf' %}🥬
+                                        {% elif feed.icon == 'meat' %}🥩
+                                        {% else %}📦{% endif %}
+                                    </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 font-medium text-stone-100">{{ feed.name }}</td>
+                            <td class="px-6 py-4 font-medium text-stone-100">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-white group-hover:text-[#cca43b] transition-colors">{{ feed.name }}</span>
+                                    {% if feed.description %}
+                                    <span class="text-[11px] text-[#a0ac96]/80 truncate max-w-xs">{{ feed.description }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-[#a0ac96]">{{ feed.category }}</td>
                             <td class="px-6 py-4 text-center font-mono font-bold text-white">
-                                {{ feed.quantity_sacks|floatformat:"-2" }} <span class="text-xs text-[#a0ac96] font-normal">sacks</span>
+                                <div class="flex flex-col items-center">
+                                    <span>{{ feed.quantity_sacks|floatformat:"-2" }} <span class="text-xs text-[#a0ac96] font-normal">sacks</span></span>
+                                    {% if feed.has_sacks %}
+                                    <span class="text-[10px] text-[#cca43b] font-medium font-sans hover:underline mt-0.5">
+                                        View {{ feed.sacks_list|length }} individual sacks ▾
+                                    </span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-center font-mono text-[#a0ac96]">
                                 {{ feed.kg_per_sack|floatformat:"-2" }} <span class="text-xs">kg/sack</span>
@@ -114,7 +136,7 @@
                             <td class="px-6 py-4 text-right font-mono font-black text-[#cca43b]">
                                 {{ feed.total_kg|floatformat:"2" }} <span class="text-xs font-bold text-[#cca43b]/80">kg</span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4" onclick="event.stopPropagation()">
                                 <div class="flex items-center justify-end gap-2">
                                     <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}', '{{ feed.quantity_sacks }}', '{{ feed.kg_per_sack }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,6 +148,78 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Expandable Sacks Sub-Table Row -->
+                        <tr id="sacks-row-{{ feed.id }}" class="hidden bg-black/40 border-t border-b border-white/5">
+                            <td colspan="7" class="p-0">
+                                <div class="px-6 py-4 space-y-3 bg-[#01140e]/95 border-l-4 border-[#cca43b] my-1 mx-2 rounded-xl">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-base">📦</span>
+                                            <h4 class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Individual Sacks Breakdown — {{ feed.name }}</h4>
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">
+                                                {{ feed.sacks_list|length }} {% if feed.sacks_list|length == 1 %}sack{% else %}sacks{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-4 text-xs font-mono text-[#a0ac96]">
+                                            <span>Unit Spec: <strong class="text-white">{{ feed.kg_per_sack|floatformat:"-2" }} kg/sack</strong></span>
+                                            <span>Total Batch: <strong class="text-[#cca43b]">{{ feed.total_kg|floatformat:"2" }} kg</strong></span>
+                                        </div>
+                                    </div>
+
+                                    {% if feed.has_sacks %}
+                                    <div class="overflow-hidden rounded-lg border border-white/10 bg-black/40">
+                                        <table class="w-full text-left text-xs text-[#a0ac96]">
+                                            <thead class="bg-white/5 text-[10px] uppercase font-black tracking-wider text-[#a0ac96] border-b border-white/10">
+                                                <tr>
+                                                    <th class="px-4 py-2.5 text-white font-bold">Sack #</th>
+                                                    <th class="px-4 py-2.5 text-white font-bold">Tracking ID</th>
+                                                    <th class="px-4 py-2.5 text-right text-white font-bold">Weight (kg)</th>
+                                                    <th class="px-4 py-2.5 text-center text-white font-bold">Packaging</th>
+                                                    <th class="px-4 py-2.5 text-center text-white font-bold">Stock Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/5 font-mono">
+                                                {% for sack in feed.sacks_list %}
+                                                <tr class="hover:bg-white/5 transition-colors">
+                                                    <td class="px-4 py-2.5 font-bold text-[#cca43b]">
+                                                        Sack #{{ sack.sack_index }}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-stone-200 font-bold">
+                                                        {{ sack.sack_code }}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-right font-black text-white">
+                                                        {{ sack.weight_kg|floatformat:"2" }} <span class="text-[10px] text-[#a0ac96] font-normal">kg</span>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center text-[11px] text-[#a0ac96] font-sans">
+                                                        {{ sack.package_type }}
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-sans">
+                                                        {% if sack.status_color == 'emerald' %}
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                            {{ sack.status }}
+                                                        </span>
+                                                        {% else %}
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                                                            <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                                                            {{ sack.status }}
+                                                        </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="py-4 text-center text-xs text-[#a0ac96] italic bg-black/20 rounded-lg border border-white/5">
+                                        No individual sacks in stock (0 sacks). Click the <span class="text-[#cca43b] font-bold">Edit</span> icon to specify quantity in sacks.
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -282,6 +376,25 @@ const feedIconNames = {
     'box': 'Box / Pellets 📦',
     'meat': 'Meat / Protein 🥩'
 };
+
+function toggleSacksSubtable(rowId, chevronId) {
+    const row = document.getElementById(rowId);
+    const chevron = document.getElementById(chevronId);
+    if (!row) return;
+    if (row.classList.contains('hidden')) {
+        row.classList.remove('hidden');
+        if (chevron) {
+            chevron.style.transform = 'rotate(90deg)';
+            chevron.classList.add('text-[#cca43b]');
+        }
+    } else {
+        row.classList.add('hidden');
+        if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+            chevron.classList.remove('text-[#cca43b]');
+        }
+    }
+}
 
 function updateFeedCalcPreview() {
     const sacks = parseFloat(document.getElementById('feed-quantity-sacks').value) || 0;

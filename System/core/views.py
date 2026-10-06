@@ -437,6 +437,31 @@ def inventory_overview(request):
         total_kg = feed_type.total_kg
         total_feed_sacks += sacks
         total_feed_weight_kg += total_kg
+        
+        # Build individual sack items list for sub-table
+        sacks_count = int(sacks)
+        fraction = float(sacks) - sacks_count
+        sacks_list = []
+        for i in range(sacks_count):
+            sacks_list.append({
+                'sack_index': i + 1,
+                'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",
+                'weight_kg': kg_sack,
+                'package_type': f"Standard {int(kg_sack) if kg_sack == int(kg_sack) else kg_sack}kg Sack",
+                'status': 'Full / Sealed',
+                'status_color': 'emerald',
+            })
+        if fraction > 0:
+            partial_kg = Decimal(str(round(fraction * float(kg_sack), 2)))
+            sacks_list.append({
+                'sack_index': sacks_count + 1,
+                'sack_code': f"SCK-{feed_type.id:03d}-{sacks_count+1:02d}",
+                'weight_kg': partial_kg,
+                'package_type': f"Partial Sack ({round(fraction*100)}%)",
+                'status': f"Open / {partial_kg}kg Left",
+                'status_color': 'amber',
+            })
+
         feed_inventory.append({
             'id': feed_type.id,
             'name': feed_type.name,
@@ -446,6 +471,8 @@ def inventory_overview(request):
             'quantity_sacks': sacks,
             'kg_per_sack': kg_sack,
             'total_kg': total_kg,
+            'sacks_list': sacks_list,
+            'has_sacks': len(sacks_list) > 0,
             'description': feed_type.description,
             'accent_color': feed_type.accent_color,
             'icon': feed_type.icon,
