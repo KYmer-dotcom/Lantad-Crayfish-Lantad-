@@ -9,6 +9,7 @@ from django.db.models import Sum, Count, F
 from django import forms
 from django.db.models.functions import TruncDate, TruncMonth
 from datetime import datetime, timedelta
+from decimal import Decimal
 import json
 from apps.accounts.access import filter_by_pond, is_customer, is_rider, get_accessible_farms, get_accessible_ponds
 from apps.accounts.models import User
