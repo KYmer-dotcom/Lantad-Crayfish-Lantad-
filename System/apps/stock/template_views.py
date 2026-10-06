@@ -170,6 +170,7 @@ def products_list(request):
     
     active_batches_count = sum(1 for p in products for op in p.used_in_operations if op['capacity'] > 0)
     total_product_quantity = sum(p.quantity_kg for p in products)
+    in_stock_products_count = sum(1 for p in products if (p.quantity_kg or 0) > 0)
     
     context = {
         'species_list': species,
@@ -181,6 +182,7 @@ def products_list(request):
         'products': products,
         'active_batches_count': active_batches_count,
         'total_product_quantity': total_product_quantity,
+        'in_stock_products_count': in_stock_products_count,
     }
     return render(request, 'stock_monitoring/list.html', context)
 

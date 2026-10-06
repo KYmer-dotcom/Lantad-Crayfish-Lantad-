@@ -29,10 +29,10 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96] truncate">Available Stocks</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ products|length }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{{ in_stock_products_count|default:"0" }} <span class="text-sm font-normal text-[#a0ac96]">/ {{ products|length }} in stock</span></p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono truncate">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span class="truncate">Products currently recorded</span>
+                    <span class="inline-block h-1.5 w-1.5 rounded-full {% if in_stock_products_count > 0 %}bg-emerald-400{% else %}bg-rose-400{% endif %} shrink-0"></span>
+                    <span class="truncate">Products ready for market sale</span>
                 </div>
             </div>
         </div>
@@ -123,7 +123,10 @@
                         <p class="mt-0.5 text-xs text-[#a0ac96] line-clamp-2">{{ product.notes|default:"No description provided." }}</p>
                     </div>
                     <div class="text-right flex-shrink-0 ml-3">
-                        <div class="text-sm font-bold text-[#cca43b]">{{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-[10px] font-normal text-[#a0ac96]">{{ product.unit_display }}</span></div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96]">Available Stock</div>
+                        <div class="text-base font-black {% if product.quantity_kg > 0 %}text-[#cca43b]{% else %}text-stone-500{% endif %}">
+                            {{ product.quantity_kg|floatformat:"0"|default:"0" }} <span class="text-xs font-semibold text-stone-300">{{ product.unit_display }}</span>
+                        </div>
                         <div class="flex flex-col items-end text-[10px] text-[#a0ac96] mt-0.5 leading-tight">
                             {% if product.unit_price > 0 %}<span>₱{{ product.unit_price|floatformat:"0" }}/pc</span>{% endif %}
                             {% if product.price_per_kg > 0 %}<span>₱{{ product.price_per_kg|floatformat:"0" }}/{{ product.unit_display }}</span>{% endif %}
@@ -186,7 +189,7 @@
                                             </div>
                                             <div class="flex flex-col">
                                                 <span class="font-medium text-stone-100">{{ product.name }}</span>
-                                                <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Quantity: {{ product.quantity_kg|floatformat:"0"|default:"0" }}</span>
+                                                <span class="text-[11px] text-[#cca43b] font-semibold mt-0.5">Available Stock: {{ product.quantity_kg|floatformat:"0"|default:"0" }} {{ product.unit_display }}</span>
                                             </div>
                                         </div>
                                     </td>
