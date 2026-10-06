@@ -57,7 +57,7 @@
                             <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
                                 <option value="">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" {% if feed.name == 'PO2' or feed.name == 'Integra 1' or feed.category == 'grower' or feed.category == 'specialty' %}selected{% endif %}>
+                                <option value="{{ feed.id }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
@@ -85,7 +85,7 @@
                             <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
                                 <option value="">Select feed...</option>
                                 {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" {% if feed.category == 'starter' or feed.name == 'PO1' %}selected{% endif %}>
+                                <option value="{{ feed.id }}">
                                     {{ feed.name }} ({{ feed.get_category_display }})
                                 </option>
                                 {% endfor %}
