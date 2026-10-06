@@ -11,10 +11,9 @@
             <thead class="bg-white/5 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
                 <tr>
                     <th class="px-4 py-2.5 text-white">Product Available</th>
-                    <th class="px-4 py-2.5 text-center text-white">Role / Stage</th>
                     <th class="px-4 py-2.5 text-right text-white min-w-[130px]">Quantity</th>
                     <th class="px-4 py-2.5 text-right text-white min-w-[140px]">Specific Grams</th>
-                    <th class="px-4 py-2.5 text-left text-white min-w-[200px]">Feed Type to Use</th>
+                    <th class="px-4 py-2.5 text-left text-white min-w-[220px]">Feed Type to Use</th>
                     <th class="px-4 py-2.5 text-right text-white min-w-[140px]">Available Feed Stock</th>
                 </tr>
             </thead>
@@ -23,7 +22,6 @@
                     <!-- Breeder Crayfish -->
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-4 py-3 font-sans font-medium text-stone-200">Breeder Crayfish</td>
-                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 1 (Breeder)</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <input type="number" min="0" value="{{ breeding_total_breeders|default:'0' }}" oninput="recalcGramsFromQty('Breeder Crayfish', 2.0)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Breeder Crayfish" placeholder="0">
@@ -54,7 +52,6 @@
                     <!-- Crilings -->
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-4 py-3 font-sans font-medium text-stone-200">Crilings</td>
-                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 2 (Offspring)</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <input type="number" min="0" value="{{ breeding_total_crilings|default:'0' }}" oninput="recalcGramsFromQty('Crilings', 0.02)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Crilings" placeholder="0">
@@ -86,7 +83,6 @@
                     <!-- Darkling Beetles -->
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-4 py-3 font-sans font-medium text-stone-200">Darkling Beetles</td>
-                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 1 (Breeders)</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <input type="number" min="0" value="{{ sw_total_breeders|default:'0' }}" oninput="recalcGramsFromQty('Darkling Beetles', 0.1)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Darkling Beetles" placeholder="0">
@@ -117,7 +113,6 @@
                     <!-- Superworms -->
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-4 py-3 font-sans font-medium text-stone-200">Superworms</td>
-                        <td class="px-4 py-3 text-center font-sans text-stone-400">Product 2 (Yield)</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <input type="number" min="0" value="{{ sw_total_yield|default:'0' }}" oninput="recalcGramsFromQty('Superworms', 0.05)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Superworms" placeholder="0">
@@ -149,7 +144,6 @@
                     <!-- Main Pond Stock -->
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-4 py-3 font-sans font-medium text-stone-200">Crayfish</td>
-                        <td class="px-4 py-3 text-center font-sans text-stone-400">Main Stock</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <input type="number" min="0" value="{{ main_total_stock|default:'0' }}" oninput="recalcGramsFromQty('Crayfish', 2.5)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Crayfish" placeholder="0">
