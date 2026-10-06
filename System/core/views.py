@@ -445,10 +445,17 @@ def inventory_overview(request):
         # Build individual sack items list (FIFO: deduct starting from Sack #1 until depleted, then proceed to next sack)
         sacks_list = []
         if total_kg > 0 and kg_sack > 0:
-            sacks_count = int(math.ceil(float(sacks))) if float(sacks) > 0 else int(math.ceil(float(total_kg) / float(kg_sack)))
+            raw_sacks = float(sacks) if float(sacks) > 0 else (float(total_kg) / float(kg_sack))
+            rounded_sacks = round(raw_sacks)
+            if abs(raw_sacks - rounded_sacks) < 0.05:
+                sacks_count = int(rounded_sacks)
+            else:
+                sacks_count = int(math.ceil(raw_sacks))
+
             if sacks_count > 0:
                 total_capacity = Decimal(str(sacks_count)) * kg_sack
-                total_consumed = max(Decimal('0.00'), total_capacity - total_kg)
+                clamped_total_kg = min(total_capacity, total_kg)
+                total_consumed = max(Decimal('0.00'), total_capacity - clamped_total_kg)
 
                 for i in range(sacks_count):
                     consumed_in_sack = max(Decimal('0.00'), min(kg_sack, total_consumed - Decimal(str(i)) * kg_sack))
