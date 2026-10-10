@@ -14,5 +14,8 @@ urlpatterns = [
     path('types/add/', template_views.feed_type_add, name='feed_type_add'),
     path('types/<int:feed_type_id>/edit/', template_views.feed_type_edit, name='feed_type_edit'),
     path('types/<int:feed_type_id>/delete/', template_views.feed_type_delete, name='feed_type_delete'),
+    path('types/<int:feed_id>/add-sack/', template_views.feed_add_sack, name='feed_add_sack'),
+    path('sacks/<int:sack_id>/delete/', template_views.feed_delete_sack, name='feed_delete_sack'),
     path('feeding-log/create/', template_views.feeding_log_create, name='feeding_log_create'),
 ]
+

@@ -642,6 +642,7 @@ def record_operations(request):
         recorded_count = 0
         from decimal import Decimal
         from apps.feed.models import FeedType, FeedStockMovement
+        from apps.feed.services import deduct_feed_from_sacks, restore_feed_to_sacks
 
         for log in logs:
             pond_id = log.get('pond_id')
@@ -663,11 +664,14 @@ def record_operations(request):
                 if existing_log.feed_type and existing_log.quantity_grams:
                     try:
                         old_qty_g = Decimal(str(existing_log.quantity_grams))
-                        if old_qty_g > 0 and existing_log.feed_type.kg_per_sack and existing_log.feed_type.kg_per_sack > 0:
+                        if old_qty_g > 0:
                             old_qty_kg = old_qty_g / Decimal('1000')
-                            curr_kg = (existing_log.feed_type.quantity_sacks or Decimal('0')) * existing_log.feed_type.kg_per_sack
-                            existing_log.feed_type.quantity_sacks = (curr_kg + old_qty_kg) / existing_log.feed_type.kg_per_sack
-                            existing_log.feed_type.save(update_fields=['quantity_sacks'])
+                            restore_feed_to_sacks(
+                                feed_type=existing_log.feed_type,
+                                quantity_kg=old_qty_kg,
+                                user=request.user,
+                                notes=f"Reversed feed deduction for {product_name} in {pond.name}"
+                            )
                     except Exception:
                         pass
                 
@@ -702,18 +706,11 @@ def record_operations(request):
                         qty_kg = qty_g / Decimal('1000')
                         feed_obj = FeedType.objects.filter(pk=feed_type_id).first()
                         if feed_obj:
-                            if feed_obj.kg_per_sack and feed_obj.kg_per_sack > 0:
-                                curr_total_kg = (feed_obj.quantity_sacks or Decimal('0')) * feed_obj.kg_per_sack
-                                new_total_kg = max(Decimal('0.00'), curr_total_kg - qty_kg)
-                                feed_obj.quantity_sacks = new_total_kg / feed_obj.kg_per_sack
-                                feed_obj.save(update_fields=['quantity_sacks'])
-                            
-                            FeedStockMovement.objects.create(
+                            deduct_feed_from_sacks(
                                 feed_type=feed_obj,
-                                movement_type=FeedStockMovement.MovementType.OUT,
-                                delta_kg=Decimal('0.00') - qty_kg,
-                                moved_by=request.user,
-                                notes=f"Feed used for {product_name} in {pond.name} ({quantity_grams}g)",
+                                quantity_kg=qty_kg,
+                                user=request.user,
+                                notes=f"Feed used for {product_name} in {pond.name} ({quantity_grams}g)"
                             )
                 except Exception:
                     pass

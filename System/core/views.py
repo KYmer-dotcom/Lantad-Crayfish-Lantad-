@@ -428,60 +428,40 @@ def inventory_overview(request):
         })
     species_inventory.sort(key=lambda item: item['species_name'])
 
-    from apps.feed.models import FeedType, FeedStockMovement
-    import math
+    from apps.feed.models import FeedType, FeedSack, FeedStockMovement
 
     feed_inventory = []
     total_feed_sacks = Decimal('0')
     total_feed_weight_kg = Decimal('0.00')
 
-    for feed_type in FeedType.objects.filter(is_active=True).order_by('category', 'name'):
-        sacks = feed_type.quantity_sacks or Decimal('0')
-        kg_sack = feed_type.kg_per_sack or Decimal('0')
-        total_kg = max(Decimal('0.00'), feed_type.total_kg)
-        total_feed_sacks += sacks
-        total_feed_weight_kg += total_kg
-
-        # Build individual sack items list (FIFO: deduct starting from Sack #1 until depleted, then proceed to next sack)
+    for feed_type in FeedType.objects.filter(is_active=True).prefetch_related('sacks').order_by('category', 'name'):
+        kg_sack = feed_type.kg_per_sack or Decimal('0.00')
+        all_sacks = list(feed_type.sacks.all().order_by('sack_number', 'created_at'))
+        
         sacks_list = []
-        if total_kg > 0 and kg_sack > 0:
-            raw_sacks = float(sacks) if float(sacks) > 0 else (float(total_kg) / float(kg_sack))
-            rounded_sacks = round(raw_sacks)
-            if abs(raw_sacks - rounded_sacks) < 0.05:
-                sacks_count = int(rounded_sacks)
-            else:
-                sacks_count = int(math.ceil(raw_sacks))
+        if all_sacks:
+            total_kg = sum((s.current_weight_kg for s in all_sacks), Decimal('0.000'))
+            active_sacks_count = sum(1 for s in all_sacks if s.current_weight_kg > Decimal('0'))
+            sacks_count = len(all_sacks)
+            
+            for s in all_sacks:
+                sacks_list.append({
+                    'id': s.id,
+                    'sack_index': s.sack_number,
+                    'sack_code': s.sack_code,
+                    'initial_weight_kg': s.initial_weight_kg,
+                    'weight_kg': s.current_weight_kg,
+                    'status': s.status,
+                    'status_color': s.status_color,
+                    'percentage': s.percentage,
+                })
+        else:
+            total_kg = max(Decimal('0.00'), feed_type.total_kg)
+            sacks_count = int(round(float(feed_type.quantity_sacks or 0)))
+            active_sacks_count = sacks_count
 
-            if sacks_count > 0:
-                total_capacity = Decimal(str(sacks_count)) * kg_sack
-                clamped_total_kg = min(total_capacity, total_kg)
-                total_consumed = max(Decimal('0.00'), total_capacity - clamped_total_kg)
-
-                for i in range(sacks_count):
-                    consumed_in_sack = max(Decimal('0.00'), min(kg_sack, total_consumed - Decimal(str(i)) * kg_sack))
-                    sack_remaining_kg = max(Decimal('0.00'), kg_sack - consumed_in_sack)
-
-                    pct = round((float(sack_remaining_kg) / float(kg_sack)) * 100) if float(kg_sack) > 0 else 0
-                    if sack_remaining_kg <= Decimal('0.00'):
-                        p_status = 'Depleted'
-                        p_color = 'rose'
-                    elif pct >= 70:
-                        p_status = 'High Stock'
-                        p_color = 'emerald'
-                    elif pct >= 30:
-                        p_status = 'Medium Stock'
-                        p_color = 'amber'
-                    else:
-                        p_status = 'Low Stock'
-                        p_color = 'rose'
-
-                    sacks_list.append({
-                        'sack_index': i + 1,
-                        'sack_code': f"SCK-{feed_type.id:03d}-{i+1:02d}",
-                        'weight_kg': sack_remaining_kg,
-                        'status': p_status,
-                        'status_color': p_color,
-                    })
+        total_feed_sacks += Decimal(str(active_sacks_count))
+        total_feed_weight_kg += total_kg
 
         feed_inventory.append({
             'id': feed_type.id,
@@ -489,7 +469,8 @@ def inventory_overview(request):
             'category': feed_type.get_category_display(),
             'raw_category': feed_type.category,
             'price_per_kg': feed_type.price_per_kg,
-            'quantity_sacks': sacks,
+            'quantity_sacks': active_sacks_count,
+            'total_sacks_count': len(sacks_list),
             'kg_per_sack': kg_sack,
             'total_kg': total_kg,
             'sacks_list': sacks_list,

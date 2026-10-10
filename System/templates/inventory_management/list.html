@@ -6,7 +6,7 @@
     .glass-card {
         background-color: #022118;
         border: 1px solid rgba(255, 255, 255, 0.10);
-        box-: none;
+        box-shadow: none;
     }
 </style>
 
@@ -42,7 +42,7 @@
                 <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">{{ total_feed_sacks|floatformat:"-2"|default:"0" }} <span class="text-sm font-bold text-[#a0ac96]">sacks</span></p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                    <span>Total bags in stock</span>
+                    <span>Total active bags in stock</span>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Total Weight</p>
             </div>
             <div class="mt-2">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_weight_kg|floatformat:"2"|default:"0.00" }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
+                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_feed_weight_kg|floatformat:"3"|default:"0.00" }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0"></span>
                     <span>Gross feed supply</span>
@@ -68,7 +68,7 @@
             <div>
                 <h2 class="text-lg font-black tracking-tight text-white">Feed Inventory</h2>
             </div>
-            <button type="button" onclick="showFeedModal()" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20">
+            <button type="button" onclick="showFeedModal()" class="inline-flex items-center gap-2 rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-sm cursor-pointer">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -84,7 +84,7 @@
                             <th scope="col" class="px-6 py-4 w-16"></th>
                             <th scope="col" class="px-6 py-4 font-black text-white">Feed Name</th>
                             <th scope="col" class="px-6 py-4 font-black text-white">Category</th>
-                            <th scope="col" class="px-6 py-4 font-black text-white text-center">Quantity (Sacks)</th>
+                            <th scope="col" class="px-6 py-4 font-black text-white text-center">Active Sacks</th>
                             <th scope="col" class="px-6 py-4 font-black text-white text-center">Weight / Sack</th>
                             <th scope="col" class="px-6 py-4 font-black text-white text-right">Total Weight</th>
                             <th scope="col" class="px-6 py-4 text-right font-black text-white">Actions</th>
@@ -96,7 +96,7 @@
                         <tr class="hover:bg-white/5 transition-colors cursor-pointer group" onclick="toggleSacksSubtable('sacks-row-{{ feed.id }}', 'chevron-{{ feed.id }}')">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <button type="button" class="text-[#a0ac96] hover:text-[#cca43b] transition-transform duration-200 focus:outline-none" title="Toggle Individual Sacks">
+                                    <button type="button" class="text-[#a0ac96] hover:text-[#cca43b] transition-transform duration-200 focus:outline-none" title="Toggle Sacks Breakdown">
                                         <svg id="chevron-{{ feed.id }}" class="h-4 w-4 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
@@ -121,7 +121,7 @@
                             </td>
                             <td class="px-6 py-4 text-[#a0ac96]">{{ feed.category }}</td>
                             <td class="px-6 py-4 text-center font-mono font-bold text-white">
-                                {{ feed.quantity_sacks|floatformat:"-2" }} <span class="text-xs text-[#a0ac96] font-normal">sacks</span>
+                                {{ feed.quantity_sacks }} <span class="text-xs text-[#a0ac96] font-normal">sacks</span>
                             </td>
                             <td class="px-6 py-4 text-center font-mono text-[#a0ac96]">
                                 {{ feed.kg_per_sack|floatformat:"-2" }} <span class="text-xs">kg/sack</span>
@@ -131,7 +131,7 @@
                             </td>
                             <td class="px-6 py-4" onclick="event.stopPropagation()">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}', '{{ feed.quantity_sacks }}', '{{ feed.kg_per_sack }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit">
+                                    <button type="button" onclick="editFeedModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.raw_category }}', '{{ feed.description|escapejs }}', '{{ feed.accent_color }}', '{{ feed.icon }}', '{{ feed.kg_per_sack }}')" class="rounded-full border border-white/10 bg-black/20 p-1.5 text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors" title="Edit Profile">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
@@ -147,11 +147,19 @@
 
                         <!-- Expandable Sacks Sub-Table Row -->
                         <tr id="sacks-row-{{ feed.id }}" class="hidden bg-black/30 border-t border-b border-white/5">
-                            <td colspan="7" class="px-6 py-3">
-                                <div class="space-y-2">
-                                    <div class="flex items-center justify-between text-xs text-[#a0ac96] pb-1">
-                                        <span class="font-bold uppercase tracking-wider text-[#cca43b]">Sacks Breakdown — {{ feed.name }}</span>
-                                        <span class="font-mono text-[11px]">{{ feed.sacks_list|length }} sacks &bull; {{ feed.kg_per_sack|floatformat:"-2" }} kg each</span>
+                            <td colspan="7" class="px-6 py-4">
+                                <div class="space-y-3">
+                                    <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-[#a0ac96] pb-2 border-b border-white/10">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold uppercase tracking-wider text-[#cca43b]">Sacks Breakdown — {{ feed.name }}</span>
+                                            <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-mono text-white">{{ feed.sacks_list|length }} sack{{ feed.sacks_list|length|pluralize }} recorded</span>
+                                        </div>
+                                        <button type="button" onclick="openAddSackModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.kg_per_sack }}')" class="inline-flex items-center gap-1.5 rounded-lg bg-[#cca43b] px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#01140e] hover:bg-[#cca43b]/90 transition-colors shadow-sm cursor-pointer">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Add Sack
+                                        </button>
                                     </div>
 
                                     {% if feed.has_sacks %}
@@ -159,22 +167,44 @@
                                         <table class="w-full text-left text-xs text-[#a0ac96]">
                                             <thead class="bg-white/5 text-[10px] uppercase font-bold tracking-wider text-[#a0ac96] border-b border-white/10">
                                                 <tr>
-                                                    <th class="px-4 py-2 text-white">Sack #</th>
-                                                    <th class="px-4 py-2 text-right text-white">Weight (kg)</th>
-                                                    <th class="px-4 py-2 text-center text-white">Status</th>
+                                                    <th class="px-4 py-2.5 text-white">Sack Code</th>
+                                                    <th class="px-4 py-2.5 text-right text-white">Remaining / Capacity</th>
+                                                    <th class="px-4 py-2.5 text-center text-white w-44">Fill Level</th>
+                                                    <th class="px-4 py-2.5 text-center text-white">Status</th>
+                                                    <th class="px-4 py-2.5 text-right text-white w-16">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-white/5 font-mono">
                                                 {% for sack in feed.sacks_list %}
                                                 <tr class="hover:bg-white/5 transition-colors">
-                                                    <td class="px-4 py-2 text-stone-200">
-                                                        Sack #{{ sack.sack_index }}
+                                                    <td class="px-4 py-2.5 text-stone-200 font-sans">
+                                                        <span class="font-bold text-white">Sack #{{ sack.sack_index }}</span>
+                                                        <span class="ml-2 text-[10px] text-[#a0ac96]/70 font-mono">{{ sack.sack_code }}</span>
                                                     </td>
-                                                    <td class="px-4 py-2 text-right text-white">
-                                                        {{ sack.weight_kg|floatformat:"3" }} kg
+                                                    <td class="px-4 py-2.5 text-right font-mono">
+                                                        <span class="font-bold text-white">{{ sack.weight_kg|floatformat:"3" }} kg</span>
+                                                        <span class="text-[10px] text-[#a0ac96]">/ {{ sack.initial_weight_kg|floatformat:"2" }} kg</span>
                                                     </td>
-                                                    <td class="px-4 py-2 text-center font-sans text-xs">
-                                                        <span class="{% if sack.status_color == 'emerald' %}text-emerald-400{% elif sack.status_color == 'amber' %}text-amber-400{% else %}text-rose-400{% endif %} font-medium">{{ sack.status }}</span>
+                                                    <td class="px-4 py-2.5">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                                                                <div class="h-1.5 rounded-full {% if sack.status_color == 'emerald' %}bg-emerald-400{% elif sack.status_color == 'amber' %}bg-amber-400{% else %}bg-rose-500{% endif %}" style="width: {{ sack.percentage }}%"></div>
+                                                            </div>
+                                                            <span class="text-[10px] text-[#a0ac96] w-9 text-right font-mono">{{ sack.percentage }}%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-center font-sans text-xs">
+                                                        <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider {% if sack.status_color == 'emerald' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif sack.status_color == 'amber' %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
+                                                            <span class="h-1 w-1 rounded-full {% if sack.status_color == 'emerald' %}bg-emerald-400{% elif sack.status_color == 'amber' %}bg-amber-400{% else %}bg-rose-400{% endif %}"></span>
+                                                            {{ sack.status }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-2.5 text-right font-sans">
+                                                        <button type="button" onclick="openDeleteSackModal('{{ sack.id }}', '{{ sack.sack_code }}', '{{ feed.name|escapejs }}', '{{ sack.sack_index }}')" class="rounded p-1 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors" title="Delete Sack">
+                                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -182,8 +212,11 @@
                                         </table>
                                     </div>
                                     {% else %}
-                                    <div class="py-2 text-center text-xs text-[#a0ac96] italic">
-                                        0 sacks in stock.
+                                    <div class="rounded-lg border border-dashed border-white/10 bg-black/10 py-6 text-center text-xs text-[#a0ac96]">
+                                        <p>No physical sacks currently recorded for this feed.</p>
+                                        <button type="button" onclick="openAddSackModal('{{ feed.id }}', '{{ feed.name|escapejs }}', '{{ feed.kg_per_sack }}')" class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#cca43b] hover:underline cursor-pointer">
+                                            <span>+</span> Click here to add sacks
+                                        </button>
                                     </div>
                                     {% endif %}
                                 </div>
@@ -201,12 +234,12 @@
     </div>
 </div>
 
-<!-- Feed Modal -->
+<!-- Feed Type Modal (Create / Edit) -->
 <div id="feed-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
     <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6">
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <h3 id="feed-modal-title" class="text-lg font-bold text-stone-100">Create Feed Type</h3>
-            <button type="button" onclick="closeFeedModal()" class="text-white/40 hover:text-white text-xl font-bold">&times;</button>
+            <button type="button" onclick="closeFeedModal()" class="text-white/40 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
         </div>
 
         <form id="feed-form" method="post" action="{% url 'feed:feed_type_add' %}" class="mt-4 space-y-4">
@@ -221,7 +254,7 @@
                 <input type="text" name="name" id="feed-name-input" placeholder="e.g. Starter Crumble" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
             </div>
 
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Category *</label>
                     <select name="category" id="feed-category-select" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer" required>
@@ -231,22 +264,12 @@
                         <option value="specialty">Specialty Feed</option>
                     </select>
                 </div>
-            </div>
-
-            <!-- Quantity in Sacks and kg per sack -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Quantity (Sacks) *</label>
-                    <input type="number" name="quantity_sacks" id="feed-quantity-sacks" min="0" step="1" value="0" placeholder="e.g. 10" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
-                    <p class="mt-1 text-[10px] text-[#a0ac96]">Number of sacks in stock</p>
-                </div>
-                <div>
-                    <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Weight / Sack (kg) *</label>
-                    <input type="number" name="kg_per_sack" id="feed-kg-per-sack" min="0" step="0.01" value="0" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
-                    <p class="mt-1 text-[10px] text-[#a0ac96]">kg weight per each sack</p>
+                    <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Default Weight / Sack (kg) *</label>
+                    <input type="number" name="kg_per_sack" id="feed-kg-per-sack" min="0.01" step="0.01" value="50.00" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none" required />
+                    <p class="mt-1 text-[10px] text-[#a0ac96]">Default kg weight when adding new sacks</p>
                 </div>
             </div>
-
 
             <div>
                 <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Description</label>
@@ -280,19 +303,79 @@
             <div>
                 <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Icon</label>
                 <div class="mt-2 grid grid-cols-6 gap-2">
-                    <button type="button" data-icon="wheat" title="Wheat" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">🌾</button>
-                    <button type="button" data-icon="bug" title="Bug / Live" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">🐛</button>
-                    <button type="button" data-icon="corn" title="Corn" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">🌽</button>
-                    <button type="button" data-icon="leaf" title="Leaf / Veggie" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">🥬</button>
-                    <button type="button" data-icon="box" title="Box / Pellets" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">📦</button>
-                    <button type="button" data-icon="meat" title="Meat / Protein" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all">🥩</button>
+                    <button type="button" data-icon="wheat" title="Wheat" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">🌾</button>
+                    <button type="button" data-icon="bug" title="Bug / Live" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">🐛</button>
+                    <button type="button" data-icon="corn" title="Corn" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">🌽</button>
+                    <button type="button" data-icon="leaf" title="Leaf / Veggie" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">🥬</button>
+                    <button type="button" data-icon="box" title="Box / Pellets" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">📦</button>
+                    <button type="button" data-icon="meat" title="Meat / Protein" class="feed-icon-swatch flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-lg bg-black/20 hover:border-[#cca43b] transition-all cursor-pointer">🥩</button>
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
-                <button type="button" onclick="closeFeedModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors">Cancel</button>
-                <button type="submit" id="feed-submit-btn" class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-colors uppercase tracking-wider">Create Feed</button>
+                <button type="button" onclick="closeFeedModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" id="feed-submit-btn" class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-colors uppercase tracking-wider cursor-pointer">Create Feed</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Sack Modal -->
+<div id="add-sack-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4 py-8">
+    <div class="w-full max-w-md rounded-xl bg-[#021f15] border border-white/10 p-6">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+                <h3 class="text-lg font-bold text-stone-100">Add Sacks</h3>
+                <p id="add-sack-feed-name" class="text-xs text-[#cca43b] font-bold mt-0.5"></p>
+            </div>
+            <button type="button" onclick="closeAddSackModal()" class="text-white/40 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+        </div>
+
+        <form id="add-sack-form" method="post" action="" class="mt-4 space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Weight per Sack (kg) *</label>
+                <input type="number" name="weight_kg" id="add-sack-weight" step="0.01" min="0.01" value="50.00" placeholder="e.g. 50" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none font-mono" required oninput="calcAddSackTotal()" />
+                <p class="mt-1 text-[10px] text-[#a0ac96]">Net weight in kilograms per sack</p>
+            </div>
+
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-[#a0ac96]">Number of Sacks to Add *</label>
+                <input type="number" name="quantity" id="add-sack-qty" step="1" min="1" value="1" placeholder="e.g. 1" class="mt-1.5 w-full rounded-lg border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs text-white placeholder-[#a0ac96] focus:border-[#cca43b] focus:outline-none font-mono" required oninput="calcAddSackTotal()" />
+                <p class="mt-1 text-[10px] text-[#a0ac96]">Number of physical sacks to register</p>
+            </div>
+
+            <div class="rounded-lg bg-black/30 border border-white/5 p-3 text-xs text-[#a0ac96] flex items-center justify-between">
+                <span>Total added weight:</span>
+                <span id="add-sack-total-preview" class="font-mono font-bold text-[#cca43b]">50.000 kg</span>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                <button type="button" onclick="closeAddSackModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" class="rounded-lg bg-[#cca43b] px-4 py-2 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-colors uppercase tracking-wider cursor-pointer">Add Sacks</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Sack Modal -->
+<div id="delete-sack-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+    <div class="w-full max-w-md rounded-xl border border-white/10 bg-[#021f15] p-6">
+        <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-500">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-stone-100">Delete Feed Sack</h3>
+                <p class="mt-1 text-xs text-[#a0ac96]">Are you sure you want to delete <span id="delete-sack-code-display" class="font-bold text-stone-100 font-mono"></span> (<span id="delete-sack-feed-display" class="text-[#cca43b]"></span>)?</p>
+            </div>
+        </div>
+        <form id="delete-sack-form" method="post" action="" class="mt-6 flex justify-end gap-3">
+            {% csrf_token %}
+            <button type="button" onclick="closeDeleteSackModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 transition-colors uppercase tracking-wider cursor-pointer">Delete Sack</button>
         </form>
     </div>
 </div>
@@ -313,8 +396,8 @@
         </div>
         <form id="delete-feed-form" method="post" action="" class="mt-6 flex justify-end gap-3">
             {% csrf_token %}
-            <button type="button" onclick="closeDeleteFeedModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors">Cancel</button>
-            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 -rose-500/20 transition-colors uppercase tracking-wider">Delete Feed</button>
+            <button type="button" onclick="closeDeleteFeedModal()" class="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-xs font-bold text-[#a0ac96] hover:text-white transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" class="rounded-lg bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500 transition-colors uppercase tracking-wider cursor-pointer">Delete Feed</button>
         </form>
     </div>
 </div>
@@ -399,8 +482,7 @@ function showFeedModal() {
     document.getElementById('feed-form').reset();
     document.getElementById('feed-submit-btn').textContent = 'Create Feed';
     
-    document.getElementById('feed-quantity-sacks').value = '0';
-    document.getElementById('feed-kg-per-sack').value = '0';
+    document.getElementById('feed-kg-per-sack').value = '50.00';
 
     selectFeedAccent('cyan');
     selectFeedIcon('box');
@@ -409,7 +491,7 @@ function showFeedModal() {
     document.getElementById('feed-modal').classList.add('flex');
 }
 
-function editFeedModal(id, name, category, description, accent_color, icon, quantity_sacks, kg_per_sack) {
+function editFeedModal(id, name, category, description, accent_color, icon, kg_per_sack) {
     document.getElementById('feed-modal-title').textContent = 'Edit Feed Type';
     document.getElementById('feed-form').action = `/feed/types/${id}/edit/`;
     document.getElementById('feed-submit-btn').textContent = 'Save Changes';
@@ -417,8 +499,7 @@ function editFeedModal(id, name, category, description, accent_color, icon, quan
     document.getElementById('feed-name-input').value = name;
     document.getElementById('feed-category-select').value = category;
     document.getElementById('feed-description-input').value = description;
-    document.getElementById('feed-quantity-sacks').value = quantity_sacks !== undefined && quantity_sacks !== '' ? quantity_sacks : '0';
-    document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '0';
+    document.getElementById('feed-kg-per-sack').value = kg_per_sack !== undefined && kg_per_sack !== '' ? kg_per_sack : '50.00';
     
     selectFeedAccent(accent_color || 'cyan');
     selectFeedIcon(icon || 'box');
@@ -430,6 +511,41 @@ function editFeedModal(id, name, category, description, accent_color, icon, quan
 function closeFeedModal() {
     document.getElementById('feed-modal').classList.add('hidden');
     document.getElementById('feed-modal').classList.remove('flex');
+}
+
+function openAddSackModal(feedId, feedName, defaultKg) {
+    document.getElementById('add-sack-feed-name').textContent = feedName;
+    document.getElementById('add-sack-form').action = `/feed/types/${feedId}/add-sack/`;
+    document.getElementById('add-sack-weight').value = parseFloat(defaultKg) > 0 ? defaultKg : '50.00';
+    document.getElementById('add-sack-qty').value = '1';
+    calcAddSackTotal();
+    document.getElementById('add-sack-modal').classList.remove('hidden');
+    document.getElementById('add-sack-modal').classList.add('flex');
+}
+
+function closeAddSackModal() {
+    document.getElementById('add-sack-modal').classList.add('hidden');
+    document.getElementById('add-sack-modal').classList.remove('flex');
+}
+
+function calcAddSackTotal() {
+    const weight = parseFloat(document.getElementById('add-sack-weight').value) || 0;
+    const qty = parseInt(document.getElementById('add-sack-qty').value) || 0;
+    const total = (weight * qty).toFixed(3);
+    document.getElementById('add-sack-total-preview').textContent = `${total} kg`;
+}
+
+function openDeleteSackModal(sackId, sackCode, feedName, sackIndex) {
+    document.getElementById('delete-sack-code-display').textContent = `Sack #${sackIndex} (${sackCode})`;
+    document.getElementById('delete-sack-feed-display').textContent = feedName;
+    document.getElementById('delete-sack-form').action = `/feed/sacks/${sackId}/delete/`;
+    document.getElementById('delete-sack-modal').classList.remove('hidden');
+    document.getElementById('delete-sack-modal').classList.add('flex');
+}
+
+function closeDeleteSackModal() {
+    document.getElementById('delete-sack-modal').classList.add('hidden');
+    document.getElementById('delete-sack-modal').classList.remove('flex');
 }
 
 function openDeleteFeedModal(id, name) {

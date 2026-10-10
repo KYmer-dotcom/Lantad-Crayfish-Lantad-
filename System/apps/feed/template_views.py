@@ -9,9 +9,11 @@ from django import forms
 from django.db import transaction
 from django.utils import timezone
 
+from decimal import Decimal
+
 from apps.accounts.access import filter_by_pond, ensure_not_customer, get_accessible_ponds
-from .models import FeedingLog, FeedType, FeedStockMovement
-from .services import consume_feed
+from .models import FeedingLog, FeedType, FeedStockMovement, FeedSack
+from .services import consume_feed, add_feed_sacks, deduct_feed_from_sacks, restore_feed_to_sacks
 from apps.stock.models import StockBatch
 
 
@@ -91,15 +93,10 @@ class FeedTypeForm(forms.ModelForm):
                 'placeholder': 'Price per kg',
                 'step': '0.01'
             }),
-            'quantity_sacks': forms.NumberInput(attrs={
-                'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
-                'placeholder': 'Quantity in sacks',
-                'step': '1',
-                'min': '0'
-            }),
+            'quantity_sacks': forms.HiddenInput(),
             'kg_per_sack': forms.NumberInput(attrs={
                 'class': 'mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none',
-                'placeholder': 'kg per sack',
+                'placeholder': 'Default kg per sack',
                 'step': '0.01',
                 'min': '0'
             }),
@@ -111,6 +108,11 @@ class FeedTypeForm(forms.ModelForm):
             'accent_color': forms.HiddenInput(),
             'icon': forms.HiddenInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['quantity_sacks'].required = False
+        self.fields['price_per_kg'].required = False
 
 
 def _build_feed_pond_rows(user):
@@ -361,4 +363,87 @@ def feed_type_delete(request, feed_type_id):
         messages.success(request, f'Feed type "{feed_type.name}" moved to Bin. You can restore it anytime from Bin.')
         
     return redirect(request.META.get('HTTP_REFERER', 'inventory'))
+
+
+@login_required
+def feed_add_sack(request, feed_id):
+    """Add one or more physical sacks to a feed type."""
+    ensure_not_customer(request.user)
+    if request.method != 'POST':
+        return redirect('inventory')
+
+    feed_type = get_object_or_404(FeedType, id=feed_id)
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+        weight_kg = Decimal(str(request.POST.get('weight_kg', feed_type.kg_per_sack or 50)))
+        if quantity <= 0 or weight_kg <= 0:
+            messages.error(request, 'Quantity and Weight must be positive values.')
+            return redirect(request.META.get('HTTP_REFERER', 'inventory'))
+
+        created = add_feed_sacks(feed_type, quantity, weight_kg, user=request.user)
+        try:
+            from apps.sales.models import InputLog
+            InputLog.log(
+                user=request.user,
+                action=InputLog.Action.CREATED,
+                module='Feed Inventory',
+                target_entity=f'Feed Type: {feed_type.name}',
+                details=f'Added {quantity} sack(s) ({weight_kg}kg each) to {feed_type.name}'
+            )
+        except Exception:
+            pass
+        messages.success(request, f'Successfully added {quantity} sack(s) ({weight_kg}kg each) to {feed_type.name}!')
+    except Exception as e:
+        messages.error(request, f'Error adding sack: {str(e)}')
+
+    return redirect(request.META.get('HTTP_REFERER', 'inventory'))
+
+
+@login_required
+def feed_delete_sack(request, sack_id):
+    """Delete an individual physical feed sack."""
+    ensure_not_customer(request.user)
+    if request.method != 'POST':
+        return redirect('inventory')
+
+    sack = get_object_or_404(FeedSack, id=sack_id)
+    feed_type = sack.feed_type
+    sack_num = sack.sack_number
+    remaining_kg = sack.current_weight_kg
+
+    with transaction.atomic():
+        sack.delete()
+        # Re-number remaining sacks sequentially
+        all_sacks = list(feed_type.sacks.all().order_by('sack_number', 'created_at'))
+        for idx, s in enumerate(all_sacks, start=1):
+            if s.sack_number != idx:
+                s.sack_number = idx
+                s.save(update_fields=['sack_number'])
+
+        feed_type.quantity_sacks = Decimal(str(feed_type.sacks.filter(current_weight_kg__gt=0).count()))
+        feed_type.save(update_fields=['quantity_sacks'])
+
+        FeedStockMovement.objects.create(
+            feed_type=feed_type,
+            movement_type=FeedStockMovement.MovementType.OUT,
+            delta_kg=Decimal('0.000') - remaining_kg,
+            moved_by=request.user,
+            notes=f"Deleted Sack #{sack_num} ({remaining_kg}kg remaining)",
+        )
+
+    try:
+        from apps.sales.models import InputLog
+        InputLog.log(
+            user=request.user,
+            action=InputLog.Action.DELETED,
+            module='Feed Inventory',
+            target_entity=f'Feed Sack: {feed_type.name} #{sack_num}',
+            details=f'Deleted Sack #{sack_num} from {feed_type.name}'
+        )
+    except Exception:
+        pass
+
+    messages.success(request, f'Sack #{sack_num} was removed from {feed_type.name}.')
+    return redirect(request.META.get('HTTP_REFERER', 'inventory'))
+
 
