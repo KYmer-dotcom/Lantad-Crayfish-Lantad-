@@ -211,16 +211,27 @@
         <div
             class="px-6 py-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Pond Operations Log</h3>
+                <span id="ops-log-indicator" class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+                <h3 id="ops-log-title" class="text-base font-black text-white tracking-wide uppercase">Pond Operations Log</h3>
             </div>
-            <div
-                class="flex items-center gap-2 text-xs font-bold text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">
-                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>Interactive Calendar Mode</span>
+            <!-- Choices between Feeding and Mortality -->
+            <div class="flex items-center p-1 rounded-xl bg-black/60 border border-white/10 gap-1 backdrop-blur-md">
+                <button type="button" id="toggle-feeding-btn" onclick="switchOpsMode('feeding')"
+                    class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <span>Feeding</span>
+                </button>
+                <button type="button" id="toggle-mortality-btn" onclick="switchOpsMode('mortality')"
+                    class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span>Mortality</span>
+                </button>
             </div>
         </div>
 
@@ -264,7 +275,8 @@
         </div>
         <div class="overflow-x-auto flex-grow">
             <table class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
+                <!-- Feeding Headers -->
+                <thead id="ops-feeding-thead" class="bg-white/[0.03]">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Date & Time</th>
@@ -273,14 +285,18 @@
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Feed Type Used</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Amount (kg)</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Status</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Recorded By</th>
                     </tr>
                 </thead>
-                <tbody id="ops-log-tbody" class="divide-y divide-white/5 bg-transparent">
+
+                <!-- Feeding Tbody -->
+                <tbody id="ops-feeding-tbody" class="divide-y divide-white/5 bg-transparent">
                     {% for log in operations_logs %}
-                    <tr class="ops-log-row hover:bg-white/[0.03] transition-colors duration-200"
+                    <tr class="ops-log-row ops-feeding-row hover:bg-white/[0.03] transition-colors duration-200"
                         data-date="{{ log.recorded_at|date:'Y-m-d' }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.recorded_at|date:"M d, Y H:i" }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-300">{{ log.pond.name }}
@@ -288,6 +304,15 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-stone-400">
                             {% if log.feed_type %}
                             {% if log.feed_type.icon == 'wheat' %}🌾{% elif log.feed_type.icon == 'bug' %}🐛{% elif log.feed_type.icon == 'corn' %}🌽{% elif log.feed_type.icon == 'leaf' %}🥬{% elif log.feed_type.icon == 'meat' %}🥩{% else %}📦{% endif %} {{ log.feed_type.name }}
+                            {% else %}
+                            <span class="text-stone-500">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">
+                            {% if log.quantity_kg %}
+                            {{ log.quantity_kg|floatformat:2 }} kg
+                            {% elif log.quantity_grams %}
+                            {{ log.quantity_grams }} g
                             {% else %}
                             <span class="text-stone-500">—</span>
                             {% endif %}
@@ -310,16 +335,69 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-bold">{{ log.recorded_by.get_full_name|default:log.recorded_by.username }}</td>
                     </tr>
                     {% empty %}
-                    <tr id="ops-log-initial-empty-row">
-                        <td colspan="5" class="px-6 py-12 text-center text-[#a0ac96]">
-                            <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded yet</p>
+                    <tr id="ops-feeding-initial-empty-row">
+                        <td colspan="6" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No feeding operations recorded yet</p>
                         </td>
                     </tr>
                     {% endfor %}
-                    <tr id="ops-log-empty-row" class="hidden">
-                        <td colspan="5" class="px-6 py-12 text-center text-[#a0ac96]">
-                            <p class="text-sm font-bold uppercase tracking-wider">No operations data recorded on <span
-                                    id="ops-log-selected-date-str" class="text-[#cca43b] font-mono"></span></p>
+                    <tr id="ops-feeding-empty-row" class="hidden">
+                        <td colspan="6" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No feeding data recorded on <span
+                                    id="ops-feeding-selected-date-str" class="text-[#cca43b] font-mono"></span></p>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <!-- Mortality Headers -->
+                <thead id="ops-mortality-thead" class="bg-white/[0.03] hidden">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Date & Time</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Pond / Shelf</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Product</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Mortality (Qty)</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Reason / Remarks</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Recorded By</th>
+                    </tr>
+                </thead>
+
+                <!-- Mortality Tbody -->
+                <tbody id="ops-mortality-tbody" class="divide-y divide-white/5 bg-transparent hidden">
+                    {% for log in mortality_logs %}
+                    <tr class="ops-log-row ops-mortality-row hover:bg-white/[0.03] transition-colors duration-200"
+                        data-date="{{ log.recorded_at|date:'Y-m-d' }}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.recorded_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-300">{{ log.pond.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-stone-300">
+                            {{ log.product_name|default:"Breeder Crayfish" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-rose-400">
+                            {{ log.quantity }} pcs
+                        </td>
+                        <td class="px-6 py-4 text-sm text-stone-300 max-w-xs">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-300">
+                                {{ log.reason|default:"Unspecified cause" }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#a0ac96] font-bold">{{ log.recorded_by.get_full_name|default:log.recorded_by.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr id="ops-mortality-initial-empty-row">
+                        <td colspan="6" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No mortality records found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="ops-mortality-empty-row" class="hidden">
+                        <td colspan="6" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No mortality data recorded on <span
+                                    id="ops-mortality-selected-date-str" class="text-[#cca43b] font-mono"></span></p>
                         </td>
                     </tr>
                 </tbody>
@@ -878,25 +956,53 @@
             </div>
 
             <!-- Section: Operations Details -->
-            <div id="report-ops-section" class="space-y-3">
-                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Operations Log</h3>
+            <div id="report-ops-section" class="space-y-6">
+                <!-- Feeding Log Table -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Pond Feeding Operations Log</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs print-report-table">
+                            <thead>
+                                <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                    <th class="py-2.5 px-3 font-bold">Date & Time</th>
+                                    <th class="py-2.5 px-3 font-bold">Pond / Shelf</th>
+                                    <th class="py-2.5 px-3 font-bold">Feed Type</th>
+                                    <th class="py-2.5 px-3 font-bold">Amount (kg)</th>
+                                    <th class="py-2.5 px-3 font-bold">Status</th>
+                                    <th class="py-2.5 px-3 font-bold">Recorded By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-ops-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs print-report-table">
-                        <thead>
-                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
-                                <th class="py-2.5 px-3 font-bold">Date & Time</th>
-                                <th class="py-2.5 px-3 font-bold">Pond / Shelf</th>
-                                <th class="py-2.5 px-3 font-bold">Feed Type</th>
-                                <th class="py-2.5 px-3 font-bold">Status</th>
-                                <th class="py-2.5 px-3 font-bold">Recorded By</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-ops-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
+
+                <!-- Mortality Log Table -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Pond Mortality Log</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs print-report-table">
+                            <thead>
+                                <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                    <th class="py-2.5 px-3 font-bold">Date & Time</th>
+                                    <th class="py-2.5 px-3 font-bold">Pond / Shelf</th>
+                                    <th class="py-2.5 px-3 font-bold">Product</th>
+                                    <th class="py-2.5 px-3 font-bold">Mortality (Qty)</th>
+                                    <th class="py-2.5 px-3 font-bold">Reason</th>
+                                    <th class="py-2.5 px-3 font-bold">Recorded By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-mortality-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -1015,18 +1121,64 @@
         const prevMonthBtn = document.getElementById('prev-month-btn');
         const nextMonthBtn = document.getElementById('next-month-btn');
 
-        // Table Components
-        const initialEmptyRow = document.getElementById('ops-log-initial-empty-row');
-        const emptyRow = document.getElementById('ops-log-empty-row');
-        const selectedDateStrSpan = document.getElementById('ops-log-selected-date-str');
+        // Current Ops Mode State ('feeding' or 'mortality')
+        let currentOpsMode = 'feeding';
 
         // Parse existing logs to find dates with data
-        const loggedDatesSet = new Set();
-        const rows = document.querySelectorAll('.ops-log-row');
-        rows.forEach(row => {
+        const feedingDatesSet = new Set();
+        document.querySelectorAll('.ops-feeding-row').forEach(row => {
             const rowDate = row.getAttribute('data-date');
-            if (rowDate) loggedDatesSet.add(rowDate);
+            if (rowDate) feedingDatesSet.add(rowDate);
         });
+
+        const mortalityDatesSet = new Set();
+        document.querySelectorAll('.ops-mortality-row').forEach(row => {
+            const rowDate = row.getAttribute('data-date');
+            if (rowDate) mortalityDatesSet.add(rowDate);
+        });
+
+        window.switchOpsMode = function (mode) {
+            currentOpsMode = mode;
+            const feedingBtn = document.getElementById('toggle-feeding-btn');
+            const mortalityBtn = document.getElementById('toggle-mortality-btn');
+            const feedingThead = document.getElementById('ops-feeding-thead');
+            const mortalityThead = document.getElementById('ops-mortality-thead');
+            const feedingTbody = document.getElementById('ops-feeding-tbody');
+            const mortalityTbody = document.getElementById('ops-mortality-tbody');
+            const logTitle = document.getElementById('ops-log-title');
+            const logIndicator = document.getElementById('ops-log-indicator');
+
+            if (mode === 'feeding') {
+                if (feedingBtn) {
+                    feedingBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg';
+                }
+                if (mortalityBtn) {
+                    mortalityBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
+                }
+                if (feedingThead) feedingThead.classList.remove('hidden');
+                if (mortalityThead) mortalityThead.classList.add('hidden');
+                if (feedingTbody) feedingTbody.classList.remove('hidden');
+                if (mortalityTbody) mortalityTbody.classList.add('hidden');
+                if (logTitle) logTitle.textContent = 'Pond Operations Log';
+                if (logIndicator) logIndicator.className = 'h-2 w-2 rounded-full bg-[#cca43b] animate-pulse';
+            } else {
+                if (mortalityBtn) {
+                    mortalityBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-rose-500 text-white shadow-lg';
+                }
+                if (feedingBtn) {
+                    feedingBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
+                }
+                if (feedingThead) feedingThead.classList.add('hidden');
+                if (mortalityThead) mortalityThead.classList.remove('hidden');
+                if (feedingTbody) feedingTbody.classList.add('hidden');
+                if (mortalityTbody) mortalityTbody.classList.remove('hidden');
+                if (logTitle) logTitle.textContent = 'Pond Mortality Log';
+                if (logIndicator) logIndicator.className = 'h-2 w-2 rounded-full bg-rose-500 animate-pulse';
+            }
+
+            renderCalendar();
+            filterOpsLogsByDate(selectedDate);
+        };
 
         // Current Calendar State
         const today = new Date();
@@ -1055,6 +1207,8 @@
                 daysGridEl.appendChild(emptyCell);
             }
 
+            const activeDatesSet = (currentOpsMode === 'feeding') ? feedingDatesSet : mortalityDatesSet;
+
             // Render month days
             for (let day = 1; day <= lastDay; day++) {
                 const dayString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -1066,12 +1220,16 @@
 
                 const isSelected = (dayString === selectedDate);
                 const isToday = (dayString === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
-                const hasLogs = loggedDatesSet.has(dayString);
+                const hasLogs = activeDatesSet.has(dayString);
 
                 if (isSelected) {
-                    dayBtn.className += ' bg-[#cca43b] text-black  scale-110';
+                    dayBtn.className += (currentOpsMode === 'feeding')
+                        ? ' bg-[#cca43b] text-black scale-110 shadow-lg'
+                        : ' bg-rose-500 text-white scale-110 shadow-lg';
                 } else if (isToday) {
-                    dayBtn.className += ' border border-[#cca43b]/50 text-[#cca43b]';
+                    dayBtn.className += (currentOpsMode === 'feeding')
+                        ? ' border border-[#cca43b]/50 text-[#cca43b]'
+                        : ' border border-rose-500/50 text-rose-400';
                 } else {
                     dayBtn.className += ' text-stone-300 hover:bg-white/10';
                 }
@@ -1079,7 +1237,10 @@
                 // Add a visual indicator dot if logs exist for this date
                 if (hasLogs) {
                     const dot = document.createElement('span');
-                    dot.className = `absolute bottom-1.5 md:bottom-2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isSelected ? 'bg-black' : 'bg-[#cca43b]'}`;
+                    const dotBg = isSelected
+                        ? (currentOpsMode === 'feeding' ? 'bg-black' : 'bg-white')
+                        : (currentOpsMode === 'feeding' ? 'bg-[#cca43b]' : 'bg-rose-400');
+                    dot.className = `absolute bottom-1.5 md:bottom-2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${dotBg}`;
                     dayBtn.appendChild(dot);
                 }
 
@@ -1094,9 +1255,16 @@
         }
 
         function filterOpsLogsByDate(selectedDate) {
-            const rows = document.querySelectorAll('.ops-log-row');
+            const isFeeding = (currentOpsMode === 'feeding');
+            const activeTbody = document.getElementById(isFeeding ? 'ops-feeding-tbody' : 'ops-mortality-tbody');
+            if (!activeTbody) return;
 
-            // If there's an initial empty row in Django (no logs at all), don't filter
+            const rowClass = isFeeding ? '.ops-feeding-row' : '.ops-mortality-row';
+            const emptyRow = document.getElementById(isFeeding ? 'ops-feeding-empty-row' : 'ops-mortality-empty-row');
+            const initialEmptyRow = document.getElementById(isFeeding ? 'ops-feeding-initial-empty-row' : 'ops-mortality-initial-empty-row');
+            const dateSpan = document.getElementById(isFeeding ? 'ops-feeding-selected-date-str' : 'ops-mortality-selected-date-str');
+
+            const rows = activeTbody.querySelectorAll(rowClass);
             if (initialEmptyRow && !rows.length) return;
 
             let matchCount = 0;
@@ -1113,14 +1281,14 @@
             if (selectedDate && matchCount === 0) {
                 if (emptyRow) {
                     emptyRow.classList.remove('hidden');
-                    if (selectedDateStrSpan) {
+                    if (dateSpan) {
                         const dateParts = selectedDate.split('-');
                         const year = dateParts[0];
-                        const monthIndex = parseInt(dateParts[1]) - 1;
+                        const monthIndex = parseInt(dateParts[1], 10) - 1;
                         const day = dateParts[2];
                         const dateObj = new Date(year, monthIndex, day);
                         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                        selectedDateStrSpan.textContent = dateObj.toLocaleDateString('en-US', options);
+                        dateSpan.textContent = dateObj.toLocaleDateString('en-US', options);
                     }
                 }
             } else {
@@ -1261,7 +1429,8 @@
                 extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
             }
             if (rType === 'operations' || rType === 'all') {
-                extractTableData('ops-log-tbody', ['Date', 'Time', 'Pond Name', 'Status', 'Logged By'], 'Operational Logs');
+                extractTableData('ops-feeding-tbody', ['Date & Time', 'Pond / Shelf', 'Feed Type', 'Amount (kg)', 'Status', 'Recorded By'], 'Feeding Operations Log');
+                extractTableData('ops-mortality-tbody', ['Date & Time', 'Pond / Shelf', 'Product', 'Quantity Died', 'Reason / Remarks', 'Recorded By'], 'Mortality Operations Log');
             }
             if (rType === 'product_logs' || rType === 'all' || rType === 'logs') {
                 extractTableData('source-product-logs-tbody', ['Date', 'Ref / Tracking', 'Status', 'Type', 'Destination', 'Weight / Quantity', 'Rider / Personnel', 'Vehicle'], 'Product Delivery Logs');
@@ -1399,29 +1568,57 @@
                 }
             }
 
-            // Populate Ops Log Table
+            // Populate Feeding Ops Log Table
             const opsTbody = document.getElementById('report-ops-tbody');
-            const sourceOpsTbody = document.getElementById('ops-log-tbody');
-            if (opsTbody && sourceOpsTbody) {
+            const sourceFeedingTbody = document.getElementById('ops-feeding-tbody');
+            if (opsTbody && sourceFeedingTbody) {
                 opsTbody.innerHTML = '';
-                const rows = sourceOpsTbody.querySelectorAll('.ops-log-row');
+                const rows = sourceFeedingTbody.querySelectorAll('.ops-feeding-row');
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
-                    if (cells.length >= 5) {
+                    if (cells.length >= 6) {
                         const tr = document.createElement('tr');
                         tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
                             <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
                             <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[3].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-mono font-bold text-[#cca43b] print:text-stone-900">${cells[3].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[4].innerHTML.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[5].textContent.trim()}</td>
                         `;
                         opsTbody.appendChild(tr);
                     }
                 });
                 if (opsTbody.children.length === 0) {
-                    opsTbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-stone-500">No records</td></tr>';
+                    opsTbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-stone-500">No feeding operations found.</td></tr>';
+                }
+            }
+
+            // Populate Mortality Log Table
+            const mortTbody = document.getElementById('report-mortality-tbody');
+            const sourceMortTbody = document.getElementById('ops-mortality-tbody');
+            if (mortTbody && sourceMortTbody) {
+                mortTbody.innerHTML = '';
+                const rows = sourceMortTbody.querySelectorAll('.ops-mortality-row');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-white/5 print:border-stone-200';
+                        tr.innerHTML = `
+                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2.5 px-3 font-mono font-bold text-rose-400 print:text-rose-700">${cells[3].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[4].textContent.trim()}</td>
+                            <td class="py-2.5 px-3">${cells[5].textContent.trim()}</td>
+                        `;
+                        mortTbody.appendChild(tr);
+                    }
+                });
+                if (mortTbody.children.length === 0) {
+                    mortTbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-stone-500">No mortality records found.</td></tr>';
                 }
             }
 

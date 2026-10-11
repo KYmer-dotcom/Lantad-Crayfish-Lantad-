@@ -298,6 +298,12 @@ class PondFeedingLog(models.Model):
         prod = f" ({self.product_name})" if self.product_name else ""
         return f"{self.pond.name}{prod} - Fed: {self.fed} at {self.recorded_at.strftime('%Y-%m-%d %H:%M')}"
 
+    @property
+    def quantity_kg(self):
+        if self.quantity_grams is not None:
+            return round(float(self.quantity_grams) / 1000.0, 3)
+        return 0.0
+
 
 class PondTransferBatch(models.Model):
     """Tracks individual transfer batches and dates into a pond (e.g. from Breeding Pond to Main Pond)."""

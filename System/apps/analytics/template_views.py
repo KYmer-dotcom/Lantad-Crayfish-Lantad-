@@ -19,7 +19,7 @@ from apps.accounts.access import filter_by_pond, get_accessible_ponds, is_custom
 from apps.stock.models import StockBatch
 from apps.harvest.models import HarvestRecord
 from apps.sales.models import SalesOrder, Product, Delivery, InputLog, Customer
-from apps.operations.models import PondFeedingLog
+from apps.operations.models import PondFeedingLog, PondMortalityLog
 from .models import HarvestForecast, SalesForecast
 from .predictive_services import (
     forecast_sales_moving_average,
@@ -696,6 +696,27 @@ def reports(request):
         )
     ).order_by('location_order', 'pond__name', '-recorded_at')[:200]
 
+    # Fetch recent mortality logs
+    mortality_logs_qs = filter_by_pond(
+        request.user,
+        PondMortalityLog.objects.select_related('pond', 'recorded_by'),
+        'pond'
+    )
+    if start_date:
+        mortality_logs_qs = mortality_logs_qs.filter(recorded_at__date__gte=start_date)
+    if end_date:
+        mortality_logs_qs = mortality_logs_qs.filter(recorded_at__date__lte=end_date)
+
+    mortality_logs = mortality_logs_qs.annotate(
+        location_order=Case(
+            When(pond__location='Main Pond', then=Value(1)),
+            When(pond__location='Breeding Pond', then=Value(2)),
+            When(pond__location='Superworm Cabin', then=Value(3)),
+            default=Value(4),
+            output_field=IntegerField(),
+        )
+    ).order_by('location_order', 'pond__name', '-recorded_at')[:200]
+
     # Fetch Product Delivery Logs
     deliveries_logs_qs = Delivery.objects.select_related(
         'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
@@ -788,11 +809,21 @@ def reports(request):
             ])
 
         for log in operations_logs:
+            qty_str = f" ({log.quantity_kg} kg)" if log.quantity_kg else ""
             writer.writerow([
-                'Pond Operation',
+                'Pond Feeding',
                 log.recorded_at.strftime('%Y-%m-%d %H:%M'),
                 log.pond.name,
-                f"Fed: {'Yes' if log.fed else 'No'} using {log.feed_type.name if log.feed_type else 'No Feed'}",
+                f"Fed: {'Yes' if log.fed else 'No'} using {log.feed_type.name if log.feed_type else 'No Feed'}{qty_str}",
+                '',
+            ])
+
+        for mlog in mortality_logs:
+            writer.writerow([
+                'Pond Mortality',
+                mlog.recorded_at.strftime('%Y-%m-%d %H:%M'),
+                mlog.pond.name,
+                f"{mlog.product_name}: {mlog.quantity} died - Reason: {mlog.reason or 'Unspecified'}",
                 '',
             ])
         return response
@@ -807,6 +838,7 @@ def reports(request):
         'monthly_sales_qty': monthly_sales['total_qty'] or 0,
         'monthly_expenses_total': monthly_expenses['total_expenses'] or 0,
         'operations_logs': operations_logs,
+        'mortality_logs': mortality_logs,
         'product_logs': product_logs,
         'activity_logs': activity_logs,
         'input_logs': input_logs,
