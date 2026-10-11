@@ -3,8 +3,7 @@
         <tr>
             <th class="px-6 py-4">Pond</th>
             <th class="px-6 py-4">Breeder Stock</th>
-            <th class="px-6 py-4 text-center">Status</th>
-            <th class="px-6 py-4 text-right">Action</th>
+            <th class="px-6 py-4 text-right">Status</th>
         </tr>
     </thead>
     <tbody class="divide-y divide-white/10">
@@ -21,7 +20,7 @@
                 <div class="font-black text-sm text-[#cca43b] font-mono">{{ pond.capacity|default:"0" }} pcs</div>
                 <div class="text-[11px] text-[#a0ac96] mt-0.5">Available in pond</div>
             </td>
-            <td class="px-6 py-4 text-center">
+            <td class="px-6 py-4 text-right">
                 {% if pond.today_mortality_log %}
                     {% if pond.today_mortality_log.quantity > 0 %}
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30 font-mono">
@@ -38,19 +37,11 @@
                     </span>
                 {% endif %}
             </td>
-            <td class="px-6 py-4 text-right">
-                <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-[#cca43b] hover:text-[#cca43b]/90 transition-all cursor-pointer">
-                    <span>Details</span>
-                    <svg class="h-3.5 w-3.5 mortality-chevron transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </td>
         </tr>
 
         <!-- Expandable Mortality Details Sub-Table -->
         <tr class="mortality-detail-row hidden bg-black/40 border-b border-white/10" data-pond-id="{{ pond.id }}" data-product-name="Breeder Crayfish">
-            <td colspan="4" class="px-6 py-4 bg-black/25">
+            <td colspan="3" class="px-6 py-4 bg-black/25">
                 <div class="rounded-xl border border-white/10 overflow-hidden bg-[#021f15]/90 p-4 space-y-3 shadow-lg">
                     <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
                         <div class="flex items-center gap-2">
@@ -101,7 +92,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96]">No breeding ponds found.</td>
+            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No breeding ponds found.</td>
         </tr>
         {% endfor %}
     </tbody>
