@@ -16,8 +16,6 @@
                     {{ pond.product_name|default:default_product|default:"Crayfish" }}
                     {% if pond.transfer_batches.count > 1 %}
                     <span class="ml-1.5 text-[10px] text-[#cca43b] font-mono">({{ pond.transfer_batches.count }} batches)</span>
-                    {% elif pond.transfer_date %}
-                    <span class="ml-1.5 text-[10px] text-[#a0ac96] font-mono">({{ pond.transfer_date|date:"M. d, Y" }})</span>
                     {% endif %}
                 </div>
             </td>
