@@ -239,16 +239,58 @@ def sales_list(request):
 
     
     # Summary stats & completed paid transactions ledger
-    completed_paid_orders = all_orders.filter(
+    completed_paid_orders_qs = all_orders.filter(
         status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED],
         payment_status=SalesOrder.PaymentStatus.PAID
     ).exclude(status=SalesOrder.Status.CANCELLED).order_by('-order_date', '-id')
 
-    total_orders = completed_paid_orders.count()
-    total_revenue = completed_paid_orders.aggregate(
+    total_orders = completed_paid_orders_qs.count()
+    total_revenue = completed_paid_orders_qs.aggregate(
         total=Sum('total_amount')
     )['total'] or Decimal('0')
     pending_orders = SalesOrder.objects.filter(status=SalesOrder.Status.PENDING).count()
+
+    completed_paid_orders = list(completed_paid_orders_qs)
+    customer_ids = {o.customer_id for o in completed_paid_orders if o.customer_id}
+    all_customer_orders = list(
+        SalesOrder.objects.filter(customer_id__in=customer_ids)
+        .select_related('product', 'product__species')
+        .order_by('-order_date', '-created_at')
+    )
+
+    for o in completed_paid_orders:
+        siblings = []
+        for other in all_customer_orders:
+            if other.customer_id != o.customer_id:
+                continue
+            if other.id == o.id:
+                siblings.append(other)
+                continue
+
+            has_same_session = False
+            if o.notes and 'Session #' in o.notes and other.notes and 'Session #' in other.notes:
+                try:
+                    s1 = o.notes.split('Session #')[1].split(')')[0].strip()
+                    s2 = other.notes.split('Session #')[1].split(')')[0].strip()
+                    if s1 and s2 and s1 == s2:
+                        has_same_session = True
+                except Exception:
+                    pass
+
+            time_diff = abs((o.created_at - other.created_at).total_seconds()) if (o.created_at and other.created_at) else 9999
+            is_same_time_batch = (
+                time_diff <= 300 and 
+                (o.delivery_address or '').strip().upper() == (other.delivery_address or '').strip().upper() and
+                o.order_date == other.order_date
+            )
+
+            if has_same_session or is_same_time_batch:
+                siblings.append(other)
+
+        if not siblings:
+            siblings = [o]
+
+        o.ordered_items = siblings
     
     # Filter to show only active Pickup orders
     pickup_orders = all_orders.filter(delivery_address__iexact='pickup').exclude(status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED, SalesOrder.Status.CANCELLED])
