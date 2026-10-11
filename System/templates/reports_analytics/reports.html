@@ -217,20 +217,12 @@
             <!-- Choices between Feeding and Mortality -->
             <div class="flex items-center p-1 rounded-xl bg-black/60 border border-white/10 gap-1 backdrop-blur-md">
                 <button type="button" id="toggle-feeding-btn" onclick="switchOpsMode('feeding')"
-                    class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg">
-                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                    <span>Feeding</span>
+                    class="px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg">
+                    Feeding
                 </button>
                 <button type="button" id="toggle-mortality-btn" onclick="switchOpsMode('mortality')"
-                    class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5">
-                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span>Mortality</span>
+                    class="px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5">
+                    Mortality
                 </button>
             </div>
         </div>
@@ -1148,10 +1140,10 @@
 
             if (mode === 'feeding') {
                 if (feedingBtn) {
-                    feedingBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg';
+                    feedingBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-[#cca43b] text-black shadow-lg';
                 }
                 if (mortalityBtn) {
-                    mortalityBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
+                    mortalityBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
                 }
                 if (feedingThead) feedingThead.classList.remove('hidden');
                 if (mortalityThead) mortalityThead.classList.add('hidden');
@@ -1161,10 +1153,10 @@
                 if (logIndicator) logIndicator.className = 'h-2 w-2 rounded-full bg-[#cca43b] animate-pulse';
             } else {
                 if (mortalityBtn) {
-                    mortalityBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-rose-500 text-white shadow-lg';
+                    mortalityBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none bg-rose-500 text-white shadow-lg';
                 }
                 if (feedingBtn) {
-                    feedingBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
+                    feedingBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-200 cursor-pointer select-none text-[#a0ac96] hover:text-white hover:bg-white/5';
                 }
                 if (feedingThead) feedingThead.classList.add('hidden');
                 if (mortalityThead) mortalityThead.classList.remove('hidden');
