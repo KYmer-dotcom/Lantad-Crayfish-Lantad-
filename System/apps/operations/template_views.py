@@ -255,8 +255,14 @@ def ponds_list(request):
         crilings_name = p.product_name_2 or 'Crilings'
         p.today_breeder_log = today_product_logs.get((p.id, breeder_name)) or today_product_logs.get((p.id, 'Breeder Crayfish')) or (p.today_log if p.today_log and not p.today_log.product_name else None)
         p.today_crilings_log = today_product_logs.get((p.id, crilings_name)) or today_product_logs.get((p.id, 'Crilings'))
-        p.today_sw_breeder_log = today_product_logs.get((p.id, 'Darkling Beetles')) or (p.today_log if p.today_log and not p.today_log.product_name else None)
-        p.today_sw_yield_log = today_product_logs.get((p.id, 'Superworms'))
+        p.today_sw_log = (
+            today_product_logs.get((p.id, 'Superworm'))
+            or today_product_logs.get((p.id, 'Superworms'))
+            or today_product_logs.get((p.id, 'Darkling Beetles'))
+            or (p.today_log if p.today_log and not p.today_log.product_name else None)
+        )
+        p.today_sw_breeder_log = today_product_logs.get((p.id, 'Darkling Beetles')) or p.today_sw_log
+        p.today_sw_yield_log = today_product_logs.get((p.id, 'Superworms')) or p.today_sw_log
         p.today_logs_map = {log.product_name: log for log in today_logs_qs if log.pond_id == p.id}
 
     outdoor_ponds_count = len(main_ponds) + len(breeding_ponds)
@@ -273,8 +279,10 @@ def ponds_list(request):
     active_sw_ponds = [p for p in superworm_ponds if p.status not in ['empty', 'maintenance']]
     sw_total_breeders = sum(p.capacity or 0 for p in active_sw_ponds)
     sw_total_yield = sum(p.superworm_count or 0 for p in active_sw_ponds)
+    sw_total_count = sum((p.superworm_count or p.capacity or 0) for p in active_sw_ponds)
     sw_total_breeders_grams = round(sw_total_breeders * 0.1, 1)
     sw_total_yield_grams = round(sw_total_yield * 0.05, 1)
+    sw_total_grams = round(sw_total_count * 0.05, 1)
 
     active_main_ponds = [p for p in main_ponds if p.status not in ['empty', 'maintenance']]
     main_total_stock = sum(p.capacity or 0 for p in active_main_ponds)
@@ -309,6 +317,8 @@ def ponds_list(request):
         'breeding_total_crilings_grams': breeding_total_crilings_grams,
         'sw_total_breeders': sw_total_breeders,
         'sw_total_yield': sw_total_yield,
+        'sw_total_count': sw_total_count,
+        'sw_total_grams': sw_total_grams,
         'sw_total_breeders_grams': sw_total_breeders_grams,
         'sw_total_yield_grams': sw_total_yield_grams,
         'main_total_stock': main_total_stock,
@@ -577,8 +587,14 @@ def operations_data(request):
         crilings_name = pond.product_name_2 or 'Crilings'
         pond.today_breeder_log = today_product_logs.get((pond.id, breeder_name)) or today_product_logs.get((pond.id, 'Breeder Crayfish')) or (pond.today_log if pond.today_log and not pond.today_log.product_name else None)
         pond.today_crilings_log = today_product_logs.get((pond.id, crilings_name)) or today_product_logs.get((pond.id, 'Crilings'))
-        pond.today_sw_breeder_log = today_product_logs.get((pond.id, 'Darkling Beetles')) or (pond.today_log if pond.today_log and not pond.today_log.product_name else None)
-        pond.today_sw_yield_log = today_product_logs.get((pond.id, 'Superworms'))
+        pond.today_sw_log = (
+            today_product_logs.get((pond.id, 'Superworm'))
+            or today_product_logs.get((pond.id, 'Superworms'))
+            or today_product_logs.get((pond.id, 'Darkling Beetles'))
+            or (pond.today_log if pond.today_log and not pond.today_log.product_name else None)
+        )
+        pond.today_sw_breeder_log = today_product_logs.get((pond.id, 'Darkling Beetles')) or pond.today_sw_log
+        pond.today_sw_yield_log = today_product_logs.get((pond.id, 'Superworms')) or pond.today_sw_log
         pond.today_logs_map = {log.product_name: log for log in today_logs_qs if log.pond_id == pond.id}
     
     # "first is the Pond below that is the superworm cabin"

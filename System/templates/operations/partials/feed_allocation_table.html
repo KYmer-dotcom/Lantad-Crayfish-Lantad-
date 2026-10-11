@@ -93,61 +93,27 @@
                     </tr>
 
                 {% elif allocation_category == 'Superworm Cabin' %}
-                    <!-- Darkling Beetles -->
+                    <!-- Superworm -->
                     <tr class="hover:bg-white/5 transition-colors">
-                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Darkling Beetles</td>
+                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Superworm</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
-                                <input type="number" min="0" value="0" oninput="syncGramsForProduct('Darkling Beetles', this)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Darkling Beetles" placeholder="0">
+                                <input type="number" min="0" value="{{ sw_total_count|default:'0' }}" oninput="syncGramsForProduct('Superworm', this)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Superworm" placeholder="0">
                                 <span class="text-xs text-[#a0ac96] font-mono">pcs</span>
                             </div>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
-                                <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Darkling Beetles', this)" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Darkling Beetles" placeholder="0.0">
+                                <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Superworm', this)" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Superworm" placeholder="0.0">
                                 <span class="text-xs text-[#a0ac96] font-mono">g</span>
                             </div>
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Darkling Beetles">0.0 g</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Darkling Beetles">(0.00 kg)</div>
+                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Superworm">0.0 g</div>
+                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Superworm">(0.00 kg)</div>
                         </td>
                         <td class="px-4 py-3 font-sans">
-                            <select onchange="updateMasterFeed('Darkling Beetles', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Darkling Beetles">
-                                <option value="" data-stock="0" data-sacks="0">Select feed...</option>
-                                {% for feed in feed_types %}
-                                <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">
-                                    {{ feed.name }} ({{ feed.get_category_display }})
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="px-4 py-3 text-right text-[#a0ac96]">
-                            <span class="feed-stock-display text-emerald-400 font-bold">-- kg</span>
-                        </td>
-                    </tr>
-
-                    <!-- Superworms -->
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="px-4 py-3 font-sans font-medium text-stone-200">Superworms</td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center justify-end gap-1.5">
-                                <input type="number" min="0" value="0" oninput="syncGramsForProduct('Superworms', this)" class="master-feed-qty w-20 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-white focus:border-[#cca43b] focus:outline-none" data-product="Superworms" placeholder="0">
-                                <span class="text-xs text-[#a0ac96] font-mono">pcs</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center justify-end gap-1.5">
-                                <input type="number" step="0.01" min="0" value="0.0" oninput="syncGramsForProduct('Superworms', this)" class="master-feed-grams w-24 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs text-right font-bold font-mono text-[#cca43b] focus:border-[#cca43b] focus:outline-none" data-product="Superworms" placeholder="0.0">
-                                <span class="text-xs text-[#a0ac96] font-mono">g</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                            <div class="font-bold text-[#cca43b] master-total-grams" data-product="Superworms">0.0 g</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 master-total-kg" data-product="Superworms">(0.00 kg)</div>
-                        </td>
-                        <td class="px-4 py-3 font-sans">
-                            <select onchange="updateMasterFeed('Superworms', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Superworms">
+                            <select onchange="updateMasterFeed('Superworm', this.value, this)" class="master-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer" data-product="Superworm">
                                 <option value="" data-stock="0" data-sacks="0">Select feed...</option>
                                 {% for feed in feed_types %}
                                 <option value="{{ feed.id }}" data-stock="{{ feed.current_stock_kg|floatformat:3 }}" data-sacks="{{ feed.quantity_sacks|floatformat:1 }}">

@@ -91,13 +91,13 @@
                     </tr>
 
                 {% elif pond.location == 'Superworm Cabin' %}
-                    <!-- Superworm Cabin Product 1: Darkling Beetles -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Darkling Beetles" data-quantity="{{ pond.capacity|default:'0' }}">
+                    <!-- Superworm Cabin Card (Single Entry per Card) -->
+                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Superworm" data-quantity="{{ pond.superworm_count|default:pond.capacity|default:'0' }}">
                         <td class="px-6 py-3 font-sans font-medium text-stone-200">
-                            Darkling Beetles
+                            Superworm
                         </td>
                         <td class="px-6 py-3 text-right">
-                            <div class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }} pcs</div>
+                            <div class="font-bold text-[#cca43b]">{{ pond.superworm_count|default:pond.capacity|default:"0" }} pcs</div>
                             <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
                         </td>
                         <td class="px-6 py-3 font-sans">
@@ -105,38 +105,12 @@
                                 <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
                                     <option value="">Select feed...</option>
                                     {% for feed in feed_types %}
-                                    <option value="{{ feed.id }}" {% if pond.today_sw_breeder_log and pond.today_sw_breeder_log.feed_type_id == feed.id %}selected{% endif %}>
+                                    <option value="{{ feed.id }}" {% if pond.today_sw_log and pond.today_sw_log.feed_type_id == feed.id %}selected{% endif %}>
                                         {{ feed.name }} ({{ feed.get_category_display }})
                                     </option>
                                     {% endfor %}
                                 </select>
-                                {% if pond.today_sw_breeder_log %}
-                                <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Superworm Cabin Product 2: Superworms -->
-                    <tr class="operation-row hover:bg-white/5 transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Superworms" data-quantity="{{ pond.superworm_count|default:'0' }}">
-                        <td class="px-6 py-3 font-sans font-medium text-stone-200">
-                            Superworms
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <div class="font-bold text-[#cca43b]">{{ pond.superworm_count|default:"0" }} pcs</div>
-                            <div class="text-[11px] text-[#a0ac96] font-mono mt-0.5 op-row-grams">0.0 g</div>
-                        </td>
-                        <td class="px-6 py-3 font-sans">
-                            <div class="flex items-center gap-2">
-                                <select class="op-feed-select w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-stone-100 focus:border-[#cca43b] focus:outline-none appearance-none cursor-pointer">
-                                    <option value="">Select feed...</option>
-                                    {% for feed in feed_types %}
-                                    <option value="{{ feed.id }}" {% if pond.today_sw_yield_log and pond.today_sw_yield_log.feed_type_id == feed.id %}selected{% endif %}>
-                                        {{ feed.name }} ({{ feed.get_category_display }})
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                {% if pond.today_sw_yield_log %}
+                                {% if pond.today_sw_log %}
                                 <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">Recorded</span>
                                 {% endif %}
                             </div>
