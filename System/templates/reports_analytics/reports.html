@@ -714,8 +714,8 @@
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.03] text-[10px] font-black uppercase tracking-wider text-[#a0ac96]">
                             <th class="py-3 px-4">Item Description</th>
-                            <th class="py-3 px-4 text-center">Quantity (kg)</th>
-                            <th class="py-3 px-4 text-right">Price / kg</th>
+                            <th class="py-3 px-4 text-center">Quantity</th>
+                            <th class="py-3 px-4 text-right">Price</th>
                             <th class="py-3 px-4 text-right">Total (PHP)</th>
                         </tr>
                     </thead>
@@ -914,8 +914,8 @@
                         ₱0.00</p>
                 </div>
                 <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Biomass Volume Dispatched</p>
-                    <p id="report-kpi-qty" class="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-stone-900 mt-1">0.00 kg</p>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Total Quantity Sold</p>
+                    <p id="report-kpi-qty" class="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-stone-900 mt-1">0.00</p>
                 </div>
             </div>
 
@@ -1527,7 +1527,7 @@
             const salesValEl = document.getElementById('total-sales-val');
             const qtyValEl = document.getElementById('total-qty-val');
             document.getElementById('report-kpi-sales').textContent = salesValEl ? salesValEl.textContent : '₱0.00';
-            document.getElementById('report-kpi-qty').textContent = qtyValEl ? qtyValEl.textContent + ' kg' : '0.00 kg';
+            document.getElementById('report-kpi-qty').textContent = qtyValEl ? qtyValEl.textContent : '0.00';
 
             // Populate Sales Ledger Table
             const salesTbody = document.getElementById('report-sales-tbody');
@@ -1822,15 +1822,15 @@
                                         <thead>
                                             <tr class="border-b border-white/10 print:border-black bg-white/[0.03] print:bg-gray-100 text-[10px] font-black uppercase tracking-wider text-[#a0ac96] print:text-black">
                                                 <th class="py-3 px-4">Item Description</th>
-                                                <th class="py-3 px-4 text-center">Quantity (kg)</th>
-                                                <th class="py-3 px-4 text-right">Price / kg</th>
+                                                <th class="py-3 px-4 text-center">Quantity</th>
+                                                <th class="py-3 px-4 text-right">Price</th>
                                                 <th class="py-3 px-4 text-right">Total (PHP)</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-white/5 print:divide-black text-stone-200 print:text-black font-mono">
                                             <tr>
                                                 <td class="py-3 px-4 font-bold text-white print:text-black font-sans">${product}</td>
-                                                <td class="py-3 px-4 text-center">${quantity} kg</td>
+                                                <td class="py-3 px-4 text-center">${quantity}</td>
                                                 <td class="py-3 px-4 text-right">₱${price}</td>
                                                 <td class="py-3 px-4 text-right font-bold text-white print:text-black">₱${totalAmount}</td>
                                             </tr>
@@ -1957,7 +1957,7 @@
             document.getElementById('receipt-modal-delivered-date').textContent = data.deliveredDate;
 
             document.getElementById('receipt-modal-item').textContent = data.productName;
-            document.getElementById('receipt-modal-qty').textContent = data.quantityKg + ' kg';
+            document.getElementById('receipt-modal-qty').textContent = data.quantityKg;
             document.getElementById('receipt-modal-price').textContent = '₱' + data.pricePerKg;
             document.getElementById('receipt-modal-item-total').textContent = '₱' + data.totalAmount;
 
