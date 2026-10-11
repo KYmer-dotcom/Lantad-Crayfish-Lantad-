@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Farm, Pond, PondFeedingLog
+from .models import Farm, Pond, PondFeedingLog, PondMortalityLog
 
 
 @admin.register(Farm)
@@ -17,3 +17,9 @@ class PondAdmin(admin.ModelAdmin):
 class PondFeedingLogAdmin(admin.ModelAdmin):
     list_display = ('pond', 'feed_type', 'fed', 'recorded_by', 'recorded_at')
     list_filter = ('fed', 'recorded_at')
+
+
+@admin.register(PondMortalityLog)
+class PondMortalityLogAdmin(admin.ModelAdmin):
+    list_display = ('pond', 'product_name', 'quantity', 'reason', 'date', 'recorded_by')
+    list_filter = ('date', 'product_name')

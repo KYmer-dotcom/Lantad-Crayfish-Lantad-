@@ -22,7 +22,7 @@ from apps.accounts.models import User
 from apps.stock.models import Species
 from apps.feed.models import FeedType
 from apps.sales.models import Product
-from .models import Farm, Pond, PondFeedingLog, PondTransferBatch
+from .models import Farm, Pond, PondFeedingLog, PondTransferBatch, PondMortalityLog
 
 
 class FarmForm(forms.ModelForm):
@@ -295,6 +295,11 @@ def ponds_list(request):
     breeding_pond_recorded_today = len(breeding_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
     )
+    breeding_pond_mortality_recorded_today = len(breeding_ponds) > 0 and all(
+        PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
+    )
+    for p in breeding_ponds:
+        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).first()
     superworm_cabin_recorded_today = superworm_ponds.exists() and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in superworm_ponds
     )
@@ -338,6 +343,7 @@ def ponds_list(request):
         'sale_products': Product.objects.filter(is_active=True).order_by('name'),
         'main_pond_recorded_today': main_pond_recorded_today,
         'breeding_pond_recorded_today': breeding_pond_recorded_today,
+        'breeding_pond_mortality_recorded_today': breeding_pond_mortality_recorded_today,
         'superworm_cabin_recorded_today': superworm_cabin_recorded_today,
         'azula_sanitized_today': azula_sanitized_today,
         'azula_due_count': azula_due_count,
@@ -963,6 +969,74 @@ def pond_transfer(request):
         f"Successfully transferred {transfer_qty} {prod_name} from {source_pond.name} to {dest_pond.name}!"
     )
     return redirect(redirect_target)
+
+
+@login_required
+@require_POST
+def record_mortality(request):
+    """Save pond mortality logs and deduct dead stock from pond capacity"""
+    try:
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        data = json.loads(request.body)
+        logs = data.get('logs', [])
+        recorded_count = 0
+
+        for log in logs:
+            pond_id = log.get('pond_id')
+            product_name = (log.get('product_name') or 'Breeder Crayfish').strip()
+            quantity = int(log.get('quantity') or 0)
+            reason = (log.get('reason') or '').strip()
+
+            pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
+
+            existing_log = PondMortalityLog.objects.filter(pond=pond, product_name=product_name, recorded_at__date=today).first()
+            if existing_log:
+                # If updating, restore previously deducted quantity before applying new deduction
+                if existing_log.quantity > 0:
+                    pond.capacity = (pond.capacity or 0) + existing_log.quantity
+
+                # Deduct new quantity
+                if quantity > 0:
+                    pond.capacity = max(0, (pond.capacity or 0) - quantity)
+                
+                if pond.capacity <= 0 and (pond.capacity_2 or 0) <= 0:
+                    pond.status = Pond.Status.EMPTY
+                else:
+                    pond.status = Pond.Status.ACTIVE
+                pond.save(update_fields=['capacity', 'status', 'updated_at'])
+
+                existing_log.quantity = quantity
+                existing_log.reason = reason
+                existing_log.recorded_by = request.user
+                existing_log.save()
+            else:
+                # Deduct quantity from pond Product 1 capacity
+                if quantity > 0:
+                    pond.capacity = max(0, (pond.capacity or 0) - quantity)
+                    if pond.capacity <= 0 and (pond.capacity_2 or 0) <= 0:
+                        pond.status = Pond.Status.EMPTY
+                    else:
+                        pond.status = Pond.Status.ACTIVE
+                    pond.save(update_fields=['capacity', 'status', 'updated_at'])
+
+                PondMortalityLog.objects.create(
+                    pond=pond,
+                    product_name=product_name,
+                    quantity=quantity,
+                    reason=reason,
+                    recorded_by=request.user
+                )
+
+            recorded_count += 1
+
+        messages.success(request, f"Successfully recorded mortality for {recorded_count} pond(s).")
+        return JsonResponse({'status': 'success', 'recorded_count': recorded_count})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
 

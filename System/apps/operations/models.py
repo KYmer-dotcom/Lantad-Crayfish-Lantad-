@@ -321,3 +321,22 @@ class PondTransferBatch(models.Model):
     @property
     def feed_grams(self):
         return round((self.quantity or 0) * 2.5, 1)
+
+
+class PondMortalityLog(models.Model):
+    """Logs daily mortality for a pond and product."""
+    pond = models.ForeignKey(Pond, on_delete=models.CASCADE, related_name='mortality_logs')
+    product_name = models.CharField(max_length=100, default='Breeder Crayfish')
+    quantity = models.IntegerField(default=0, help_text="Number of mortalities")
+    reason = models.TextField(blank=True, default='', help_text="Reason / cause of death")
+    recorded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    recorded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Pond Mortality Log'
+        verbose_name_plural = 'Pond Mortality Logs'
+        ordering = ['-recorded_at']
+
+    def __str__(self):
+        return f"{self.pond.name} - {self.quantity} {self.product_name} ({self.date}): {self.reason}"

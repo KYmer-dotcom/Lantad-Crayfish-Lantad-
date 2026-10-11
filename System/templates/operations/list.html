@@ -92,7 +92,11 @@
                 {% else %}
                 <button type="button" onclick="openOperationsSidebar('Breeding Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Feeding</button>
                 {% endif %}
-                <button type="button" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
+                {% if breeding_pond_mortality_recorded_today %}
+                <button type="button" onclick="openMortalitySidebar('Breeding Pond')" class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-colors cursor-pointer">Recorded Today</button>
+                {% else %}
+                <button type="button" onclick="openMortalitySidebar('Breeding Pond')" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
+                {% endif %}
             </div>
         </div>
         <div class="p-6">
@@ -576,6 +580,42 @@
         <div class="harvest-table-wrapper hidden" data-category="Azula">
             <div class="rounded-lg border border-white/10 bg-black/20 overflow-hidden">
                 {% include "operations/partials/harvest_sidebar_table.html" with harvest_ponds=azula_ponds_list is_harvest=True %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mortality Sidebar (Half-Screen Slide-Over) -->
+<div id="mortality-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
+    <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+        <div>
+            <h2 id="mortality-sidebar-title" class="text-xl font-bold text-stone-100 flex items-center gap-2">
+                <span class="inline-block h-2.5 w-2.5 rounded-full bg-red-500"></span>
+                <span>Breeding Pond Mortality</span>
+            </h2>
+            <p id="mortality-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Daily mortality tracking for Product 1 (Breeder Crayfish) · Records once a day</p>
+        </div>
+        <button type="button" onclick="closeMortalitySidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer text-xl font-bold p-1 rounded-lg hover:bg-white/5">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- Breeding Pond Mortality Wrapper -->
+        <div class="mortality-table-wrapper" data-category="Breeding Pond">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Breeding Pond Operations</h3>
+                    <p class="text-xs text-[#a0ac96] mt-0.5">Click any pond row to expand its reason and mortality quantity</p>
+                </div>
+                <button type="button" onclick="submitMortalityOperations(this)" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-1.5 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Record</span>
+                </button>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
+                {% include "operations/partials/mortality_table.html" with mortality_ponds=breeding_ponds %}
             </div>
         </div>
     </div>
@@ -1413,6 +1453,103 @@
             row.classList.remove('bg-white/[0.06]');
             if (chevron) chevron.classList.remove('rotate-180');
         }
+    }
+
+    // Mortality Sidebar Toggle
+    function openMortalitySidebar(category) {
+        closeOperationsSidebar();
+        closeHarvestSidebar();
+        const el = document.getElementById('mortality-sidebar');
+        if (el) el.classList.remove('translate-x-full');
+    }
+
+    function closeMortalitySidebar() {
+        const el = document.getElementById('mortality-sidebar');
+        if (el) el.classList.add('translate-x-full');
+    }
+
+    function toggleMortalityPondRow(row) {
+        const detailRow = row.nextElementSibling;
+        if (!detailRow || !detailRow.classList.contains('mortality-detail-row')) return;
+        
+        const isCurrentlyHidden = detailRow.classList.contains('hidden');
+        detailRow.classList.toggle('hidden');
+        
+        const chevron = row.querySelector('.mortality-chevron');
+        if (isCurrentlyHidden) {
+            row.classList.add('bg-white/[0.06]');
+            if (chevron) chevron.classList.add('rotate-180');
+        } else {
+            row.classList.remove('bg-white/[0.06]');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+    }
+
+    function submitMortalityOperations(button) {
+        const wrapper = button.closest('.mortality-table-wrapper') || document.getElementById('mortality-sidebar');
+        const rows = wrapper.querySelectorAll('.mortality-entry-row');
+        const logs = [];
+
+        rows.forEach(row => {
+            const pondId = row.getAttribute('data-pond-id');
+            const productName = row.getAttribute('data-product-name') || 'Breeder Crayfish';
+            const reasonInput = row.querySelector('.mortality-reason-input');
+            const qtyInput = row.querySelector('.mortality-qty-input');
+
+            const reason = reasonInput ? reasonInput.value.trim() : '';
+            const qty = qtyInput ? (parseInt(qtyInput.value) || 0) : 0;
+
+            if (pondId) {
+                logs.push({
+                    pond_id: parseInt(pondId),
+                    product_name: productName,
+                    quantity: qty,
+                    reason: reason
+                });
+            }
+        });
+
+        if (logs.length === 0) {
+            showToast('No ponds found to record mortality.', 'error');
+            return;
+        }
+
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span>Recording...</span>';
+        button.disabled = true;
+
+        fetch("{% url 'operations:record_mortality' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ logs: logs })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to record mortality.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Mortality recorded successfully!', 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 1200);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            showToast('Error recording mortality: ' + error.message, 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
     }
 
     function toggleFedStatus(pondId, isChecked) {
