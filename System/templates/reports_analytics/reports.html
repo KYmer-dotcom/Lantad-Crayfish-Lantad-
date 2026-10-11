@@ -285,7 +285,7 @@
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Feed Type Used</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Amount (kg)</th>
+                            Amount (g)</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Status</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
@@ -309,10 +309,8 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">
-                            {% if log.quantity_kg %}
-                            {{ log.quantity_kg|floatformat:2 }} kg
-                            {% elif log.quantity_grams %}
-                            {{ log.quantity_grams }} g
+                            {% if log.quantity_grams is not None %}
+                            {{ log.quantity_grams|floatformat:"-2" }} g
                             {% else %}
                             <span class="text-stone-500">—</span>
                             {% endif %}
@@ -969,7 +967,7 @@
                                     <th class="py-2.5 px-3 font-bold">Date & Time</th>
                                     <th class="py-2.5 px-3 font-bold">Pond / Shelf</th>
                                     <th class="py-2.5 px-3 font-bold">Feed Type</th>
-                                    <th class="py-2.5 px-3 font-bold">Amount (kg)</th>
+                                    <th class="py-2.5 px-3 font-bold">Amount (g)</th>
                                     <th class="py-2.5 px-3 font-bold">Status</th>
                                     <th class="py-2.5 px-3 font-bold">Recorded By</th>
                                 </tr>
@@ -1429,7 +1427,7 @@
                 extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
             }
             if (rType === 'operations' || rType === 'all') {
-                extractTableData('ops-feeding-tbody', ['Date & Time', 'Pond / Shelf', 'Feed Type', 'Amount (kg)', 'Status', 'Recorded By'], 'Feeding Operations Log');
+                extractTableData('ops-feeding-tbody', ['Date & Time', 'Pond / Shelf', 'Feed Type', 'Amount (g)', 'Status', 'Recorded By'], 'Feeding Operations Log');
                 extractTableData('ops-mortality-tbody', ['Date & Time', 'Pond / Shelf', 'Product', 'Quantity Died', 'Reason / Remarks', 'Recorded By'], 'Mortality Operations Log');
             }
             if (rType === 'product_logs' || rType === 'all' || rType === 'logs') {

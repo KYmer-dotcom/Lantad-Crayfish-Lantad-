@@ -809,7 +809,7 @@ def reports(request):
             ])
 
         for log in operations_logs:
-            qty_str = f" ({log.quantity_kg} kg)" if log.quantity_kg else ""
+            qty_str = f" ({log.quantity_grams}g)" if log.quantity_grams else ""
             writer.writerow([
                 'Pond Feeding',
                 log.recorded_at.strftime('%Y-%m-%d %H:%M'),
