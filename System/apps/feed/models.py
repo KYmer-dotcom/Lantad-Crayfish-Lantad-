@@ -91,12 +91,14 @@ class FeedSack(models.Model):
             pct = (self.current_weight_kg / self.initial_weight_kg) * 100
         else:
             pct = 100
-        if pct >= 70:
-            return 'High Stock'
-        elif pct >= 30:
-            return 'Medium Stock'
+        if pct >= 95:
+            return 'Full'
+        elif pct >= 60:
+            return 'High'
+        elif pct >= 25:
+            return 'Medium'
         else:
-            return 'Low Stock'
+            return 'Low'
 
     @property
     def percentage(self):
@@ -107,13 +109,13 @@ class FeedSack(models.Model):
     @property
     def status_color(self):
         s = self.status
-        if s == 'High Stock':
+        if s in ('Full', 'High'):
             return 'emerald'
-        elif s == 'Medium Stock':
+        elif s == 'Medium':
             return 'amber'
-        elif s == 'Low Stock':
+        elif s in ('Low', 'Depleted'):
             return 'rose'
-        return 'rose'
+        return 'emerald'
 
 
 class FeedInventory(models.Model):

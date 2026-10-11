@@ -169,8 +169,7 @@
                                                 <tr>
                                                     <th class="px-4 py-2.5 text-white">Sack Code</th>
                                                     <th class="px-4 py-2.5 text-right text-white">Remaining / Capacity</th>
-                                                    <th class="px-4 py-2.5 text-center text-white w-44">Fill Level</th>
-                                                    <th class="px-4 py-2.5 text-center text-white">Status</th>
+                                                    <th class="px-4 py-2.5 text-center text-white w-48">Fill Level</th>
                                                     <th class="px-4 py-2.5 text-right text-white w-16">Actions</th>
                                                 </tr>
                                             </thead>
@@ -185,22 +184,22 @@
                                                         <span class="font-bold text-white">{{ sack.weight_kg|floatformat:"3" }} kg</span>
                                                         <span class="text-[10px] text-[#a0ac96]">/ {{ sack.initial_weight_kg|floatformat:"2" }} kg</span>
                                                     </td>
-                                                    <td class="px-4 py-2.5">
-                                                        <div class="flex items-center gap-2">
+                                                    <td class="px-4 py-2.5 font-sans">
+                                                        <div class="flex flex-col gap-1.5 min-w-[150px]">
+                                                            <div class="flex items-center justify-between text-xs">
+                                                                <span class="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px] {% if sack.status_color == 'emerald' %}text-emerald-400{% elif sack.status_color == 'amber' %}text-amber-400{% else %}text-rose-400{% endif %}">
+                                                                    <span class="h-1.5 w-1.5 rounded-full {% if sack.status_color == 'emerald' %}bg-emerald-400{% elif sack.status_color == 'amber' %}bg-amber-400{% else %}bg-rose-400{% endif %}"></span>
+                                                                    {{ sack.status }}
+                                                                </span>
+                                                                <span class="font-mono text-[10px] text-[#a0ac96]">{{ sack.percentage }}%</span>
+                                                            </div>
                                                             <div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
                                                                 <div class="h-1.5 rounded-full {% if sack.status_color == 'emerald' %}bg-emerald-400{% elif sack.status_color == 'amber' %}bg-amber-400{% else %}bg-rose-500{% endif %}" style="width: {{ sack.percentage }}%"></div>
                                                             </div>
-                                                            <span class="text-[10px] text-[#a0ac96] w-9 text-right font-mono">{{ sack.percentage }}%</span>
                                                         </div>
                                                     </td>
-                                                    <td class="px-4 py-2.5 text-center font-sans text-xs">
-                                                        <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider {% if sack.status_color == 'emerald' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% elif sack.status_color == 'amber' %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% else %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% endif %}">
-                                                            <span class="h-1 w-1 rounded-full {% if sack.status_color == 'emerald' %}bg-emerald-400{% elif sack.status_color == 'amber' %}bg-amber-400{% else %}bg-rose-400{% endif %}"></span>
-                                                            {{ sack.status }}
-                                                        </span>
-                                                    </td>
                                                     <td class="px-4 py-2.5 text-right font-sans">
-                                                        <button type="button" onclick="openDeleteSackModal('{{ sack.id }}', '{{ sack.sack_code }}', '{{ feed.name|escapejs }}', '{{ sack.sack_index }}')" class="rounded p-1 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors" title="Delete Sack">
+                                                        <button type="button" onclick="openDeleteSackModal('{{ sack.id }}', '{{ sack.sack_code }}', '{{ feed.name|escapejs }}', '{{ sack.sack_index }}')" class="rounded p-1 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors cursor-pointer" title="Delete Sack">
                                                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                             </svg>
