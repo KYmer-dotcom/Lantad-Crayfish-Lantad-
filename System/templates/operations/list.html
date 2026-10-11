@@ -115,7 +115,11 @@
                 {% else %}
                 <button type="button" onclick="openOperationsSidebar('Main Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Feeding</button>
                 {% endif %}
-                <button type="button" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
+                {% if main_pond_mortality_recorded_today %}
+                <button type="button" onclick="openMortalitySidebar('Main Pond')" class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-colors cursor-pointer">Recorded Today</button>
+                {% else %}
+                <button type="button" onclick="openMortalitySidebar('Main Pond')" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
+                {% endif %}
             </div>
         </div>
         <div class="p-6">
@@ -614,7 +618,23 @@
                 </button>
             </div>
             <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
-                {% include "operations/partials/mortality_table.html" with mortality_ponds=breeding_ponds %}
+                {% include "operations/partials/mortality_table.html" with mortality_ponds=breeding_ponds stock_header="Breeder Stock" default_product="Breeder Crayfish" %}
+            </div>
+        </div>
+
+        <!-- Main Pond Mortality Wrapper -->
+        <div class="mortality-table-wrapper hidden" data-category="Main Pond">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Main Pond Operations</h3>
+                    <p class="text-xs text-[#a0ac96] mt-0.5">Select a pond row to enter cause of death and quantity</p>
+                </div>
+                <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                    Record
+                </button>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
+                {% include "operations/partials/mortality_table.html" with mortality_ponds=main_ponds stock_header="Crayfish Stock" default_product="Crayfish" %}
             </div>
         </div>
     </div>
@@ -1458,6 +1478,29 @@
     function openMortalitySidebar(category) {
         closeOperationsSidebar();
         closeHarvestSidebar();
+        const titleEl = document.getElementById('mortality-sidebar-title');
+        const subtitleEl = document.getElementById('mortality-sidebar-subtitle');
+        if (category) {
+            if (titleEl) {
+                titleEl.innerHTML = `<span class="inline-block h-2.5 w-2.5 rounded-full bg-red-500"></span><span>${category} Mortality</span>`;
+            }
+            if (subtitleEl) {
+                const prodName = category === 'Breeding Pond' ? 'Breeder Crayfish' : 'Crayfish';
+                subtitleEl.textContent = `Daily mortality tracking for ${prodName} · Records once a day`;
+            }
+            document.querySelectorAll('.mortality-table-wrapper').forEach(wrapper => {
+                if (wrapper.dataset.category === category) {
+                    wrapper.classList.remove('hidden');
+                } else {
+                    wrapper.classList.add('hidden');
+                }
+            });
+        } else {
+            document.querySelectorAll('.mortality-table-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('hidden');
+            });
+        }
+
         const el = document.getElementById('mortality-sidebar');
         if (el) el.classList.remove('translate-x-full');
     }

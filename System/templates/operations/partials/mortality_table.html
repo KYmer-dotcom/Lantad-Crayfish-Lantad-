@@ -2,18 +2,23 @@
     <thead class="bg-black/40 text-xs uppercase text-[#a0ac96]">
         <tr>
             <th class="px-6 py-4">Pond</th>
-            <th class="px-6 py-4">Breeder Stock</th>
+            <th class="px-6 py-4">{{ stock_header|default:"Available Stock" }}</th>
             <th class="px-6 py-4 text-right">Status</th>
         </tr>
     </thead>
     <tbody class="divide-y divide-white/10">
         {% for pond in mortality_ponds %}
         <!-- Clickable Main Pond Row -->
-        <tr class="mortality-row hover:bg-white/5 transition-colors cursor-pointer select-none" data-pond-id="{{ pond.id }}" data-product-name="Breeder Crayfish" onclick="toggleMortalityPondRow(this)">
+        <tr class="mortality-row hover:bg-white/5 transition-colors cursor-pointer select-none" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:default_product|default:'Crayfish' }}" onclick="toggleMortalityPondRow(this)">
             <td class="px-6 py-4">
                 <div class="font-bold text-white text-base tracking-wide">{{ pond.name }}</div>
                 <div class="text-xs text-[#a0ac96] mt-0.5">
-                    {{ pond.product_name|default:"Breeder Crayfish" }}
+                    {{ pond.product_name|default:default_product|default:"Crayfish" }}
+                    {% if pond.transfer_batches.count > 1 %}
+                    <span class="ml-1.5 text-[10px] text-[#cca43b] font-mono">({{ pond.transfer_batches.count }} batches)</span>
+                    {% elif pond.transfer_date %}
+                    <span class="ml-1.5 text-[10px] text-[#a0ac96] font-mono">({{ pond.transfer_date|date:"M. d, Y" }})</span>
+                    {% endif %}
                 </div>
             </td>
             <td class="px-6 py-4">
@@ -40,7 +45,7 @@
         </tr>
 
         <!-- Expandable Mortality Details Sub-Table -->
-        <tr class="mortality-detail-row hidden bg-black/40 border-b border-white/10" data-pond-id="{{ pond.id }}" data-product-name="Breeder Crayfish">
+        <tr class="mortality-detail-row hidden bg-black/40 border-b border-white/10" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:default_product|default:'Crayfish' }}">
             <td colspan="3" class="px-6 py-4 bg-black/25">
                 <div class="rounded-xl border border-white/10 overflow-hidden bg-[#021f15]/90 p-4 space-y-3 shadow-lg">
                     <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
@@ -62,9 +67,9 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
-                            <tr class="mortality-entry-row hover:bg-white/[0.02] transition-colors" data-pond-id="{{ pond.id }}" data-product-name="Breeder Crayfish">
+                            <tr class="mortality-entry-row hover:bg-white/[0.02] transition-colors" data-pond-id="{{ pond.id }}" data-product-name="{{ pond.product_name|default:default_product|default:'Crayfish' }}">
                                 <td class="px-3 py-3 align-middle">
-                                    <span class="font-bold text-white text-xs block">{{ pond.product_name|default:"Breeder Crayfish" }}</span>
+                                    <span class="font-bold text-white text-xs block">{{ pond.product_name|default:default_product|default:"Crayfish" }}</span>
                                     <span class="text-[10px] text-[#a0ac96] font-mono">Product 1</span>
                                 </td>
                                 <td class="px-3 py-3 align-middle">
@@ -92,7 +97,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No breeding ponds found.</td>
+            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96]">No ponds found.</td>
         </tr>
         {% endfor %}
     </tbody>

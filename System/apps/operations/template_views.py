@@ -292,6 +292,11 @@ def ponds_list(request):
     main_pond_recorded_today = len(main_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
     )
+    main_pond_mortality_recorded_today = len(main_ponds) > 0 and all(
+        PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
+    )
+    for p in main_ponds:
+        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).first()
     breeding_pond_recorded_today = len(breeding_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
     )
@@ -342,6 +347,7 @@ def ponds_list(request):
         'feed_types': FeedType.objects.filter(is_active=True).order_by('category', 'name'),
         'sale_products': Product.objects.filter(is_active=True).order_by('name'),
         'main_pond_recorded_today': main_pond_recorded_today,
+        'main_pond_mortality_recorded_today': main_pond_mortality_recorded_today,
         'breeding_pond_recorded_today': breeding_pond_recorded_today,
         'breeding_pond_mortality_recorded_today': breeding_pond_mortality_recorded_today,
         'superworm_cabin_recorded_today': superworm_cabin_recorded_today,
@@ -985,41 +991,45 @@ def record_mortality(request):
 
         for log in logs:
             pond_id = log.get('pond_id')
-            product_name = (log.get('product_name') or 'Breeder Crayfish').strip()
             quantity = int(log.get('quantity') or 0)
             reason = (log.get('reason') or '').strip()
 
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
+            product_name = (log.get('product_name') or pond.product_name or ('Breeder Crayfish' if pond.location == 'Breeding Pond' else 'Crayfish')).strip()
 
             existing_log = PondMortalityLog.objects.filter(pond=pond, product_name=product_name, recorded_at__date=today).first()
             if existing_log:
                 # If updating, restore previously deducted quantity before applying new deduction
                 if existing_log.quantity > 0:
-                    pond.capacity = (pond.capacity or 0) + existing_log.quantity
+                    if pond.location == 'Main Pond' and pond.transfer_batches.exists():
+                        last_batch = pond.transfer_batches.order_by('-transfer_date', '-id').first()
+                        if last_batch:
+                            last_batch.quantity += existing_log.quantity
+                            last_batch.save(update_fields=['quantity'])
+                            pond.capacity = sum(b.quantity for b in pond.transfer_batches.all())
+                            pond.status = Pond.Status.ACTIVE
+                            pond.save(update_fields=['capacity', 'status', 'updated_at'])
+                        else:
+                            pond.capacity = (pond.capacity or 0) + existing_log.quantity
+                            pond.status = Pond.Status.ACTIVE
+                            pond.save(update_fields=['capacity', 'status', 'updated_at'])
+                    else:
+                        pond.capacity = (pond.capacity or 0) + existing_log.quantity
+                        pond.status = Pond.Status.ACTIVE
+                        pond.save(update_fields=['capacity', 'status', 'updated_at'])
 
                 # Deduct new quantity
                 if quantity > 0:
-                    pond.capacity = max(0, (pond.capacity or 0) - quantity)
-                
-                if pond.capacity <= 0 and (pond.capacity_2 or 0) <= 0:
-                    pond.status = Pond.Status.EMPTY
-                else:
-                    pond.status = Pond.Status.ACTIVE
-                pond.save(update_fields=['capacity', 'status', 'updated_at'])
+                    pond.deduct_stock(quantity)
 
                 existing_log.quantity = quantity
                 existing_log.reason = reason
                 existing_log.recorded_by = request.user
                 existing_log.save()
             else:
-                # Deduct quantity from pond Product 1 capacity
+                # Deduct quantity from pond
                 if quantity > 0:
-                    pond.capacity = max(0, (pond.capacity or 0) - quantity)
-                    if pond.capacity <= 0 and (pond.capacity_2 or 0) <= 0:
-                        pond.status = Pond.Status.EMPTY
-                    else:
-                        pond.status = Pond.Status.ACTIVE
-                    pond.save(update_fields=['capacity', 'status', 'updated_at'])
+                    pond.deduct_stock(quantity)
 
                 PondMortalityLog.objects.create(
                     pond=pond,
