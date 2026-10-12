@@ -135,8 +135,10 @@ def products_list(request):
             
     for product in products:
         pond_aggregates = {}
+        is_azula_product = product.name and product.name.strip().lower() == 'azula'
         for p in all_ponds:
-            if p.product_name == product.name:
+            is_azula = (p.location == 'Azula') or is_azula_product
+            if p.product_name == product.name or (is_azula_product and p.location == 'Azula'):
                 if p.name not in pond_aggregates:
                     pond_aggregates[p.name] = {
                         'name': p.name,
@@ -144,7 +146,7 @@ def products_list(request):
                         'capacity': 0,
                         'transfer_date': p.transfer_date
                     }
-                qty = p.capacity or 0
+                qty = p.current_azula_quantity if is_azula else (p.capacity or 0)
                 pond_aggregates[p.name]['capacity'] += qty
                 
                 # Keep the most recent transfer date
@@ -159,7 +161,7 @@ def products_list(request):
                         'capacity': 0,
                         'transfer_date': p.transfer_date
                     }
-                qty2 = p.capacity_2 or 0
+                qty2 = p.current_azula_quantity if is_azula else (p.capacity_2 or 0)
                 pond_aggregates[p.name]['capacity'] += qty2
                 
                 if p.transfer_date and (not pond_aggregates[p.name]['transfer_date'] or p.transfer_date > pond_aggregates[p.name]['transfer_date']):
