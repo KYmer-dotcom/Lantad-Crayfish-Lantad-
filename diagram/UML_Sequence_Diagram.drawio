@@ -1,0 +1,257 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram name="UML_Sequence_Diagram" id="uml_seq_avcms">
+    <mxGraphModel dx="1700" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="p_customer" value="Customer
+(Actor)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#0f172a;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="120" height="60" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_customer" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="100" y="130" as_="sourcePoint"/>
+            <mxPoint x="100" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_webapp" value="Web App / UI
+(Boundary)" style="shape=rectangle;rounded=1;arcSize=8;strokeWidth=2;strokeColor=#1e293b;fillColor=#f1f5f9;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="310" y="60" width="140" height="50" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_webapp" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="130" as_="sourcePoint"/>
+            <mxPoint x="380" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_backend" value="Django Server
+(Controller)" style="shape=rectangle;rounded=1;arcSize=8;strokeWidth=2;strokeColor=#1e293b;fillColor=#f1f5f9;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="605" y="60" width="150" height="50" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_backend" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="130" as_="sourcePoint"/>
+            <mxPoint x="680" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_database" value="Database
+(Entity / Storage)" style="shape=rectangle;rounded=1;arcSize=8;strokeWidth=2;strokeColor=#1e293b;fillColor=#f1f5f9;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="60" width="140" height="50" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_database" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="980" y="130" as_="sourcePoint"/>
+            <mxPoint x="980" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_owner" value="Farm Owner
+(Administrator)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#0f172a;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="60" width="140" height="60" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_owner" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1260" y="130" as_="sourcePoint"/>
+            <mxPoint x="1260" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p_rider" value="Delivery Rider
+(Courier)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#0f172a;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#0f172a;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="60" width="120" height="60" as_="geometry"/>
+        </mxCell>
+        <mxCell id="life_p_rider" style="endArrow=none;dashed=1;html=1;strokeColor=#64748b;strokeWidth=1.5;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1520" y="130" as_="sourcePoint"/>
+            <mxPoint x="1520" y="1370" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frame_0" value="Phase 1: Catalog Browsing &amp; Cart Checkout" style="shape=swimlane;startSize=25;rounded=1;arcSize=4;strokeWidth=1.5;strokeColor=#94a3b8;fillColor=#f8fafc;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#1e293b;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="1620" height="370" as_="geometry"/>
+        </mxCell>
+        <mxCell id="frame_1" value="Phase 2: Payment Settlement &amp; Owner Verification" style="shape=swimlane;startSize=25;rounded=1;arcSize=4;strokeWidth=1.5;strokeColor=#86efac;fillColor=#f0fdf4;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#1e293b;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="1620" height="280" as_="geometry"/>
+        </mxCell>
+        <mxCell id="frame_2" value="Phase 3: Courier Dispatch &amp; Live Transit Tracking" style="shape=swimlane;startSize=25;rounded=1;arcSize=4;strokeWidth=1.5;strokeColor=#93c5fd;fillColor=#eff6ff;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#1e293b;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="1620" height="240" as_="geometry"/>
+        </mxCell>
+        <mxCell id="frame_3" value="Phase 4: Delivery Handover, POD &amp; Analytics Commitment" style="shape=swimlane;startSize=25;rounded=1;arcSize=4;strokeWidth=1.5;strokeColor=#d8b4fe;fillColor=#faf5ff;fontFamily=Arial;fontSize=11;fontStyle=1;fontColor=#1e293b;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1070" width="1620" height="290" as_="geometry"/>
+        </mxCell>
+        <mxCell id="msg_0" value="1. Browse catalog &amp; select products" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="100" y="180" as_="sourcePoint"/>
+            <mxPoint x="380" y="180" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_1" value="2. GET /api/products/ (fetch stock &amp; pricing)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="220" as_="sourcePoint"/>
+            <mxPoint x="680" y="220" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_2" value="3. Query active inventory &amp; batch metrics" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="260" as_="sourcePoint"/>
+            <mxPoint x="980" y="260" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_3" value="4. Return available stock &amp; dual prices" style="endArrow=open;dashed=1;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#1d4ed8;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="980" y="300" as_="sourcePoint"/>
+            <mxPoint x="680" y="300" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_4" value="5. Render product catalog &amp; cart totals" style="endArrow=open;dashed=1;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#1d4ed8;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="340" as_="sourcePoint"/>
+            <mxPoint x="380" y="340" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_5" value="6. Submit checkout details (address, tier)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="100" y="380" as_="sourcePoint"/>
+            <mxPoint x="380" y="380" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_6" value="7. POST /checkout/ (create order)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="420" as_="sourcePoint"/>
+            <mxPoint x="680" y="420" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_7" value="8. Insert Order (status: PENDING) &amp; reserve stock" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="460" as_="sourcePoint"/>
+            <mxPoint x="980" y="460" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_8" value="9. Order #ID confirmed &amp; saved" style="endArrow=open;dashed=1;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#1d4ed8;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="980" y="500" as_="sourcePoint"/>
+            <mxPoint x="680" y="500" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_9" value="10. Upload GCash proof / Select COD" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="100" y="550" as_="sourcePoint"/>
+            <mxPoint x="380" y="550" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_10" value="11. POST /payment/submit/ (receipt proof)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="590" as_="sourcePoint"/>
+            <mxPoint x="680" y="590" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_11" value="12. Commit Payment record (UNVERIFIED / COD)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="630" as_="sourcePoint"/>
+            <mxPoint x="980" y="630" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_12" value="13. Push notification: Pending order &amp; payment" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="670" as_="sourcePoint"/>
+            <mxPoint x="1260" y="670" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_13" value="14. Verify payment proof &amp; click Approve" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1260" y="710" as_="sourcePoint"/>
+            <mxPoint x="380" y="710" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_14" value="15. POST /order/approve/ (order_id)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="750" as_="sourcePoint"/>
+            <mxPoint x="680" y="750" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_15" value="16. Update Order = CONFIRMED, Payment = APPROVED" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="790" as_="sourcePoint"/>
+            <mxPoint x="980" y="790" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_16" value="17. Assign order to available Delivery Rider" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1260" y="840" as_="sourcePoint"/>
+            <mxPoint x="380" y="840" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_17" value="18. POST /dispatch/assign/ (rider_id, order_id)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="880" as_="sourcePoint"/>
+            <mxPoint x="680" y="880" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_18" value="19. Insert Dispatch record &amp; route coordinates" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="920" as_="sourcePoint"/>
+            <mxPoint x="980" y="920" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_19" value="20. Push dispatch alert &amp; route waypoints" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="960" as_="sourcePoint"/>
+            <mxPoint x="1520" y="960" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_20" value="21. POST /delivery/transit/ (status: IN_TRANSIT)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1520" y="1000" as_="sourcePoint"/>
+            <mxPoint x="680" y="1000" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_21" value="22. Live tracking feed &amp; ETA notification" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="1040" as_="sourcePoint"/>
+            <mxPoint x="100" y="1040" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_22" value="23. Handover parcel &amp; collect COD cash (if COD)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1520" y="1090" as_="sourcePoint"/>
+            <mxPoint x="100" y="1090" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_23" value="24. Capture Proof of Delivery (POD photo/sign)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="1520" y="1130" as_="sourcePoint"/>
+            <mxPoint x="380" y="1130" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_24" value="25. POST /delivery/complete/ (POD payload)" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="380" y="1170" as_="sourcePoint"/>
+            <mxPoint x="680" y="1170" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_25" value="26. Commit stock deduction &amp; mark Order = DELIVERED" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="1210" as_="sourcePoint"/>
+            <mxPoint x="980" y="1210" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_26" value="27. Log sales revenue &amp; refresh predictive models" style="endArrow=block;dashed=0;html=1;strokeColor=#0f172a;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#0f172a;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="1250" as_="sourcePoint"/>
+            <mxPoint x="980" y="1250" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_27" value="28. Send official invoice &amp; completion receipt" style="endArrow=open;dashed=1;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#1d4ed8;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="1290" as_="sourcePoint"/>
+            <mxPoint x="100" y="1290" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg_28" value="29. Update dashboard revenue &amp; forecast charts" style="endArrow=open;dashed=1;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontFamily=Arial;fontSize=10;fontColor=#1d4ed8;align=center;verticalAlign=bottom;" edge="1" parent="1">
+          <mxGeometry relative="1" as_="geometry">
+            <mxPoint x="680" y="1330" as_="sourcePoint"/>
+            <mxPoint x="1260" y="1330" as_="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

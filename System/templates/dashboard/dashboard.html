@@ -9,7 +9,22 @@
     .glass-card {
         background-color: #022118;
         border: 1px solid rgba(255, 255, 255, 0.10);
-        box-: none;
+        box-shadow: none;
+    }
+    /* Custom Scrollbar for Alerts */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(1, 20, 14, 0.4);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(204, 164, 59, 0.3);
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(204, 164, 59, 0.6);
     }
 </style>
 
@@ -129,37 +144,60 @@
         <!-- Key Alerts (4 cols) -->
         <div class="glass-card rounded-xl p-6 lg:col-span-4 flex flex-col justify-between">
             <div>
-                <div class="border-b border-white/10 pb-4 mb-4">
-                    <h2 class="text-base font-black text-white tracking-tight">Key Alerts</h2>
-                    <p class="text-xs text-[#a0ac96]">Crucial items for immediate attention</p>
-                </div>
-                <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-base font-black text-white tracking-tight">Key Alerts</h2>
+                        <p class="text-xs text-[#a0ac96]">Crucial items for immediate attention</p>
+                    </div>
                     {% if azula_alerts %}
-                    {% with alert=azula_alerts.0 %}
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30 font-mono">{{ azula_alerts|length }} Active</span>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                    {% if azula_alerts %}
+                    {% for alert in azula_alerts %}
                     <div class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
-                        <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] flex-shrink-0"></span>
+                        <span class="flex h-2 w-2 mt-1.5 rounded-full {{ alert.dot_class|default:'bg-[#cca43b]' }} flex-shrink-0"></span>
                         <div class="w-full">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Pond Sanitization</p>
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ alert.status_text }}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {{ alert.badge_class|default:'bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30' }}">{{ alert.status_text }}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ alert.pond.name }}</p>
-                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Sanitization due for {{ alert.pond.name }} ({{ alert.pond.farm.name }}).</p>
+                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono mb-2">Sanitization due for {{ alert.pond.name }} (Target: {{ alert.sanitization_date|date:"M. d, Y" }}).</p>
+                            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+                                {% if alert.pond.id %}
+                                <form method="POST" action="{% url 'operations:pond_sanitize' alert.pond.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-[#cca43b] font-bold hover:underline cursor-pointer flex items-center gap-1">
+                                        ✓ Mark Sanitized
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <a href="{% url 'operations:list' %}?type=azula" class="text-[#cca43b] font-bold hover:underline cursor-pointer">
+                                    View Sector →
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    {% endwith %}
+                    {% endfor %}
                     {% endif %}
 
                     {% if harvest1 %}
                     <div class="rounded-lg border border-white/10 bg-white/[0.03] p-3.5 flex items-start gap-3">
-                        <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] flex-shrink-0"></span>
+                        <span class="flex h-2 w-2 mt-1.5 rounded-full bg-cyan-400 flex-shrink-0"></span>
                         <div class="w-full">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <p class="text-xs font-black uppercase tracking-wider text-white">Harvest Alert</p>
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{{ harvest1.get_status_display }}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">{{ harvest1.get_status_display }}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ harvest1.stock_batch.batch_code }}</p>
-                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">Est: {{ harvest1.estimated_quantity }} pcs ({{ harvest1.estimated_total_weight }})</p>
+                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono mb-2">Est: {{ harvest1.estimated_quantity }} pcs ({{ harvest1.estimated_total_weight }})</p>
+                            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs font-mono">
+                                <span class="text-stone-300">{{ harvest1.scheduled_date }}</span>
+                                <a href="{% url 'harvest:list' %}" class="text-cyan-400 font-bold hover:underline cursor-pointer">Schedule →</a>
+                            </div>
                         </div>
                     </div>
                     {% endif %}
@@ -173,8 +211,37 @@
                                 <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order1.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
                             </div>
                             <p class="text-xs font-bold text-white mb-0.5">{{ order1.order_number }}</p>
-                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono">{{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }}.</p>
+                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono mb-2">{{ order1.get_order_type_display }} order of {{ order1.quantity_kg }} {{ order1.product.name }} by {{ order1.customer.name }}.</p>
+                            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs font-mono">
+                                <span class="text-stone-300">{{ order1.order_date }}</span>
+                                <a href="{% url 'sales:list' %}" class="text-[#cca43b] font-bold hover:underline cursor-pointer">Manage →</a>
+                            </div>
                         </div>
+                    </div>
+                    {% endif %}
+
+                    {% if order2 %}
+                    <div class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 p-3.5 flex items-start gap-3">
+                        <span class="flex h-2 w-2 mt-1.5 rounded-full bg-[#cca43b] animate-pulse flex-shrink-0"></span>
+                        <div class="w-full">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">{{ order2.get_status_display }} Order</p>
+                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">{% if order2.status == 'pending' %}Action Needed{% else %}Resolved{% endif %}</span>
+                            </div>
+                            <p class="text-xs font-bold text-white mb-0.5">{{ order2.order_number }}</p>
+                            <p class="text-xs text-[#a0ac96] leading-relaxed font-mono mb-2">{{ order2.get_order_type_display }} order of {{ order2.quantity_kg }} {{ order2.product.name }} by {{ order2.customer.name }}.</p>
+                            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs font-mono">
+                                <span class="text-stone-300">{{ order2.order_date }}</span>
+                                <a href="{% url 'sales:list' %}" class="text-[#cca43b] font-bold hover:underline cursor-pointer">Manage →</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if not azula_alerts and not harvest1 and not order1 %}
+                    <div class="rounded-lg border border-white/10 bg-white/[0.02] p-4 text-center">
+                        <p class="text-xs font-bold text-white mb-1">All Caught Up</p>
+                        <p class="text-xs text-[#a0ac96]">No critical alerts requiring immediate attention.</p>
                     </div>
                     {% endif %}
                 </div>

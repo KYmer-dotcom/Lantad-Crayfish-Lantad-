@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" modified="2026-09-23T09:00:00.000Z" agent="Antigravity Exact DFD Engine" version="24.0.0" type="device">
+    <diagram id="level_0_context_perfect" name="Level 0 Context Diagram">
+        <mxGraphModel dx="1400" dy="620" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1400" pageHeight="620" background="#FFFFFF" pageColor="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="proc_0" value="" style="swimlane;startSize=28;horizontal=1;childLayout=stackLayout;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;rounded=1;arcSize=14;strokeColor=#000000;strokeWidth=1.8;fillColor=#FFFFFF;fontFamily=Arial;fontSize=12;fontColor=#000000;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="100" width="440" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="proc_0_hdr" value="&lt;b&gt;0&lt;/b&gt;" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;fontFamily=Arial;fontSize=13;fontStyle=1;" vertex="1" parent="proc_0">
+                    <mxGeometry width="440" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="proc_0_body" value="&lt;b&gt;Aquaculture Value Chain Management&lt;br/&gt;System With Predictive Analytics&lt;/b&gt;" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;fontFamily=Arial;fontSize=12;fontStyle=1;" vertex="1" parent="proc_0">
+                    <mxGeometry y="28" width="440" height="112" as="geometry"/>
+                </mxCell>
+                <mxCell id="entity_customer" value="&lt;b&gt;Customer&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;strokeWidth=1.8;fillColor=#FFFFFF;fontColor=#000000;fontFamily=Arial;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="125" width="160" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="entity_owner" value="&lt;b&gt;Owner&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;strokeWidth=1.8;fillColor=#FFFFFF;fontColor=#000000;fontFamily=Arial;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="1200" y="125" width="160" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="entity_rider" value="&lt;b&gt;Rider&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#000000;strokeWidth=1.8;fillColor=#FFFFFF;fontColor=#000000;fontFamily=Arial;fontSize=14;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="440" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow_cust_sys" value="Customer info, Order Details, Delivery option, Payment method" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.28;exitDx=0;exitDy=0;entryX=0;entryY=0.28;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="entity_customer" target="proc_0">
+                    <mxGeometry x="0" y="-16" relative="1" as="geometry">
+                        <mxPoint as="offset" x="0" y="-16"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow_sys_cust" value="Order confirmation, Product Availability, Order tracking, Billing receipt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=1;entryY=0.72;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="proc_0" target="entity_customer">
+                    <mxGeometry x="0" y="16" relative="1" as="geometry">
+                        <mxPoint as="offset" x="0" y="16"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow_sys_owner" value="Status report, Sales summary, Sales forecast, Low stock alert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.28;exitDx=0;exitDy=0;entryX=0;entryY=0.28;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="proc_0" target="entity_owner">
+                    <mxGeometry x="0" y="-16" relative="1" as="geometry">
+                        <mxPoint as="offset" x="0" y="-16"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow_owner_sys" value="Pond &amp; feed data, Stock updates, Harvest schedule, Expense records" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.72;exitDx=0;exitDy=0;entryX=1;entryY=0.72;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="entity_owner" target="proc_0">
+                    <mxGeometry x="0" y="16" relative="1" as="geometry">
+                        <mxPoint as="offset" x="0" y="16"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow_sys_rider" value="Delivery assignment, Route map,
+Customer delivery" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.38;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="proc_0" target="entity_rider">
+                    <mxGeometry x="-70" y="0" relative="1" as="geometry">
+                        <mxPoint as="offset" x="-70" y="0"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow_rider_sys" value="Delivery status, Completion confirm,
+Location update" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.62;entryY=1;entryDx=0;entryDy=0;strokeColor=#000000;strokeWidth=1.4;endArrow=classic;endFill=1;endSize=6;fontColor=#000000;fontSize=9.5;fontFamily=Arial;fontStyle=1;labelBackgroundColor=#FFFFFF;labelBorderColor=none;" edge="1" parent="1" source="entity_rider" target="proc_0">
+                    <mxGeometry x="70" y="0" relative="1" as="geometry">
+                        <mxPoint as="offset" x="70" y="0"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

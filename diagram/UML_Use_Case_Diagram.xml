@@ -1,0 +1,135 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram name="UML_Use_Case_Diagram" id="uml_uc_avcms_perfect">
+    <mxGraphModel dx="1550" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1550" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="system_boundary" value="Aquaculture Value Chain Management System with Predictive Analytics" style="shape=swimlane;startSize=32;rounded=0;strokeWidth=2;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=13;fontStyle=1;fontColor=#000000;align=center;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="40" width="1220" height="1010" as_="geometry"/>
+        </mxCell>
+        <mxCell id="actor_owner" value="Owner" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="90" height="130" as_="geometry"/>
+        </mxCell>
+        <mxCell id="actor_customer" value="Customer" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="60" y="640" width="90" height="130" as_="geometry"/>
+        </mxCell>
+        <mxCell id="actor_rider" value="Rider" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="90" height="130" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_dashboard" value="View Dashboard
+&amp; Analytics" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="68" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_predictive" value="Sales Forecasting
+&amp; Clustering" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="945" y="68" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_ponds" value="Manage Pond
+Operations" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="158" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_feeding" value="Record Feeding
+&amp; Mortality Logs" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="945" y="158" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_inventory" value="Manage Inventory
+&amp; Pricing" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="248" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_stock_batch" value="Create Stock
+Batch" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="950" y="248" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_expenses" value="Manage Operational
+Expenses" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="405" y="338" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_reports" value="Export Printable
+Reports" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="428" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_browse" value="Browse Catalog
+&amp; Cart" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="538" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_address" value="Assign Delivery
+/ Pickup Option" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="945" y="538" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_checkout" value="Place Order
+&amp; Checkout" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="638" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_payment" value="Process Payment
+(GCash / COD)" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="945" y="638" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_tracking" value="Track Live Order
+Status &amp; Map" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="738" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_dispatch" value="View Assigned
+Deliveries" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="858" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_pod" value="Confirm Delivery
+(Proof of Delivery)" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="945" y="858" width="230" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="uc_transit" value="Update Delivery
+Status" style="shape=ellipse;perimeter=ellipsePerimeter;whiteSpace=wrap;html=1;strokeWidth=1.5;strokeColor=#000000;fillColor=#ffffff;fontFamily=Arial;fontSize=11;fontStyle=0;fontColor=#000000;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="948" width="220" height="64" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_0" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_owner" target="uc_dashboard">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_1" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_owner" target="uc_ponds">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_2" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_owner" target="uc_inventory">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_3" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_owner" target="uc_expenses">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_4" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_owner" target="uc_reports">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_5" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_customer" target="uc_browse">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_6" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_customer" target="uc_checkout">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_7" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_customer" target="uc_tracking">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_8" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_rider" target="uc_dispatch">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assoc_9" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="actor_rider" target="uc_transit">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_0" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="uc_dashboard" target="uc_predictive">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_1" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="uc_ponds" target="uc_feeding">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_2" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="uc_inventory" target="uc_stock_batch">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_3" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="uc_browse" target="uc_address">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_4" value="&lt;&lt;includes&gt;&gt;" style="endArrow=open;dashed=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;endFill=0;fontFamily=Arial;fontSize=10;fontColor=#000000;align=center;verticalAlign=middle;" edge="1" parent="1" source="uc_checkout" target="uc_payment">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+        <mxCell id="edge_fl_5" value="&lt;&lt;includes&gt;&gt;" style="endArrow=open;dashed=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=1.5;endFill=0;fontFamily=Arial;fontSize=10;fontColor=#000000;align=center;verticalAlign=middle;" edge="1" parent="1" source="uc_dispatch" target="uc_pod">
+          <mxGeometry relative="1" as_="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -57,7 +57,7 @@ class PondOperationalTest(TestCase):
     def test_azula_sanitization_lifecycle(self):
         from django.utils import timezone
         from datetime import timedelta
-        today = timezone.now().date()
+        today = timezone.localdate()
         pond = Pond.objects.create(
             farm=self.farm,
             name='AZULA-POND-01',

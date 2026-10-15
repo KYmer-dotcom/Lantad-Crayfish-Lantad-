@@ -760,10 +760,10 @@ def mark_pond_sanitized(request, pond_id):
         referer = request.META.get('HTTP_REFERER')
         if referer:
             return redirect(referer)
-        return redirect('notifications')
+        return redirect('dashboard')
     
     from django.utils import timezone
-    today = timezone.now().date()
+    today = timezone.localdate()
     pond.last_sanitized_date = today
     if pond.status == Pond.Status.MAINTENANCE:
         pond.status = Pond.Status.ACTIVE
@@ -787,7 +787,7 @@ def mark_pond_sanitized(request, pond_id):
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
-    return redirect('notifications')
+    return redirect('dashboard')
 
 
 @login_required
