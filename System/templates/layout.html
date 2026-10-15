@@ -238,8 +238,8 @@
                             Inventory</a>
                         <a href="{% url 'sales:orders_admin' %}"
                             class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Orders</a>
-                        <a href="{% url 'sales:delivery_list' %}"
-                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Deliveries</a>
+                        <a href="{% url 'sales:delivery_track' %}"
+                            class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Track Order</a>
                         <a href="{% url 'sales:rider_list' %}"
                             class="rounded-xl border border-white/10 px-4 py-2 text-slate-100 hover:border-cyan-300">Riders</a>
                         {% if user.is_owner %}

@@ -1774,66 +1774,13 @@ def paymongo_payment_success(request):
 
 @login_required
 def delivery_list_page(request):
-    """Delivery management module page."""
-    access_response = _ensure_sales_owner(request)
-    if access_response:
-        return access_response
-
-    # Auto-sync delivery records for orders with delivery address
-    _sync_order_deliveries()
-
-    deliveries_qs = Delivery.objects.select_related('order', 'order__customer', 'order__product', 'rider', 'created_by').all()
-
-    # Filter by status: Default to active deliveries only (scheduled + in transit)
-    status_filter = request.GET.get('status', '').strip().lower()
-    if status_filter == 'all':
-        deliveries = deliveries_qs
-    elif status_filter in [Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT, Delivery.Status.DELIVERED, Delivery.Status.CANCELLED]:
-        deliveries = deliveries_qs.filter(status=status_filter)
-    else:
-        deliveries = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
-
-    # Search keyword
-    query = request.GET.get('q', '').strip()
-    if query:
-        deliveries = deliveries.filter(
-            Q(order__order_number__icontains=query) |
-            Q(order__customer__name__icontains=query) |
-            Q(order__customer__phone__icontains=query) |
-            Q(delivery_location__icontains=query) |
-            Q(rider__name__icontains=query) |
-            Q(notes__icontains=query)
-        )
-
-    # Calculate statistics
-    total_deliveries = deliveries_qs.count()
-    scheduled_count = deliveries_qs.filter(status=Delivery.Status.SCHEDULED).count()
-    in_transit_count = deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
-    delivered_count = deliveries_qs.filter(status=Delivery.Status.DELIVERED).count()
-    cancelled_count = deliveries_qs.filter(status=Delivery.Status.CANCELLED).count()
-    active_count = scheduled_count + in_transit_count
-    total_kg = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT]).aggregate(
-        total=Sum('quantity_kg')
-    )['total'] or Decimal('0')
-
-    riders = Rider.objects.filter(is_active=True).order_by('name')
-    form = DeliveryForm(user=request.user, initial={'scheduled_date': datetime.date.today()})
-
-    context = {
-        'deliveries': deliveries,
-        'riders': riders,
-        'form': form,
-        'total_deliveries': total_deliveries,
-        'active_count': active_count,
-        'scheduled_count': scheduled_count,
-        'in_transit_count': in_transit_count,
-        'delivered_count': delivered_count,
-        'cancelled_count': cancelled_count,
-        'total_kg': total_kg,
-        'status_filter': status_filter,
-        'query': query,
-    }
-    return render(request, 'sales_management/delivery_list.html', context)
+    """Redirect to unified Track Order page in registry view mode."""
+    qs_params = request.GET.copy()
+    if 'view' not in qs_params:
+        qs_params['view'] = 'registry'
+    from django.urls import reverse
+    redirect_url = f"{reverse('sales:delivery_track')}?{qs_params.urlencode()}"
+    return redirect(redirect_url)
 
 
 @login_required
@@ -2316,22 +2263,49 @@ def _resolve_coords(addr_text, c_lat, c_lng):
 
 @login_required
 def delivery_track_page(request):
-    """Live GPS order tracking command center for Logistics & Fleet dispatch."""
+    """Live GPS order tracking command center for Logistics & Fleet dispatch with integrated Delivery Dispatch Registry."""
     access_response = _ensure_sales_owner(request)
     if access_response:
         return access_response
 
-    all_deliveries = Delivery.objects.select_related(
-        'order', 'order__customer', 'order__product', 'rider', 'created_by'
-    ).order_by('-created_at')
+    # Auto-sync delivery records for orders with delivery address
+    _sync_order_deliveries()
 
-    # Quick summary counters
-    in_transit_count = all_deliveries.filter(status=Delivery.Status.IN_TRANSIT).count()
-    scheduled_count = all_deliveries.filter(status=Delivery.Status.SCHEDULED).count()
-    delivered_count = all_deliveries.filter(status=Delivery.Status.DELIVERED).count()
+    base_deliveries_qs = Delivery.objects.select_related(
+        'order', 'order__customer', 'order__product', 'rider', 'created_by'
+    ).order_by('-scheduled_date', '-created_at')
+
+    # Status counts for registry tabs and live tracking
+    total_deliveries = base_deliveries_qs.count()
+    in_transit_count = base_deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
+    scheduled_count = base_deliveries_qs.filter(status=Delivery.Status.SCHEDULED).count()
+    delivered_count = base_deliveries_qs.filter(status=Delivery.Status.DELIVERED).count()
+    active_count = scheduled_count + in_transit_count
+
+    # Table status filter: Default to active deliveries (scheduled + in transit)
+    status_filter = request.GET.get('status', '').strip().lower()
+    if status_filter == 'all':
+        table_deliveries = base_deliveries_qs
+    elif status_filter in [Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT, Delivery.Status.DELIVERED, Delivery.Status.CANCELLED]:
+        table_deliveries = base_deliveries_qs.filter(status=status_filter)
+    elif status_filter == 'active':
+        table_deliveries = base_deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+    else:
+        table_deliveries = base_deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
 
     query = request.GET.get('q', '').strip()
     if query:
+        table_deliveries = table_deliveries.filter(
+            Q(order__order_number__icontains=query) |
+            Q(order__customer__name__icontains=query) |
+            Q(order__customer__phone__icontains=query) |
+            Q(delivery_location__icontains=query) |
+            Q(rider__name__icontains=query) |
+            Q(notes__icontains=query)
+        )
+
+    all_deliveries = base_deliveries_qs
+    if query and request.GET.get('view') != 'registry':
         all_deliveries = all_deliveries.filter(
             Q(order__order_number__icontains=query) |
             Q(order__customer__name__icontains=query) |
@@ -2351,6 +2325,7 @@ def delivery_track_page(request):
                             all_deliveries.first()
 
     # Pre-calculate coordinates & metadata payload for dynamic map switches
+    import json
     deliveries_data = []
     for d in all_deliveries:
         cust = d.order.customer if d.order else None
@@ -2402,14 +2377,21 @@ def delivery_track_page(request):
             'lng': lng,
         })
 
+    view_mode = request.GET.get('view', '').strip().lower()
+
     context = {
         'selected_delivery': selected_delivery,
         'all_deliveries': all_deliveries,
+        'deliveries': table_deliveries,
         'deliveries_json': json.dumps(deliveries_data),
         'in_transit_count': in_transit_count,
         'scheduled_count': scheduled_count,
         'delivered_count': delivered_count,
+        'active_count': active_count,
+        'total_deliveries': total_deliveries,
+        'status_filter': status_filter or 'active',
         'query': query,
+        'view_mode': view_mode,
     }
     return render(request, 'sales_management/track_order.html', context)
 
