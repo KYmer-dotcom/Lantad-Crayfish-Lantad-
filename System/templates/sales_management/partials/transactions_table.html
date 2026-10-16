@@ -23,6 +23,7 @@
             <tr class="hover:bg-white/[0.03] transition-colors duration-200 cursor-pointer group"
                 data-name="{{ order.customer.name }}"
                 data-date="{{ order.order_date|date:'Y-m-d' }}"
+                data-products="{% if order.ordered_items %}{% for item in order.ordered_items %}{% if item.product %}{{ item.product.name }}|{% endif %}{% endfor %}{% elif order.product %}{{ order.product.name }}|{% endif %}"
                 onclick="toggleTransactionOrder('details-order-{{ order.id }}')">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-100 group-hover:text-[#cca43b] transition-colors flex items-center gap-2">
                     <svg id="chevron-details-order-{{ order.id }}"
@@ -158,9 +159,13 @@
     document.addEventListener('DOMContentLoaded', () => {
         new TableEnhancer('#transactions-table', {
             pageSize: 10,
-            filterColumns: [
-                { colIndex: 5, label: 'Status' },
-                { colIndex: 6, label: 'Payment' }
+            filterColumns: [],
+            customFilters: [
+                {
+                    attribute: 'products',
+                    label: 'Product',
+                    defaultLabel: 'All Products'
+                }
             ],
             searchPlaceholder: 'Search transactions by ID, customer, amount...'
         });

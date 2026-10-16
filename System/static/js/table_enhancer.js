@@ -27,6 +27,7 @@ class TableEnhancer {
             sortable: true,
             filterable: true,
             filterColumns: [], // [{ colIndex: 5, label: 'Status' }]
+            customFilters: [], // [{ attribute: 'products', label: 'Product', defaultLabel: 'All Products' }]
             searchPlaceholder: 'Search table records...',
             emptyMessage: 'No matching records found'
         }, options);
@@ -44,6 +45,7 @@ class TableEnhancer {
         this.pageSize = this.options.pageSize;
         this.searchQuery = '';
         this.columnFilters = {};
+        this.customFilterValues = {};
         this.currentSort = { colIndex: -1, direction: 'asc' };
         this.selectedSortMode = this.options.defaultSort || 'default';
 
@@ -181,6 +183,66 @@ class TableEnhancer {
             });
         }
 
+        // Custom Filters (e.g. Products filter)
+        this.customFilterSelects = {};
+        if (this.options.filterable && Array.isArray(this.options.customFilters) && this.options.customFilters.length > 0) {
+            this.options.customFilters.forEach((customFilter, idx) => {
+                const selectContainer = document.createElement('div');
+                selectContainer.className = 'relative';
+
+                let options = [];
+                if (Array.isArray(customFilter.options) && customFilter.options.length > 0) {
+                    const seen = new Set();
+                    customFilter.options.forEach(opt => {
+                        const val = typeof opt === 'string' ? opt : opt.value;
+                        const label = typeof opt === 'string' ? opt : (opt.label || opt.value);
+                        const key = String(val).toLowerCase().trim();
+                        if (key && !seen.has(key)) {
+                            seen.add(key);
+                            options.push({ value: key, label: label });
+                        }
+                    });
+                } else if (customFilter.attribute) {
+                    const delimiter = customFilter.delimiter || '|';
+                    const uniqueMap = new Map();
+                    this.rowGroups.forEach(group => {
+                        const attrVal = group.parent.dataset[customFilter.attribute] || '';
+                        const items = attrVal.split(delimiter).map(s => s.trim()).filter(Boolean);
+                        items.forEach(item => {
+                            const key = item.toLowerCase();
+                            if (!uniqueMap.has(key)) {
+                                uniqueMap.set(key, item);
+                            }
+                        });
+                    });
+                    const sortedKeys = Array.from(uniqueMap.keys()).sort();
+                    options = sortedKeys.map(k => ({ value: k, label: uniqueMap.get(k) }));
+                }
+
+                if (options.length > 0) {
+                    const defaultLabel = customFilter.defaultLabel || `All ${customFilter.label || 'Products'}`;
+                    let optionsHtml = `<option value="">${defaultLabel}</option>`;
+                    options.forEach(opt => {
+                        optionsHtml += `<option value="${opt.value}">${opt.label}</option>`;
+                    });
+
+                    selectContainer.innerHTML = `
+                        <select class="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-stone-200 focus:border-[#cca43b] focus:outline-none cursor-pointer">
+                            ${optionsHtml}
+                        </select>
+                    `;
+                    const select = selectContainer.querySelector('select');
+                    select.addEventListener('change', (e) => {
+                        this.customFilterValues[idx] = e.target.value.toLowerCase().trim();
+                        this.currentPage = 1;
+                        this.applyFilters();
+                    });
+                    this.customFilterSelects[idx] = select;
+                    leftBox.appendChild(selectContainer);
+                }
+            });
+        }
+
         // Sort By Filter Dropdown (Alphabetical / Date)
         if (this.options.sortable) {
             const sortContainer = document.createElement('div');
@@ -311,6 +373,28 @@ class TableEnhancer {
                     const isMatch = cellText === targetVal || words.includes(targetVal) || (cellText.includes(targetVal) && targetVal !== 'paid');
                     if (!isMatch) {
                         return false;
+                    }
+                }
+            }
+
+            // Custom filters (e.g. Product filter)
+            if (this.options.customFilters && this.options.customFilters.length > 0) {
+                for (let i = 0; i < this.options.customFilters.length; i++) {
+                    const selectedVal = this.customFilterValues[i];
+                    if (selectedVal) {
+                        const customFilter = this.options.customFilters[i];
+                        if (typeof customFilter.filterFn === 'function') {
+                            if (!customFilter.filterFn(group, selectedVal)) {
+                                return false;
+                            }
+                        } else if (customFilter.attribute) {
+                            const delimiter = customFilter.delimiter || '|';
+                            const attrVal = (group.parent.dataset[customFilter.attribute] || '').toLowerCase();
+                            const items = attrVal.split(delimiter).map(s => s.trim()).filter(Boolean);
+                            if (!items.includes(selectedVal)) {
+                                return false;
+                            }
+                        }
                     }
                 }
             }
