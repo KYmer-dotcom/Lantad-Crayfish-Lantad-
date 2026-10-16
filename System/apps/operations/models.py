@@ -105,7 +105,15 @@ class Pond(models.Model):
     @property
     def crilings_count(self):
         if self.location == 'Breeding Pond':
-            return (self.capacity or 0) * 250
+            if not self.pk:
+                return (self.capacity or 0) * 250
+            from django.db.models import Sum
+            outgoing_total = self.outgoing_transfers.aggregate(Sum('quantity'))['quantity__sum'] or 0
+            mortality_total = self.mortality_logs.filter(product_name__icontains='Criling').aggregate(Sum('quantity'))['quantity__sum'] or 0
+            base_crilings = (self.capacity or 0) * 250
+            if self.capacity_2 is not None and 0 < self.capacity_2 < base_crilings:
+                return min(self.capacity_2, max(0, base_crilings - outgoing_total - mortality_total))
+            return max(0, base_crilings - outgoing_total - mortality_total)
         return self.capacity_2 or 0
 
     @property
@@ -227,13 +235,21 @@ class Pond(models.Model):
             return False
         return days >= self.harvest_due_target_days
 
-    def deduct_stock(self, quantity):
+    def deduct_stock(self, quantity, product_name=None):
         """
         Deducts quantity from this pond. If transfer batches exist (e.g. in Main Pond),
         always deducts in FIFO order from the oldest transferred batch first.
+        If product is Crilings in a Breeding Pond, deducts from capacity_2.
         """
         if quantity <= 0:
             return 0
+
+        if self.location == 'Breeding Pond' and product_name and 'criling' in str(product_name).lower():
+            current = self.crilings_count
+            to_deduct = min(current, quantity)
+            self.capacity_2 = max(0, current - to_deduct)
+            self.save(update_fields=['capacity_2', 'updated_at'])
+            return to_deduct
 
         actual_deducted = 0
         remaining = quantity

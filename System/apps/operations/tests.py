@@ -124,5 +124,49 @@ class PondOperationalTest(TestCase):
         self.assertEqual(response2.status_code, 400)
         self.assertEqual(response2.json().get('status'), 'error')
 
+    def test_breeding_pond_crilings_transfer_deduction(self):
+        """Verify transferring Crilings from Breeding Pond deducts accurately."""
+        breeding_pond = Pond.objects.create(
+            farm=self.farm,
+            name='BREEDING-01',
+            location='Breeding Pond',
+            size=Decimal('50.00'),
+            depth=Decimal('1.00'),
+            capacity=19,
+            product_name='Breeder Crayfish',
+            product_name_2='Crilings',
+            status=Pond.Status.ACTIVE
+        )
+        main_pond = Pond.objects.create(
+            farm=self.farm,
+            name='MAIN-01',
+            location='Main Pond',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            capacity=30,
+            product_name='Crayfish',
+            status=Pond.Status.ACTIVE
+        )
+
+        self.assertEqual(breeding_pond.crilings_count, 4750)
+        self.assertEqual(breeding_pond.capacity, 19)
+
+        self.client.login(username='pondowner', password='password123')
+        response = self.client.post('/operations/pond/transfer/', {
+            'source_pond_id': breeding_pond.id,
+            'destination_pond_id': main_pond.id,
+            'target_product': '2',
+            'transfer_quantity': '120',
+        })
+        self.assertEqual(response.status_code, 302)
+
+        breeding_pond.refresh_from_db()
+        main_pond.refresh_from_db()
+
+        self.assertEqual(breeding_pond.crilings_count, 4630)
+        self.assertEqual(breeding_pond.capacity, 19)
+        self.assertEqual(main_pond.capacity, 150)
+
+
 
 

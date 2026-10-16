@@ -469,7 +469,15 @@ def pond_edit(request, pond_id):
             pond = form.save(commit=False)
             pond.location = form.cleaned_data.get('category', 'Main Pond')
             if pond.location == 'Breeding Pond':
-                pond.capacity_2 = (pond.capacity or 0) * 250
+                from django.db.models import Sum
+                outgoing_total = 0
+                if pond.pk:
+                    outgoing_total = pond.outgoing_transfers.aggregate(Sum('quantity'))['quantity__sum'] or 0
+                base_crilings = (pond.capacity or 0) * 250
+                if outgoing_total > 0:
+                    pond.capacity_2 = max(0, base_crilings - outgoing_total)
+                elif pond.capacity_2 is None or pond.capacity_2 == 0:
+                    pond.capacity_2 = base_crilings
                 if not pond.product_name_2 and (pond.capacity or 0) > 0:
                     pond.product_name_2 = 'Crilings'
             elif pond.location != 'Breeding Pond':
@@ -872,9 +880,9 @@ def pond_transfer(request):
         return redirect(redirect_target)
         
     # Determine which product and available quantity
-    if target_product == '2':
+    if target_product == '2' or source_pond.location == 'Breeding Pond':
         prod_name = source_pond.product_name_2 or "Crilings"
-        available_qty = source_pond.capacity_2 or 0
+        available_qty = source_pond.crilings_count
     else:
         prod_name = source_pond.product_name or "Stock"
         available_qty = source_pond.capacity or 0
@@ -893,12 +901,13 @@ def pond_transfer(request):
         return redirect(redirect_target)
         
     # Deduct from source pond
-    if target_product == '2':
-        source_pond.capacity_2 -= transfer_qty
-        if source_pond.capacity_2 <= 0:
-            source_pond.capacity_2 = 0
-            source_pond.product_name_2 = ''
-        source_pond.save()
+    if target_product == '2' or source_pond.location == 'Breeding Pond':
+        current_crilings = source_pond.crilings_count
+        new_crilings = max(0, current_crilings - transfer_qty)
+        source_pond.capacity_2 = new_crilings
+        if not source_pond.product_name_2:
+            source_pond.product_name_2 = 'Crilings'
+        source_pond.save(update_fields=['capacity_2', 'product_name_2', 'updated_at'])
     else:
         if source_pond.transfer_batches.exists():
             source_pond.deduct_stock(transfer_qty)
@@ -1020,7 +1029,7 @@ def record_mortality(request):
 
                 # Deduct new quantity
                 if quantity > 0:
-                    pond.deduct_stock(quantity)
+                    pond.deduct_stock(quantity, product_name=product_name)
 
                 existing_log.quantity = quantity
                 existing_log.reason = reason
@@ -1029,7 +1038,7 @@ def record_mortality(request):
             else:
                 # Deduct quantity from pond
                 if quantity > 0:
-                    pond.deduct_stock(quantity)
+                    pond.deduct_stock(quantity, product_name=product_name)
 
                 PondMortalityLog.objects.create(
                     pond=pond,

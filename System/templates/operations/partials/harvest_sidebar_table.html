@@ -136,7 +136,11 @@
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="font-black text-sm text-[#cca43b]">{{ pond.crilings_count }}</div>
+                                    {% if pond.outgoing_transfers.exists %}
+                                    <div class="text-[10px] text-[#a0ac96]">(Remaining Stock)</div>
+                                    {% else %}
                                     <div class="text-[10px] text-[#a0ac96]">({{ pond.capacity|default:"0" }} Breeders × 250)</div>
+                                    {% endif %}
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     {% if pond.status == 'empty' or pond.crilings_count == 0 %}

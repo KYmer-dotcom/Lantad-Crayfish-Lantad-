@@ -77,7 +77,7 @@
                 <span>{{ pond.product_name|default:"PROD 1" }}:</span>
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
             </div>
-            {% if pond.product_name_2 or pond.crilings_count %}
+            {% if pond.location == 'Breeding Pond' or pond.product_name_2 or pond.crilings_count %}
             <div class="flex items-center justify-between">
                 <span>{{ pond.product_name_2|default:"Crilings" }}:</span>
                 <span class="font-bold text-[#cca43b]">{{ pond.crilings_count }}</span>

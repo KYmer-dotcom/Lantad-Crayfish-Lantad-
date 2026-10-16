@@ -418,7 +418,7 @@ def pond_harvest(request, pond_id):
         except (ValueError, TypeError):
             harvested_qty = 0
     elif target_product == '2':
-        harvested_qty = pond.capacity_2 or 0
+        harvested_qty = pond.crilings_count if pond.location == 'Breeding Pond' else (pond.capacity_2 or 0)
     elif target_product == '1':
         harvested_qty = pond.capacity or 0
     else:
@@ -431,14 +431,19 @@ def pond_harvest(request, pond_id):
     prod_name = pond.product_name_2 if target_product == '2' else (pond.product_name or "Stock")
     credited_label = credit_to_inventory(prod_name, harvested_qty)
     
-    if target_product == '2' and pond.product_name_2:
+    if target_product == '2' and (pond.product_name_2 or pond.location == 'Breeding Pond'):
         if total_allocated_qty > 0:
-            pond.capacity_2 = max(0, (pond.capacity_2 or 0) - total_allocated_qty)
-            if pond.capacity_2 == 0:
-                pond.product_name_2 = ''
+            if pond.location == 'Breeding Pond':
+                current_c = pond.crilings_count
+                pond.capacity_2 = max(0, current_c - total_allocated_qty)
+            else:
+                pond.capacity_2 = max(0, (pond.capacity_2 or 0) - total_allocated_qty)
+                if pond.capacity_2 == 0:
+                    pond.product_name_2 = ''
         else:
             pond.capacity_2 = 0
-            pond.product_name_2 = ''
+            if pond.location != 'Breeding Pond':
+                pond.product_name_2 = ''
             
         if (pond.capacity or 0) <= 0 and (pond.capacity_2 or 0) <= 0:
             pond.capacity = 0
