@@ -91,6 +91,11 @@ class Pond(models.Model):
     def save(self, *args, **kwargs):
         if self.location == 'Main Pond' and (self.capacity or 0) > 2000:
             raise ValueError(f"Main Pond capacity cannot exceed 2,000 (attempted: {self.capacity}).")
+        if self.location == 'Breeding Pond' and not self.pk:
+            if not self.capacity_2 and (self.capacity or 0) > 0:
+                self.capacity_2 = (self.capacity or 0) * 250
+            if not self.product_name_2:
+                self.product_name_2 = 'Crilings'
         super().save(*args, **kwargs)
 
     
@@ -118,15 +123,16 @@ class Pond(models.Model):
     @property
     def crilings_count(self):
         if self.location == 'Breeding Pond':
+            if self.capacity_2 is not None and self.capacity_2 > 0:
+                return self.capacity_2
             if not self.pk:
                 return (self.capacity or 0) * 250
             from django.db.models import Sum
             outgoing_total = self.outgoing_transfers.aggregate(Sum('quantity'))['quantity__sum'] or 0
             mortality_total = self.mortality_logs.filter(product_name__icontains='Criling').aggregate(Sum('quantity'))['quantity__sum'] or 0
-            base_crilings = (self.capacity or 0) * 250
-            if self.capacity_2 is not None and 0 < self.capacity_2 < base_crilings:
-                return min(self.capacity_2, max(0, base_crilings - outgoing_total - mortality_total))
-            return max(0, base_crilings - outgoing_total - mortality_total)
+            if outgoing_total > 0 or mortality_total > 0:
+                return max(0, self.capacity_2 or 0)
+            return (self.capacity or 0) * 250
         return self.capacity_2 or 0
 
     @property
@@ -299,8 +305,22 @@ class Pond(models.Model):
             actual_deducted = to_deduct
             if self.capacity <= 0:
                 self.capacity = 0
-                self.status = Pond.Status.EMPTY
-                self.transfer_date = None
+                if self.location != 'Breeding Pond' and self.product_name_2 and self.capacity_2:
+                    self.product_name = self.product_name_2
+                    self.capacity = self.capacity_2
+                    self.product_name_2 = ''
+                    self.capacity_2 = 0
+                    self.status = Pond.Status.ACTIVE
+                elif self.location == 'Breeding Pond':
+                    # In Breeding Pond, Breeder depletion does NOT empty or erase Crilings!
+                    if (self.capacity_2 or 0) <= 0:
+                        self.status = Pond.Status.EMPTY
+                        self.transfer_date = None
+                    else:
+                        self.status = Pond.Status.ACTIVE
+                else:
+                    self.status = Pond.Status.EMPTY
+                    self.transfer_date = None
             else:
                 self.status = Pond.Status.ACTIVE
             self.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])

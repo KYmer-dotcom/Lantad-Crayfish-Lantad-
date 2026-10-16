@@ -19,9 +19,15 @@
     </div>
 
     <!-- Product 2 (Only for Breeding Pond) -->
-    <div id="field-product-2" class="hidden">
-        <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product 2 (Crilings / Dual Tracking)</label>
-        {{ form.product_name_2 }}
+    <div id="field-product-2" class="hidden space-y-4">
+        <div>
+            <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product 2 (Crilings / Dual Tracking)</label>
+            {{ form.product_name_2 }}
+        </div>
+        <div id="field-quantity-2">
+            <label id="label-quantity-2" class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity 2 (Crilings)</label>
+            {{ form.capacity_2 }}
+        </div>
     </div>
 
     <!-- Date Transferred Field -->

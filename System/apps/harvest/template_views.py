@@ -467,13 +467,21 @@ def pond_harvest(request, pond_id):
         
         # If product 1 was fully depleted
         if (pond.capacity or 0) <= 0:
-            if pond.product_name_2 or pond.capacity_2:
+            if pond.location != 'Breeding Pond' and (pond.product_name_2 or pond.capacity_2):
                 pond.product_name = pond.product_name_2
                 pond.capacity = pond.capacity_2
                 pond.product_name_2 = ''
                 pond.capacity_2 = 0
                 pond.status = Pond.Status.ACTIVE if pond.capacity > 0 else Pond.Status.EMPTY
                 pond.save(update_fields=['product_name', 'capacity', 'product_name_2', 'capacity_2', 'status', 'updated_at'])
+            elif pond.location == 'Breeding Pond':
+                pond.capacity = 0
+                if (pond.capacity_2 or 0) <= 0:
+                    pond.status = Pond.Status.EMPTY
+                    pond.transfer_date = None
+                else:
+                    pond.status = Pond.Status.ACTIVE
+                pond.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])
             else:
                 pond.capacity = 0
                 pond.capacity_2 = 0

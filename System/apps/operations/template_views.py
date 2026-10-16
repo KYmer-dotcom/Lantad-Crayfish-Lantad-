@@ -173,8 +173,12 @@ class PondForm(forms.ModelForm):
         self.fields['product_name_2'].choices = product_choices
         
         current_pond_id = self.instance.pk if self.instance else None
+        if self.instance and self.instance.pk and self.instance.location == 'Breeding Pond':
+            if 'capacity_2' not in self.initial or not self.initial.get('capacity_2'):
+                self.initial['capacity_2'] = self.instance.crilings_count
         self.category_allowed_map = get_category_product_rules(current_pond_id)
         self.category_allowed_map_json = json.dumps(self.category_allowed_map)
+
 
     def clean_name(self):
         return self.cleaned_data.get('name', '').upper()
@@ -228,6 +232,19 @@ def ponds_list(request):
     PondTransferBatch.objects.filter(quantity__lte=0).delete()
     Pond.objects.filter(capacity__lte=0, capacity_2__lte=0).exclude(status__in=['empty', 'maintenance']).update(status='empty', transfer_date=None)
     Pond.objects.filter(Q(capacity__gt=0) | Q(capacity_2__gt=0), status='empty').update(status='active')
+    
+    # Ensure existing Breeding Ponds have an initialized capacity_2 for Crilings
+    for bp in Pond.objects.filter(location='Breeding Pond'):
+        if bp.capacity_2 is None or bp.capacity_2 == 0:
+            from django.db.models import Sum
+            outgoing = bp.outgoing_transfers.aggregate(Sum('quantity'))['quantity__sum'] or 0
+            mortality = bp.mortality_logs.filter(product_name__icontains='Criling').aggregate(Sum('quantity'))['quantity__sum'] or 0
+            if outgoing == 0 and mortality == 0 and (bp.capacity or 0) > 0:
+                bp.capacity_2 = (bp.capacity or 0) * 250
+                if not bp.product_name_2:
+                    bp.product_name_2 = 'Crilings'
+                bp.save(update_fields=['capacity_2', 'product_name_2'])
+
     
     farms = get_accessible_farms(request.user)
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
@@ -485,19 +502,16 @@ def pond_edit(request, pond_id):
                 })
 
             if pond.location == 'Breeding Pond':
-                from django.db.models import Sum
-                outgoing_total = 0
-                if pond.pk:
-                    outgoing_total = pond.outgoing_transfers.aggregate(Sum('quantity'))['quantity__sum'] or 0
-                base_crilings = (pond.capacity or 0) * 250
-                if outgoing_total > 0:
-                    pond.capacity_2 = max(0, base_crilings - outgoing_total)
-                elif pond.capacity_2 is None or pond.capacity_2 == 0:
-                    pond.capacity_2 = base_crilings
+                form_cap2 = form.cleaned_data.get('capacity_2')
+                if form_cap2 is not None and form_cap2 > 0:
+                    pond.capacity_2 = form_cap2
+                elif pond.capacity_2 is None or (pond.capacity_2 == 0 and not pond.outgoing_transfers.exists() and not pond.mortality_logs.filter(product_name__icontains='Criling').exists()):
+                    pond.capacity_2 = (pond.capacity or 0) * 250
                 if not pond.product_name_2 and (pond.capacity or 0) > 0:
                     pond.product_name_2 = 'Crilings'
             elif pond.location != 'Breeding Pond':
                 pond.capacity_2 = 0
+
             if (pond.capacity or 0) <= 0 and (pond.capacity_2 or 0) <= 0 and pond.status != Pond.Status.MAINTENANCE:
                 pond.status = Pond.Status.EMPTY
                 pond.transfer_date = None

@@ -167,6 +167,60 @@ class PondOperationalTest(TestCase):
         self.assertEqual(breeding_pond.capacity, 19)
         self.assertEqual(main_pond.capacity, 150)
 
+        # Deduct Product 1: Product 2 must NOT be deducted
+        breeding_pond.deduct_stock(5, product_name='Breeder Crayfish')
+        breeding_pond.refresh_from_db()
+        self.assertEqual(breeding_pond.capacity, 14)
+        self.assertEqual(breeding_pond.crilings_count, 4630)
+
+    def test_deduct_product_1_does_not_deduct_product_2(self):
+        """Verify that deducting Product 1 (Breeder Crayfish) does NOT deduct Product 2 (Crilings)."""
+        bp = Pond.objects.create(
+            farm=self.farm,
+            name='BP-INDEP-TEST',
+            location='Breeding Pond',
+            size=Decimal('50.00'),
+            depth=Decimal('1.00'),
+            capacity=20,
+            capacity_2=5000,
+            product_name='Breeder Crayfish',
+            product_name_2='Crilings',
+            status=Pond.Status.ACTIVE
+        )
+        self.assertEqual(bp.capacity, 20)
+        self.assertEqual(bp.crilings_count, 5000)
+
+        # Deduct 1 breeder via deduct_stock (Product 1)
+        bp.deduct_stock(1, product_name='Breeder Crayfish')
+        bp.refresh_from_db()
+        self.assertEqual(bp.capacity, 19)
+        self.assertEqual(bp.crilings_count, 5000)
+
+        # Deduct 6 more breeders (down to 13)
+        bp.deduct_stock(6, product_name='Breeder Crayfish')
+        bp.refresh_from_db()
+        self.assertEqual(bp.capacity, 13)
+        self.assertEqual(bp.crilings_count, 5000)
+
+        # Edit pond via client POST
+        self.client.login(username='pondowner', password='password123')
+        from apps.sales.models import Product
+        Product.objects.get_or_create(name='Breeder Crayfish', defaults={'unit_price': 100})
+        Product.objects.get_or_create(name='Crilings', defaults={'unit_price': 10})
+        resp = self.client.post(f'/operations/pond/{bp.id}/edit/', {
+            'name': 'BP-INDEP-TEST',
+            'category': 'Breeding Pond',
+            'product_name': 'Breeder Crayfish',
+            'capacity': 10,
+            'product_name_2': 'Crilings',
+            'capacity_2': 5000,
+        }, follow=True)
+        self.assertEqual(resp.status_code, 200)
+        bp.refresh_from_db()
+        self.assertEqual(bp.capacity, 10)
+        self.assertEqual(bp.crilings_count, 5000)
+
+
     def test_main_pond_2000_capacity_limit_on_model(self):
         from django.core.exceptions import ValidationError
         # Creating with <= 2000 works
