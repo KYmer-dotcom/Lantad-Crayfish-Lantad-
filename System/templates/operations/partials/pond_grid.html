@@ -87,9 +87,16 @@
             <div class="flex items-center gap-2">
                 <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>Darkling Beetles</span>
             </div>
+            {% elif pond.location == 'Main Pond' %}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>{% if pond.transfer_batches.count > 1 %}Total Quantity{% else %}Quantity{% endif %}</span>
+                </div>
+                <span class="text-[10px] text-[#a0ac96] font-mono">Max: 2,000</span>
+            </div>
             {% else %}
             <div class="flex items-center gap-2">
-                <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>{% if pond.location == 'Main Pond' and pond.transfer_batches.count > 1 %}Total Quantity{% else %}Quantity{% endif %}</span>
+                <span class="font-bold text-[#cca43b]">{{ pond.capacity|default:"0" }}</span> <span>Quantity</span>
             </div>
             {% endif %}
         </div>

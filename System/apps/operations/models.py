@@ -80,6 +80,19 @@ class Pond(models.Model):
     
     def __str__(self):
         return f"{self.farm.name} - {self.name}"
+
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        if self.location == 'Main Pond':
+            if (self.capacity or 0) > 2000:
+                raise ValidationError({'capacity': 'Main Pond capacity cannot exceed 2,000.'})
+
+    def save(self, *args, **kwargs):
+        if self.location == 'Main Pond' and (self.capacity or 0) > 2000:
+            raise ValueError(f"Main Pond capacity cannot exceed 2,000 (attempted: {self.capacity}).")
+        super().save(*args, **kwargs)
+
     
     @property
     def current_stock_count(self):

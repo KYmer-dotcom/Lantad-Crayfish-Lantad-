@@ -146,6 +146,9 @@ function togglePondFormFields() {
                     fieldQuantity.classList.add('hidden');
                     if (capacityInput && !capacityInput.value) capacityInput.value = '0';
                 }
+                if (capacityInput) {
+                    capacityInput.max = '2000';
+                }
                 if (fieldDate) fieldDate.classList.add('hidden');
                 if (labelProduct) labelProduct.textContent = 'Product';
             } else {

@@ -202,17 +202,20 @@ class PondForm(forms.ModelForm):
                 if product_name and product_name_2 and product_name == product_name_2:
                     self.add_error('product_name_2', 'Product 1 and Product 2 cannot be the same product.')
 
-        if category == 'Breeding Pond':
+        effective_category = category or (self.instance.location if self.instance else '')
+        if effective_category == 'Breeding Pond':
             if capacity is None:
                 self.add_error('capacity', 'Quantity 1 is required.')
-        elif category == 'Superworm Cabin':
+        elif effective_category == 'Superworm Cabin':
             pass
-        elif category == 'Main Pond':
-            # Main Pond capacity is aggregated from transfer batches, standard field not required
-            pass
+        elif effective_category == 'Main Pond':
+            # Main Pond capacity has a strict limit of 2,000
+            if capacity is not None and capacity > 2000:
+                self.add_error('capacity', 'Main Pond capacity cannot exceed 2,000.')
         else:
             if capacity is None:
                 self.add_error('capacity', 'Quantity is required.')
+
                 
         return cleaned_data
 
@@ -399,6 +402,10 @@ def pond_create(request):
         category = form.cleaned_data.get('category') or 'Main Pond'
         pond.location = category
         pond.capacity = pond.capacity or 0
+        if category == 'Main Pond' and pond.capacity > 2000:
+            messages.error(request, "Main Pond capacity cannot exceed 2,000.")
+            return redirect('ponds:list')
+
         if category == 'Breeding Pond':
             pond.capacity_2 = (pond.capacity or 0) * 250
             if not pond.product_name_2 and (pond.capacity or 0) > 0:
@@ -468,6 +475,15 @@ def pond_edit(request, pond_id):
         if form.is_valid():
             pond = form.save(commit=False)
             pond.location = form.cleaned_data.get('category', 'Main Pond')
+            if pond.location == 'Main Pond' and (pond.capacity or 0) > 2000:
+                messages.error(request, "Main Pond capacity cannot exceed 2,000.")
+                return render(request, 'operations/edit.html', {
+                    'form': form,
+                    'pond': pond,
+                    'current_op_type': target_type,
+                    'cancel_url': cancel_url,
+                })
+
             if pond.location == 'Breeding Pond':
                 from django.db.models import Sum
                 outgoing_total = 0
@@ -899,6 +915,18 @@ def pond_transfer(request):
     if transfer_qty > available_qty:
         messages.error(request, f"Cannot transfer {transfer_qty}. Only {available_qty} available in {source_pond.name}.")
         return redirect(redirect_target)
+        
+    # Check destination capacity limit for Main Pond (strictly 2,000 maximum)
+    if dest_pond.location == 'Main Pond':
+        dest_capacity = dest_pond.capacity or 0
+        if dest_capacity + transfer_qty > 2000:
+            remaining_space = max(0, 2000 - dest_capacity)
+            messages.error(
+                request,
+                f"Cannot transfer {transfer_qty}. Destination {dest_pond.name} maximum capacity is 2,000 (currently {dest_capacity}, space remaining: {remaining_space})."
+            )
+            return redirect(redirect_target)
+
         
     # Deduct from source pond
     if target_product == '2' or source_pond.location == 'Breeding Pond':

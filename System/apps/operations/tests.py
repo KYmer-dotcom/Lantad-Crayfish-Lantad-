@@ -167,6 +167,110 @@ class PondOperationalTest(TestCase):
         self.assertEqual(breeding_pond.capacity, 19)
         self.assertEqual(main_pond.capacity, 150)
 
+    def test_main_pond_2000_capacity_limit_on_model(self):
+        from django.core.exceptions import ValidationError
+        # Creating with <= 2000 works
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='MAIN-LIMIT-OK',
+            location='Main Pond',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            capacity=2000,
+            status=Pond.Status.ACTIVE
+        )
+        self.assertEqual(pond.capacity, 2000)
+
+        # Calling clean with > 2000 raises ValidationError
+        pond.capacity = 2001
+        with self.assertRaises(ValidationError):
+            pond.clean()
+
+        # Calling save with > 2000 raises ValueError
+        with self.assertRaises(ValueError):
+            pond.save()
+
+    def test_main_pond_2000_capacity_limit_on_transfer(self):
+        main_pond = Pond.objects.create(
+            farm=self.farm,
+            name='MAIN-CAP-TEST',
+            location='Main Pond',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            capacity=1900,
+            product_name='Crayfish',
+            status=Pond.Status.ACTIVE
+        )
+        breeding_pond = Pond.objects.create(
+            farm=self.farm,
+            name='BREED-CAP-TEST',
+            location='Breeding Pond',
+            size=Decimal('80.00'),
+            depth=Decimal('1.20'),
+            capacity=10,
+            capacity_2=500,
+            product_name='Breeder Crayfish',
+            product_name_2='Crilings',
+            status=Pond.Status.ACTIVE
+        )
+        self.client.login(username='pondowner', password='password123')
+
+        # Attempt to transfer 150 into 1900 -> total 2050 > 2000 (must be blocked)
+        response = self.client.post('/operations/pond/transfer/', {
+            'source_pond_id': breeding_pond.id,
+            'destination_pond_id': main_pond.id,
+            'target_product': '2',
+            'transfer_quantity': '150',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        main_pond.refresh_from_db()
+        breeding_pond.refresh_from_db()
+
+        # Verify quantities did NOT change
+        self.assertEqual(main_pond.capacity, 1900)
+        self.assertEqual(breeding_pond.crilings_count, 500)
+
+        # Now transfer 100 into 1900 -> total 2000 == 2000 (must succeed)
+        response_ok = self.client.post('/operations/pond/transfer/', {
+            'source_pond_id': breeding_pond.id,
+            'destination_pond_id': main_pond.id,
+            'target_product': '2',
+            'transfer_quantity': '100',
+        }, follow=True)
+
+        self.assertEqual(response_ok.status_code, 200)
+        main_pond.refresh_from_db()
+        breeding_pond.refresh_from_db()
+
+        self.assertEqual(main_pond.capacity, 2000)
+        self.assertEqual(breeding_pond.crilings_count, 400)
+
+    def test_main_pond_2000_capacity_limit_on_form(self):
+        from apps.operations.template_views import PondForm
+        from apps.sales.models import Product
+        Product.objects.get_or_create(name='Crayfish', defaults={'unit_price': 100})
+
+        # Main Pond with 2001 capacity should fail form validation
+        form_invalid = PondForm(data={
+            'name': 'MAIN-FORM-FAIL',
+            'category': 'Main Pond',
+            'product_name': 'Crayfish',
+            'capacity': 2001,
+        }, user=self.owner)
+        self.assertFalse(form_invalid.is_valid())
+        self.assertIn('capacity', form_invalid.errors)
+
+        # Main Pond with 2000 capacity should be valid
+        form_valid = PondForm(data={
+            'name': 'MAIN-FORM-OK',
+            'category': 'Main Pond',
+            'product_name': 'Crayfish',
+            'capacity': 2000,
+        }, user=self.owner)
+        self.assertTrue(form_valid.is_valid())
+
+
 
 
 

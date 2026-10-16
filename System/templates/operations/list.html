@@ -714,8 +714,8 @@
                     <option value="">-- Choose Destination Pond --</option>
                     <optgroup id="dest-group-main" label="Main Ponds">
                         {% for mp in main_ponds %}
-                        <option value="{{ mp.id }}" data-category="Main Pond">
-                            {{ mp.name }} {% if mp.status == 'empty' or mp.capacity == 0 %}(Empty / Unused){% else %}(Current: {{ mp.product_name|default:"Stock" }} - {{ mp.capacity }}){% endif %}
+                        <option value="{{ mp.id }}" data-category="Main Pond" data-capacity="{{ mp.capacity|default:0 }}">
+                            {{ mp.name }} {% if mp.status == 'empty' or mp.capacity == 0 %}(Empty - 0/2,000){% elif mp.capacity >= 2000 %}(Full - 2,000/2,000){% else %}(Current: {{ mp.product_name|default:"Stock" }} - {{ mp.capacity }}/2,000){% endif %}
                         </option>
                         {% endfor %}
                     </optgroup>
@@ -727,6 +727,7 @@
                         {% endfor %}
                     </optgroup>
                 </select>
+                <p id="transfer-capacity-hint" class="mt-1.5 text-xs text-[#a0ac96] hidden"></p>
             </div>
 
             <!-- Transfer Quantity Field -->
@@ -1144,13 +1145,97 @@
                     return;
                 }
                 let isAllowed = sourceLocation === 'Main Pond' ? (opt.dataset.category === 'Breeding Pond') : (opt.dataset.category === 'Main Pond');
+                let isFullMain = (opt.dataset.category === 'Main Pond' && parseInt(opt.dataset.capacity || '0', 10) >= 2000);
                 opt.hidden = !isAllowed;
-                opt.disabled = !isAllowed;
+                opt.disabled = !isAllowed || isFullMain;
             });
             destSelect.value = '';
+            syncTransferDestCapacity();
         }
         
         showModal('transfer-pond-modal');
+    }
+
+    function syncTransferDestCapacity() {
+        const destSelect = document.getElementById('transfer-destination-pond');
+        const qtyInput = document.getElementById('transfer-quantity-input');
+        const maxQtyEl = document.getElementById('transfer-max-qty');
+        const hintEl = document.getElementById('transfer-capacity-hint');
+        const sourceQtyEl = document.getElementById('transfer-source-qty');
+        const confirmBtn = document.querySelector('#transfer-pond-form button[type="submit"]');
+
+        if (!destSelect) return;
+        const sourceQty = parseInt(sourceQtyEl ? sourceQtyEl.textContent : '0', 10) || 0;
+        const selectedOpt = destSelect.selectedOptions ? destSelect.selectedOptions[0] : null;
+
+        if (!selectedOpt || !selectedOpt.value) {
+            if (maxQtyEl) maxQtyEl.textContent = sourceQty;
+            if (qtyInput) qtyInput.max = sourceQty;
+            if (hintEl) {
+                hintEl.classList.add('hidden');
+                hintEl.textContent = '';
+            }
+            if (confirmBtn) confirmBtn.disabled = false;
+            return;
+        }
+
+        if (selectedOpt.dataset.category === 'Main Pond') {
+            const destCap = parseInt(selectedOpt.dataset.capacity || '0', 10);
+            const remainingSpace = Math.max(0, 2000 - destCap);
+            const maxTransfer = Math.min(sourceQty, remainingSpace);
+
+            if (maxQtyEl) maxQtyEl.textContent = maxTransfer;
+            if (qtyInput) {
+                qtyInput.max = maxTransfer;
+                if (parseInt(qtyInput.value || '0', 10) > maxTransfer) {
+                    qtyInput.value = maxTransfer > 0 ? maxTransfer : 0;
+                }
+            }
+
+            if (hintEl) {
+                hintEl.classList.remove('hidden');
+                if (remainingSpace <= 0) {
+                    hintEl.textContent = 'This Main Pond has reached its maximum capacity limit of 2,000. Please select another pond.';
+                    hintEl.className = 'mt-1.5 text-xs text-rose-400 font-bold';
+                    if (confirmBtn) confirmBtn.disabled = true;
+                } else {
+                    hintEl.textContent = `Main Pond Capacity Limit: 2,000 (Current: ${destCap}, Space available: ${remainingSpace})`;
+                    hintEl.className = 'mt-1.5 text-xs text-[#cca43b]';
+                    if (confirmBtn) confirmBtn.disabled = false;
+                }
+            }
+        } else {
+            if (maxQtyEl) maxQtyEl.textContent = sourceQty;
+            if (qtyInput) qtyInput.max = sourceQty;
+            if (hintEl) {
+                hintEl.classList.add('hidden');
+                hintEl.textContent = '';
+            }
+            if (confirmBtn) confirmBtn.disabled = false;
+        }
+    }
+
+    const transferDestSelect = document.getElementById('transfer-destination-pond');
+    if (transferDestSelect) {
+        transferDestSelect.addEventListener('change', syncTransferDestCapacity);
+    }
+    const transferPondForm = document.getElementById('transfer-pond-form');
+    if (transferPondForm) {
+        transferPondForm.addEventListener('submit', function(e) {
+            const select = document.getElementById('transfer-destination-pond');
+            const qtyInput = document.getElementById('transfer-quantity-input');
+            const selectedOpt = select ? select.selectedOptions[0] : null;
+            if (selectedOpt && selectedOpt.dataset.category === 'Main Pond') {
+                const destCap = parseInt(selectedOpt.dataset.capacity || '0', 10);
+                const qty = parseInt(qtyInput ? qtyInput.value : '0', 10);
+                if (destCap + qty > 2000) {
+                    e.preventDefault();
+                    const remaining = Math.max(0, 2000 - destCap);
+                    alert(`Cannot transfer ${qty}. Destination Main Pond has a strict limit of 2,000 (currently ${destCap}, space remaining: ${remaining}).`);
+                    return false;
+                }
+            }
+        });
     }
 
     function closePondTransferModal() {
