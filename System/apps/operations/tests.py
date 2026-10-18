@@ -152,26 +152,27 @@ class PondOperationalTest(TestCase):
         self.assertEqual(breeding_pond.capacity, 19)
 
         self.client.login(username='pondowner', password='password123')
+        # Transfer 2 units (2 * 250 = 500 Crilings)
         response = self.client.post('/operations/pond/transfer/', {
             'source_pond_id': breeding_pond.id,
             'destination_pond_id': main_pond.id,
             'target_product': '2',
-            'transfer_quantity': '120',
+            'transfer_quantity': '2',
         })
         self.assertEqual(response.status_code, 302)
 
         breeding_pond.refresh_from_db()
         main_pond.refresh_from_db()
 
-        self.assertEqual(breeding_pond.crilings_count, 4630)
+        self.assertEqual(breeding_pond.crilings_count, 4250)
         self.assertEqual(breeding_pond.capacity, 19)
-        self.assertEqual(main_pond.capacity, 150)
+        self.assertEqual(main_pond.capacity, 530)
 
         # Deduct Product 1: Product 2 must NOT be deducted
         breeding_pond.deduct_stock(5, product_name='Breeder Crayfish')
         breeding_pond.refresh_from_db()
         self.assertEqual(breeding_pond.capacity, 14)
-        self.assertEqual(breeding_pond.crilings_count, 4630)
+        self.assertEqual(breeding_pond.crilings_count, 4250)
 
     def test_deduct_product_1_does_not_deduct_product_2(self):
         """Verify that deducting Product 1 (Breeder Crayfish) does NOT deduct Product 2 (Crilings)."""
@@ -251,7 +252,7 @@ class PondOperationalTest(TestCase):
             location='Main Pond',
             size=Decimal('100.00'),
             depth=Decimal('1.50'),
-            capacity=1900,
+            capacity=1750,
             product_name='Crayfish',
             status=Pond.Status.ACTIVE
         )
@@ -269,12 +270,12 @@ class PondOperationalTest(TestCase):
         )
         self.client.login(username='pondowner', password='password123')
 
-        # Attempt to transfer 150 into 1900 -> total 2050 > 2000 (must be blocked)
+        # Attempt to transfer 2 units (2 * 250 = 500) into 1750 -> total 2250 > 2000 (must be blocked)
         response = self.client.post('/operations/pond/transfer/', {
             'source_pond_id': breeding_pond.id,
             'destination_pond_id': main_pond.id,
             'target_product': '2',
-            'transfer_quantity': '150',
+            'transfer_quantity': '2',
         }, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -282,15 +283,15 @@ class PondOperationalTest(TestCase):
         breeding_pond.refresh_from_db()
 
         # Verify quantities did NOT change
-        self.assertEqual(main_pond.capacity, 1900)
+        self.assertEqual(main_pond.capacity, 1750)
         self.assertEqual(breeding_pond.crilings_count, 500)
 
-        # Now transfer 100 into 1900 -> total 2000 == 2000 (must succeed)
+        # Now transfer 1 unit (1 * 250 = 250) into 1750 -> total 2000 == 2000 (must succeed)
         response_ok = self.client.post('/operations/pond/transfer/', {
             'source_pond_id': breeding_pond.id,
             'destination_pond_id': main_pond.id,
             'target_product': '2',
-            'transfer_quantity': '100',
+            'transfer_quantity': '1',
         }, follow=True)
 
         self.assertEqual(response_ok.status_code, 200)
@@ -298,7 +299,44 @@ class PondOperationalTest(TestCase):
         breeding_pond.refresh_from_db()
 
         self.assertEqual(main_pond.capacity, 2000)
-        self.assertEqual(breeding_pond.crilings_count, 400)
+        self.assertEqual(breeding_pond.crilings_count, 250)
+
+    def test_breeding_pond_crilings_harvest_multiplier(self):
+        """Verify harvesting 1 unit of Product 2 (Crilings) credits 250 pcs to sales product inventory."""
+        from apps.sales.models import Product
+        sale_prod, _ = Product.objects.get_or_create(
+            name='Crilings',
+            defaults={'unit_price': Decimal('5.00'), 'quantity_kg': Decimal('0')}
+        )
+        initial_stock = sale_prod.quantity_kg or Decimal('0')
+
+        bp = Pond.objects.create(
+            farm=self.farm,
+            name='BREED-HARV-TEST',
+            location='Breeding Pond',
+            size=Decimal('100.00'),
+            depth=Decimal('1.20'),
+            capacity=10,
+            capacity_2=1000,
+            product_name='Breeder Crayfish',
+            product_name_2='Crilings',
+            status=Pond.Status.ACTIVE
+        )
+        self.client.login(username='pondowner', password='password123')
+
+        # Harvest 2 units of Product 2 -> credits 2 * 250 = 500 pcs to inventory
+        response = self.client.post(f'/harvest/pond/{bp.id}/harvest/', {
+            'target_product': '2',
+            'destination_product_id': sale_prod.id,
+            'harvest_quantity': '2',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        bp.refresh_from_db()
+        sale_prod.refresh_from_db()
+
+        self.assertEqual(bp.crilings_count, 500)
+        self.assertEqual(sale_prod.quantity_kg, initial_stock + Decimal('500'))
 
     def test_main_pond_2000_capacity_limit_on_form(self):
         from apps.operations.template_views import PondForm

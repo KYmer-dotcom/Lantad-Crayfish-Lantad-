@@ -342,7 +342,7 @@ def pond_harvest(request, pond_id):
     pond = get_object_or_404(accessible_ponds, id=pond_id)
     
     referer = request.META.get('HTTP_REFERER')
-    redirect_target = referer if referer else 'operations:pond_list'
+    redirect_target = referer if referer else 'operations:list'
     
     is_transfer = request.POST.get('is_transfer') == 'true' or request.POST.get('action_type') == 'transfer'
     
@@ -374,6 +374,8 @@ def pond_harvest(request, pond_id):
             except (ValueError, TypeError):
                 pass
     
+    is_product_2_crilings = (target_product == '2' and (pond.product_name_2 or pond.location == 'Breeding Pond'))
+
     def credit_to_inventory(stock_name, qty):
         if is_transfer or qty <= 0:
             return ""
@@ -384,13 +386,15 @@ def pond_harvest(request, pond_id):
             credited_items = []
             for item in allocations:
                 pid = item.get('product_id')
-                item_qty = Decimal(str(item.get('quantity', 0)))
-                if item_qty > 0:
+                item_qty_units = Decimal(str(item.get('quantity', 0)))
+                item_actual_qty = (item_qty_units * Decimal('250')) if is_product_2_crilings else item_qty_units
+                if item_actual_qty > 0:
                     prod = Product.objects.filter(id=pid, is_active=True).first()
                     if prod:
-                        prod.quantity_kg = (prod.quantity_kg or Decimal('0')) + item_qty
+                        prod.quantity_kg = (prod.quantity_kg or Decimal('0')) + item_actual_qty
                         prod.save(update_fields=['quantity_kg', 'updated_at'])
-                        credited_items.append(f"{prod.name} ({item_qty})")
+                        unit_str = f"{item_qty_units} unit(s) = {item_actual_qty} pcs" if is_product_2_crilings else f"{item_actual_qty}"
+                        credited_items.append(f"{prod.name} ({unit_str})")
             if credited_items:
                 return f" into {', '.join(credited_items)}"
         
@@ -400,46 +404,47 @@ def pond_harvest(request, pond_id):
         if not market_prod and stock_name:
             market_prod = Product.objects.filter(name=stock_name, is_active=True).first()
         if market_prod:
-            market_prod.quantity_kg = (market_prod.quantity_kg or Decimal('0')) + Decimal(str(qty))
+            actual_credit_qty = (Decimal(str(qty)) * Decimal('250')) if is_product_2_crilings else Decimal(str(qty))
+            market_prod.quantity_kg = (market_prod.quantity_kg or Decimal('0')) + actual_credit_qty
             market_prod.save(update_fields=['quantity_kg', 'updated_at'])
-            return f" into {market_prod.name}"
+            unit_str = f"{qty} unit(s) = {actual_credit_qty} pcs" if is_product_2_crilings else f"{qty}"
+            return f" into {market_prod.name} ({unit_str})"
         return ""
     
     # Determine harvested quantity
-    total_allocated_qty = 0
+    total_allocated_units = 0
     if allocations:
-        total_allocated_qty = sum(int(item.get('quantity', 0)) for item in allocations)
+        total_allocated_units = sum(int(item.get('quantity', 0)) for item in allocations)
         
-    if total_allocated_qty > 0:
-        harvested_qty = total_allocated_qty
+    if total_allocated_units > 0:
+        harvested_units = total_allocated_units
     elif request.POST.get('harvest_quantity'):
         try:
-            harvested_qty = int(request.POST.get('harvest_quantity'))
+            harvested_units = int(request.POST.get('harvest_quantity'))
         except (ValueError, TypeError):
-            harvested_qty = 0
+            harvested_units = 0
     elif target_product == '2':
-        harvested_qty = pond.crilings_count if pond.location == 'Breeding Pond' else (pond.capacity_2 or 0)
+        total_crilings = pond.crilings_count if pond.location == 'Breeding Pond' else (pond.capacity_2 or 0)
+        harvested_units = (total_crilings // 250) if is_product_2_crilings else total_crilings
     elif target_product == '1':
-        harvested_qty = pond.capacity or 0
+        harvested_units = pond.capacity or 0
     else:
-        harvested_qty = (pond.capacity or 0) + (pond.capacity_2 or 0)
+        harvested_units = (pond.capacity or 0) + (pond.capacity_2 or 0)
 
-    if harvested_qty <= 0:
+    if harvested_units <= 0:
         messages.error(request, "Please enter a valid harvest quantity greater than 0.")
         return redirect(redirect_target)
 
+    actual_harvested_qty = (harvested_units * 250) if is_product_2_crilings else harvested_units
+    harvested_qty = actual_harvested_qty
+    total_allocated_qty = (total_allocated_units * 250) if is_product_2_crilings else total_allocated_units
     prod_name = pond.product_name_2 if target_product == '2' else (pond.product_name or "Stock")
-    credited_label = credit_to_inventory(prod_name, harvested_qty)
+    credited_label = credit_to_inventory(prod_name, harvested_units)
     
     if target_product == '2' and (pond.product_name_2 or pond.location == 'Breeding Pond'):
-        if total_allocated_qty > 0:
-            if pond.location == 'Breeding Pond':
-                current_c = pond.crilings_count
-                pond.capacity_2 = max(0, current_c - total_allocated_qty)
-            else:
-                pond.capacity_2 = max(0, (pond.capacity_2 or 0) - total_allocated_qty)
-                if pond.capacity_2 == 0:
-                    pond.product_name_2 = ''
+        current_c = pond.crilings_count if pond.location == 'Breeding Pond' else (pond.capacity_2 or 0)
+        if actual_harvested_qty > 0 and actual_harvested_qty < current_c:
+            pond.capacity_2 = max(0, current_c - actual_harvested_qty)
         else:
             pond.capacity_2 = 0
             if pond.location != 'Breeding Pond':
@@ -458,7 +463,8 @@ def pond_harvest(request, pond_id):
             pond.status = Pond.Status.ACTIVE
             pond.save(update_fields=['product_name_2', 'capacity_2', 'status', 'updated_at'])
         
-        messages.success(request, f"Successfully {action_verb} {prod_name} (Qty: {harvested_qty}) from {pond_name}{credited_label}!")
+        msg_qty = f"{harvested_units} unit(s) ({actual_harvested_qty} pcs)" if is_product_2_crilings else f"Qty: {harvested_units}"
+        messages.success(request, f"Successfully {action_verb} {prod_name} ({msg_qty}) from {pond_name}{credited_label}!")
         return redirect(redirect_target)
         
     elif target_product == '1':

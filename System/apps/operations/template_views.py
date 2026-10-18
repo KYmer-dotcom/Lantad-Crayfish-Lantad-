@@ -910,51 +910,63 @@ def pond_transfer(request):
         return redirect(redirect_target)
         
     # Determine which product and available quantity
-    if target_product == '2' or source_pond.location == 'Breeding Pond':
+    is_product_2_crilings = (target_product == '2' or (source_pond.location == 'Breeding Pond' and target_product != '1'))
+    if is_product_2_crilings:
         prod_name = source_pond.product_name_2 or "Crilings"
         available_qty = source_pond.crilings_count
+        available_units = available_qty // 250
     else:
         prod_name = source_pond.product_name or "Stock"
         available_qty = source_pond.capacity or 0
+        available_units = available_qty
         
     try:
-        transfer_qty = int(transfer_qty_str) if transfer_qty_str else available_qty
+        input_qty = int(transfer_qty_str) if transfer_qty_str else (available_units if is_product_2_crilings else available_qty)
     except ValueError:
-        transfer_qty = available_qty
+        input_qty = available_units if is_product_2_crilings else available_qty
         
-    if transfer_qty <= 0:
+    if input_qty <= 0:
         messages.error(request, "Transfer quantity must be greater than 0.")
         return redirect(redirect_target)
-        
-    if transfer_qty > available_qty:
-        messages.error(request, f"Cannot transfer {transfer_qty}. Only {available_qty} available in {source_pond.name}.")
-        return redirect(redirect_target)
+
+    if is_product_2_crilings:
+        transfer_units = input_qty
+        actual_transfer_qty = transfer_units * 250
+        if actual_transfer_qty > available_qty:
+            messages.error(request, f"Cannot transfer {transfer_units} unit(s) ({actual_transfer_qty} pcs). Only {available_qty} Crilings available in {source_pond.name}.")
+            return redirect(redirect_target)
+    else:
+        transfer_units = input_qty
+        actual_transfer_qty = input_qty
+        if actual_transfer_qty > available_qty:
+            messages.error(request, f"Cannot transfer {actual_transfer_qty}. Only {available_qty} available in {source_pond.name}.")
+            return redirect(redirect_target)
         
     # Check destination capacity limit for Main Pond (strictly 2,000 maximum)
     if dest_pond.location == 'Main Pond':
         dest_capacity = dest_pond.capacity or 0
-        if dest_capacity + transfer_qty > 2000:
+        if dest_capacity + actual_transfer_qty > 2000:
             remaining_space = max(0, 2000 - dest_capacity)
+            unit_info = f" ({transfer_units} unit(s) = {actual_transfer_qty} pcs)" if is_product_2_crilings else ""
             messages.error(
                 request,
-                f"Cannot transfer {transfer_qty}. Destination {dest_pond.name} maximum capacity is 2,000 (currently {dest_capacity}, space remaining: {remaining_space})."
+                f"Cannot transfer{unit_info}. Destination {dest_pond.name} maximum capacity is 2,000 (currently {dest_capacity}, space remaining: {remaining_space})."
             )
             return redirect(redirect_target)
 
-        
     # Deduct from source pond
-    if target_product == '2' or source_pond.location == 'Breeding Pond':
+    if is_product_2_crilings:
         current_crilings = source_pond.crilings_count
-        new_crilings = max(0, current_crilings - transfer_qty)
+        new_crilings = max(0, current_crilings - actual_transfer_qty)
         source_pond.capacity_2 = new_crilings
         if not source_pond.product_name_2:
             source_pond.product_name_2 = 'Crilings'
         source_pond.save(update_fields=['capacity_2', 'product_name_2', 'updated_at'])
     else:
         if source_pond.transfer_batches.exists():
-            source_pond.deduct_stock(transfer_qty)
+            source_pond.deduct_stock(actual_transfer_qty)
         else:
-            source_pond.capacity -= transfer_qty
+            source_pond.capacity -= actual_transfer_qty
             if source_pond.capacity <= 0:
                 if source_pond.product_name_2 and source_pond.capacity_2:
                     source_pond.product_name = source_pond.product_name_2
@@ -970,17 +982,15 @@ def pond_transfer(request):
     transfer_date_today = timezone.localdate() if hasattr(timezone, 'localdate') else timezone.now().date()
     
     if dest_pond.location == 'Breeding Pond':
-        # Main Pond stock transferred into Breeding Pond becomes Product 1 (Breeder Crayfish)
         dest_prod_name = 'Breeder Crayfish'
         dest_pond.product_name = dest_prod_name
-        dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
+        dest_pond.capacity = (dest_pond.capacity or 0) + actual_transfer_qty
         dest_pond.status = Pond.Status.ACTIVE
         dest_pond.transfer_date = transfer_date_today
         dest_pond.save()
     else:
         # Stock transferred into Main Pond
         dest_prod_name = 'Crayfish'
-        # If dest_pond already had previous stock without batch tracking, preserve initial batch
         if not dest_pond.transfer_batches.exists() and (dest_pond.capacity or 0) > 0 and dest_pond.transfer_date:
             PondTransferBatch.objects.create(
                 pond=dest_pond,
@@ -992,7 +1002,7 @@ def pond_transfer(request):
 
         # Add to destination Main Pond
         dest_pond.product_name = dest_prod_name
-        dest_pond.capacity = (dest_pond.capacity or 0) + transfer_qty
+        dest_pond.capacity = (dest_pond.capacity or 0) + actual_transfer_qty
         dest_pond.status = Pond.Status.ACTIVE
         dest_pond.transfer_date = transfer_date_today
         dest_pond.save()
@@ -1002,7 +1012,7 @@ def pond_transfer(request):
             pond=dest_pond,
             source_pond=source_pond,
             product_name=dest_prod_name,
-            quantity=transfer_qty,
+            quantity=actual_transfer_qty,
             transfer_date=transfer_date_today,
             transferred_by=request.user,
             notes=f"Transferred from {source_pond.name}"
@@ -1011,19 +1021,21 @@ def pond_transfer(request):
     # Audit log if available
     try:
         from apps.sales.models import InputLog
+        qty_desc = f"{transfer_units} unit(s) ({actual_transfer_qty} pcs)" if is_product_2_crilings else f"{actual_transfer_qty} pcs"
         InputLog.log(
             user=request.user,
             module='Operations',
             action='transferred',
             target_entity=f"{source_pond.name} -> {dest_pond.name}",
-            change_details=f"Transferred {transfer_qty} {prod_name} from {source_pond.name} to {dest_pond.name}."
+            change_details=f"Transferred {qty_desc} {prod_name} from {source_pond.name} to {dest_pond.name}."
         )
     except Exception:
         pass
     
+    qty_msg = f"{transfer_units} unit(s) ({actual_transfer_qty} Crilings)" if is_product_2_crilings else f"{actual_transfer_qty} {prod_name}"
     messages.success(
         request, 
-        f"Successfully transferred {transfer_qty} {prod_name} from {source_pond.name} to {dest_pond.name}!"
+        f"Successfully transferred {qty_msg} from {source_pond.name} to {dest_pond.name}!"
     )
     return redirect(redirect_target)
 
