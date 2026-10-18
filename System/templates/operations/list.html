@@ -591,13 +591,10 @@
 
 <!-- Mortality Sidebar (Half-Screen Slide-Over) -->
 <div id="mortality-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
-    <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+    <div class="flex items-center justify-between p-6 min-h-[94px] border-b border-white/10 bg-black/20">
         <div>
-            <h2 id="mortality-sidebar-title" class="text-xl font-bold text-stone-100 flex items-center gap-2">
-                <span class="inline-block h-2.5 w-2.5 rounded-full bg-red-500"></span>
-                <span>Breeding Pond Mortality</span>
-            </h2>
-            <p id="mortality-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Daily mortality tracking for Product 1 (Breeder Crayfish) · Records once a day</p>
+            <h2 id="mortality-sidebar-title" class="text-xl font-bold text-stone-100">Breeding Pond Mortality</h2>
+            <p id="mortality-sidebar-subtitle" class="hidden"></p>
         </div>
         <button type="button" onclick="closeMortalitySidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer text-xl font-bold p-1 rounded-lg hover:bg-white/5">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1578,11 +1575,10 @@
         const subtitleEl = document.getElementById('mortality-sidebar-subtitle');
         if (category) {
             if (titleEl) {
-                titleEl.innerHTML = `<span class="inline-block h-2.5 w-2.5 rounded-full bg-red-500"></span><span>${category} Mortality</span>`;
+                titleEl.textContent = `${category} Mortality`;
             }
             if (subtitleEl) {
-                const prodName = category === 'Breeding Pond' ? 'Breeder Crayfish' : 'Crayfish';
-                subtitleEl.textContent = `Daily mortality tracking for ${prodName} · Records once a day`;
+                subtitleEl.textContent = "";
             }
             document.querySelectorAll('.mortality-table-wrapper').forEach(wrapper => {
                 if (wrapper.dataset.category === category) {
