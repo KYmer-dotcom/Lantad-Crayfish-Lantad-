@@ -1257,17 +1257,16 @@
             }
 
             if (hintEl) {
-                hintEl.classList.remove('hidden');
                 if (remainingSpace <= 0 || (isCrilings && remainingSpace < 250)) {
+                    hintEl.classList.remove('hidden');
                     hintEl.textContent = isCrilings 
                         ? `This Main Pond has ${remainingSpace} pcs space remaining (less than 1 unit / 250 pcs). Please select another pond.`
                         : 'This Main Pond has reached its maximum capacity limit of 2,000. Please select another pond.';
                     hintEl.className = 'mt-1.5 text-xs text-rose-400 font-bold';
                     if (confirmBtn) confirmBtn.disabled = true;
                 } else {
-                    const extra = isCrilings ? ` - space for up to ${Math.floor(remainingSpace / 250)} units` : '';
-                    hintEl.textContent = `Main Pond Capacity Limit: 2,000 (Current: ${destCap}, Space available: ${remainingSpace}${extra})`;
-                    hintEl.className = 'mt-1.5 text-xs text-[#cca43b]';
+                    hintEl.classList.add('hidden');
+                    hintEl.textContent = '';
                     if (confirmBtn) confirmBtn.disabled = false;
                 }
             }
