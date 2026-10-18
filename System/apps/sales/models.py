@@ -233,18 +233,30 @@ class SalesOrder(SoftDeleteModel):
 
     @property
     def product_types_count(self):
+        if hasattr(self, '_product_types_count'):
+            return self._product_types_count
         items = getattr(self, 'ordered_items', None)
         if items:
             names = {item.product.name.strip().lower() for item in items if item.product and item.product.name}
             return len(names) or 1
         return 1 if self.product_id else 0
 
+    @product_types_count.setter
+    def product_types_count(self, value):
+        self._product_types_count = value
+
     @property
     def order_total_amount(self):
+        if hasattr(self, '_order_total_amount'):
+            return self._order_total_amount
         items = getattr(self, 'ordered_items', None)
         if items:
             return sum((item.total_amount for item in items), Decimal('0'))
         return self.total_amount
+
+    @order_total_amount.setter
+    def order_total_amount(self, value):
+        self._order_total_amount = value
     
     def save(self, *args, **kwargs):
         if not self.order_date:
