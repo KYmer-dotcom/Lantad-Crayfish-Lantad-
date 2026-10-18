@@ -616,7 +616,7 @@
                     </button>
                     {% endif %}
                     <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
-                        Record
+                        Record All
                     </button>
                 </div>
             </div>
@@ -638,7 +638,7 @@
                     </button>
                     {% endif %}
                     <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
-                        Record
+                        Record All
                     </button>
                 </div>
             </div>
@@ -1598,6 +1598,64 @@
     function closeMortalitySidebar() {
         const el = document.getElementById('mortality-sidebar');
         if (el) el.classList.add('translate-x-full');
+    }
+
+    function submitSingleMortalityOperation(button) {
+        const row = button.closest('.mortality-entry-row');
+        if (!row) return;
+
+        const pondId = row.getAttribute('data-pond-id');
+        const productName = row.getAttribute('data-product-name') || 'Breeder Crayfish';
+        const pondName = row.querySelector('.font-bold')?.textContent?.trim() || `Pond ${pondId}`;
+        const reasonInput = row.querySelector('.mortality-reason-input');
+        const qtyInput = row.querySelector('.mortality-qty-input');
+
+        const reason = reasonInput ? reasonInput.value.trim() : '';
+        const qty = qtyInput ? (parseInt(qtyInput.value) || 0) : 0;
+
+        if (!pondId) return;
+
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span>...</span>';
+        button.disabled = true;
+
+        fetch("{% url 'operations:record_mortality' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                logs: [{
+                    pond_id: parseInt(pondId),
+                    product_name: productName,
+                    quantity: qty,
+                    reason: reason
+                }]
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to record mortality.');
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast(`${pondName} mortality recorded!`, 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 800);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            showToast('Error: ' + error.message, 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
     }
 
     function submitMortalityOperations(button) {

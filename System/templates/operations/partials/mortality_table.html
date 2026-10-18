@@ -1,10 +1,11 @@
 <table class="w-full text-left text-xs text-stone-100">
     <thead class="bg-black/40 text-[10px] uppercase font-bold text-[#a0ac96] border-b border-white/10">
         <tr>
-            <th class="px-4 py-3 min-w-[140px]">Pond</th>
+            <th class="px-4 py-3 min-w-[130px]">Pond</th>
             <th class="px-4 py-3 min-w-[110px]">{{ stock_header|default:"Available Stock" }}</th>
-            <th class="px-4 py-3 min-w-[240px]">Reason On How It / They Died</th>
-            <th class="px-4 py-3 text-right min-w-[130px]">Quantity Died</th>
+            <th class="px-4 py-3 min-w-[220px]">Reason On How It / They Died</th>
+            <th class="px-4 py-3 text-right min-w-[120px]">Quantity Died</th>
+            <th class="px-4 py-3 text-right min-w-[90px]">Action</th>
         </tr>
     </thead>
     <tbody class="divide-y divide-white/5">
@@ -34,16 +35,23 @@
                     <input type="number" 
                            min="0" 
                            max="{{ pond.capacity|default:0 }}" 
-                           class="mortality-qty-input w-24 rounded-lg border border-white/10 bg-black/50 px-2.5 py-2 text-xs text-right font-bold font-mono text-red-400 focus:border-red-500 focus:outline-none transition-colors" 
+                           class="mortality-qty-input w-20 rounded-lg border border-white/10 bg-black/50 px-2 py-2 text-xs text-right font-bold font-mono text-red-400 focus:border-red-500 focus:outline-none transition-colors" 
                            placeholder="0"
                            value="{{ pond.today_mortality_log.quantity|default:0 }}">
                     <span class="text-xs text-[#a0ac96] font-mono">pcs</span>
                 </div>
             </td>
+            <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
+                <button type="button" 
+                        onclick="submitSingleMortalityOperation(this)" 
+                        class="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                    Record
+                </button>
+            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96]">No ponds found.</td>
+            <td colspan="5" class="px-6 py-8 text-center text-[#a0ac96]">No ponds found.</td>
         </tr>
         {% endfor %}
     </tbody>
