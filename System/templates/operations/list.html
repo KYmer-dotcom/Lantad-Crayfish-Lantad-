@@ -518,10 +518,10 @@
 
 <!-- Harvest Sidebar (Half-Screen Slide-Over) -->
 <div id="harvest-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
-    <div class="flex items-center justify-between p-6 border-b border-white/10">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <div>
-            <h2 id="harvest-sidebar-title" class="text-xl font-bold text-stone-100">Harvest Data</h2>
-            <p id="harvest-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Detailed harvest metrics and actions</p>
+            <h2 id="harvest-sidebar-title" class="text-lg font-bold text-stone-100">Harvest Data</h2>
+            <p id="harvest-sidebar-subtitle" class="hidden"></p>
         </div>
         <button type="button" onclick="closeHarvestSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer text-xl font-bold">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1512,7 +1512,7 @@
         const titleEl = document.getElementById('harvest-sidebar-title');
         const subtitleEl = document.getElementById('harvest-sidebar-subtitle');
         if (titleEl) titleEl.textContent = title;
-        if (subtitleEl) subtitleEl.textContent = category === 'Breeding Pond' ? "Crilings transfer staging and actions to Main Pond" : "Transfer staging and actions";
+        if (subtitleEl) subtitleEl.textContent = "";
 
         let targetCategory = (category === 'Breeding Pond' || category === 'Main Pond') ? (category + " Transfer") : category;
 
@@ -1535,7 +1535,7 @@
         const titleEl = document.getElementById('harvest-sidebar-title');
         const subtitleEl = document.getElementById('harvest-sidebar-subtitle');
         if (titleEl) titleEl.textContent = title;
-        if (subtitleEl) subtitleEl.textContent = "Production status, cycles, and harvest actions";
+        if (subtitleEl) subtitleEl.textContent = "";
 
         let targetCategory = (category === 'Breeding Pond' || category === 'Main Pond') ? (category + " Harvest") : category;
 
