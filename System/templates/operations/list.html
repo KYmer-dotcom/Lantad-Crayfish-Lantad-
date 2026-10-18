@@ -608,7 +608,6 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Breeding Pond Operations</h3>
-                    <p class="text-xs text-[#a0ac96] mt-0.5">Select a pond row to enter cause of death and quantity</p>
                 </div>
                 <div class="flex items-center gap-2">
                     {% if breeding_pond_mortality_recorded_today %}
@@ -621,7 +620,7 @@
                     </button>
                 </div>
             </div>
-            <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
+            <div class="rounded-xl border border-white/10 bg-black/20 overflow-x-auto shadow-inner">
                 {% include "operations/partials/mortality_table.html" with mortality_ponds=breeding_ponds stock_header="Breeder Stock" default_product="Breeder Crayfish" %}
             </div>
         </div>
@@ -631,7 +630,6 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Main Pond Operations</h3>
-                    <p class="text-xs text-[#a0ac96] mt-0.5">Select a pond row to enter cause of death and quantity</p>
                 </div>
                 <div class="flex items-center gap-2">
                     {% if main_pond_mortality_recorded_today %}
@@ -644,7 +642,7 @@
                     </button>
                 </div>
             </div>
-            <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
+            <div class="rounded-xl border border-white/10 bg-black/20 overflow-x-auto shadow-inner">
                 {% include "operations/partials/mortality_table.html" with mortality_ponds=main_ponds stock_header="Crayfish Stock" default_product="Crayfish" %}
             </div>
         </div>
@@ -1600,23 +1598,6 @@
     function closeMortalitySidebar() {
         const el = document.getElementById('mortality-sidebar');
         if (el) el.classList.add('translate-x-full');
-    }
-
-    function toggleMortalityPondRow(row) {
-        const detailRow = row.nextElementSibling;
-        if (!detailRow || !detailRow.classList.contains('mortality-detail-row')) return;
-        
-        const isCurrentlyHidden = detailRow.classList.contains('hidden');
-        detailRow.classList.toggle('hidden');
-        
-        const chevron = row.querySelector('.mortality-chevron');
-        if (isCurrentlyHidden) {
-            row.classList.add('bg-white/[0.06]');
-            if (chevron) chevron.classList.add('rotate-180');
-        } else {
-            row.classList.remove('bg-white/[0.06]');
-            if (chevron) chevron.classList.remove('rotate-180');
-        }
     }
 
     function submitMortalityOperations(button) {
