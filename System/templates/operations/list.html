@@ -613,9 +613,16 @@
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Breeding Pond Operations</h3>
                     <p class="text-xs text-[#a0ac96] mt-0.5">Select a pond row to enter cause of death and quantity</p>
                 </div>
-                <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
-                    Record
-                </button>
+                <div class="flex items-center gap-2">
+                    {% if breeding_pond_mortality_recorded_today %}
+                    <button type="button" onclick="resetTodayMortality('Breeding Pond', this)" class="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer shadow-sm">
+                        Reset Today
+                    </button>
+                    {% endif %}
+                    <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                        Record
+                    </button>
+                </div>
             </div>
             <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
                 {% include "operations/partials/mortality_table.html" with mortality_ponds=breeding_ponds stock_header="Breeder Stock" default_product="Breeder Crayfish" %}
@@ -629,9 +636,16 @@
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Main Pond Operations</h3>
                     <p class="text-xs text-[#a0ac96] mt-0.5">Select a pond row to enter cause of death and quantity</p>
                 </div>
-                <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
-                    Record
-                </button>
+                <div class="flex items-center gap-2">
+                    {% if main_pond_mortality_recorded_today %}
+                    <button type="button" onclick="resetTodayMortality('Main Pond', this)" class="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer shadow-sm">
+                        Reset Today
+                    </button>
+                    {% endif %}
+                    <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                        Record
+                    </button>
+                </div>
             </div>
             <div class="rounded-xl border border-white/10 bg-black/20 overflow-hidden shadow-inner">
                 {% include "operations/partials/mortality_table.html" with mortality_ponds=main_ponds stock_header="Crayfish Stock" default_product="Crayfish" %}
@@ -1674,6 +1688,46 @@
         })
         .catch(error => {
             showToast('Error recording mortality: ' + error.message, 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function resetTodayMortality(category, button) {
+        if (!confirm(`Are you sure you want to reset today's mortality records for ${category}? This will restore deducted pond capacities and set pond status back to Pending.`)) {
+            return;
+        }
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span>Resetting...</span>';
+        button.disabled = true;
+
+        fetch("{% url 'operations:reset_mortality' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ category: category })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to reset mortality.');
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                showToast("Today's mortality records reset successfully!", 'success');
+                setTimeout(() => {
+                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(err => {
+            showToast('Error resetting mortality: ' + err.message, 'error');
             button.innerHTML = originalText;
             button.disabled = false;
         });

@@ -324,6 +324,123 @@ class PondOperationalTest(TestCase):
         }, user=self.owner)
         self.assertTrue(form_valid.is_valid())
 
+    def test_mortality_daily_reset_and_status(self):
+        """Test that past mortality records (e.g. 3 days ago) do not show as recorded today."""
+        from django.utils import timezone
+        from django.db.models import Q
+        import datetime
+        from apps.operations.models import PondMortalityLog
+
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='BREEDING-MORT-RESET',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            location='Breeding Pond',
+            capacity=20,
+            status=Pond.Status.ACTIVE
+        )
+
+        three_days_ago = timezone.now() - datetime.timedelta(days=3)
+        past_date = three_days_ago.date()
+
+        log = PondMortalityLog.objects.create(
+            pond=pond,
+            product_name='Breeder Crayfish',
+            quantity=4,
+            reason='thirsty',
+            date=past_date
+        )
+        PondMortalityLog.objects.filter(id=log.id).update(recorded_at=three_days_ago, date=past_date)
+
+        today = timezone.localdate()
+        today_match = PondMortalityLog.objects.filter(pond=pond).filter(
+            Q(date=today) | Q(recorded_at__date=today)
+        ).first()
+
+        self.assertIsNone(today_match)
+
+    def test_record_and_reset_mortality_view(self):
+        """Test record_mortality view deducts stock and reset_mortality view restores it."""
+        import json
+        from django.test import RequestFactory
+        from apps.operations.template_views import record_mortality, reset_mortality
+        from apps.operations.models import PondMortalityLog
+
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='BREEDING-MORT-TEST',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            location='Breeding Pond',
+            capacity=20,
+            status=Pond.Status.ACTIVE
+        )
+
+        rf = RequestFactory()
+        
+        # 1. Record mortality
+        payload = {
+            'logs': [
+                {
+                    'pond_id': pond.id,
+                    'product_name': 'Breeder Crayfish',
+                    'quantity': 5,
+                    'reason': 'water quality'
+                }
+            ]
+        }
+        req = rf.post('/operations/record-mortality/', data=json.dumps(payload), content_type='application/json')
+        req.user = self.owner
+        resp = record_mortality(req)
+        self.assertEqual(resp.status_code, 200)
+
+        pond.refresh_from_db()
+        self.assertEqual(pond.capacity, 15)
+        self.assertTrue(PondMortalityLog.objects.filter(pond=pond).exists())
+
+        # 2. Reset mortality
+        reset_req = rf.post('/operations/reset-mortality/', data=json.dumps({'category': 'Breeding Pond'}), content_type='application/json')
+        reset_req.user = self.owner
+        reset_resp = reset_mortality(reset_req)
+        self.assertEqual(reset_resp.status_code, 200)
+
+        pond.refresh_from_db()
+        self.assertEqual(pond.capacity, 20)
+        self.assertFalse(PondMortalityLog.objects.filter(pond=pond).exists())
+
+    def test_clear_today_mortality_management_command(self):
+        """Test clear_today_mortality management command clears logs and restores stock."""
+        from django.core.management import call_command
+        from apps.operations.models import PondMortalityLog
+
+        pond = Pond.objects.create(
+            farm=self.farm,
+            name='MAIN-MORT-CMD',
+            size=Decimal('100.00'),
+            depth=Decimal('1.50'),
+            location='Main Pond',
+            capacity=1000,
+            status=Pond.Status.ACTIVE
+        )
+
+        pond.deduct_stock(25)
+        self.assertEqual(pond.capacity, 975)
+
+        PondMortalityLog.objects.create(
+            pond=pond,
+            product_name='Crayfish',
+            quantity=25,
+            reason='cannibalism'
+        )
+
+        call_command('clear_today_mortality')
+
+        pond.refresh_from_db()
+        self.assertEqual(pond.capacity, 1000)
+        self.assertEqual(PondMortalityLog.objects.filter(pond=pond).count(), 0)
+
+
 
 
 

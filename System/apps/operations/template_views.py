@@ -249,7 +249,7 @@ def ponds_list(request):
     farms = get_accessible_farms(request.user)
     ponds = get_accessible_ponds(request.user).select_related('farm').prefetch_related('species')
     from django.utils import timezone
-    today = timezone.now().date()
+    today = timezone.localdate()
     today_logs_qs = PondFeedingLog.objects.filter(recorded_at__date=today, feed_type__isnull=False, fed=True).select_related('feed_type')
     today_logs = {log.pond_id: log for log in today_logs_qs}
     today_product_logs = {(log.pond_id, log.product_name): log for log in today_logs_qs}
@@ -313,18 +313,18 @@ def ponds_list(request):
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
     )
     main_pond_mortality_recorded_today = len(main_ponds) > 0 and all(
-        PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
+        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).exists() for p in main_ponds
     )
     for p in main_ponds:
-        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).first()
+        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).first()
     breeding_pond_recorded_today = len(breeding_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
     )
     breeding_pond_mortality_recorded_today = len(breeding_ponds) > 0 and all(
-        PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
+        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).exists() for p in breeding_ponds
     )
     for p in breeding_ponds:
-        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p, recorded_at__date=today).first()
+        p.today_mortality_log = PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).first()
     superworm_cabin_recorded_today = superworm_ponds.exists() and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in superworm_ponds
     )
@@ -1034,7 +1034,8 @@ def record_mortality(request):
     """Save pond mortality logs and deduct dead stock from pond capacity"""
     try:
         from django.utils import timezone
-        today = timezone.now().date()
+        from django.db.models import Q
+        today = timezone.localdate()
         
         data = json.loads(request.body)
         logs = data.get('logs', [])
@@ -1048,7 +1049,9 @@ def record_mortality(request):
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
             product_name = (log.get('product_name') or pond.product_name or ('Breeder Crayfish' if pond.location == 'Breeding Pond' else 'Crayfish')).strip()
 
-            existing_log = PondMortalityLog.objects.filter(pond=pond, product_name=product_name, recorded_at__date=today).first()
+            existing_log = PondMortalityLog.objects.filter(pond=pond, product_name=product_name).filter(
+                Q(date=today) | Q(recorded_at__date=today)
+            ).first()
             if existing_log:
                 # If updating, restore previously deducted quantity before applying new deduction
                 if existing_log.quantity > 0:
@@ -1064,6 +1067,10 @@ def record_mortality(request):
                             pond.capacity = (pond.capacity or 0) + existing_log.quantity
                             pond.status = Pond.Status.ACTIVE
                             pond.save(update_fields=['capacity', 'status', 'updated_at'])
+                    elif pond.location == 'Breeding Pond' and 'criling' in product_name.lower():
+                        pond.capacity_2 = (pond.capacity_2 or 0) + existing_log.quantity
+                        pond.status = Pond.Status.ACTIVE
+                        pond.save(update_fields=['capacity_2', 'status', 'updated_at'])
                     else:
                         pond.capacity = (pond.capacity or 0) + existing_log.quantity
                         pond.status = Pond.Status.ACTIVE
@@ -1076,6 +1083,7 @@ def record_mortality(request):
                 existing_log.quantity = quantity
                 existing_log.reason = reason
                 existing_log.recorded_by = request.user
+                existing_log.date = today
                 existing_log.save()
             else:
                 # Deduct quantity from pond
@@ -1087,17 +1095,80 @@ def record_mortality(request):
                     product_name=product_name,
                     quantity=quantity,
                     reason=reason,
-                    recorded_by=request.user
+                    recorded_by=request.user,
+                    date=today
                 )
 
-            recorded_count += 1
-
-        messages.success(request, f"Successfully recorded mortality for {recorded_count} pond(s).")
+        try:
+            messages.success(request, f"Successfully recorded mortality for {recorded_count} pond(s).")
+        except Exception:
+            pass
         return JsonResponse({'status': 'success', 'recorded_count': recorded_count})
     except Exception as e:
         import traceback
         traceback.print_exc()
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+@require_POST
+def reset_mortality(request):
+    """Reset today's mortality logs and restore deducted pond stock back to pond/batches"""
+    try:
+        from django.utils import timezone
+        from django.db.models import Q
+        today = timezone.localdate()
+        utc_today = timezone.now().date()
+        
+        category = request.POST.get('category')
+        if not category and request.body:
+            try:
+                body_data = json.loads(request.body)
+                category = body_data.get('category')
+            except Exception:
+                pass
+
+        qs = PondMortalityLog.objects.filter(
+            Q(date=today) | Q(recorded_at__date=today) |
+            Q(date=utc_today) | Q(recorded_at__date=utc_today)
+        )
+        if category:
+            qs = qs.filter(pond__location=category)
+
+        restored_count = 0
+        for log in qs:
+            pond = log.pond
+            qty = log.quantity or 0
+            if qty > 0:
+                prod = (log.product_name or '').lower()
+                if pond.location == 'Main Pond' and pond.transfer_batches.exists():
+                    last_batch = pond.transfer_batches.order_by('-transfer_date', '-id').first()
+                    if last_batch:
+                        last_batch.quantity += qty
+                        last_batch.save(update_fields=['quantity'])
+                        pond.capacity = sum(b.quantity for b in pond.transfer_batches.all())
+                    else:
+                        pond.capacity = (pond.capacity or 0) + qty
+                elif pond.location == 'Breeding Pond' and 'criling' in prod:
+                    pond.capacity_2 = (pond.capacity_2 or 0) + qty
+                else:
+                    pond.capacity = (pond.capacity or 0) + qty
+
+                pond.status = Pond.Status.ACTIVE
+                pond.save()
+            restored_count += 1
+
+        qs.delete()
+        try:
+            messages.success(request, "Today's mortality records have been reset and stock restored.")
+        except Exception:
+            pass
+        return JsonResponse({'status': 'success', 'restored_count': restored_count})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 
 
 

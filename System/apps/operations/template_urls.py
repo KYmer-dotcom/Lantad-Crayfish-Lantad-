@@ -19,6 +19,7 @@ urlpatterns = [
     path('operations/', template_views.operations_data, name='operations_data'),
     path('operations/record/', template_views.record_operations, name='record_operations'),
     path('operations/record-mortality/', template_views.record_mortality, name='record_mortality'),
+    path('operations/reset-mortality/', template_views.reset_mortality, name='reset_mortality'),
     path('operations/azula-sanitize/', template_views.record_azula_sanitization, name='record_azula_sanitization'),
 ]
 
