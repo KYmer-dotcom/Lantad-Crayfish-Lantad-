@@ -748,7 +748,6 @@
                     <span class="text-[11px] text-[#a0ac96]">Max: <strong id="transfer-max-qty" class="text-[#cca43b]">-</strong></span>
                 </div>
                 <input type="number" name="transfer_quantity" id="transfer-quantity-input" required min="1" value="0" class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-stone-100 focus:border-[#cca43b] focus:outline-none" placeholder="0">
-                <p id="transfer-unit-calc-preview" class="mt-1.5 text-xs text-[#cca43b] hidden font-mono"></p>
             </div>
 
             <!-- Modal Action Buttons -->
@@ -1122,30 +1121,6 @@
         hideModal('harvest-pond-modal');
     }
 
-    function updateTransferCalcPreview() {
-        const destSelect = document.getElementById('transfer-destination-pond');
-        const qtyInput = document.getElementById('transfer-quantity-input');
-        const previewEl = document.getElementById('transfer-unit-calc-preview');
-        if (!qtyInput || !previewEl) return;
-        
-        const isCrilings = destSelect && destSelect.dataset.isCrilings === 'true';
-        if (!isCrilings) {
-            previewEl.classList.add('hidden');
-            previewEl.textContent = '';
-            return;
-        }
-        
-        const units = parseInt(qtyInput.value || '0', 10);
-        if (units > 0) {
-            const actualPcs = units * 250;
-            previewEl.classList.remove('hidden');
-            previewEl.textContent = `↳ ${units} unit(s) = ${actualPcs} Crilings transferred`;
-        } else {
-            previewEl.classList.add('hidden');
-            previewEl.textContent = '';
-        }
-    }
-
     function openPondTransferModal(pondId, pondName, targetProduct, productName, quantity, sourceLocation = '') {
         const sourceIdEl = document.getElementById('transfer-source-pond-id');
         const targetProdEl = document.getElementById('transfer-target-product');
@@ -1161,7 +1136,6 @@
         const mainGroup = document.getElementById('dest-group-main');
         const breedingGroup = document.getElementById('dest-group-breeding');
         const qtyLabelEl = document.getElementById('transfer-quantity-label');
-        const previewEl = document.getElementById('transfer-unit-calc-preview');
 
         if (sourceLocation === 'Main Pond') {
             if (modalTitleEl) modalTitleEl.textContent = 'Transfer to Breeding Pond';
@@ -1210,10 +1184,6 @@
             qtyInput.value = '0';
             qtyInput.max = availableUnits || '';
             qtyInput.placeholder = isCrilings ? 'Units (1 = 250 pcs)' : '0';
-        }
-        if (previewEl) {
-            previewEl.classList.add('hidden');
-            previewEl.textContent = '';
         }
         
         if (destSelect) {
@@ -1311,16 +1281,11 @@
             }
             if (confirmBtn) confirmBtn.disabled = false;
         }
-        updateTransferCalcPreview();
     }
 
     const transferDestSelect = document.getElementById('transfer-destination-pond');
     if (transferDestSelect) {
         transferDestSelect.addEventListener('change', syncTransferDestCapacity);
-    }
-    const transferQtyInput = document.getElementById('transfer-quantity-input');
-    if (transferQtyInput) {
-        transferQtyInput.addEventListener('input', updateTransferCalcPreview);
     }
     const transferPondForm = document.getElementById('transfer-pond-form');
     if (transferPondForm) {
