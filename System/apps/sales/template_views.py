@@ -244,12 +244,6 @@ def sales_list(request):
         payment_status=SalesOrder.PaymentStatus.PAID
     ).exclude(status=SalesOrder.Status.CANCELLED).order_by('-order_date', '-id')
 
-    total_orders = completed_paid_orders_qs.count()
-    total_revenue = completed_paid_orders_qs.aggregate(
-        total=Sum('total_amount')
-    )['total'] or Decimal('0')
-    pending_orders = SalesOrder.objects.filter(status=SalesOrder.Status.PENDING).count()
-
     completed_paid_orders = list(completed_paid_orders_qs)
     customer_ids = {o.customer_id for o in completed_paid_orders if o.customer_id}
     all_customer_orders = list(
@@ -258,7 +252,13 @@ def sales_list(request):
         .order_by('-order_date', '-created_at')
     )
 
+    seen_order_ids = set()
+    deduped_orders = []
+
     for o in completed_paid_orders:
+        if o.id in seen_order_ids:
+            continue
+
         siblings = []
         for other in all_customer_orders:
             if other.customer_id != o.customer_id:
@@ -283,21 +283,30 @@ def sales_list(request):
                 (o.delivery_address or '').strip().upper() == (other.delivery_address or '').strip().upper() and
                 o.order_date == other.order_date
             )
+            is_same_order_number = bool(o.order_number and other.order_number and o.order_number == other.order_number)
 
-            if has_same_session or is_same_time_batch:
+            if has_same_session or is_same_time_batch or is_same_order_number:
                 siblings.append(other)
 
         if not siblings:
             siblings = [o]
 
+        for s in siblings:
+            seen_order_ids.add(s.id)
+
         o.ordered_items = siblings
+        deduped_orders.append(o)
+
+    total_orders = len(deduped_orders)
+    total_revenue = sum((o.order_total_amount for o in deduped_orders), Decimal('0'))
+    pending_orders = SalesOrder.objects.filter(status=SalesOrder.Status.PENDING).count()
     
     # Filter to show only active Pickup orders
     pickup_orders = all_orders.filter(delivery_address__iexact='pickup').exclude(status__in=[SalesOrder.Status.COMPLETED, SalesOrder.Status.DELIVERED, SalesOrder.Status.CANCELLED])
     
     context = {
         'orders': pickup_orders,
-        'all_orders': completed_paid_orders,
+        'all_orders': deduped_orders,
         'products': products,
         'deliveries': deliveries,
         'customers': customers,
@@ -1254,8 +1263,9 @@ def customer_orders_page(request):
             prev_order = current_group['orders'][-1]
             time_diff = abs((prev_order.created_at - order_created).total_seconds()) if (prev_order.created_at and order_created) else 9999
 
-            # Group if within 300 seconds (5 min) of each other with matching status, payment status, and delivery address
-            if (time_diff <= 300 and 
+            is_same_order_number = bool(order.order_number and prev_order.order_number and order.order_number == prev_order.order_number)
+            # Group if matching order number, or within 300 seconds (5 min) with matching status/payment/address
+            if is_same_order_number or (time_diff <= 300 and 
                 order.status == prev_order.status and 
                 order.payment_status == prev_order.payment_status and 
                 (order.delivery_address or '').strip().upper() == (prev_order.delivery_address or '').strip().upper()):

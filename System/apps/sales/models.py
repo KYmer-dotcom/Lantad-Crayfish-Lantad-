@@ -6,6 +6,7 @@ Manages customers, sales orders, and delivery tracking.
 =============================================================================
 """
 
+from decimal import Decimal
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -58,7 +59,7 @@ class Customer(models.Model):
 
     @property
     def product_types_count(self):
-        return self.orders.values('product').distinct().count()
+        return self.orders.filter(product__isnull=False).values('product__name').distinct().count()
 
 
 class Product(SoftDeleteModel):
@@ -229,6 +230,21 @@ class SalesOrder(SoftDeleteModel):
         if '(Session #' in clean:
             clean = clean.split('(Session #')[0].strip()
         return clean or 'Cash'
+
+    @property
+    def product_types_count(self):
+        items = getattr(self, 'ordered_items', None)
+        if items:
+            names = {item.product.name.strip().lower() for item in items if item.product and item.product.name}
+            return len(names) or 1
+        return 1 if self.product_id else 0
+
+    @property
+    def order_total_amount(self):
+        items = getattr(self, 'ordered_items', None)
+        if items:
+            return sum((item.total_amount for item in items), Decimal('0'))
+        return self.total_amount
     
     def save(self, *args, **kwargs):
         if not self.order_date:
