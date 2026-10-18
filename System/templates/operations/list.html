@@ -353,10 +353,10 @@
 
 <!-- Operations Sidebar -->
 <div id="operations-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-5xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col">
-    <div class="flex items-center justify-between p-6 border-b border-white/10">
+    <div class="flex items-center justify-between p-6 min-h-[94px] border-b border-white/10">
         <div>
             <h2 id="operations-sidebar-title" class="text-xl font-bold text-stone-100">Operations Data</h2>
-            <p id="operations-sidebar-subtitle" class="text-sm text-[#a0ac96] mt-1">Detailed view of operational metrics</p>
+            <p id="operations-sidebar-subtitle" class="hidden"></p>
         </div>
         <button type="button" onclick="closeOperationsSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -518,9 +518,9 @@
 
 <!-- Harvest Sidebar (Half-Screen Slide-Over) -->
 <div id="harvest-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-white/10">
+    <div class="flex items-center justify-between p-6 min-h-[94px] border-b border-white/10">
         <div>
-            <h2 id="harvest-sidebar-title" class="text-lg font-bold text-stone-100">Harvest Data</h2>
+            <h2 id="harvest-sidebar-title" class="text-xl font-bold text-stone-100">Harvest Data</h2>
             <p id="harvest-sidebar-subtitle" class="hidden"></p>
         </div>
         <button type="button" onclick="closeHarvestSidebar()" class="text-[#a0ac96] hover:text-stone-100 transition-colors cursor-pointer text-xl font-bold">
@@ -1470,14 +1470,11 @@
         const subtitleEl = document.getElementById('operations-sidebar-subtitle');
         if (category === 'Azula') {
             title = "Azula Sanitization Protocol";
-            if (subtitleEl) subtitleEl.textContent = "15-day strict cycle · Accessible once cycle expires";
         } else if (category) {
             title = category + " Operations";
-            if (subtitleEl) subtitleEl.textContent = "Detailed view of operational metrics";
-        } else {
-            if (subtitleEl) subtitleEl.textContent = "Detailed view of operational metrics";
         }
         if (titleEl) titleEl.textContent = title;
+        if (subtitleEl) subtitleEl.textContent = "";
 
         if (category) {
             // Show only relevant category table wrapper
