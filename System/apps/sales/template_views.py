@@ -295,6 +295,9 @@ def sales_list(request):
             seen_order_ids.add(s.id)
 
         o.ordered_items = siblings
+        names = {item.product.name.strip().lower() for item in siblings if item.product and item.product.name}
+        o.product_types_count = len(names) or (1 if o.product_id else 0)
+        o.order_total_amount = sum((s.total_amount for s in siblings if s.total_amount), Decimal('0')) or o.total_amount
         deduped_orders.append(o)
 
     total_orders = len(deduped_orders)
