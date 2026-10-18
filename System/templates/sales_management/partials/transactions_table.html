@@ -64,11 +64,7 @@
                                     <tr>
                                         <th class="px-4 py-3 text-left font-bold text-white">Product</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Quantity</th>
-                                        <th class="px-4 py-3 text-left font-bold text-white">Total Amount</th>
-                                        <th class="px-4 py-3 text-left font-bold text-white">Order Date</th>
                                         <th class="px-4 py-3 text-left font-bold text-white">Delivery Address</th>
-                                        <th class="px-4 py-3 text-left font-bold text-white">Status</th>
-                                        <th class="px-4 py-3 text-left font-bold text-white">Payment Method</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-white/5 text-xs text-stone-300">
@@ -77,8 +73,6 @@
                                         <tr class="hover:bg-white/5 transition-colors">
                                             <td class="px-4 py-3 font-bold text-white">{{ item.product.name|default:"-" }}</td>
                                             <td class="px-4 py-3 font-bold text-[#cca43b]">{{ item.quantity_kg|floatformat:"-2" }} {% if '[KG]' in item.notes %}{{ item.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}</td>
-                                            <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ item.total_amount|floatformat:"-2" }}</td>
-                                            <td class="px-4 py-3 font-mono text-[#a0ac96]">{{ item.order_date|date:"M d, Y" }}</td>
                                             <td class="px-4 py-3 text-stone-300">
                                                 {% if item.delivery_address|upper == 'PICKUP' %}
                                                 <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 py-0.5 rounded-full">Pickup</span>
@@ -86,44 +80,22 @@
                                                 <span class="text-stone-300 font-medium">{{ item.delivery_address|default:"-" }}</span>
                                                 {% endif %}
                                             </td>
-                                            <td class="px-4 py-3 whitespace-nowrap">
-                                                <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1 {% if item.status == 'delivered' or item.status == 'completed' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif item.status == 'shipped' or item.status == 'processing' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 {% elif item.status == 'confirmed' %}bg-blue-500/15 text-blue-400 border-blue-500/30 {% elif item.status == 'cancelled' %}bg-rose-500/15 text-rose-400 border-rose-500/30 {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
-                                                    {{ item.get_status_display }}
-                                                </span>
-                                            </td>
-                                            <td class="px-4 py-3 text-stone-300">
-                                                <span class="px-2 py-0.5 inline-flex text-[10px] font-bold rounded-full bg-white/5 border border-white/10 text-stone-300 tracking-wide">
-                                                    {{ item.payment_method_display }}
-                                                </span>
-                                            </td>
                                         </tr>
                                         {% empty %}
                                         <tr>
-                                            <td colspan="7" class="px-4 py-6 text-center text-[#a0ac96]">No products recorded for this transaction.</td>
+                                            <td colspan="3" class="px-4 py-6 text-center text-[#a0ac96]">No products recorded for this transaction.</td>
                                         </tr>
                                         {% endfor %}
                                     {% else %}
                                         <tr class="hover:bg-white/5 transition-colors">
                                             <td class="px-4 py-3 font-bold text-white">{{ order.product.name|default:"-" }}</td>
                                             <td class="px-4 py-3 font-bold text-[#cca43b]">{{ order.quantity_kg|floatformat:"-2" }} {% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}</td>
-                                            <td class="px-4 py-3 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:"-2" }}</td>
-                                            <td class="px-4 py-3 font-mono text-[#a0ac96]">{{ order.order_date|date:"M d, Y" }}</td>
                                             <td class="px-4 py-3 text-stone-300">
                                                 {% if order.delivery_address|upper == 'PICKUP' %}
                                                 <span class="font-bold text-[#cca43b] uppercase tracking-wider text-[10px] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 py-0.5 rounded-full">Pickup</span>
                                                 {% else %}
                                                 <span class="text-stone-300 font-medium">{{ order.delivery_address|default:"-" }}</span>
                                                 {% endif %}
-                                            </td>
-                                            <td class="px-4 py-3 whitespace-nowrap">
-                                                <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-full uppercase tracking-wider border items-center gap-1 {% if order.status == 'delivered' or order.status == 'completed' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif order.status == 'shipped' or order.status == 'processing' %}bg-cyan-500/15 text-cyan-300 border-cyan-500/30 {% elif order.status == 'confirmed' %}bg-blue-500/15 text-blue-400 border-blue-500/30 {% elif order.status == 'cancelled' %}bg-rose-500/15 text-rose-400 border-rose-500/30 {% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
-                                                    {{ order.get_status_display }}
-                                                </span>
-                                            </td>
-                                            <td class="px-4 py-3 text-stone-300">
-                                                <span class="px-2 py-0.5 inline-flex text-[10px] font-bold rounded-full bg-white/5 border border-white/10 text-stone-300 tracking-wide">
-                                                    {{ order.payment_method_display }}
-                                                </span>
                                             </td>
                                         </tr>
                                     {% endif %}
