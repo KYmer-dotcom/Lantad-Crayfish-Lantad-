@@ -445,7 +445,13 @@ def analytics_dashboard(request):
         cust_addr = (o.customer.address if o.customer else '') or addr or 'N/A'
         amount = float(o.total_amount or 0)
         prod_name = o.product.name if o.product else 'Mixed Products'
-        qty_str = f"{o.quantity_kg} {o.product.bulk_unit_display}" if o.product else f"{o.quantity_kg} kg"
+        if o.quantity_kg is not None:
+            q_float = float(o.quantity_kg)
+            q_str = str(int(q_float)) if q_float % 1 == 0 else f"{q_float:.2f}".rstrip('0').rstrip('.')
+        else:
+            q_str = "0"
+        unit_str = o.product.bulk_unit_display if o.product else "kg"
+        qty_str = f"{q_str} {unit_str}"
 
         order_item = {
             'order_number': o.order_number,
