@@ -149,7 +149,7 @@
                         <div class="flex items-center justify-between text-xs font-bold mb-1.5">
                             <div class="flex items-center gap-2 min-w-0">
                                 <span class="text-white font-sans truncate group-hover:text-[#cca43b] transition-colors">
-                                    {% if 'Pickup' in loc.name %}🏬{% else %}📍{% endif %} {{ loc.name }}
+                                    {{ loc.name }}
                                 </span>
                                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/20 group-hover:text-[#cca43b] transition-colors font-mono shrink-0">
                                     {{ loc.customer_count }} customer{{ loc.customer_count|pluralize }}
@@ -546,7 +546,6 @@
         <div class="flex items-start justify-between border-b border-white/10 pb-4 mb-4">
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span id="loc-modal-icon" class="text-xl">📍</span>
                     <h3 id="loc-modal-title" class="text-xl font-black text-white tracking-tight">Location Details</h3>
                     <span id="loc-modal-type-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Delivery Destination</span>
                 </div>
@@ -1053,7 +1052,6 @@
         }
 
         const isPickup = locName.includes('Pickup');
-        const iconEl = document.getElementById('loc-modal-icon');
         const titleEl = document.getElementById('loc-modal-title');
         const badgeEl = document.getElementById('loc-modal-type-badge');
         const revEl = document.getElementById('loc-modal-revenue');
@@ -1062,7 +1060,6 @@
         const tabCustCount = document.getElementById('loc-tab-cust-count');
         const tabOrdCount = document.getElementById('loc-tab-ord-count');
 
-        if (iconEl) iconEl.textContent = isPickup ? '🏬' : '📍';
         if (titleEl) titleEl.textContent = locName;
         if (badgeEl) {
             badgeEl.textContent = isPickup ? 'Direct Pickup' : 'Delivery Destination';
@@ -1181,8 +1178,8 @@
                                     </span>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-3 mt-1 text-[11px] text-[#a0ac96] font-mono">
-                                    ${c.phone && c.phone !== 'N/A' ? `<span>📞 ${c.phone}</span>` : ''}
-                                    <span>📍 ${c.address}</span>
+                                    ${c.phone && c.phone !== 'N/A' ? `<span>${c.phone}</span>` : ''}
+                                    <span>${c.address}</span>
                                 </div>
                             </div>
                         </div>
