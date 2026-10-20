@@ -88,93 +88,7 @@
         </div>
     </div>
 
-    <!-- Sales by Date -->
-    <div data-report-group="receipts"
-        class="glass-card rounded-xl overflow-hidden flex flex-col">
-        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <div>
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Sales by Date</h3>
-            </div>
-            <span
-                class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Last
-                30 Days</span>
-        </div>
-        <div class="overflow-x-auto flex-grow">
-            <table class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Date</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] order-num-col">
-                            Order Number</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Customer</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Product</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Location</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Paid Date / Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Total Amount</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] no-print receipt-action-col">
-                            Show</th>
-                    </tr>
-                </thead>
-                <tbody id="sales-by-date-tbody" class="divide-y divide-white/5 bg-transparent">
-                    {% for order in sales_by_date %}
-                    {% with delivery=order.deliveries.first %}
-                    <tr onclick="openGeneratedReceiptModalFromRow(this)" class="hover:bg-white/[0.05] transition-colors duration-200 cursor-pointer"
-                        data-order-number="{{ order.order_number }}"
-                        data-delivery-id="{% if delivery %}{{ delivery.id }}{% else %}{{ order.id }}{% endif %}"
-                        data-order-date="{{ order.order_date|date:'F d, Y' }}"
-                        data-delivered-date="{% if delivery and delivery.delivered_date %}{{ delivery.delivered_date|date:'F d, Y' }}{% elif order.delivery_date %}{{ order.delivery_date|date:'F d, Y' }}{% elif order.status == 'completed' or order.status == 'delivered' %}{{ order.updated_at|date:'F d, Y' }}{% else %}{{ order.order_date|date:'F d, Y' }}{% endif %}"
-                        data-customer="{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}"
-                        data-phone="{% if order.customer and order.customer.phone %}{{ order.customer.phone }}{% else %}09452345235{% endif %}"
-                        data-address="{% if order.delivery_address %}{{ order.delivery_address }}{% elif order.customer and order.customer.address %}{{ order.customer.address }}{% else %}N/A{% endif %}"
-                        data-approver="{% if delivery and delivery.created_by and delivery.created_by.role == 'owner' %}{{ delivery.created_by.get_full_name|default:delivery.created_by.username }}{% elif order.created_by and order.created_by.role == 'owner' %}{{ order.created_by.get_full_name|default:order.created_by.username }}{% else %}Owner{% endif %}"
-                        data-approver-role="Owner Approved"
-                        data-rider="{% if delivery and delivery.rider %}{{ delivery.rider.name }}{% else %}Cris Ma-apni{% endif %}"
-                        data-rider-vehicle="{% if delivery and delivery.rider %}{{ delivery.rider.vehicle_type }} ({{ delivery.rider.plate_number|default:'ABC1234' }}){% else %}Motorcycle (ABC1234){% endif %}"
-                        data-product="{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
-                        data-price="{{ order.price_per_kg|default:0|floatformat:'-2' }}"
-                        data-discount="{{ order.discount|default:0|floatformat:'-2' }}"
-                        data-quantity="{{ order.quantity_kg|default:0|floatformat:'-2' }}"
-                        data-total="{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}"
-                        data-payment-status="{{ order.get_payment_status_display }}"
-                        data-is-paid="{% if order.payment_status == 'paid' %}true{% else %}false{% endif %}"
-                        data-receipt-image="{% if delivery and delivery.proof_of_delivery %}{{ delivery.proof_of_delivery.url }}{% elif order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:25 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:25 }}{% else %}PICKUP{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
-                            {% if order.payment_status == 'paid' %}
-                            <span class="text-emerald-400">Paid on {{ order.updated_at|date:"M d, Y" }}</span>
-                            {% elif order.payment_status == 'partial' %}
-                            <span class="text-amber-400">Partially Paid</span>
-                            {% else %}
-                            <span class="text-rose-400">Unpaid</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
-                            <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-lg text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
-                        </td>
-                    </tr>
-                    {% endwith %}
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-[#a0ac96]">
-                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected range</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+
 
     <!-- Recent Operations Log -->
     <div id="ops-log-card" data-report-group="operations"
@@ -436,6 +350,93 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Sales Ledger -->
+    <div data-report-group="sales receipts"
+        class="glass-card rounded-xl overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <div>
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Sales Ledger</h3>
+            </div>
+            <span
+                class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">{{ sales_by_date|length }} Orders</span>
+        </div>
+        <div class="overflow-x-auto flex-grow">
+            <table class="min-w-full divide-y divide-white/10">
+                <thead class="bg-white/[0.03]">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] order-num-col">
+                            Order Number</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Customer</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Product</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Location</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Paid Date / Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
+                            Total Amount</th>
+                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em] no-print receipt-action-col">
+                            Show</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-by-date-tbody" class="divide-y divide-white/5 bg-transparent">
+                    {% for order in sales_by_date %}
+                    {% with delivery=order.deliveries.first %}
+                    <tr onclick="openGeneratedReceiptModalFromRow(this)" class="hover:bg-white/[0.05] transition-colors duration-200 cursor-pointer"
+                        data-order-number="{{ order.order_number }}"
+                        data-delivery-id="{% if delivery %}{{ delivery.id }}{% else %}{{ order.id }}{% endif %}"
+                        data-order-date="{{ order.order_date|date:'F d, Y' }}"
+                        data-delivered-date="{% if delivery and delivery.delivered_date %}{{ delivery.delivered_date|date:'F d, Y' }}{% elif order.delivery_date %}{{ order.delivery_date|date:'F d, Y' }}{% elif order.status == 'completed' or order.status == 'delivered' %}{{ order.updated_at|date:'F d, Y' }}{% else %}{{ order.order_date|date:'F d, Y' }}{% endif %}"
+                        data-customer="{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}"
+                        data-phone="{% if order.customer and order.customer.phone %}{{ order.customer.phone }}{% else %}09452345235{% endif %}"
+                        data-address="{% if order.delivery_address %}{{ order.delivery_address }}{% elif order.customer and order.customer.address %}{{ order.customer.address }}{% else %}N/A{% endif %}"
+                        data-approver="{% if delivery and delivery.created_by and delivery.created_by.role == 'owner' %}{{ delivery.created_by.get_full_name|default:delivery.created_by.username }}{% elif order.created_by and order.created_by.role == 'owner' %}{{ order.created_by.get_full_name|default:order.created_by.username }}{% else %}Owner{% endif %}"
+                        data-approver-role="Owner Approved"
+                        data-rider="{% if delivery and delivery.rider %}{{ delivery.rider.name }}{% else %}Cris Ma-apni{% endif %}"
+                        data-rider-vehicle="{% if delivery and delivery.rider %}{{ delivery.rider.vehicle_type }} ({{ delivery.rider.plate_number|default:'ABC1234' }}){% else %}Motorcycle (ABC1234){% endif %}"
+                        data-product="{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
+                        data-price="{{ order.price_per_kg|default:0|floatformat:'-2' }}"
+                        data-discount="{{ order.discount|default:0|floatformat:'-2' }}"
+                        data-quantity="{{ order.quantity_kg|default:0|floatformat:'-2' }}"
+                        data-total="{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}"
+                        data-payment-status="{{ order.get_payment_status_display }}"
+                        data-is-paid="{% if order.payment_status == 'paid' %}true{% else %}false{% endif %}"
+                        data-receipt-image="{% if delivery and delivery.proof_of_delivery %}{{ delivery.proof_of_delivery.url }}{% elif order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:25 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:25 }}{% else %}PICKUP{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                            {% if order.payment_status == 'paid' %}
+                            <span class="text-emerald-400">Paid on {{ order.updated_at|date:"M d, Y" }}</span>
+                            {% elif order.payment_status == 'partial' %}
+                            <span class="text-amber-400">Partially Paid</span>
+                            {% else %}
+                            <span class="text-rose-400">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
+                            <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-lg text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center text-[#a0ac96]">
+                            <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected range</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
