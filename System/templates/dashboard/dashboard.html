@@ -244,24 +244,14 @@
 
     </div>
 
-    <!-- Recent Activity & Order Queue Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
+    <!-- Main Tables Grid: Pond Mortality on Left, Recent Orders + Sales Activity on Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1.5 items-start">
 
-        <!-- Recent Activity / Pond Mortality Tabbed Card -->
+        <!-- Left Column: Pond Mortality Table -->
         <div class="glass-card rounded-xl overflow-hidden flex flex-col justify-between">
-            <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-3.5 bg-white/[0.02] gap-2">
-                <!-- Navigation Tabs -->
-                <div class="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/10">
-                    <button type="button" id="tab-sales-btn" onclick="switchDashboardTab('sales')" class="px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#01140e] cursor-pointer">
-                        Sales Activity
-                    </button>
-                    <button type="button" id="tab-mortality-btn" onclick="switchDashboardTab('mortality')" class="px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all text-[#a0ac96] hover:text-white cursor-pointer">
-                        Pond Mortality
-                    </button>
-                </div>
-
-                <!-- Top Reason Overall Badge (visible on mortality tab) -->
-                <div id="mortality-reason-badge" class="hidden items-center gap-1.5">
+            <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02] gap-2">
+                <h2 class="text-base font-black text-white tracking-tight">Pond Mortality</h2>
+                <div class="inline-flex items-center gap-1.5">
                     <span class="text-[11px] uppercase tracking-wider text-[#a0ac96] font-bold">Top Cause:</span>
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono border bg-amber-500/15 text-amber-400 border-amber-500/30">
                         {{ top_mortality_reason }}
@@ -269,34 +259,7 @@
                 </div>
             </div>
 
-            <!-- Tab 1: Sales Activity Table -->
-            <div id="tab-sales-view" class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-white/10 text-sm">
-                    <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
-                        <tr>
-                            <th class="px-6 py-3.5 text-left">Date</th>
-                            <th class="px-6 py-3.5 text-left">Orders</th>
-                            <th class="px-6 py-3.5 text-left">Gross Revenue</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
-                        {% for row in sales_by_date %}
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="px-6 py-3.5 font-mono font-bold">{{ row.day|date:"Y-m-d" }}</td>
-                            <td class="px-6 py-3.5 font-bold text-white">{{ row.total_orders }}</td>
-                            <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No sales activity yet.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Tab 2: Pond Mortality Table -->
-            <div id="tab-mortality-view" class="overflow-x-auto hidden">
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-white/10 text-sm">
                     <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
                         <tr>
@@ -337,43 +300,76 @@
             </div>
         </div>
 
-        <!-- Recent Orders Queue -->
-        <div class="glass-card rounded-xl overflow-hidden">
-            <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
-                <h2 class="text-base font-black text-white tracking-tight">Recent Orders</h2>
+        <!-- Right Column: Recent Orders + Sales Activity stacked -->
+        <div class="space-y-1.5 flex flex-col">
+            <!-- Recent Orders Queue -->
+            <div class="glass-card rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
+                    <h2 class="text-base font-black text-white tracking-tight">Recent Orders</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-white/10 text-sm">
+                        <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
+                            <tr>
+                                <th class="px-6 py-3.5 text-left">Order</th>
+                                <th class="px-6 py-3.5 text-left">Customer</th>
+                                <th class="px-6 py-3.5 text-left">Status</th>
+                                <th class="px-6 py-3.5 text-left">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
+                            {% for order in recent_orders %}
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="px-6 py-3.5 font-mono font-bold text-white">{{ order.order_number }}</td>
+                                <td class="px-6 py-3.5 font-bold text-stone-200">{{ order.customer.name }}</td>
+                                <td class="px-6 py-3.5">
+                                    <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-md uppercase tracking-wider border {% if order.status == 'pending' %}bg-[#cca43b]/20 text-[#cca43b] border-[#cca43b]/40 {% elif order.status == 'completed' %}bg-white/10 text-white border-white/20 {% else %}bg-[#cca43b]/10 text-[#cca43b] border-[#cca43b]/20{% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No orders in queue.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-white/10 text-sm">
-                    <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
-                        <tr>
-                            <th class="px-6 py-3.5 text-left">Order</th>
-                            <th class="px-6 py-3.5 text-left">Customer</th>
-                            <th class="px-6 py-3.5 text-left">Status</th>
-                            <th class="px-6 py-3.5 text-left">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
-                        {% for order in recent_orders %}
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="px-6 py-3.5 font-mono font-bold text-white">{{ order.order_number }}</td>
-                            <td class="px-6 py-3.5 font-bold text-stone-200">{{ order.customer.name }}</td>
-                            <td class="px-6 py-3.5">
-                                <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-md uppercase tracking-wider border {% if order.status == 'pending' %}bg-[#cca43b]/20 text-[#cca43b] border-[#cca43b]/40 {% elif order.status == 'completed' %}bg-white/10 text-white border-white/20 {% else %}bg-[#cca43b]/10 text-[#cca43b] border-[#cca43b]/20{% endif %}">
-                                    {{ order.get_status_display }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:2 }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No orders in queue.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+
+            <!-- Sales Activity Table (Below Recent Orders) -->
+            <div class="glass-card rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
+                    <h2 class="text-base font-black text-white tracking-tight">Sales Activity</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-white/10 text-sm">
+                        <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
+                            <tr>
+                                <th class="px-6 py-3.5 text-left">Date</th>
+                                <th class="px-6 py-3.5 text-left">Orders</th>
+                                <th class="px-6 py-3.5 text-left">Gross Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
+                            {% for row in sales_by_date %}
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="px-6 py-3.5 font-mono font-bold">{{ row.day|date:"Y-m-d" }}</td>
+                                <td class="px-6 py-3.5 font-bold text-white">{{ row.total_orders }}</td>
+                                <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No sales activity yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
     </div>
 
 </div>
@@ -465,34 +461,6 @@
                 }
             }
         });
-    }
-
-    function switchDashboardTab(tab) {
-        const salesBtn = document.getElementById('tab-sales-btn');
-        const mortalityBtn = document.getElementById('tab-mortality-btn');
-        const salesView = document.getElementById('tab-sales-view');
-        const mortalityView = document.getElementById('tab-mortality-view');
-        const reasonBadge = document.getElementById('mortality-reason-badge');
-
-        if (tab === 'sales') {
-            salesBtn.className = 'px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#01140e] cursor-pointer';
-            mortalityBtn.className = 'px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all text-[#a0ac96] hover:text-white cursor-pointer';
-            salesView.classList.remove('hidden');
-            mortalityView.classList.add('hidden');
-            if (reasonBadge) {
-                reasonBadge.classList.add('hidden');
-                reasonBadge.classList.remove('inline-flex');
-            }
-        } else {
-            mortalityBtn.className = 'px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all bg-[#cca43b] text-[#01140e] cursor-pointer';
-            salesBtn.className = 'px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider transition-all text-[#a0ac96] hover:text-white cursor-pointer';
-            salesView.classList.add('hidden');
-            mortalityView.classList.remove('hidden');
-            if (reasonBadge) {
-                reasonBadge.classList.remove('hidden');
-                reasonBadge.classList.add('inline-flex');
-            }
-        }
     }
 </script>
 {% endblock %}
