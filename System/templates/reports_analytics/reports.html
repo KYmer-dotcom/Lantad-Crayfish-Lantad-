@@ -83,7 +83,7 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4">
         <div data-report-group="sales"
             class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ sales_label|default:"Total Sales (This Month)" }}</p>
@@ -92,17 +92,6 @@
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Gross monthly revenue inflow</span>
-                </div>
-            </div>
-        </div>
-        <div data-report-group="sales harvest"
-            class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
-            <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ qty_label|default:"Quantity Sold (This Month)" }}</p>
-            <div class="mt-2">
-                <p id="total-qty-val" class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ monthly_sales_qty|floatformat:2 }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Aggregate product volume dispatched</span>
                 </div>
             </div>
         </div>
@@ -807,15 +796,11 @@
             </div>
 
             <!-- Summary KPI Block -->
-            <div id="report-kpi-block" class="grid grid-cols-2 gap-4 print:gap-4 print:my-2">
+            <div id="report-kpi-block" class="grid grid-cols-1 gap-4 print:gap-4 print:my-2">
                 <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
                     <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Total Sales Revenue</p>
                     <p id="report-kpi-sales" class="text-2xl sm:text-3xl font-bold tracking-tight text-[#cca43b] print:text-stone-900 mt-1">
                         ₱0.00</p>
-                </div>
-                <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Total Quantity Sold</p>
-                    <p id="report-kpi-qty" class="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-stone-900 mt-1">0.00</p>
                 </div>
             </div>
 
@@ -1367,8 +1352,10 @@
             // Populate KPIs
             const salesValEl = document.getElementById('total-sales-val');
             const qtyValEl = document.getElementById('total-qty-val');
-            document.getElementById('report-kpi-sales').textContent = salesValEl ? salesValEl.textContent : '₱0.00';
-            document.getElementById('report-kpi-qty').textContent = qtyValEl ? qtyValEl.textContent : '0.00';
+            const kpiSalesEl = document.getElementById('report-kpi-sales');
+            const kpiQtyEl = document.getElementById('report-kpi-qty');
+            if (kpiSalesEl) kpiSalesEl.textContent = salesValEl ? salesValEl.textContent : '₱0.00';
+            if (kpiQtyEl) kpiQtyEl.textContent = qtyValEl ? qtyValEl.textContent : '0.00';
 
             // Populate Sales Ledger Table
             const salesTbody = document.getElementById('report-sales-tbody');
