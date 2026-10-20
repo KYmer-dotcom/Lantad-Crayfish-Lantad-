@@ -581,8 +581,8 @@
     </div>
 </div>
 
-<!-- Mortality Sidebar (Half-Screen Slide-Over) -->
-<div id="mortality-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-3xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
+<!-- Mortality Sidebar (Slide-Over) -->
+<div id="mortality-sidebar" class="fixed inset-y-0 right-0 z-50 w-full max-w-4xl lg:max-w-5xl transform translate-x-full transition-transform duration-300 ease-in-out bg-[#021f15] border-l border-white/10 flex flex-col shadow-2xl">
     <div class="flex items-center justify-between p-6 min-h-[94px] border-b border-white/10 bg-black/20">
         <div>
             <h2 id="mortality-sidebar-title" class="text-xl font-bold text-stone-100">Breeding Pond Mortality</h2>
@@ -601,12 +601,7 @@
                 <div>
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Breeding Pond Operations</h3>
                 </div>
-                <div class="flex items-center gap-2">
-                    {% if breeding_pond_mortality_recorded_today %}
-                    <button type="button" onclick="resetTodayMortality('Breeding Pond', this)" class="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer shadow-sm">
-                        Reset Today
-                    </button>
-                    {% endif %}
+                <div>
                     <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
                         Record All
                     </button>
@@ -623,12 +618,7 @@
                 <div>
                     <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider">Main Pond Operations</h3>
                 </div>
-                <div class="flex items-center gap-2">
-                    {% if main_pond_mortality_recorded_today %}
-                    <button type="button" onclick="resetTodayMortality('Main Pond', this)" class="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer shadow-sm">
-                        Reset Today
-                    </button>
-                    {% endif %}
+                <div>
                     <button type="button" onclick="submitMortalityOperations(this)" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-black text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
                         Record All
                     </button>
