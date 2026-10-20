@@ -1660,6 +1660,19 @@
         if (el) el.classList.add('translate-x-full');
     }
 
+    function handleMortalityInputChange(input) {
+        const row = input.closest('.mortality-entry-row');
+        if (!row) return;
+        const btn = row.querySelector('.mortality-action-btn');
+        if (!btn) return;
+
+        const initialStatus = btn.getAttribute('data-initial-status');
+        if (initialStatus === 'recorded') {
+            btn.textContent = 'Update';
+            btn.className = 'mortality-action-btn rounded-lg border border-amber-500/30 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-400 hover:bg-amber-500/25 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm';
+        }
+    }
+
     function submitSingleMortalityOperation(button) {
         const row = button.closest('.mortality-entry-row');
         if (!row) return;
@@ -1701,6 +1714,9 @@
         .then(data => {
             if (data.status === 'success') {
                 showToast(`${pondName} mortality recorded!`, 'success');
+                button.textContent = 'Recorded';
+                button.className = 'mortality-action-btn rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm';
+                button.setAttribute('data-initial-status', 'recorded');
                 setTimeout(() => {
                     sessionStorage.setItem('scrollPosition', window.scrollY);
                     window.location.reload();

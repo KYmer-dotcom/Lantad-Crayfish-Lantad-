@@ -25,7 +25,8 @@
                 <div class="text-[10px] text-[#a0ac96]">Available in pond</div>
             </td>
             <td class="px-4 py-3 align-middle">
-                <select class="mortality-reason-input w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-xs text-stone-100 focus:border-red-500 focus:outline-none transition-colors cursor-pointer">
+                <select class="mortality-reason-input w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-xs text-stone-100 focus:border-red-500 focus:outline-none transition-colors cursor-pointer"
+                        onchange="handleMortalityInputChange(this)">
                     <option value="" disabled {% if not pond.today_mortality_log.reason %}selected{% endif %} hidden></option>
                     <option value="Temperature" class="bg-[#021f15] text-stone-100" {% if pond.today_mortality_log.reason == 'Temperature' %}selected{% endif %}>Temperature</option>
                     <option value="Water Quality" class="bg-[#021f15] text-stone-100" {% if pond.today_mortality_log.reason|lower == 'water quality' or pond.today_mortality_log.reason|lower == 'waterquality' %}selected{% endif %}>Water Quality</option>
@@ -41,16 +42,28 @@
                            max="{{ pond.capacity|default:0 }}" 
                            class="mortality-qty-input w-20 rounded-lg border border-white/10 bg-black/50 px-2 py-2 text-xs text-right font-bold font-mono text-red-400 focus:border-red-500 focus:outline-none transition-colors" 
                            placeholder="0"
-                           value="{{ pond.today_mortality_log.quantity|default:0 }}">
+                           value="{{ pond.today_mortality_log.quantity|default:0 }}"
+                           data-original-value="{{ pond.today_mortality_log.quantity|default:0 }}"
+                           oninput="handleMortalityInputChange(this)">
                     <span class="text-xs text-[#a0ac96] font-mono">pcs</span>
                 </div>
             </td>
             <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
+                {% if pond.today_mortality_log and pond.today_mortality_log.quantity > 0 %}
                 <button type="button" 
                         onclick="submitSingleMortalityOperation(this)" 
-                        class="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                        data-initial-status="recorded"
+                        class="mortality-action-btn rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
+                    Recorded
+                </button>
+                {% else %}
+                <button type="button" 
+                        onclick="submitSingleMortalityOperation(this)" 
+                        data-initial-status="unrecorded"
+                        class="mortality-action-btn rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-400 hover:bg-red-500/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95 shadow-sm">
                     Record
                 </button>
+                {% endif %}
             </td>
         </tr>
         {% empty %}

@@ -394,16 +394,16 @@ def ponds_list(request):
     main_pond_recorded_today = len(main_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in main_ponds
     )
-    main_pond_mortality_recorded_today = len(main_ponds) > 0 and all(
-        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).exists() for p in main_ponds
+    main_pond_mortality_recorded_today = len(main_ponds) > 0 and any(
+        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).filter(quantity__gt=0).exists() for p in main_ponds
     )
     for p in main_ponds:
         p.today_mortality_log = PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).first()
     breeding_pond_recorded_today = len(breeding_ponds) > 0 and all(
         PondFeedingLog.objects.filter(pond=p, recorded_at__date=today).exists() for p in breeding_ponds
     )
-    breeding_pond_mortality_recorded_today = len(breeding_ponds) > 0 and all(
-        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).exists() for p in breeding_ponds
+    breeding_pond_mortality_recorded_today = len(breeding_ponds) > 0 and any(
+        PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).filter(quantity__gt=0).exists() for p in breeding_ponds
     )
     for p in breeding_ponds:
         p.today_mortality_log = PondMortalityLog.objects.filter(pond=p).filter(Q(date=today) | Q(recorded_at__date=today)).first()
