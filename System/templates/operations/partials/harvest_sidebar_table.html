@@ -90,9 +90,6 @@
                                         <div class="text-[10px] text-[#a0ac96]">({{ pond.capacity|default:"0" }} Beetles)</div>
                                     {% elif pond.location == 'Azula' %}
                                         <div class="font-black text-sm text-[#cca43b]">{{ pond.current_azula_quantity }}</div>
-                                        {% if pond.days_since_transfer %}
-                                        <div class="text-[10px] text-[#a0ac96]">(+{{ pond.days_since_transfer|add:pond.days_since_transfer }} growth)</div>
-                                        {% endif %}
                                     {% else %}
                                         <span class="font-black text-sm text-[#cca43b]">{{ pond.capacity|default:"0" }}</span>
                                     {% endif %}

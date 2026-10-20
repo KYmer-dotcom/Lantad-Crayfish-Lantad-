@@ -157,12 +157,9 @@ class Pond(models.Model):
 
     @property
     def current_azula_quantity(self):
-        if self.location == 'Azula':
-            if self.status == 'empty' or (self.capacity or 0) <= 0:
-                return 0
-            days = self.days_since_transfer or 0
-            return (self.capacity or 0) + (days * 2)
-        return self.capacity or 0
+        if self.status == 'empty':
+            return 0
+        return max(0, self.capacity or 0)
 
 
     @property
