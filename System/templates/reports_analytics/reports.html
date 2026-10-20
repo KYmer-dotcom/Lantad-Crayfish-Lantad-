@@ -50,9 +50,9 @@
             </div>
             <select id="report-type-select"
                 class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer mt-2">
-                <option value="sales" class="bg-[#01140e] text-white">Sales Only</option>
-                <option value="operations" class="bg-[#01140e] text-white">Operations Only</option>
-                <option value="receipts" class="bg-[#01140e] text-white">Receipts Only</option>
+                <option value="sales" class="bg-[#01140e] text-white">Sales</option>
+                <option value="operations" class="bg-[#01140e] text-white">Operations</option>
+                <option value="receipts" class="bg-[#01140e] text-white">Receipts</option>
             </select>
         </div>
 
@@ -1345,7 +1345,7 @@
 
             // Populate Scope
             const typeSelect = document.getElementById('report-type-select');
-            const scopeVal = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : 'Sales Only';
+            const scopeVal = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : 'Sales';
             const scopeValEl = document.getElementById('report-scope-val');
             if (scopeValEl) scopeValEl.textContent = scopeVal;
 
