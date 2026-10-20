@@ -386,6 +386,7 @@ def dashboard(request):
             'location': p.location,
             'product_name': prod,
             'capacity': p.capacity or 0,
+            'deaths': stat_30d['dead'],
             'rate_7d': stat_7d['rate'],
             'dead_7d': stat_7d['dead'],
             'rate_30d': stat_30d['rate'],
