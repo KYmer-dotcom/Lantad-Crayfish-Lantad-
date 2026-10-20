@@ -83,10 +83,7 @@
             class="glass-card rounded-lg p-5 sm:p-6 flex flex-col justify-between">
             <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ sales_label|default:"Total Sales (This Month)" }}</p>
             <div class="mt-2">
-                <p id="total-sales-val" class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ monthly_sales_total|floatformat:2 }}</p>
-                <div class="mt-2 text-[11px] text-[#a0ac96] font-mono">
-                    <span>Gross monthly revenue inflow</span>
-                </div>
+                <p id="total-sales-val" class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ monthly_sales_total|floatformat:"-2" }}</p>
             </div>
         </div>
     </div>
@@ -135,15 +132,15 @@
                         data-customer="{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}"
                         data-phone="{% if order.customer and order.customer.phone %}{{ order.customer.phone }}{% else %}09452345235{% endif %}"
                         data-address="{% if order.delivery_address %}{{ order.delivery_address }}{% elif order.customer and order.customer.address %}{{ order.customer.address }}{% else %}N/A{% endif %}"
-                        data-approver="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_full_name|default:delivery.created_by.username }}{% elif order.created_by %}{{ order.created_by.get_full_name|default:order.created_by.username }}{% elif order.customer %}{{ order.customer.name }}{% else %}System Admin{% endif %}"
-                        data-approver-role="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_role_display|default:'Owner' }}{% elif order.created_by %}{{ order.created_by.get_role_display|default:'Owner' }}{% else %}Customer{% endif %}"
+                        data-approver="{% if delivery and delivery.created_by and delivery.created_by.role == 'owner' %}{{ delivery.created_by.get_full_name|default:delivery.created_by.username }}{% elif order.created_by and order.created_by.role == 'owner' %}{{ order.created_by.get_full_name|default:order.created_by.username }}{% else %}Owner{% endif %}"
+                        data-approver-role="Owner Approved"
                         data-rider="{% if delivery and delivery.rider %}{{ delivery.rider.name }}{% else %}Cris Ma-apni{% endif %}"
                         data-rider-vehicle="{% if delivery and delivery.rider %}{{ delivery.rider.vehicle_type }} ({{ delivery.rider.plate_number|default:'ABC1234' }}){% else %}Motorcycle (ABC1234){% endif %}"
                         data-product="{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
-                        data-price="{{ order.price_per_kg|default:0|floatformat:2 }}"
-                        data-discount="{{ order.discount|default:0|floatformat:2 }}"
-                        data-quantity="{{ order.quantity_kg|default:0|floatformat:2 }}"
-                        data-total="{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:2 }}{% else %}{{ order.total_amount|default:0|floatformat:2 }}{% endif %}"
+                        data-price="{{ order.price_per_kg|default:0|floatformat:'-2' }}"
+                        data-discount="{{ order.discount|default:0|floatformat:'-2' }}"
+                        data-quantity="{{ order.quantity_kg|default:0|floatformat:'-2' }}"
+                        data-total="{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}"
                         data-payment-status="{{ order.get_payment_status_display }}"
                         data-is-paid="{% if order.payment_status == 'paid' %}true{% else %}false{% endif %}"
                         data-receipt-image="{% if delivery and delivery.proof_of_delivery %}{{ delivery.proof_of_delivery.url }}{% elif order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
@@ -161,7 +158,7 @@
                             <span class="text-rose-400">Unpaid</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:2 }}{% else %}{{ order.total_amount|default:0|floatformat:2 }}{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:'-2' }}{% else %}{{ order.total_amount|default:0|floatformat:'-2' }}{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
                             <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-lg text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
                         </td>
@@ -392,7 +389,7 @@
                         {% for row in sales_weekly %}
                         <tr class="hover:bg-white/[0.03] transition-colors duration-200">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.week|date:"M d, Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:"-2" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -427,7 +424,7 @@
                         {% for row in sales_monthly %}
                         <tr class="hover:bg-white/[0.03] transition-colors duration-200">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ row.month|date:"M Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:"-2" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -595,7 +592,7 @@
 
     @media print {
         @page {
-            margin: 10mm 12mm;
+            margin: 8mm 10mm;
             size: portrait;
         }
 
@@ -662,6 +659,7 @@
             overflow: visible !important;
             height: auto !important;
             max-height: none !important;
+            padding: 0 !important;
         }
 
         #report-sidebar .max-w-3xl {
@@ -671,13 +669,37 @@
             padding: 0 !important;
         }
 
+        #report-sidebar .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 10px !important;
+        }
+
+        #report-branding-header {
+            padding-bottom: 6px !important;
+            margin-bottom: 6px !important;
+        }
+
+        #report-kpi-block {
+            margin: 4px 0 !important;
+        }
+        #report-kpi-block > div {
+            padding: 6px 10px !important;
+        }
+        #report-kpi-sales {
+            font-size: 20px !important;
+            line-height: 1.2 !important;
+        }
+
         /* 3. Clean table printing & clean row breaking */
         .print-report-table {
             border-collapse: collapse !important;
             width: 100% !important;
             color: #0f172a !important;
-            margin-top: 6px !important;
-            font-size: 10px !important;
+            margin-top: 4px !important;
+            font-size: 9px !important;
+        }
+
+        .print-report-table thead {
+            display: table-header-group !important;
         }
 
         .print-report-table tr {
@@ -688,10 +710,10 @@
         .print-report-table th {
             border: none !important;
             border-bottom: 1.5px solid #0f172a !important;
-            padding: 6px 8px !important;
+            padding: 3.5px 5px !important;
             color: #334155 !important;
             background: transparent !important;
-            font-size: 9px !important;
+            font-size: 8.5px !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
             font-weight: 700 !important;
@@ -700,10 +722,11 @@
         .print-report-table td {
             border: none !important;
             border-bottom: 1px solid #e2e8f0 !important;
-            padding: 6px 8px !important;
+            padding: 3px 5px !important;
             color: #0f172a !important;
             background: transparent !important;
-            font-size: 10px !important;
+            font-size: 8.5px !important;
+            line-height: 1.25 !important;
         }
 
         .text-emerald-400, .text-emerald-600 {
@@ -718,9 +741,16 @@
             color: #be123c !important;
         }
 
-        #report-branding-header,
-        #report-kpi-block,
         .report-signature-block {
+            padding-top: 14px !important;
+            margin-top: 12px !important;
+            gap: 20px !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        #report-branding-header,
+        #report-kpi-block {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
@@ -780,9 +810,9 @@
             <!-- Summary KPI Block -->
             <div id="report-kpi-block" class="grid grid-cols-1 gap-4 print:gap-4 print:my-2">
                 <div class="p-4 rounded-lg bg-white/[0.02] border border-white/10 print:bg-stone-50/70 print:border-stone-200">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">Total Sales Revenue</p>
+                    <p id="report-kpi-sales-label" class="text-[10px] font-bold uppercase tracking-wider text-[#a0ac96] print:text-stone-500">{{ sales_label|default:"Total Sales (This Month)" }}</p>
                     <p id="report-kpi-sales" class="text-2xl sm:text-3xl font-bold tracking-tight text-[#cca43b] print:text-stone-900 mt-1">
-                        ₱0.00</p>
+                        ₱0</p>
                 </div>
             </div>
 
@@ -805,7 +835,7 @@
                                 {% for row in sales_weekly %}
                                 <tr class="hover:bg-white/[0.02]">
                                     <td class="py-1.5 px-2 whitespace-nowrap font-medium">{{ row.week|date:"M d, Y" }}</td>
-                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:"-2" }}</td>
                                 </tr>
                                 {% empty %}
                                 <tr><td colspan="2" class="py-3 text-center text-stone-500 text-[11px]">No weekly sales recorded</td></tr>
@@ -828,7 +858,7 @@
                                 {% for row in sales_monthly %}
                                 <tr class="hover:bg-white/[0.02]">
                                     <td class="py-1.5 px-2 whitespace-nowrap font-medium">{{ row.month|date:"M Y" }}</td>
-                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:"-2" }}</td>
                                 </tr>
                                 {% empty %}
                                 <tr><td colspan="2" class="py-3 text-center text-stone-500 text-[11px]">No monthly sales recorded</td></tr>
@@ -912,8 +942,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-
             </div>
 
             <!-- Section: Receipts -->
@@ -1462,14 +1490,16 @@
             // Populate Period
             const startVal = document.getElementById('start-date-input').value;
             const endVal = document.getElementById('end-date-input').value;
+            const periodEl = document.getElementById('report-period');
             if (startVal && endVal) {
-                document.getElementById('report-period').textContent = `${startVal} to ${endVal}`;
+                periodEl.textContent = `${startVal} to ${endVal}`;
             } else if (startVal) {
-                document.getElementById('report-period').textContent = `From ${startVal}`;
+                periodEl.textContent = `From ${startVal}`;
             } else if (endVal) {
-                document.getElementById('report-period').textContent = `Until ${endVal}`;
+                periodEl.textContent = `Until ${endVal}`;
             } else {
-                document.getElementById('report-period').textContent = 'Last 30 Days';
+                const currentMonthName = today.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                periodEl.textContent = `This Month (${currentMonthName})`;
             }
 
             // Populate Scope
@@ -1482,9 +1512,22 @@
             const salesValEl = document.getElementById('total-sales-val');
             const qtyValEl = document.getElementById('total-qty-val');
             const kpiSalesEl = document.getElementById('report-kpi-sales');
+            const kpiSalesLabelEl = document.getElementById('report-kpi-sales-label');
             const kpiQtyEl = document.getElementById('report-kpi-qty');
-            if (kpiSalesEl) kpiSalesEl.textContent = salesValEl ? salesValEl.textContent : '₱0.00';
-            if (kpiQtyEl) kpiQtyEl.textContent = qtyValEl ? qtyValEl.textContent : '0.00';
+            
+            if (kpiSalesLabelEl) {
+                kpiSalesLabelEl.textContent = (startVal || endVal) ? 'Total Sales (Selected Period)' : 'Total Sales (This Month)';
+            }
+            if (kpiSalesEl) {
+                let sVal = salesValEl ? salesValEl.textContent.trim() : '₱0';
+                sVal = sVal.replace(/\.00(?!\d)/g, '');
+                kpiSalesEl.textContent = sVal;
+            }
+            if (kpiQtyEl) {
+                let qVal = qtyValEl ? qtyValEl.textContent.trim() : '0';
+                qVal = qVal.replace(/\.00(?!\d)/g, '');
+                kpiQtyEl.textContent = qVal;
+            }
 
             // Populate Sales Ledger Table
             const salesTbody = document.getElementById('report-sales-tbody');
@@ -1497,14 +1540,15 @@
                     if (cells.length >= 7) {
                         const tr = document.createElement('tr');
                         tr.className = 'border-b border-white/5 print:border-stone-200';
+                        const amountClean = cells[6].textContent.trim().replace(/\.00(?!\d)/g, '');
                         tr.innerHTML = `
-                            <td class="py-2 px-3 whitespace-nowrap text-stone-300 print:text-stone-900">${cells[0].textContent.trim()}</td>
-                            <td class="py-2 px-3 font-semibold text-stone-200 print:text-stone-900 whitespace-nowrap font-mono">${cells[1].textContent.trim()}</td>
-                            <td class="py-2 px-3">${cells[2].textContent.trim()}</td>
-                            <td class="py-2 px-3">${cells[3].textContent.trim()}</td>
-                            <td class="py-2 px-3 text-stone-400 print:text-stone-700">${row.getAttribute('data-address') || cells[4].textContent.trim()}</td>
-                            <td class="py-2 px-3 whitespace-nowrap font-medium">${cells[5].innerHTML.trim()}</td>
-                            <td class="py-2 px-3 text-right font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap font-mono">${cells[6].textContent.trim()}</td>
+                            <td class="py-1.5 px-2 whitespace-nowrap text-stone-300 print:text-stone-900">${cells[0].textContent.trim()}</td>
+                            <td class="py-1.5 px-2 font-semibold text-stone-200 print:text-stone-900 whitespace-nowrap font-mono">${cells[1].textContent.trim()}</td>
+                            <td class="py-1.5 px-2">${cells[2].textContent.trim()}</td>
+                            <td class="py-1.5 px-2">${cells[3].textContent.trim()}</td>
+                            <td class="py-1.5 px-2 text-stone-400 print:text-stone-700">${row.getAttribute('data-address') || cells[4].textContent.trim()}</td>
+                            <td class="py-1.5 px-2 whitespace-nowrap font-medium">${cells[5].innerHTML.trim()}</td>
+                            <td class="py-1.5 px-2 text-right font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap font-mono">${amountClean}</td>
                         `;
                         salesTbody.appendChild(tr);
                     }
@@ -1596,8 +1640,9 @@
                         const rider = row.getAttribute('data-rider') || 'Cris Ma-apni';
                         const riderVehicle = row.getAttribute('data-rider-vehicle') || 'Motorcycle (ABC1234)';
                         const product = row.getAttribute('data-product') || 'Breeder Crayfish';
-                        const price = row.getAttribute('data-price') || '0.00';
-                        const discount = row.getAttribute('data-discount') || '0.00';
+                        const price = (row.getAttribute('data-price') || '0').replace(/\.00(?!\d)/g, '');
+                        const discount = (row.getAttribute('data-discount') || '0').replace(/\.00(?!\d)/g, '');
+                        const totalClean = totalAmount.replace(/\.00(?!\d)/g, '');
                         const isPaid = (row.getAttribute('data-is-paid') === 'true');
                         const receiptImage = row.getAttribute('data-receipt-image') || '';
 
@@ -1656,8 +1701,8 @@
                                     <div class="space-y-1">
                                         <p class="text-[10px] uppercase font-black tracking-wider text-[#a0ac96] print:text-stone-600">Billed & Delivered To:</p>
                                         <h4 class="font-bold text-white print:text-black text-sm">${customerName}</h4>
-                                        <p class="font-mono text-[#a0ac96] print:text-stone-700">${phone ? '📞 ' + phone : ''}</p>
-                                        <p class="text-stone-300 print:text-black mt-1 leading-snug">📍 ${address}</p>
+                                        <p class="font-mono text-[#a0ac96] print:text-stone-700">${phone ? phone : ''}</p>
+                                        <p class="text-stone-300 print:text-black mt-1 leading-snug">${address}</p>
                                     </div>
 
                                     <!-- Approval & Dispatch Info -->
@@ -1703,7 +1748,7 @@
                                                 <td class="py-3 px-4 font-bold text-white print:text-black font-sans">${product}</td>
                                                 <td class="py-3 px-4 text-center">${quantity}</td>
                                                 <td class="py-3 px-4 text-right">₱${price}</td>
-                                                <td class="py-3 px-4 text-right font-bold text-white print:text-black">₱${totalAmount}</td>
+                                                <td class="py-3 px-4 text-right font-bold text-white print:text-black">₱${totalClean}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1792,8 +1837,8 @@
             document.getElementById('receipt-modal-or').textContent = 'OR-' + data.orderNumber;
             document.getElementById('receipt-modal-del-id').textContent = 'Tracking: DEL-' + String(data.deliveryId || '1').padStart(5, '0');
             document.getElementById('receipt-modal-customer').textContent = data.customerName;
-            document.getElementById('receipt-modal-phone').textContent = data.customerPhone ? '📞 ' + data.customerPhone : '';
-            document.getElementById('receipt-modal-address').textContent = '📍 ' + (data.customerAddress || 'N/A');
+            document.getElementById('receipt-modal-phone').textContent = data.customerPhone || '';
+            document.getElementById('receipt-modal-address').textContent = data.customerAddress || 'N/A';
 
             document.getElementById('receipt-modal-approver').textContent = data.approverName || 'Owner';
             document.getElementById('receipt-modal-approver-role').textContent = '(' + (data.approverRole || 'Customer') + ')';
@@ -1806,12 +1851,12 @@
 
             document.getElementById('receipt-modal-item').textContent = data.productName;
             document.getElementById('receipt-modal-qty').textContent = data.quantityKg;
-            document.getElementById('receipt-modal-price').textContent = '₱' + data.pricePerKg;
-            document.getElementById('receipt-modal-item-total').textContent = '₱' + data.totalAmount;
+            document.getElementById('receipt-modal-price').textContent = '₱' + (data.pricePerKg || '0').replace(/\.00(?!\d)/g, '');
+            document.getElementById('receipt-modal-item-total').textContent = '₱' + (data.totalAmount || '0').replace(/\.00(?!\d)/g, '');
 
-            document.getElementById('receipt-modal-subtotal').textContent = '₱' + data.totalAmount;
-            document.getElementById('receipt-modal-discount').textContent = '-₱' + (data.discount || '0.00');
-            document.getElementById('receipt-modal-grand-total').textContent = '₱' + data.totalAmount;
+            document.getElementById('receipt-modal-subtotal').textContent = '₱' + (data.totalAmount || '0').replace(/\.00(?!\d)/g, '');
+            document.getElementById('receipt-modal-discount').textContent = '-₱' + (data.discount || '0').replace(/\.00(?!\d)/g, '');
+            document.getElementById('receipt-modal-grand-total').textContent = '₱' + (data.totalAmount || '0').replace(/\.00(?!\d)/g, '');
 
             document.getElementById('receipt-modal-payment-status').textContent = 'Status: ' + (data.paymentStatus || 'PAID').toUpperCase() + (data.isPaid ? ' (VERIFIED PAID)' : ' (PENDING / UNPAID)');
 
