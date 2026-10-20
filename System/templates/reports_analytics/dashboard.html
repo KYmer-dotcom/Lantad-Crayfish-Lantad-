@@ -550,13 +550,10 @@
 <div id="location-customers-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto" onclick="if(event.target === this) closeLocationModal();">
     <div class="glass-card max-w-4xl w-full rounded-2xl border border-white/15 bg-[#01140e]/95 p-6 shadow-2xl flex flex-col max-h-[90vh] my-auto">
         <!-- Modal Header -->
-        <div class="flex items-start justify-between border-b border-white/10 pb-4 mb-4">
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <h3 id="loc-modal-title" class="text-xl font-black text-white tracking-tight">Location Details</h3>
-                    <span id="loc-modal-type-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Delivery Destination</span>
-                </div>
-                <p class="text-xs text-[#a0ac96]">Verified customers and purchase history associated with this fulfillment location or pickup.</p>
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div class="flex items-center gap-2">
+                <h3 id="loc-modal-title" class="text-xl font-black text-white tracking-tight">Location Details</h3>
+                <span id="loc-modal-type-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Delivery Destination</span>
             </div>
             <button type="button" onclick="closeLocationModal()" class="rounded-lg p-1.5 text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="Close (Esc)">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -656,14 +653,11 @@
 <div id="product-customers-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto" onclick="if(event.target === this) closeProductModal();">
     <div class="glass-card max-w-4xl w-full rounded-2xl border border-white/15 bg-[#01140e]/95 p-6 shadow-2xl flex flex-col max-h-[90vh] my-auto">
         <!-- Modal Header -->
-        <div class="flex items-start justify-between border-b border-white/10 pb-4 mb-4">
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span id="prod-modal-dot" class="hidden"></span>
-                    <h3 id="prod-modal-title" class="text-xl font-black text-white tracking-tight">Product Details</h3>
-                    <span id="prod-modal-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Product</span>
-                </div>
-                <p class="text-xs text-[#a0ac96]">Customer demand breakdown ranked from highest volume buyer to lowest.</p>
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div class="flex items-center gap-2">
+                <span id="prod-modal-dot" class="hidden"></span>
+                <h3 id="prod-modal-title" class="text-xl font-black text-white tracking-tight">Product Details</h3>
+                <span id="prod-modal-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Product</span>
             </div>
             <button type="button" onclick="closeProductModal()" class="rounded-lg p-1.5 text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="Close (Esc)">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
