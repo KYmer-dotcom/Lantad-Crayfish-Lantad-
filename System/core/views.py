@@ -348,6 +348,50 @@ def dashboard(request):
     order1 = recent_orders_list[0] if len(recent_orders_list) > 0 else None
     order2 = recent_orders_list[1] if len(recent_orders_list) > 1 else None
 
+    # Pond Mortality Rates (Main Pond & Breeding Pond Product 1)
+    from apps.operations.models import PondMortalityLog
+    from django.db.models import Case, When, Value, IntegerField
+    mortality_ponds_qs = accessible_ponds.filter(
+        location__in=['Main Pond', 'Breeding Pond']
+    ).annotate(
+        loc_sort=Case(
+            When(location='Main Pond', then=Value(1)),
+            When(location='Breeding Pond', then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField()
+        )
+    ).order_by('loc_sort', 'name')
+
+    top_reason_stat = (
+        PondMortalityLog.objects.filter(
+            pond__in=mortality_ponds_qs
+        )
+        .exclude(product_name__icontains='Criling')
+        .exclude(reason='')
+        .values('reason')
+        .annotate(count=Count('id'), total_qty=Sum('quantity'))
+        .order_by('-count', '-total_qty')
+        .first()
+    )
+    top_mortality_reason = top_reason_stat['reason'] if top_reason_stat else 'None Recorded'
+
+    mortality_ponds = []
+    for p in mortality_ponds_qs:
+        stat_7d = p.get_mortality_stats(days=7)
+        stat_30d = p.get_mortality_stats(days=30)
+        prod = 'Breeder Crayfish' if p.location == 'Breeding Pond' else (p.product_name or 'Crayfish')
+        mortality_ponds.append({
+            'pond': p,
+            'name': p.name,
+            'location': p.location,
+            'product_name': prod,
+            'capacity': p.capacity or 0,
+            'rate_7d': stat_7d['rate'],
+            'dead_7d': stat_7d['dead'],
+            'rate_30d': stat_30d['rate'],
+            'dead_30d': stat_30d['dead'],
+        })
+
     context = {
         'stats': {
             'total_farms': total_farms,
@@ -394,6 +438,8 @@ def dashboard(request):
         'harvest1': harvest1,
         'order1': order1,
         'order2': order2,
+        'mortality_ponds': mortality_ponds,
+        'top_mortality_reason': top_mortality_reason,
     }
     
     return render(request, 'dashboard/dashboard.html', context)

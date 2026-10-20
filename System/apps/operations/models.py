@@ -312,6 +312,36 @@ class Pond(models.Model):
         }
         return mapping.get(status, 'Far')
 
+    def get_mortality_stats(self, days=7):
+        """
+        Calculates mortality count and rate for this pond over given days.
+        For Breeding Pond, tracks Product 1 (Breeder Crayfish), excluding Crilings.
+        """
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Sum
+
+        today = timezone.localdate()
+        qs = self.mortality_logs.all()
+        if days:
+            qs = qs.filter(date__gte=today - timedelta(days=days))
+        if self.location == 'Breeding Pond':
+            qs = qs.exclude(product_name__icontains='Criling')
+
+        dead = qs.aggregate(Sum('quantity'))['quantity__sum'] or 0
+        stock = self.capacity or 0
+        total = stock + dead
+        rate = round((dead / total) * 100, 1) if total > 0 else 0.0
+        return {'dead': dead, 'rate': rate, 'total': total}
+
+    @property
+    def mortality_rate_7d(self):
+        return self.get_mortality_stats(days=7)['rate']
+
+    @property
+    def mortality_rate_30d(self):
+        return self.get_mortality_stats(days=30)['rate']
+
     def deduct_stock(self, quantity, product_name=None):
         """
         Deducts quantity from this pond. If transfer batches exist (e.g. in Main Pond),

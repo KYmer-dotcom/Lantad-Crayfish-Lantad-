@@ -559,3 +559,41 @@ class YieldSubpageRoutingTest(TestCase):
         self.assertEqual(resp_pond.status_code, 200)
         self.assertTemplateUsed(resp_pond, 'operations/list.html')
 
+
+class PondMortalityDashboardTest(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='mortdashowner', email='mortdash@lantad.com', password='password123', role='owner')
+        self.farm = Farm.objects.create(name='Mort Farm', location='Silay', total_area=Decimal('1000.00'), owner=self.owner)
+        self.pond = Pond.objects.create(
+            farm=self.farm, name='Mortality Pond 1', size=Decimal('100.00'),
+            depth=Decimal('1.5'), location='Main Pond', capacity=950, status=Pond.Status.ACTIVE
+        )
+        self.client.force_login(self.owner)
+
+    def test_mortality_rate_properties_and_dashboard_tab(self):
+        from django.utils import timezone
+        from apps.operations.models import PondMortalityLog
+
+        # Create 50 mortalities for Water Quality
+        PondMortalityLog.objects.create(
+            pond=self.pond,
+            product_name='Crayfish',
+            quantity=50,
+            reason='Water Quality',
+            date=timezone.localdate()
+        )
+
+        # 50 dead, 950 stock -> total = 1000 -> 5.0%
+        self.assertEqual(self.pond.mortality_rate_7d, 5.0)
+        self.assertEqual(self.pond.mortality_rate_30d, 5.0)
+
+        # Dashboard rendering test
+        resp = self.client.get(reverse('dashboard'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Sales Activity')
+        self.assertContains(resp, 'Pond Mortality')
+        self.assertContains(resp, 'Water Quality')
+        self.assertContains(resp, 'Mortality Pond 1')
+        self.assertContains(resp, '5.0%')
+
+
