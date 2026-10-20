@@ -522,6 +522,7 @@ def analytics_dashboard(request):
     location_details_json = json.dumps(location_details_dict, default=str)
 
     # 7. Top Products Donut Breakdown (100% from Database)
+    # 7. Top Products Donut Breakdown (100% from Database)
     top_products_donut = []
     prod_sales_qs = all_user_sales.values('product__name', 'product__unit_type').annotate(
         total_rev=Sum('total_amount'),
@@ -532,33 +533,144 @@ def analytics_dashboard(request):
     colors_palette = ['#cca43b', '#138a5c', '#9e812d', '#06b6d4', '#818cf8']
     total_prod_rev = sum(float(p['total_rev'] or 0) for p in prod_sales_qs) or 1.0
 
+    product_details_dict = {}
+
     for idx, p_row in enumerate(prod_sales_qs):
         p_name = p_row['product__name'] or 'Product'
         p_unit = p_row.get('product__unit_type') or 'pcs'
         p_rev = float(p_row['total_rev'] or 0)
         p_qty = float(p_row['total_qty'] or 0)
         share_pct = round((p_rev / total_prod_rev) * 100)
-        units_label = f"{p_qty:.1f} kg" if p_unit == 'kg' else f"{int(p_qty)} {p_unit}{'s' if p_unit in ['tub', 'pack', 'pair'] and int(p_qty) != 1 else ''}"
+        unit_suffix = 's' if p_unit in ['tub', 'pack', 'pair', 'crate', 'bag'] and int(p_qty) != 1 else ''
+        units_label = f"{p_qty:.1f} kg" if p_unit == 'kg' else f"{int(p_qty)} {p_unit.capitalize()}{unit_suffix}"
+        color = colors_palette[idx % len(colors_palette)]
+        key = f"prod_{idx}"
+
+        # Gather orders for this specific product & unit_type
+        prod_orders_qs = all_user_sales.filter(
+            product__name=p_name,
+            product__unit_type=p_unit
+        ).select_related('customer', 'product').order_by('-order_date', '-id')
+
+        cust_aggregates = {}
+        prod_orders_list = []
+
+        for o in prod_orders_qs:
+            cust_id = o.customer_id if o.customer else 0
+            cust_name = o.customer.name if o.customer else 'Guest Customer'
+            cust_phone = (o.customer.phone if o.customer else '') or 'N/A'
+            cust_addr = (o.delivery_address or (o.customer.address if o.customer else '') or 'N/A').strip()
+            o_qty = float(o.quantity_kg or 0)
+            o_amount = float(o.total_amount or 0)
+
+            o_suffix = 's' if p_unit in ['tub', 'pack', 'pair', 'crate', 'bag'] and int(o_qty) != 1 else ''
+            o_qty_str = f"{o_qty:.1f} kg" if p_unit == 'kg' else f"{int(o_qty)} {p_unit.capitalize()}{o_suffix}"
+
+            order_item = {
+                'order_number': o.order_number,
+                'customer_name': cust_name,
+                'customer_phone': cust_phone,
+                'customer_address': cust_addr,
+                'delivery_address': (o.delivery_address or '').strip() or cust_addr,
+                'date': o.order_date.strftime('%b %d, %Y') if o.order_date else '',
+                'product': p_name,
+                'quantity': o_qty_str,
+                'raw_qty': o_qty,
+                'amount': o_amount,
+                'status': o.get_status_display(),
+                'payment_status': o.get_payment_status_display(),
+            }
+            prod_orders_list.append(order_item)
+
+            if cust_id not in cust_aggregates:
+                cust_aggregates[cust_id] = {
+                    'id': cust_id,
+                    'name': cust_name,
+                    'phone': cust_phone,
+                    'address': cust_addr,
+                    'total_qty': 0.0,
+                    'total_spent': 0.0,
+                    'order_count': 0,
+                    'orders': []
+                }
+            c_entry = cust_aggregates[cust_id]
+            c_entry['total_qty'] += o_qty
+            c_entry['total_spent'] += o_amount
+            c_entry['order_count'] += 1
+            c_entry['orders'].append(order_item)
+
+        # Sort customers strictly from most to least quantity (and then by spend)
+        customers_list = sorted(cust_aggregates.values(), key=lambda c: (c['total_qty'], c['total_spent']), reverse=True)
+        for rank, c_entry in enumerate(customers_list, 1):
+            c_entry['rank'] = rank
+            c_qty = c_entry['total_qty']
+            c_suffix = 's' if p_unit in ['tub', 'pack', 'pair', 'crate', 'bag'] and int(c_qty) != 1 else ''
+            c_entry['total_qty_str'] = f"{c_qty:.1f} kg" if p_unit == 'kg' else f"{int(c_qty)} {p_unit.capitalize()}{c_suffix}"
+
         top_products_donut.append({
+            'key': key,
             'name': p_name,
+            'unit_type': p_unit,
             'share_pct': share_pct,
             'units_str': f"{units_label} sold",
             'trend_str': '↑ Active sales' if share_pct > 25 else '→ Steady demand',
-            'color': colors_palette[idx % len(colors_palette)]
+            'color': color,
+            'customer_count': len(customers_list),
+            'order_count': len(prod_orders_list),
+            'revenue': p_rev,
         })
+
+        product_details_dict[key] = {
+            'key': key,
+            'name': p_name,
+            'unit_type': p_unit,
+            'units_label': units_label,
+            'color': color,
+            'revenue': p_rev,
+            'total_qty': p_qty,
+            'total_qty_str': units_label,
+            'share_pct': share_pct,
+            'customer_count': len(customers_list),
+            'order_count': len(prod_orders_list),
+            'customers': customers_list,
+            'orders': prod_orders_list,
+        }
 
     if not top_products_donut:
         # Fallback to active inventory products
         for idx, p in enumerate(Product.objects.filter(is_active=True)[:4]):
             p_unit = p.unit_display
             units_label = f"{p.quantity_kg:.1f} kg" if p_unit == 'kg' else f"{int(p.quantity_kg)} {p_unit}{'s' if p_unit in ['tub', 'pack', 'pair'] and int(p.quantity_kg) != 1 else ''}"
+            key = f"prod_{idx}"
+            color = colors_palette[idx % len(colors_palette)]
             top_products_donut.append({
+                'key': key,
                 'name': p.name,
                 'share_pct': 25,
                 'units_str': f"{units_label} available",
                 'trend_str': '→ In stock',
-                'color': colors_palette[idx % len(colors_palette)]
+                'color': color,
+                'customer_count': 0,
+                'order_count': 0,
+                'revenue': 0,
             })
+            product_details_dict[key] = {
+                'key': key,
+                'name': p.name,
+                'unit_type': p_unit,
+                'units_label': units_label,
+                'color': color,
+                'revenue': 0,
+                'total_qty': float(p.quantity_kg or 0),
+                'total_qty_str': units_label,
+                'share_pct': 25,
+                'customer_count': 0,
+                'order_count': 0,
+                'customers': [],
+                'orders': [],
+            }
+
+    product_details_json = json.dumps(product_details_dict, default=str)
 
     # 8. Seasonal Demand & Production Planning (100% from Database)
     seasonal_data = calculate_seasonal_indices_from_db(
@@ -643,6 +755,7 @@ def analytics_dashboard(request):
         'top_locations': top_locations,
         'location_details_json': location_details_json,
         'top_products_donut': top_products_donut,
+        'product_details_json': product_details_json,
         'donut_chart_data_json': json.dumps({
             'labels': [p['name'] for p in top_products_donut],
             'values': [p['share_pct'] for p in top_products_donut],

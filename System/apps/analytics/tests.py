@@ -127,3 +127,47 @@ class AlgorithmicServicesTestCase(TestCase):
 
         # Expected: (5 * 600) - 200 = 2800.00
         self.assertEqual(order.total_amount, 2800.00)
+
+    def test_analytics_product_customer_breakdown(self):
+        """Test Product customer breakdown sorts customers from most to least quantity ordered."""
+        import json
+        from django.urls import reverse
+        owner = User.objects.create_user(username='analytics_owner', password='password123', role='owner')
+        cust1 = Customer.objects.create(name='Big Buyer', phone='09111111111')
+        cust2 = Customer.objects.create(name='Small Buyer', phone='09222222222')
+        prod = Product.objects.create(name='Breeder Crayfish', unit_type='pair', unit_price=240, quantity_kg=100)
+
+        # Big Buyer orders 20 pairs
+        SalesOrder.objects.create(
+            order_number='SO-TST-001', customer=cust1, product=prod,
+            order_date=date(2026, 3, 1), quantity_kg=20, total_amount=4800, status=SalesOrder.Status.COMPLETED,
+            payment_status=SalesOrder.PaymentStatus.PAID
+        )
+        # Small Buyer orders 5 pairs
+        SalesOrder.objects.create(
+            order_number='SO-TST-002', customer=cust2, product=prod,
+            order_date=date(2026, 3, 2), quantity_kg=5, total_amount=1200, status=SalesOrder.Status.COMPLETED,
+            payment_status=SalesOrder.PaymentStatus.PAID
+        )
+
+        self.client.force_login(owner)
+        response = self.client.get(reverse('analytics:dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+        # Verify product_details_json contains customers sorted from most to least
+        prod_data = json.loads(response.context['product_details_json'])
+        breeder_key = None
+        for k, v in prod_data.items():
+            if v['name'] == 'Breeder Crayfish':
+                breeder_key = k
+                break
+        self.assertIsNotNone(breeder_key)
+        customers = prod_data[breeder_key]['customers']
+        self.assertEqual(len(customers), 2)
+        # Ranked #1 must be Big Buyer (20 pairs), #2 Small Buyer (5 pairs)
+        self.assertEqual(customers[0]['name'], 'Big Buyer')
+        self.assertEqual(customers[0]['total_qty'], 20.0)
+        self.assertEqual(customers[0]['rank'], 1)
+        self.assertEqual(customers[1]['name'], 'Small Buyer')
+        self.assertEqual(customers[1]['total_qty'], 5.0)
+        self.assertEqual(customers[1]['rank'], 2)
