@@ -229,9 +229,86 @@ class PondForm(forms.ModelForm):
         return cleaned_data
 
 
+def get_harvest_yield_data():
+    """Calculates active products and their live quantities in ponds/cabins/tanks."""
+    products = list(Product.objects.select_related('species', 'pond').filter(is_active=True))
+    all_ponds = list(Pond.objects.all())
+
+    for product in products:
+        pond_aggregates = {}
+        is_azula_product = product.name and product.name.strip().lower() == 'azula'
+        for p in all_ponds:
+            is_azula = (p.location == 'Azula') or is_azula_product
+            if p.product_name == product.name or (is_azula_product and p.location == 'Azula'):
+                if p.name not in pond_aggregates:
+                    pond_aggregates[p.name] = {
+                        'name': p.name,
+                        'location': p.location or 'All Locations',
+                        'capacity': 0,
+                        'transfer_date': p.transfer_date
+                    }
+                qty = p.current_azula_quantity if is_azula else (p.capacity or 0)
+                pond_aggregates[p.name]['capacity'] += qty
+
+                if p.transfer_date and (not pond_aggregates[p.name]['transfer_date'] or p.transfer_date > pond_aggregates[p.name]['transfer_date']):
+                    pond_aggregates[p.name]['transfer_date'] = p.transfer_date
+
+            if p.product_name_2 == product.name:
+                if p.name not in pond_aggregates:
+                    pond_aggregates[p.name] = {
+                        'name': p.name,
+                        'location': p.location or 'All Locations',
+                        'capacity': 0,
+                        'transfer_date': p.transfer_date
+                    }
+                qty2 = p.current_azula_quantity if is_azula else (p.capacity_2 or 0)
+                pond_aggregates[p.name]['capacity'] += qty2
+
+                if p.transfer_date and (not pond_aggregates[p.name]['transfer_date'] or p.transfer_date > pond_aggregates[p.name]['transfer_date']):
+                    pond_aggregates[p.name]['transfer_date'] = p.transfer_date
+
+        product.used_in_operations = sorted(list(pond_aggregates.values()), key=lambda x: x['name'])
+        product.total_operations_quantity = sum(op['capacity'] for op in product.used_in_operations)
+
+    total_yield_quantity = sum(p.total_operations_quantity for p in products)
+    active_operations_count = len({op['name'] for p in products for op in p.used_in_operations if op['capacity'] > 0})
+    active_products_count = sum(1 for p in products if p.total_operations_quantity > 0)
+
+    return {
+        'products': products,
+        'total_yield_quantity': total_yield_quantity,
+        'active_operations_count': active_operations_count,
+        'active_products_count': active_products_count,
+    }
+
+
+@login_required
+def yield_list(request):
+    """Operations - Yield page displaying live products for harvest."""
+    ensure_not_customer(request.user)
+    yield_data = get_harvest_yield_data()
+    context = {
+        **yield_data,
+        'current_op_type': 'yield',
+    }
+    return render(request, 'operations/yield.html', context)
+
+
 @login_required
 def ponds_list(request):
-    """List all farms and ponds"""
+    """List all farms and ponds or route to sub-operation type"""
+    op_type = request.GET.get('type')
+    if not op_type:
+        return redirect(f"{reverse('operations:list')}?type=yield")
+
+    if op_type == 'yield':
+        yield_data = get_harvest_yield_data()
+        context = {
+            **yield_data,
+            'current_op_type': 'yield',
+        }
+        return render(request, 'operations/yield.html', context)
+
     from django.db.models import Q
     PondTransferBatch.objects.filter(pond__capacity__lte=0).delete()
     PondTransferBatch.objects.filter(quantity__lte=0).delete()
@@ -388,7 +465,7 @@ def ponds_list(request):
 def farm_create(request):
     ensure_not_customer(request.user)
     if request.method != 'POST':
-        return redirect('ponds:list')
+        return redirect(reverse('ponds:list') + '?type=pond')
 
     form = FarmForm(request.POST)
     if form.is_valid():
@@ -404,19 +481,19 @@ def farm_create(request):
                 'farms': farms,
                 'pond_form': PondForm(user=request.user),
             })
-        return redirect('ponds:list')
+        return redirect(reverse('ponds:list') + '?type=pond')
 
     for field, errors in form.errors.items():
         for error in errors:
             messages.error(request, f"{field}: {error}")
-    return redirect('ponds:list')
+    return redirect(reverse('ponds:list') + '?type=pond')
 
 
 @login_required
 def pond_create(request):
     ensure_not_customer(request.user)
     if request.method != 'POST':
-        return redirect('ponds:list')
+        return redirect(reverse('ponds:list') + '?type=pond')
 
     form = PondForm(request.POST, user=request.user)
     if form.is_valid():
@@ -465,7 +542,7 @@ def pond_create(request):
             return redirect(reverse('ponds:list') + '?type=azula')
         if category == 'Superworm Cabin':
             return redirect(reverse('ponds:list') + '?type=cabin')
-        return redirect('ponds:list')
+        return redirect(reverse('ponds:list') + '?type=pond')
 
     for field, errors in form.errors.items():
         for error in errors:
@@ -475,7 +552,7 @@ def pond_create(request):
         return redirect(reverse('ponds:list') + '?type=azula')
     if category == 'Superworm Cabin':
         return redirect(reverse('ponds:list') + '?type=cabin')
-    return redirect('ponds:list')
+    return redirect(reverse('ponds:list') + '?type=pond')
 @login_required
 def pond_edit(request, pond_id):
     """Edit a pond"""
@@ -537,7 +614,7 @@ def pond_edit(request, pond_id):
                 return redirect(reverse('ponds:list') + '?type=azula')
             if pond.location == 'Superworm Cabin':
                 return redirect(reverse('ponds:list') + '?type=cabin')
-            return redirect('ponds:list')
+            return redirect(reverse('ponds:list') + '?type=pond')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -555,6 +632,10 @@ def pond_edit(request, pond_id):
         cancel_url += '?type=azula'
     elif target_type == 'cabin':
         cancel_url += '?type=cabin'
+    elif target_type == 'yield':
+        cancel_url += '?type=yield'
+    else:
+        cancel_url += '?type=pond'
 
     return render(request, 'operations/edit.html', {
         'form': form, 
@@ -582,7 +663,7 @@ def farm_remove(request, farm_id):
             'pond_form': PondForm(user=request.user),
         })
 
-    return redirect('ponds:list')
+    return redirect(reverse('ponds:list') + '?type=pond')
 
 
 @login_required
@@ -607,7 +688,7 @@ def pond_remove(request, pond_id):
         return redirect(reverse('ponds:list') + '?type=azula')
     if pond_location == 'Superworm Cabin':
         return redirect(reverse('ponds:list') + '?type=cabin')
-    return redirect('ponds:list')
+    return redirect(reverse('ponds:list') + '?type=pond')
 
 
 @login_required

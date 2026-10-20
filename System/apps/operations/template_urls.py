@@ -8,6 +8,7 @@ app_name = 'ponds'
 
 urlpatterns = [
     path('', template_views.ponds_list, name='list'),
+    path('yield/', template_views.yield_list, name='yield'),
     path('map/', template_views.pond_geomap, name='geomap'),
     path('farm/create/', template_views.farm_create, name='farm_create'),
     path('pond/create/', template_views.pond_create, name='pond_create'),

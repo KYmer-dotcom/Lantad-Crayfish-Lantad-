@@ -1,5 +1,6 @@
 from django.test import TestCase
 from decimal import Decimal
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.operations.models import Farm, Pond
 from apps.stock.models import Species
@@ -529,3 +530,32 @@ class PondOperationalTest(TestCase):
         azula_pond.refresh_from_db()
         self.assertEqual(azula_pond.capacity, 40)
         self.assertEqual(azula_pond.current_azula_quantity, 40)
+
+
+class YieldSubpageRoutingTest(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='yieldowner', email='yieldowner@lantad.com', password='password123', role='owner')
+        self.client.force_login(self.owner)
+
+    def test_yield_subpage_render_and_routing(self):
+        # 1. Bare /operations/ redirects to ?type=yield
+        resp_bare = self.client.get(reverse('ponds:list'))
+        self.assertEqual(resp_bare.status_code, 302)
+        self.assertIn('?type=yield', resp_bare.url)
+
+        # 2. ?type=yield loads yield.html
+        resp_yield = self.client.get(reverse('ponds:list') + '?type=yield')
+        self.assertEqual(resp_yield.status_code, 200)
+        self.assertTemplateUsed(resp_yield, 'operations/yield.html')
+        self.assertContains(resp_yield, 'Products for Harvest')
+
+        # 3. Dedicated /operations/yield/ loads yield.html
+        resp_named = self.client.get(reverse('ponds:yield'))
+        self.assertEqual(resp_named.status_code, 200)
+        self.assertTemplateUsed(resp_named, 'operations/yield.html')
+
+        # 4. ?type=pond loads operations/list.html
+        resp_pond = self.client.get(reverse('ponds:list') + '?type=pond')
+        self.assertEqual(resp_pond.status_code, 200)
+        self.assertTemplateUsed(resp_pond, 'operations/list.html')
+
