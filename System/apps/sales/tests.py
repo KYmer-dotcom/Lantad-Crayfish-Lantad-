@@ -206,3 +206,26 @@ class SalesAndDataIntegrityTestCase(TestCase):
         self.assertEqual(log_entry.action, InputLog.Action.ADDED)
         self.assertEqual(log_entry.module, 'Sales Orders')
         self.assertEqual(InputLog.objects.count(), 1)
+
+    def test_delete_order_command(self):
+        """Test delete_order management command deletes order and customer."""
+        from django.core.management import call_command
+        cust = Customer.objects.create(name='Samuel Sian Test', phone='09378171777')
+        prod = Product.objects.create(name='Crilings', unit_price=50, quantity_kg=10)
+        order = SalesOrder.objects.create(
+            order_number='SO-20261018-0003',
+            customer=cust,
+            product=prod,
+            order_date=date(2026, 10, 18),
+            quantity_kg=1,
+            total_amount=50,
+            status=SalesOrder.Status.COMPLETED
+        )
+
+        self.assertEqual(SalesOrder.all_objects.filter(order_number='SO-20261018-0003').count(), 1)
+        self.assertEqual(Customer.objects.filter(name='Samuel Sian Test').count(), 1)
+
+        call_command('delete_order', order='SO-20261018-0003')
+
+        self.assertEqual(SalesOrder.all_objects.filter(order_number='SO-20261018-0003').count(), 0)
+        self.assertEqual(Customer.objects.filter(name='Samuel Sian Test').count(), 0)
