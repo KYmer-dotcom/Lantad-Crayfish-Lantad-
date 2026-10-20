@@ -642,7 +642,7 @@ def reports(request):
     if end_date:
         sales_qs = sales_qs.filter(order_date__lte=end_date)
 
-    sales_by_date = sales_qs.select_related('customer', 'product', 'created_by').prefetch_related('deliveries__rider', 'deliveries__created_by').order_by('-order_date', '-id')[:30]
+    sales_by_date = sales_qs.select_related('customer', 'product', 'created_by').prefetch_related('deliveries__rider', 'deliveries__created_by').order_by('-order_date', '-id')[:250]
 
     sales_weekly = sales_qs.annotate(week=TruncWeek('order_date')).values('week').annotate(
         total_sales=Sum('total_amount'),

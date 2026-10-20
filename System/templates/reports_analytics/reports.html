@@ -122,9 +122,7 @@
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Product</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            City</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
-                            Quantity</th>
+                            Location</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
                             Paid Date / Status</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">
@@ -160,8 +158,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:20 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:20 }}{% else %}N/A{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-[#cca43b] font-bold">{{ order.quantity_kg|default:0|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:25 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:25 }}{% else %}PICKUP{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if order.payment_status == 'paid' %}
                             <span class="text-emerald-400">Paid on {{ order.updated_at|date:"M d, Y" }}</span>
@@ -805,28 +802,79 @@
             </div>
 
             <!-- Section: Sales Details -->
-            <div id="report-sales-section" class="space-y-3">
-                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Sales Ledger</h3>
+            <div id="report-sales-section" class="space-y-6">
+                <!-- Periodic Sales Summaries Block in Printable Report -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-2">
+                    <div class="space-y-2">
+                        <div class="border-b border-white/10 pb-1.5 print:border-stone-800">
+                            <h4 class="text-[11px] font-bold uppercase tracking-wider text-[#cca43b] print:text-stone-900">Weekly Sales Summary</h4>
+                        </div>
+                        <table class="w-full text-left text-xs print-report-table">
+                            <thead>
+                                <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                    <th class="py-1.5 px-2 font-bold whitespace-nowrap">Week</th>
+                                    <th class="py-1.5 px-2 font-bold text-right whitespace-nowrap">Total Sales (₱)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                                {% for row in sales_weekly %}
+                                <tr class="hover:bg-white/[0.02]">
+                                    <td class="py-1.5 px-2 whitespace-nowrap font-medium">{{ row.week|date:"M d, Y" }}</td>
+                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="2" class="py-3 text-center text-stone-500 text-[11px]">No weekly sales recorded</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="border-b border-white/10 pb-1.5 print:border-stone-800">
+                            <h4 class="text-[11px] font-bold uppercase tracking-wider text-[#cca43b] print:text-stone-900">Monthly Sales Summary</h4>
+                        </div>
+                        <table class="w-full text-left text-xs print-report-table">
+                            <thead>
+                                <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                    <th class="py-1.5 px-2 font-bold whitespace-nowrap">Month</th>
+                                    <th class="py-1.5 px-2 font-bold text-right whitespace-nowrap">Total Sales (₱)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                                {% for row in sales_monthly %}
+                                <tr class="hover:bg-white/[0.02]">
+                                    <td class="py-1.5 px-2 whitespace-nowrap font-medium">{{ row.month|date:"M Y" }}</td>
+                                    <td class="py-1.5 px-2 text-right font-mono font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap">₱{{ row.total_sales|default:0|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="2" class="py-3 text-center text-stone-500 text-[11px]">No monthly sales recorded</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs print-report-table">
-                        <thead>
-                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
-                                <th class="py-2.5 px-3 font-bold">Date</th>
-                                <th class="py-2.5 px-3 font-bold">Order No.</th>
-                                <th class="py-2.5 px-3 font-bold">Customer</th>
-                                <th class="py-2.5 px-3 font-bold">Product</th>
-                                <th class="py-2.5 px-3 font-bold">City</th>
-                                <th class="py-2.5 px-3 font-bold">Quantity</th>
-                                <th class="py-2.5 px-3 font-bold">Paid Status</th>
-                                <th class="py-2.5 px-3 font-bold text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-sales-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Sales Ledger</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs print-report-table">
+                            <thead>
+                                <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
+                                    <th class="py-2.5 px-3 font-bold whitespace-nowrap">Date</th>
+                                    <th class="py-2.5 px-3 font-bold whitespace-nowrap">Order No.</th>
+                                    <th class="py-2.5 px-3 font-bold">Customer</th>
+                                    <th class="py-2.5 px-3 font-bold">Product</th>
+                                    <th class="py-2.5 px-3 font-bold">Location</th>
+                                    <th class="py-2.5 px-3 font-bold whitespace-nowrap">Paid Status</th>
+                                    <th class="py-2.5 px-3 font-bold text-right whitespace-nowrap">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-sales-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -1225,8 +1273,10 @@
                     const cells = tr.querySelectorAll('td');
                     if (cells.length > 0) {
                         let rowData = [];
-                        cells.forEach(td => {
-                            rowData.push(escapeCSV(td.textContent.replace(/\s+/g, ' ')));
+                        cells.forEach((td, idx) => {
+                            if (idx < headerCols.length) {
+                                rowData.push(escapeCSV(td.textContent.replace(/\s+/g, ' ')));
+                            }
                         });
                         csvRows.push(rowData);
                     }
@@ -1238,10 +1288,10 @@
                 extractTableData('ops-feeding-tbody', ['Date & Time', 'Pond / Shelf', 'Feed Type', 'Amount (g)', 'Status', 'Recorded By'], 'Feeding Operations Log');
                 extractTableData('ops-mortality-tbody', ['Date & Time', 'Pond / Shelf', 'Product', 'Quantity Died', 'Reason / Remarks', 'Recorded By'], 'Mortality Operations Log');
             } else if (rType === 'receipts') {
-                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Verified Receipts Ledger');
+                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'Location', 'Status', 'Total Amount'], 'Verified Receipts Ledger');
             } else {
                 // sales
-                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
+                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'Location', 'Status', 'Total Amount'], 'Sales Ledger');
             }
 
             const csvString = csvRows.map(e => e.join(',')).join('\r\n');
@@ -1365,24 +1415,23 @@
                 const rows = sourceSalesTbody.querySelectorAll('tr');
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
-                    if (cells.length >= 8) {
+                    if (cells.length >= 7) {
                         const tr = document.createElement('tr');
                         tr.className = 'border-b border-white/5 print:border-stone-200';
                         tr.innerHTML = `
-                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[3].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-medium">${cells[5].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[6].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3 text-right font-bold text-[#cca43b] print:text-stone-900">${cells[7].textContent.trim()}</td>
+                            <td class="py-2 px-3 whitespace-nowrap text-stone-300 print:text-stone-900">${cells[0].textContent.trim()}</td>
+                            <td class="py-2 px-3 font-semibold text-stone-200 print:text-stone-900 whitespace-nowrap font-mono">${cells[1].textContent.trim()}</td>
+                            <td class="py-2 px-3">${cells[2].textContent.trim()}</td>
+                            <td class="py-2 px-3">${cells[3].textContent.trim()}</td>
+                            <td class="py-2 px-3 text-stone-400 print:text-stone-700">${row.getAttribute('data-address') || cells[4].textContent.trim()}</td>
+                            <td class="py-2 px-3 whitespace-nowrap font-medium">${cells[5].innerHTML.trim()}</td>
+                            <td class="py-2 px-3 text-right font-bold text-[#cca43b] print:text-stone-900 whitespace-nowrap font-mono">${cells[6].textContent.trim()}</td>
                         `;
                         salesTbody.appendChild(tr);
                     }
                 });
                 if (rows.length === 0) {
-                    salesTbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-500">No records</td></tr>';
+                    salesTbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-stone-500">No records</td></tr>';
                 }
             }
 
