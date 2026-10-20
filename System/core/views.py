@@ -392,6 +392,10 @@ def dashboard(request):
             'dead_30d': stat_30d['dead'],
         })
 
+    total_dead_30d = sum(item['dead_30d'] for item in mortality_ponds)
+    total_stock_all = sum(item['capacity'] for item in mortality_ponds) + total_dead_30d
+    mortality_rate_30d = round((total_dead_30d / total_stock_all) * 100, 1) if total_stock_all > 0 else 0.0
+
     context = {
         'stats': {
             'total_farms': total_farms,
@@ -401,7 +405,8 @@ def dashboard(request):
             'total_biomass': total_biomass,
             'feed_used_30d': feed_used_30d,
             'feeding_count': feeding_count,
-            'mortality_30d': mortality_30d,
+            'mortality_30d': total_dead_30d,
+            'mortality_rate_30d': mortality_rate_30d,
             'mortality_events': mortality_events,
             'harvest_30d': harvest_30d,
             'harvest_count': harvest_count,
