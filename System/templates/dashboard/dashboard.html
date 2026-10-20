@@ -263,7 +263,7 @@
 
         <!-- Left Column: Pond Mortality Table -->
         <div class="glass-card rounded-xl overflow-hidden flex flex-col justify-between">
-            <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02] gap-2">
+            <div class="flex flex-wrap items-center justify-between border-b border-white/10 px-6 py-3.5 bg-white/[0.02] gap-2">
                 <h2 class="text-base font-black text-white tracking-tight">Pond Mortality</h2>
                 <div class="inline-flex items-center gap-1.5">
                     <span class="text-[11px] uppercase tracking-wider text-[#a0ac96] font-bold">Top Cause:</span>
@@ -273,34 +273,34 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto max-h-[520px] overflow-y-auto custom-scrollbar">
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-white/10 text-sm">
-                    <thead class="bg-[#022118] sticky top-0 z-10 text-xs font-black uppercase tracking-wider text-[#a0ac96] border-b border-white/10">
+                    <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
                         <tr>
-                            <th class="px-6 py-3.5 text-left">Pond</th>
-                            <th class="px-6 py-3.5 text-left">Product</th>
-                            <th class="px-6 py-3.5 text-left">Deaths</th>
-                            <th class="px-6 py-3.5 text-left">Rate</th>
+                            <th class="px-5 py-3 text-left">Pond</th>
+                            <th class="px-5 py-3 text-left">Product</th>
+                            <th class="px-5 py-3 text-left">Deaths</th>
+                            <th class="px-5 py-3 text-left">Rate</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
                         {% for item in mortality_ponds %}
                         <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="px-6 py-3.5 whitespace-nowrap">
+                            <td class="px-5 py-2.5 whitespace-nowrap">
                                 <span class="font-bold text-white">{{ item.name }}</span>
                                 <span class="text-xs text-[#a0ac96] ml-1">({{ item.location }})</span>
                             </td>
-                            <td class="px-6 py-3.5 whitespace-nowrap text-xs text-[#a0ac96] font-medium">{{ item.product_name }}</td>
-                            <td class="px-6 py-3.5 whitespace-nowrap font-mono font-bold text-stone-200">{{ item.dead_30d|default:0 }}</td>
-                            <td class="px-6 py-3.5 whitespace-nowrap">
-                                <span class="px-2.5 py-1 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_30d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_30d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
+                            <td class="px-5 py-2.5 whitespace-nowrap text-xs text-[#a0ac96] font-medium">{{ item.product_name }}</td>
+                            <td class="px-5 py-2.5 whitespace-nowrap font-mono font-bold {% if item.dead_30d > 0 %}text-white{% else %}text-[#a0ac96]{% endif %}">{{ item.dead_30d|default:0 }}</td>
+                            <td class="px-5 py-2.5 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_30d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_30d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
                                     {{ item.rate_30d|floatformat:1 }}%
                                 </span>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No pond records available.</td>
+                            <td colspan="4" class="px-5 py-8 text-center text-[#a0ac96] font-mono">No pond records available.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -312,34 +312,34 @@
         <div class="space-y-1.5 flex flex-col">
             <!-- Recent Orders Queue -->
             <div class="glass-card rounded-xl overflow-hidden">
-                <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
+                <div class="flex items-center justify-between border-b border-white/10 px-6 py-3.5 bg-white/[0.02]">
                     <h2 class="text-base font-black text-white tracking-tight">Recent Orders</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-white/10 text-sm">
                         <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
                             <tr>
-                                <th class="px-6 py-3.5 text-left">Order</th>
-                                <th class="px-6 py-3.5 text-left">Customer</th>
-                                <th class="px-6 py-3.5 text-left">Status</th>
-                                <th class="px-6 py-3.5 text-left">Total</th>
+                                <th class="px-5 py-3 text-left">Order</th>
+                                <th class="px-5 py-3 text-left">Customer</th>
+                                <th class="px-5 py-3 text-left">Status</th>
+                                <th class="px-5 py-3 text-left">Total</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
                             {% for order in recent_orders %}
                             <tr class="hover:bg-white/[0.02] transition-colors">
-                                <td class="px-6 py-3.5 font-mono font-bold text-white">{{ order.order_number }}</td>
-                                <td class="px-6 py-3.5 font-bold text-stone-200">{{ order.customer.name }}</td>
-                                <td class="px-6 py-3.5">
+                                <td class="px-5 py-2.5 font-mono font-bold text-white">{{ order.order_number }}</td>
+                                <td class="px-5 py-2.5 font-bold text-stone-200">{{ order.customer.name }}</td>
+                                <td class="px-5 py-2.5">
                                     <span class="px-2.5 py-0.5 inline-flex text-[10px] font-black rounded-md uppercase tracking-wider border {% if order.status == 'pending' %}bg-[#cca43b]/20 text-[#cca43b] border-[#cca43b]/40 {% elif order.status == 'completed' %}bg-white/10 text-white border-white/20 {% else %}bg-[#cca43b]/10 text-[#cca43b] border-[#cca43b]/20{% endif %}">
                                         {{ order.get_status_display }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:0 }}</td>
+                                <td class="px-5 py-2.5 font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|floatformat:0 }}</td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No orders in queue.</td>
+                                <td colspan="4" class="px-5 py-8 text-center text-[#a0ac96] font-mono">No orders in queue.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -349,28 +349,28 @@
 
             <!-- Sales Activity Table (Below Recent Orders) -->
             <div class="glass-card rounded-xl overflow-hidden">
-                <div class="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-white/[0.02]">
+                <div class="flex items-center justify-between border-b border-white/10 px-6 py-3.5 bg-white/[0.02]">
                     <h2 class="text-base font-black text-white tracking-tight">Sales Activity</h2>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-white/10 text-sm">
                         <thead class="bg-white/[0.03] text-xs font-black uppercase tracking-wider text-[#a0ac96]">
                             <tr>
-                                <th class="px-6 py-3.5 text-left">Date</th>
-                                <th class="px-6 py-3.5 text-left">Orders</th>
-                                <th class="px-6 py-3.5 text-left">Gross Revenue</th>
+                                <th class="px-5 py-3 text-left">Date</th>
+                                <th class="px-5 py-3 text-left">Orders</th>
+                                <th class="px-5 py-3 text-left">Gross Revenue</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5 bg-transparent text-stone-300">
                             {% for row in sales_by_date %}
                             <tr class="hover:bg-white/[0.02] transition-colors">
-                                <td class="px-6 py-3.5 font-mono font-bold">{{ row.day|date:"Y-m-d" }}</td>
-                                <td class="px-6 py-3.5 font-bold text-white">{{ row.total_orders }}</td>
-                                <td class="px-6 py-3.5 font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:0 }}</td>
+                                <td class="px-5 py-2.5 font-mono font-bold">{{ row.day|date:"Y-m-d" }}</td>
+                                <td class="px-5 py-2.5 font-bold text-white">{{ row.total_orders }}</td>
+                                <td class="px-5 py-2.5 font-mono font-bold text-[#cca43b]">₱{{ row.total_sales|default:0|floatformat:0 }}</td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="3" class="px-6 py-8 text-center text-[#a0ac96] font-mono">No sales activity yet.</td>
+                                <td colspan="3" class="px-5 py-8 text-center text-[#a0ac96] font-mono">No sales activity yet.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

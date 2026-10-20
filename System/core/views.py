@@ -280,7 +280,7 @@ def dashboard(request):
         is_active=True,
         quantity_kg__lte=F('reorder_level_kg')
     ).count()
-    recent_orders = SalesOrder.objects.select_related('customer', 'product').order_by('-created_at')[:6]
+    recent_orders = SalesOrder.objects.select_related('customer', 'product').order_by('-created_at')[:8]
     
     from django.utils import timezone
     from django.db.models import Q
