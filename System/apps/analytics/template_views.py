@@ -874,16 +874,31 @@ def reports(request):
 
         o.ordered_items = siblings
         p_names = []
+        items_payload = []
         for item in siblings:
-            if item.product and item.product.name:
-                p_name = item.product.name.strip()
-                if p_name not in p_names:
-                    p_names.append(p_name)
+            p_name = item.product.name.strip() if (item.product and item.product.name) else "Aquaculture Stock"
+            if p_name not in p_names:
+                p_names.append(p_name)
+            qty = float(item.quantity_kg or 0)
+            price = float(item.price_per_kg or 0)
+            tot = float(item.total_amount or (qty * price))
+            items_payload.append({
+                'name': p_name,
+                'qty': int(qty) if qty.is_integer() else qty,
+                'price': int(price) if price.is_integer() else price,
+                'total': int(tot) if tot.is_integer() else tot,
+            })
         if not p_names and o.product and o.product.name:
             p_names = [o.product.name.strip()]
 
         o.products_summary = ", ".join(p_names) if p_names else "Aquaculture Stock"
         o.order_total_amount = sum((s.total_amount for s in siblings if s.total_amount), Decimal('0')) or o.total_amount
+        o.items_json = json.dumps(items_payload)
+
+        addr = (o.delivery_address or '').strip().upper()
+        cust_addr = (o.customer.address or '').strip().upper() if o.customer else ''
+        o.is_pickup = (addr == 'PICKUP') or (not addr and cust_addr == 'PICKUP')
+
         deduped_sales.append(o)
 
     sales_by_date = deduped_sales
