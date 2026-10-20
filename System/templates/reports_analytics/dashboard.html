@@ -659,7 +659,7 @@
         <div class="flex items-start justify-between border-b border-white/10 pb-4 mb-4">
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span id="prod-modal-dot" class="h-3 w-3 rounded-sm shrink-0 bg-[#cca43b]"></span>
+                    <span id="prod-modal-dot" class="hidden"></span>
                     <h3 id="prod-modal-title" class="text-xl font-black text-white tracking-tight">Product Details</h3>
                     <span id="prod-modal-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Product</span>
                 </div>
@@ -683,7 +683,7 @@
                 <p id="prod-modal-revenue" class="text-lg font-black font-mono text-white mt-0.5">₱0</p>
             </div>
             <div class="p-3 rounded-lg bg-white/[0.02] border border-white/10">
-                <p class="text-[10px] font-mono uppercase text-[#a0ac96]">Unique Buyers</p>
+                <p class="text-[10px] font-mono uppercase text-[#a0ac96]">Buyers</p>
                 <p id="prod-modal-cust-count" class="text-lg font-black font-mono text-emerald-400 mt-0.5">0</p>
             </div>
         </div>
@@ -693,10 +693,7 @@
             <!-- Search Input -->
             <div class="relative flex-1">
                 <input type="text" id="prod-modal-search" oninput="filterProductModalContent()" placeholder="Search customer name, phone, address, or order #..."
-                    class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 pl-9 text-xs text-white placeholder-stone-400 focus:border-[#cca43b] focus:outline-none transition-colors font-mono">
-                <svg class="h-4 w-4 text-stone-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs text-white placeholder-stone-400 focus:border-[#cca43b] focus:outline-none transition-colors font-mono">
             </div>
 
             <!-- Tabs -->
@@ -742,9 +739,6 @@
 
             <!-- Empty State -->
             <div id="prod-modal-empty" class="hidden py-12 text-center text-xs text-[#a0ac96]">
-                <svg class="mx-auto h-8 w-8 text-stone-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
                 <p class="font-bold text-white">No buyers found</p>
                 <p class="text-[11px] mt-0.5">Try a different search keyword or switch view tabs.</p>
             </div>
@@ -752,10 +746,7 @@
 
         <!-- Modal Footer -->
         <div class="border-t border-white/10 pt-3 mt-4 flex items-center justify-between text-[11px] text-[#a0ac96] font-mono">
-            <span class="flex items-center gap-1.5">
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-                Sorted: Highest quantity ordered &rarr; Lowest
-            </span>
+            <span>Sorted: Highest quantity ordered &rarr; Lowest</span>
             <button type="button" onclick="closeProductModal()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors cursor-pointer">
                 Close
             </button>
@@ -1484,11 +1475,11 @@
                 const rank = c.rank || (idx + 1);
                 let rankBadge = '';
                 if (rank === 1) {
-                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/40 font-mono">🏆 #1 Top Buyer</span>';
+                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/40 font-mono">#1 Top Buyer</span>';
                 } else if (rank === 2) {
-                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-stone-300/20 text-stone-200 border border-stone-300/40 font-mono">🥈 #2</span>';
+                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-stone-300/20 text-stone-200 border border-stone-300/40 font-mono">#2</span>';
                 } else if (rank === 3) {
-                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-700/30 text-amber-300 border border-amber-600/40 font-mono">🥉 #3</span>';
+                    rankBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-700/30 text-amber-300 border border-amber-600/40 font-mono">#3</span>';
                 } else {
                     rankBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-white/5 text-[#a0ac96] border border-white/10 font-mono">#${rank}</span>`;
                 }
@@ -1522,8 +1513,8 @@
                                     </span>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-3 mt-1 text-[11px] text-[#a0ac96] font-mono">
-                                    ${c.phone && c.phone !== 'N/A' ? `<span>📞 ${c.phone}</span>` : ''}
-                                    ${c.address && c.address !== 'N/A' ? `<span>📍 ${c.address}</span>` : ''}
+                                    ${c.phone && c.phone !== 'N/A' ? `<span>${c.phone}</span>` : ''}
+                                    ${c.address && c.address !== 'N/A' ? `<span>${c.address}</span>` : ''}
                                 </div>
                             </div>
                         </div>
