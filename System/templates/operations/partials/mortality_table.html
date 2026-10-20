@@ -25,10 +25,14 @@
                 <div class="text-[10px] text-[#a0ac96]">Available in pond</div>
             </td>
             <td class="px-4 py-3 align-middle">
-                <input type="text" 
-                       class="mortality-reason-input w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-xs text-stone-100 placeholder-stone-500 focus:border-red-500 focus:outline-none transition-colors" 
-                       placeholder="State reason on how it/they died (e.g., Molting failure, water quality, cannibalism)..."
-                       value="{{ pond.today_mortality_log.reason|default:'' }}">
+                <select class="mortality-reason-input w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-xs text-stone-100 focus:border-red-500 focus:outline-none transition-colors cursor-pointer">
+                    <option value="" class="bg-[#021f15] text-stone-400">Select reason...</option>
+                    <option value="Temperature" class="bg-[#021f15] text-stone-100" {% if pond.today_mortality_log.reason == 'Temperature' %}selected{% endif %}>Temperature</option>
+                    <option value="Water Quality" class="bg-[#021f15] text-stone-100" {% if pond.today_mortality_log.reason|lower == 'water quality' or pond.today_mortality_log.reason|lower == 'waterquality' %}selected{% endif %}>Water Quality</option>
+                    {% if pond.today_mortality_log.reason and pond.today_mortality_log.reason != 'Temperature' and pond.today_mortality_log.reason|lower != 'water quality' and pond.today_mortality_log.reason|lower != 'waterquality' %}
+                    <option value="{{ pond.today_mortality_log.reason }}" class="bg-[#021f15] text-stone-100" selected>{{ pond.today_mortality_log.reason }}</option>
+                    {% endif %}
+                </select>
             </td>
             <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1.5">
