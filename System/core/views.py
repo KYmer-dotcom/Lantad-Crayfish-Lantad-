@@ -375,8 +375,17 @@ def dashboard(request):
     )
     top_mortality_reason = top_reason_stat['reason'] if top_reason_stat else 'None Recorded'
 
+    import re
+    def natural_pond_key(p):
+        loc_val = 1 if p.location == 'Main Pond' else (2 if p.location == 'Breeding Pond' else 3)
+        digits = re.findall(r'\d+', p.name or '')
+        num = int(digits[0]) if digits else 0
+        return (loc_val, num, p.name or '')
+
+    mortality_ponds_list = sorted(list(mortality_ponds_qs), key=natural_pond_key)
+
     mortality_ponds = []
-    for p in mortality_ponds_qs:
+    for p in mortality_ponds_list:
         stat_7d = p.get_mortality_stats(days=7)
         stat_30d = p.get_mortality_stats(days=30)
         prod = 'Breeder Crayfish' if p.location == 'Breeding Pond' else (p.product_name or 'Crayfish')
