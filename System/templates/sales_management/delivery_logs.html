@@ -39,6 +39,90 @@
         box-shadow: 0 4px 14px 0 rgba(204, 164, 59, 0.3) !important;
         border-color: transparent !important;
     }
+
+    @media print {
+        @page {
+            margin: 10mm 12mm;
+            size: landscape;
+        }
+
+        nav,
+        aside,
+        header,
+        footer,
+        #mobile-menu,
+        #django-messages-container,
+        #receipt-modal,
+        #bin-purge-modal,
+        .no-print,
+        form,
+        .pagination,
+        #logs-type-tabs,
+        .bin-tab-btn,
+        button {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        html, body, .app-shell, .app-shell > div, main {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .glass-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+            color: #0f172a !important;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            color: #0f172a !important;
+        }
+
+        thead {
+            display: table-header-group !important;
+            background: #f1f5f9 !important;
+        }
+
+        th {
+            color: #334155 !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+            font-size: 10px !important;
+        }
+
+        td {
+            color: #0f172a !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            font-size: 11px !important;
+        }
+
+        tr {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+        }
+
+        h1, h2, h3, h4, p, span, strong {
+            color: #0f172a !important;
+            text-shadow: none !important;
+        }
+
+        .text-\[\#cca43b\], .text-emerald-400, .text-cyan-400, .text-amber-400 {
+            color: #0f172a !important;
+            font-weight: bold !important;
+        }
+    }
 </style>
 
 <div class="space-y-1.5 pb-12">
@@ -47,6 +131,15 @@
         <div>
             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Audit & Activity Records</p>
             <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Audit & System Logs</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="window.print()"
+                class="no-print inline-flex items-center gap-2 rounded-xl bg-[#cca43b] px-4 py-2 text-xs font-black text-[#01140e] hover:bg-[#b89235] transition-all shadow-sm cursor-pointer">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span>Print</span>
+            </button>
         </div>
     </div>
 
