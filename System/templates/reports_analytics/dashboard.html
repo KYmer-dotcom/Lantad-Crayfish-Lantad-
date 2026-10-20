@@ -136,24 +136,40 @@
                 <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
                     <div>
                         <h2 class="text-base sm:text-lg font-black tracking-tight text-white">Top Delivery Locations</h2>
-                        <p class="text-xs text-[#a0ac96]">Revenue volume & distribution by destination</p>
+                        <p class="text-xs text-[#a0ac96]">Revenue volume & distribution by destination · <span class="text-[#cca43b] font-bold">Click any to view customers & orders</span></p>
                     </div>
                     <span class="rounded-md bg-[#cca43b]/15 border border-[#cca43b]/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#cca43b]">{{ active_month }}</span>
                 </div>
 
                 <div class="space-y-3.5">
                     {% for loc in top_locations %}
-                    <div class="p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                    <div onclick="openLocationModal('{{ loc.name|escapejs }}')"
+                        class="group p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-[#cca43b]/40 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+                        title="Click to view customers and orders for {{ loc.name }}">
                         <div class="flex items-center justify-between text-xs font-bold mb-1.5">
-                            <span class="text-white font-sans">{{ loc.name }}</span>
-                            <span class="text-[#cca43b] font-mono">₱{{ loc.revenue|floatformat:2 }}</span>
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="text-white font-sans truncate group-hover:text-[#cca43b] transition-colors">
+                                    {% if 'Pickup' in loc.name %}🏬{% else %}📍{% endif %} {{ loc.name }}
+                                </span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[#a0ac96] group-hover:bg-[#cca43b]/20 group-hover:text-[#cca43b] transition-colors font-mono shrink-0">
+                                    {{ loc.customer_count }} customer{{ loc.customer_count|pluralize }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="text-[#cca43b] font-mono">₱{{ loc.revenue|floatformat:2 }}</span>
+                                <svg class="w-3.5 h-3.5 text-[#a0ac96] group-hover:text-[#cca43b] group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
                         </div>
                         <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                             <div class="h-full bg-[#cca43b] rounded-full transition-all duration-500" style="width: {{ loc.bar_pct }}%"></div>
                         </div>
                         <div class="flex items-center justify-between text-[11px] text-[#a0ac96] font-mono mt-1.5">
-                            <span>{{ loc.orders }} orders · {{ loc.pct }}% of revenue</span>
-                            <span class="{% if '-' in loc.growth %}text-rose-400{% else %}text-emerald-400{% endif %}">{{ loc.growth }}</span>
+                            <span>{{ loc.orders }} order{{ loc.orders|pluralize }} · {{ loc.pct }}% of revenue</span>
+                            <span class="text-[10px] text-[#cca43b] font-bold uppercase tracking-wider group-hover:underline flex items-center gap-1">
+                                View Customers &rarr;
+                            </span>
                         </div>
                     </div>
                     {% endfor %}
@@ -519,6 +535,114 @@
         <div class="mt-4 flex items-center justify-between pt-3 border-t border-white/10">
             <span class="text-xs text-[#a0ac96] font-mono">Retrained daily on sales order updates</span>
             <button onclick="retrainModel()" id="btnRetrainModel" class="rounded-md border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-bold text-[#cca43b] hover:bg-[#cca43b] hover:text-[#01140e] transition-all cursor-pointer">Retrain Model</button>
+        </div>
+    </div>
+</div>
+
+<!-- Location Customers & Orders Breakdown Modal -->
+<div id="location-customers-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto" onclick="if(event.target === this) closeLocationModal();">
+    <div class="glass-card max-w-4xl w-full rounded-2xl border border-white/15 bg-[#01140e]/95 p-6 shadow-2xl flex flex-col max-h-[90vh] my-auto">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between border-b border-white/10 pb-4 mb-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span id="loc-modal-icon" class="text-xl">📍</span>
+                    <h3 id="loc-modal-title" class="text-xl font-black text-white tracking-tight">Location Details</h3>
+                    <span id="loc-modal-type-badge" class="rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">Delivery Destination</span>
+                </div>
+                <p class="text-xs text-[#a0ac96]">Verified customers and purchase history associated with this fulfillment location or pickup.</p>
+            </div>
+            <button type="button" onclick="closeLocationModal()" class="rounded-lg p-1.5 text-stone-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer" title="Close (Esc)">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Summary KPI Strip -->
+        <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="p-3 rounded-lg bg-white/[0.02] border border-white/10">
+                <p class="text-[10px] font-mono uppercase text-[#a0ac96]">Total Revenue</p>
+                <p id="loc-modal-revenue" class="text-lg font-black font-mono text-[#cca43b] mt-0.5">₱0.00</p>
+            </div>
+            <div class="p-3 rounded-lg bg-white/[0.02] border border-white/10">
+                <p class="text-[10px] font-mono uppercase text-[#a0ac96]">Unique Customers</p>
+                <p id="loc-modal-customers-count" class="text-lg font-black font-mono text-white mt-0.5">0</p>
+            </div>
+            <div class="p-3 rounded-lg bg-white/[0.02] border border-white/10">
+                <p class="text-[10px] font-mono uppercase text-[#a0ac96]">Total Orders</p>
+                <p id="loc-modal-orders-count" class="text-lg font-black font-mono text-emerald-400 mt-0.5">0</p>
+            </div>
+        </div>
+
+        <!-- Search and View Switcher -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <!-- Search Input -->
+            <div class="relative flex-1">
+                <input type="text" id="loc-modal-search" oninput="filterLocationModalContent()" placeholder="Search customer name, phone, order #, or product..."
+                    class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 pl-9 text-xs text-white placeholder-stone-400 focus:border-[#cca43b] focus:outline-none transition-colors font-mono">
+                <svg class="h-4 w-4 text-stone-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <!-- Tabs -->
+            <div class="inline-flex rounded-lg border border-white/10 bg-black/40 p-1 shrink-0">
+                <button id="btn-tab-customers" type="button" onclick="switchLocModalTab('customers')"
+                    class="px-3 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer">
+                    Customers (<span id="loc-tab-cust-count">0</span>)
+                </button>
+                <button id="btn-tab-orders" type="button" onclick="switchLocModalTab('orders')"
+                    class="px-3 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer">
+                    All Orders (<span id="loc-tab-ord-count">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content Body -->
+        <div class="overflow-y-auto flex-1 pr-1 custom-scrollbar space-y-3" style="max-height: 52vh;">
+            <!-- Customers View -->
+            <div id="loc-view-customers" class="space-y-3">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Orders View -->
+            <div id="loc-view-orders" class="hidden">
+                <div class="overflow-x-auto rounded-lg border border-white/10">
+                    <table class="min-w-full divide-y divide-white/10 text-left text-xs font-mono">
+                        <thead class="bg-white/[0.04] text-[#a0ac96]">
+                            <tr>
+                                <th class="px-3 py-2.5 font-bold uppercase">Order #</th>
+                                <th class="px-3 py-2.5 font-bold uppercase">Customer</th>
+                                <th class="px-3 py-2.5 font-bold uppercase">Date</th>
+                                <th class="px-3 py-2.5 font-bold uppercase">Product & Qty</th>
+                                <th class="px-3 py-2.5 font-bold uppercase text-right">Amount</th>
+                                <th class="px-3 py-2.5 font-bold uppercase text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loc-orders-tbody" class="divide-y divide-white/5 bg-transparent">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="loc-modal-empty" class="hidden py-12 text-center text-xs text-[#a0ac96]">
+                <svg class="mx-auto h-8 w-8 text-stone-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <p class="font-bold text-white">No matches found</p>
+                <p class="text-[11px] mt-0.5">Try a different search keyword or switch view tabs.</p>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="border-t border-white/10 pt-3 mt-4 flex items-center justify-between text-[11px] text-[#a0ac96] font-mono">
+            <span>Tip: Press ESC or click outside to dismiss.</span>
+            <button type="button" onclick="closeLocationModal()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors cursor-pointer">
+                Close
+            </button>
         </div>
     </div>
 </div>
@@ -906,5 +1030,221 @@
             btn.className = 'rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-xs font-bold text-emerald-400';
         }, 1200);
     }
+
+    // -------------------------------------------------------------
+    // Location Customers & Orders Breakdown Modal Logic
+    // -------------------------------------------------------------
+    const locationData = {{ location_details_json|default:"{}"|safe }};
+    let currentModalLoc = null;
+    let currentLocTab = 'customers';
+
+    function openLocationModal(locName) {
+        currentModalLoc = locationData[locName];
+        if (!currentModalLoc) {
+            console.warn('Location data not found for:', locName);
+            return;
+        }
+
+        const isPickup = locName.includes('Pickup');
+        const iconEl = document.getElementById('loc-modal-icon');
+        const titleEl = document.getElementById('loc-modal-title');
+        const badgeEl = document.getElementById('loc-modal-type-badge');
+        const revEl = document.getElementById('loc-modal-revenue');
+        const custCountEl = document.getElementById('loc-modal-customers-count');
+        const ordCountEl = document.getElementById('loc-modal-orders-count');
+        const tabCustCount = document.getElementById('loc-tab-cust-count');
+        const tabOrdCount = document.getElementById('loc-tab-ord-count');
+
+        if (iconEl) iconEl.textContent = isPickup ? '🏬' : '📍';
+        if (titleEl) titleEl.textContent = locName;
+        if (badgeEl) {
+            badgeEl.textContent = isPickup ? 'Direct Pickup' : 'Delivery Destination';
+            badgeEl.className = isPickup
+                ? 'rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30';
+        }
+        if (revEl) revEl.textContent = '₱' + Number(currentModalLoc.revenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (custCountEl) custCountEl.textContent = currentModalLoc.customer_count;
+        if (ordCountEl) ordCountEl.textContent = currentModalLoc.order_count;
+        if (tabCustCount) tabCustCount.textContent = currentModalLoc.customer_count;
+        if (tabOrdCount) tabOrdCount.textContent = currentModalLoc.order_count;
+
+        const searchInput = document.getElementById('loc-modal-search');
+        if (searchInput) searchInput.value = '';
+
+        switchLocModalTab('customers');
+        renderLocationModalContent('');
+
+        const modal = document.getElementById('location-customers-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        }
+    }
+
+    function closeLocationModal() {
+        const modal = document.getElementById('location-customers-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+
+    function switchLocModalTab(tab) {
+        currentLocTab = tab;
+        const btnCust = document.getElementById('btn-tab-customers');
+        const btnOrd = document.getElementById('btn-tab-orders');
+        const viewCust = document.getElementById('loc-view-customers');
+        const viewOrd = document.getElementById('loc-view-orders');
+
+        if (!btnCust || !btnOrd || !viewCust || !viewOrd) return;
+
+        if (tab === 'customers') {
+            btnCust.className = 'px-3 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
+            btnOrd.className = 'px-3 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            viewCust.classList.remove('hidden');
+            viewOrd.classList.add('hidden');
+        } else {
+            btnOrd.className = 'px-3 py-1 text-xs font-bold rounded-md bg-[#cca43b] text-[#01140e] transition-colors cursor-pointer';
+            btnCust.className = 'px-3 py-1 text-xs font-bold rounded-md text-[#a0ac96] hover:text-white transition-colors cursor-pointer';
+            viewOrd.classList.remove('hidden');
+            viewCust.classList.add('hidden');
+        }
+
+        const q = document.getElementById('loc-modal-search') ? document.getElementById('loc-modal-search').value : '';
+        renderLocationModalContent(q);
+    }
+
+    function renderLocationModalContent(searchTerm = '') {
+        if (!currentModalLoc) return;
+        const q = (searchTerm || '').trim().toLowerCase();
+        const emptyEl = document.getElementById('loc-modal-empty');
+
+        // 1. Render Customers
+        const custContainer = document.getElementById('loc-view-customers');
+        if (custContainer) {
+            custContainer.innerHTML = '';
+            const filteredCustomers = (currentModalLoc.customers || []).filter(c => {
+                if (!q) return true;
+                return (c.name || '').toLowerCase().includes(q) ||
+                       (c.phone && c.phone.toLowerCase().includes(q)) ||
+                       (c.address && c.address.toLowerCase().includes(q)) ||
+                       (c.orders || []).some(o => (o.order_number || '').toLowerCase().includes(q) || (o.product || '').toLowerCase().includes(q));
+            });
+
+            if (currentLocTab === 'customers') {
+                if (emptyEl) {
+                    if (filteredCustomers.length === 0) emptyEl.classList.remove('hidden');
+                    else emptyEl.classList.add('hidden');
+                }
+            }
+
+            filteredCustomers.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] p-4 transition-all';
+
+                const ordersHTML = (c.orders || []).map(o => `
+                    <div class="flex flex-wrap items-center justify-between gap-2 py-2 border-b border-white/5 last:border-0 text-xs">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-mono font-bold text-stone-200">#${o.order_number}</span>
+                            <span class="text-[#a0ac96] text-[11px] font-mono">${o.date}</span>
+                            <span class="text-white font-sans font-semibold">${o.product}</span>
+                            <span class="text-[11px] text-[#a0ac96] font-mono">(${o.quantity})</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono font-bold text-[#cca43b]">₱${Number(o.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${(o.payment_status || '').toLowerCase() === 'paid' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">${o.payment_status}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-full bg-[#cca43b]/15 border border-[#cca43b]/30 flex items-center justify-center text-[#cca43b] font-black text-sm shrink-0 font-mono">
+                                ${(c.name || 'G').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-bold text-white">${c.name}</h4>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[#a0ac96] font-mono">
+                                        ${c.order_count} order${c.order_count > 1 ? 's' : ''}
+                                    </span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3 mt-1 text-[11px] text-[#a0ac96] font-mono">
+                                    ${c.phone && c.phone !== 'N/A' ? `<span>📞 ${c.phone}</span>` : ''}
+                                    <span>📍 ${c.address}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:text-right shrink-0">
+                            <span class="text-[10px] text-[#a0ac96] uppercase font-mono">Total Purchases</span>
+                            <p class="text-base font-black font-mono text-[#cca43b]">₱${Number(c.total_spent).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-white/5">
+                        <p class="text-[10px] font-mono uppercase text-[#a0ac96] mb-1.5 font-bold">Orders Breakdown</p>
+                        <div class="space-y-1">
+                            ${ordersHTML}
+                        </div>
+                    </div>
+                `;
+                custContainer.appendChild(card);
+            });
+        }
+
+        // 2. Render Orders Table
+        const ordersTbody = document.getElementById('loc-orders-tbody');
+        if (ordersTbody) {
+            ordersTbody.innerHTML = '';
+            const filteredOrders = (currentModalLoc.orders || []).filter(o => {
+                if (!q) return true;
+                return (o.order_number || '').toLowerCase().includes(q) ||
+                       (o.customer_name || '').toLowerCase().includes(q) ||
+                       (o.product || '').toLowerCase().includes(q) ||
+                       (o.date || '').toLowerCase().includes(q);
+            });
+
+            if (currentLocTab === 'orders') {
+                if (emptyEl) {
+                    if (filteredOrders.length === 0) emptyEl.classList.remove('hidden');
+                    else emptyEl.classList.add('hidden');
+                }
+            }
+
+            filteredOrders.forEach(o => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-white/[0.02] transition-colors';
+                tr.innerHTML = `
+                    <td class="px-3 py-2.5 font-bold text-stone-200">#${o.order_number}</td>
+                    <td class="px-3 py-2.5 text-white font-sans font-bold">
+                        <div>${o.customer_name}</div>
+                        <div class="text-[10px] text-[#a0ac96] font-mono">${o.customer_phone && o.customer_phone !== 'N/A' ? o.customer_phone : ''}</div>
+                    </td>
+                    <td class="px-3 py-2.5 text-[#a0ac96] whitespace-nowrap">${o.date}</td>
+                    <td class="px-3 py-2.5 text-stone-200">
+                        <span class="font-sans font-semibold">${o.product}</span>
+                        <span class="text-[11px] text-[#a0ac96]">(${o.quantity})</span>
+                    </td>
+                    <td class="px-3 py-2.5 text-right font-bold text-[#cca43b] whitespace-nowrap">₱${Number(o.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="px-3 py-2.5 text-center whitespace-nowrap">
+                        <span class="inline-block text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${(o.payment_status || '').toLowerCase() === 'paid' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">${o.payment_status}</span>
+                    </td>
+                `;
+                ordersTbody.appendChild(tr);
+            });
+        }
+    }
+
+    function filterLocationModalContent() {
+        const searchInput = document.getElementById('loc-modal-search');
+        renderLocationModalContent(searchInput ? searchInput.value : '');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeLocationModal();
+    });
 </script>
 {% endblock %}

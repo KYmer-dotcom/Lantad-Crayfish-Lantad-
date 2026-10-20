@@ -418,15 +418,16 @@ def analytics_dashboard(request):
 
     # 6. Top Locations Progress Breakdown (100% from Database)
     top_locations = []
-    loc_order_qs = all_user_sales.values('customer__address').annotate(
-        total_rev=Sum('total_amount'),
-        total_orders=Count('id')
-    ).order_by('-total_rev')
-    
-    city_aggregates = defaultdict(lambda: {'revenue': 0.0, 'orders': 0})
-    for row in loc_order_qs:
-        addr = (row['customer__address'] or '').strip()
-        if not addr or addr.upper() == 'PICKUP':
+    city_aggregates = defaultdict(lambda: {
+        'revenue': 0.0,
+        'orders': 0,
+        'customers': {},
+        'orders_list': []
+    })
+
+    for o in all_user_sales.select_related('customer', 'product').order_by('-order_date', '-id'):
+        addr = (o.delivery_address or (o.customer.address if o.customer else '') or '').strip()
+        if not addr or addr.upper() == 'PICKUP' or (o.customer and (o.customer.address or '').strip().upper() == 'PICKUP'):
             city_name = 'Pickup / Farm Direct'
         elif 'Silay' in addr:
             city_name = 'Silay City'
@@ -437,24 +438,82 @@ def analytics_dashboard(request):
         else:
             parts = [p.strip() for p in addr.split(',')]
             city_name = parts[-1] if parts else 'Local Area'
-            
-        city_aggregates[city_name]['revenue'] += float(row['total_rev'] or 0)
-        city_aggregates[city_name]['orders'] += int(row['total_orders'] or 0)
+
+        cust_id = o.customer_id if o.customer else 0
+        cust_name = o.customer.name if o.customer else 'Guest Customer'
+        cust_phone = (o.customer.phone if o.customer else '') or 'N/A'
+        cust_addr = (o.customer.address if o.customer else '') or addr or 'N/A'
+        amount = float(o.total_amount or 0)
+        prod_name = o.product.name if o.product else 'Mixed Products'
+        qty_str = f"{o.quantity_kg} {o.product.bulk_unit_display}" if o.product else f"{o.quantity_kg} kg"
+
+        order_item = {
+            'order_number': o.order_number,
+            'customer_name': cust_name,
+            'customer_phone': cust_phone,
+            'customer_address': cust_addr,
+            'delivery_address': (o.delivery_address or '').strip() or ('Pickup' if city_name == 'Pickup / Farm Direct' else cust_addr),
+            'date': o.order_date.strftime('%b %d, %Y') if o.order_date else '',
+            'product': prod_name,
+            'quantity': qty_str,
+            'amount': amount,
+            'status': o.get_status_display(),
+            'payment_status': o.get_payment_status_display(),
+        }
+
+        city_data = city_aggregates[city_name]
+        city_data['revenue'] += amount
+        city_data['orders'] += 1
+        city_data['orders_list'].append(order_item)
+
+        if cust_id not in city_data['customers']:
+            city_data['customers'][cust_id] = {
+                'id': cust_id,
+                'name': cust_name,
+                'phone': cust_phone,
+                'address': cust_addr,
+                'total_spent': 0.0,
+                'order_count': 0,
+                'orders': []
+            }
+        cust_rec = city_data['customers'][cust_id]
+        cust_rec['total_spent'] += amount
+        cust_rec['order_count'] += 1
+        cust_rec['orders'].append(order_item)
 
     total_all_loc_rev = sum(c['revenue'] for c in city_aggregates.values()) or 1.0
     max_loc_rev = max((c['revenue'] for c in city_aggregates.values()), default=1.0) or 1.0
 
+    location_details_dict = {}
+
     for c_name, c_info in sorted(city_aggregates.items(), key=lambda x: x[1]['revenue'], reverse=True)[:5]:
         share_pct = round((c_info['revenue'] / total_all_loc_rev) * 100)
         bar_pct = min(100, round((c_info['revenue'] / max_loc_rev) * 100))
-        top_locations.append({
+        customers_list = sorted(c_info['customers'].values(), key=lambda x: x['total_spent'], reverse=True)
+        
+        loc_entry = {
             'name': c_name,
             'revenue': c_info['revenue'],
             'orders': c_info['orders'],
             'pct': share_pct,
             'growth': '+8% vs August' if share_pct > 30 else 'Active volume',
-            'bar_pct': bar_pct
-        })
+            'bar_pct': bar_pct,
+            'customer_count': len(customers_list),
+            'customers': customers_list,
+            'orders_list': c_info['orders_list'],
+        }
+        top_locations.append(loc_entry)
+        location_details_dict[c_name] = {
+            'name': c_name,
+            'revenue': c_info['revenue'],
+            'order_count': c_info['orders'],
+            'customer_count': len(customers_list),
+            'pct': share_pct,
+            'customers': customers_list,
+            'orders': c_info['orders_list'],
+        }
+
+    location_details_json = json.dumps(location_details_dict, default=str)
 
     # 7. Top Products Donut Breakdown (100% from Database)
     top_products_donut = []
@@ -576,6 +635,7 @@ def analytics_dashboard(request):
 
         # Top Locations & Products
         'top_locations': top_locations,
+        'location_details_json': location_details_json,
         'top_products_donut': top_products_donut,
         'donut_chart_data_json': json.dumps({
             'labels': [p['name'] for p in top_products_donut],
