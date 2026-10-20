@@ -50,13 +50,9 @@
             </div>
             <select id="report-type-select"
                 class="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs font-bold text-white focus:border-[#cca43b] focus:outline-none transition-colors cursor-pointer mt-2">
-                <option value="all" class="bg-[#01140e] text-white">Comprehensive Summary</option>
                 <option value="sales" class="bg-[#01140e] text-white">Sales Only</option>
                 <option value="operations" class="bg-[#01140e] text-white">Operations Only</option>
                 <option value="receipts" class="bg-[#01140e] text-white">Receipts Only</option>
-                <option value="product_logs" class="bg-[#01140e] text-white">Product Delivery Logs</option>
-                <option value="activity_logs" class="bg-[#01140e] text-white">Activity Audit Logs</option>
-                <option value="input_logs" class="bg-[#01140e] text-white">Input Modification Logs</option>
             </select>
         </div>
 
@@ -482,149 +478,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Product Delivery Logs Section -->
-    <div data-report-group="product_logs logs"
-        class="glass-card rounded-xl overflow-hidden flex flex-col">
-        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Product Delivery Logs</h3>
-            </div>
-            <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Logistics Audit</span>
-        </div>
-        <div class="overflow-x-auto flex-grow">
-            <table class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Date</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Order No.</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Product & Qty</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Customer & Destination</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Approved By</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Courier / Rider</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Amount</th>
-                    </tr>
-                </thead>
-                <tbody id="source-product-logs-tbody" class="divide-y divide-white/5 bg-transparent">
-                    {% for d in product_logs %}
-                    <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_at|date:"M d, Y" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ d.order.order_number }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.product.name|default:"Stock" }} • <span class="text-[#cca43b]">{{ d.quantity_kg }} kg</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.order.customer.name }}<br><span class="text-xs text-[#a0ac96] font-normal">📍 {{ d.delivery_location|default:d.order.customer.address|truncatechars:25 }}</span></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ d.created_by.get_full_name|default:d.created_by.username|default:"System Admin" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-cyan-300">{% if d.rider %}{{ d.rider.name }}{% else %}Unassigned{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
-                            {% if d.status == 'delivered' %}<span class="text-emerald-400">Delivered</span>
-                            {% elif d.status == 'in_transit' %}<span class="text-cyan-400">In Transit</span>
-                            {% elif d.status == 'scheduled' %}<span class="text-amber-400">Scheduled</span>
-                            {% else %}<span class="text-rose-400">{{ d.get_status_display }}</span>{% endif %}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ d.order.total_amount|default:0|floatformat:2 }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-[#a0ac96]">No product delivery logs found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Activity Audit Logs Section -->
-    <div data-report-group="activity_logs logs"
-        class="glass-card rounded-xl overflow-hidden flex flex-col">
-        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Activity Audit Logs</h3>
-            </div>
-            <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">System Operations</span>
-        </div>
-        <div class="overflow-x-auto flex-grow">
-            <table class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Entity</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Details</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="source-activity-logs-tbody" class="divide-y divide-white/5 bg-transparent">
-                    {% for a in activity_logs %}
-                    <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.timestamp|date:"M d, Y • h:i A" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-white">{{ a.icon }} {{ a.action }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ a.actor }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#cca43b]">{{ a.role }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ a.entity }}</td>
-                        <td class="px-6 py-4 text-sm text-stone-300 max-w-xs">{{ a.details }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-emerald-400">{{ a.status }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">No activity audit logs found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Input & Data Modification Logs Section -->
-    <div data-report-group="input_logs logs"
-        class="glass-card rounded-xl overflow-hidden flex flex-col">
-        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                <h3 class="text-base font-black text-white tracking-wide uppercase">Input & Data Modification Logs</h3>
-            </div>
-            <span class="text-xs font-mono text-[#cca43b] bg-[#cca43b]/10 border border-[#cca43b]/20 px-3 py-1 rounded-full">Who Added & Deleted Data</span>
-        </div>
-        <div class="overflow-x-auto flex-grow">
-            <table class="min-w-full divide-y divide-white/10">
-                <thead class="bg-white/[0.03]">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Timestamp</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Action</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">User / Actor</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Role</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Module</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Target Record</th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-[#a0ac96] uppercase tracking-[0.15em]">Operation Details</th>
-                    </tr>
-                </thead>
-                <tbody id="source-input-logs-tbody" class="divide-y divide-white/5 bg-transparent">
-                    {% for log in input_logs %}
-                    <tr class="hover:bg-white/[0.03] transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.created_at|date:"M d, Y • h:i A" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
-                            {% if log.action == 'added' %}<span class="text-emerald-400">Data Added</span>
-                            {% elif log.action == 'deleted' %}<span class="text-rose-400">Data Deleted</span>
-                            {% else %}<span class="text-amber-400">Data Updated</span>{% endif %}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ log.user_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#cca43b]">{{ log.user_role }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-xs text-[#a0ac96]">{{ log.module }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300">{{ log.target_entity }}</td>
-                        <td class="px-6 py-4 text-sm text-stone-300 max-w-xs">{{ log.details|default:"—" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center text-[#a0ac96]">No input modification logs found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-    </div>
-
 </div>
 
 <!-- ============================================================ -->
@@ -1051,80 +904,6 @@
                 </div>
             </div>
 
-            <!-- Section: Product Delivery Logs -->
-            <div id="report-product-logs-section" class="space-y-3">
-                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Product Delivery Logs Ledger</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs print-report-table">
-                        <thead>
-                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
-                                <th class="py-2.5 px-3 font-bold">Date</th>
-                                <th class="py-2.5 px-3 font-bold">Order No.</th>
-                                <th class="py-2.5 px-3 font-bold">Product & Qty</th>
-                                <th class="py-2.5 px-3 font-bold">Customer & Destination</th>
-                                <th class="py-2.5 px-3 font-bold">Approved By</th>
-                                <th class="py-2.5 px-3 font-bold">Courier / Rider</th>
-                                <th class="py-2.5 px-3 font-bold">Status</th>
-                                <th class="py-2.5 px-3 font-bold text-right">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-product-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Section: Activity Audit Logs -->
-            <div id="report-activity-logs-section" class="space-y-3">
-                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Activity Audit Logs Ledger</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs print-report-table">
-                        <thead>
-                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
-                                <th class="py-2.5 px-3 font-bold">Timestamp</th>
-                                <th class="py-2.5 px-3 font-bold">Action</th>
-                                <th class="py-2.5 px-3 font-bold">User / Actor</th>
-                                <th class="py-2.5 px-3 font-bold">Role</th>
-                                <th class="py-2.5 px-3 font-bold">Target Entity</th>
-                                <th class="py-2.5 px-3 font-bold">Activity Details</th>
-                                <th class="py-2.5 px-3 font-bold">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-activity-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Section: Input & Data Modification Logs -->
-            <div id="report-input-logs-section" class="space-y-3">
-                <div class="flex items-center justify-between border-b border-white/10 pb-2 print:border-stone-800">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-white print:text-stone-900">Input & Data Modification Logs Ledger</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs print-report-table">
-                        <thead>
-                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#a0ac96] print:border-stone-800 print:text-stone-600">
-                                <th class="py-2.5 px-3 font-bold">Timestamp</th>
-                                <th class="py-2.5 px-3 font-bold">Action</th>
-                                <th class="py-2.5 px-3 font-bold">User / Actor</th>
-                                <th class="py-2.5 px-3 font-bold">Role</th>
-                                <th class="py-2.5 px-3 font-bold">Module</th>
-                                <th class="py-2.5 px-3 font-bold">Target Record</th>
-                                <th class="py-2.5 px-3 font-bold">Operation Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="report-input-logs-tbody" class="divide-y divide-white/5 print:divide-stone-200 text-stone-300 print:text-stone-900">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
             <!-- Section: Receipts -->
@@ -1368,15 +1147,7 @@
         function applyFilter(selectedValue) {
             items.forEach(item => {
                 const groups = (item.getAttribute('data-report-group') || '').split(' ');
-                if (selectedValue === 'all') {
-                    item.style.display = '';
-                } else if (selectedValue === 'all_logs') {
-                    if (groups.includes('logs') || groups.includes('product_logs') || groups.includes('activity_logs') || groups.includes('input_logs')) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                } else if (groups.includes(selectedValue)) {
+                if (groups.includes(selectedValue)) {
                     item.style.display = '';
                 } else {
                     item.style.display = 'none';
@@ -1384,31 +1155,13 @@
             });
 
             const execCard = document.getElementById('execution-card');
-            if (execCard) {
-                if (selectedValue === 'receipts') {
-                    execCard.style.display = 'none';
-                } else {
-                    execCard.style.display = '';
-                }
-            }
+            if (execCard) execCard.style.display = '';
 
             const dateCard = document.getElementById('date-range-card');
-            if (dateCard) {
-                if (selectedValue === 'receipts') {
-                    dateCard.style.display = 'none';
-                } else {
-                    dateCard.style.display = '';
-                }
-            }
+            if (dateCard) dateCard.style.display = '';
 
             const filterGrid = document.getElementById('filter-controls-grid');
-            if (filterGrid) {
-                if (selectedValue === 'receipts') {
-                    filterGrid.className = 'grid grid-cols-1 gap-6 lg:grid-cols-2';
-                } else {
-                    filterGrid.className = 'grid grid-cols-1 gap-6 lg:grid-cols-4';
-                }
-            }
+            if (filterGrid) filterGrid.className = 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4';
 
             // Always keep SHOW column visible for instant receipt lookup
             const showCols = document.querySelectorAll('.receipt-action-col');
@@ -1417,11 +1170,11 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const reportTypeParam = urlParams.get('report_type');
-        if (reportTypeParam && selectEl) {
-            selectEl.value = reportTypeParam;
-            applyFilter(reportTypeParam);
-        } else if (selectEl) {
-            applyFilter(selectEl.value);
+        const validTypes = ['sales', 'operations', 'receipts'];
+        const initialType = validTypes.includes(reportTypeParam) ? reportTypeParam : 'sales';
+        if (selectEl) {
+            selectEl.value = initialType;
+            applyFilter(initialType);
         }
 
         if (selectEl) {
@@ -1504,24 +1257,14 @@
                 csvRows.push([]);
             }
 
-            if (rType === 'sales' || rType === 'all') {
-                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
-            }
-            if (rType === 'operations' || rType === 'all') {
+            if (rType === 'operations') {
                 extractTableData('ops-feeding-tbody', ['Date & Time', 'Pond / Shelf', 'Feed Type', 'Amount (g)', 'Status', 'Recorded By'], 'Feeding Operations Log');
                 extractTableData('ops-mortality-tbody', ['Date & Time', 'Pond / Shelf', 'Product', 'Quantity Died', 'Reason / Remarks', 'Recorded By'], 'Mortality Operations Log');
-            }
-            if (rType === 'product_logs' || rType === 'all' || rType === 'logs') {
-                extractTableData('source-product-logs-tbody', ['Date', 'Ref / Tracking', 'Status', 'Type', 'Destination', 'Weight / Quantity', 'Rider / Personnel', 'Vehicle'], 'Product Delivery Logs');
-            }
-            if (rType === 'activity_logs' || rType === 'all' || rType === 'logs') {
-                extractTableData('source-activity-logs-tbody', ['Date', 'User', 'Role', 'Category', 'Action / Event', 'Status', 'IP Address'], 'Activity Audit Logs');
-            }
-            if (rType === 'input_logs' || rType === 'all' || rType === 'logs') {
-                extractTableData('source-input-logs-tbody', ['Date', 'User', 'Role', 'Category', 'Item / Field Modified', 'Action Detail', 'Remarks'], 'Input Modification Logs');
-            }
-            if (rType === 'receipts') {
+            } else if (rType === 'receipts') {
                 extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Verified Receipts Ledger');
+            } else {
+                // sales
+                extractTableData('sales-by-date-tbody', ['Date', 'Order Number', 'Customer', 'Product', 'City', 'Quantity', 'Status', 'Total Amount'], 'Sales Ledger');
             }
 
             const csvString = csvRows.map(e => e.join(',')).join('\r\n');
@@ -1546,11 +1289,11 @@
 
                 const startDate = document.getElementById('start-date-input').value;
                 const endDate = document.getElementById('end-date-input').value;
-                const reportType = selectEl ? selectEl.value : 'all';
+                const reportType = selectEl ? selectEl.value : 'sales';
 
                 const currentStartDate = urlParams.get('start_date') || '';
                 const currentEndDate = urlParams.get('end_date') || '';
-                const currentReportType = urlParams.get('report_type') || 'all';
+                const currentReportType = urlParams.get('report_type') || 'sales';
 
                 const datesChanged = (startDate !== currentStartDate) || (endDate !== currentEndDate) || (reportType !== currentReportType);
 
@@ -1625,7 +1368,7 @@
 
             // Populate Scope
             const typeSelect = document.getElementById('report-type-select');
-            const scopeVal = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : 'Comprehensive Summary';
+            const scopeVal = typeSelect ? typeSelect.options[typeSelect.selectedIndex].text : 'Sales Only';
             const scopeValEl = document.getElementById('report-scope-val');
             if (scopeValEl) scopeValEl.textContent = scopeVal;
 
@@ -1715,91 +1458,6 @@
                 });
                 if (mortTbody.children.length === 0) {
                     mortTbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-stone-500">No mortality records found.</td></tr>';
-                }
-            }
-
-            // Populate Product Delivery Logs Table
-            const productLogsTbody = document.getElementById('report-product-logs-tbody');
-            const sourceProductLogs = document.getElementById('source-product-logs-tbody');
-            if (productLogsTbody && sourceProductLogs) {
-                productLogsTbody.innerHTML = '';
-                const rows = sourceProductLogs.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 8) {
-                        const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-stone-200';
-                        tr.innerHTML = `
-                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[1].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[2].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[3].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold text-cyan-300 print:text-stone-800">${cells[5].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[6].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3 text-right font-bold text-[#cca43b] print:text-stone-900">${cells[7].textContent.trim()}</td>
-                        `;
-                        productLogsTbody.appendChild(tr);
-                    }
-                });
-                if (productLogsTbody.children.length === 0) {
-                    productLogsTbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-stone-500">No product delivery logs found.</td></tr>';
-                }
-            }
-
-            // Populate Activity Audit Logs Table
-            const activityLogsTbody = document.getElementById('report-activity-logs-tbody');
-            const sourceActivityLogs = document.getElementById('source-activity-logs-tbody');
-            if (activityLogsTbody && sourceActivityLogs) {
-                activityLogsTbody.innerHTML = '';
-                const rows = sourceActivityLogs.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 7) {
-                        const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-stone-200';
-                        tr.innerHTML = `
-                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold">${cells[1].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-[#cca43b] print:text-stone-800 font-medium">${cells[3].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[4].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-stone-300 print:text-stone-700">${cells[5].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-emerald-400 print:text-emerald-700 font-semibold">${cells[6].textContent.trim()}</td>
-                        `;
-                        activityLogsTbody.appendChild(tr);
-                    }
-                });
-                if (activityLogsTbody.children.length === 0) {
-                    activityLogsTbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-stone-500">No activity audit logs found.</td></tr>';
-                }
-            }
-
-            // Populate Input & Data Modification Logs Table
-            const inputLogsTbody = document.getElementById('report-input-logs-tbody');
-            const sourceInputLogs = document.getElementById('source-input-logs-tbody');
-            if (inputLogsTbody && sourceInputLogs) {
-                inputLogsTbody.innerHTML = '';
-                const rows = sourceInputLogs.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 7) {
-                        const tr = document.createElement('tr');
-                        tr.className = 'border-b border-white/5 print:border-stone-200';
-                        tr.innerHTML = `
-                            <td class="py-2.5 px-3">${cells[0].textContent.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[1].innerHTML.trim()}</td>
-                            <td class="py-2.5 px-3">${cells[2].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-[#cca43b] print:text-stone-800 font-medium">${cells[3].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-stone-400 print:text-stone-600">${cells[4].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 font-semibold text-stone-200 print:text-stone-900">${cells[5].textContent.trim()}</td>
-                            <td class="py-2.5 px-3 text-stone-300 print:text-stone-700">${cells[6].textContent.trim()}</td>
-                        `;
-                        inputLogsTbody.appendChild(tr);
-                    }
-                });
-                if (inputLogsTbody.children.length === 0) {
-                    inputLogsTbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-stone-500">No input modification logs found.</td></tr>';
                 }
             }
 
@@ -1994,49 +1652,26 @@
             }
 
             // Handle section visibilities based on type
-            const rType = typeSelect ? typeSelect.value : 'all';
+            const rType = typeSelect ? typeSelect.value : 'sales';
             const kpiBlock = document.getElementById('report-kpi-block');
             const salesSection = document.getElementById('report-sales-section');
             const opsSection = document.getElementById('report-ops-section');
             const recSection = document.getElementById('report-receipts-section');
-            const productLogsSection = document.getElementById('report-product-logs-section');
-            const activityLogsSection = document.getElementById('report-activity-logs-section');
-            const inputLogsSection = document.getElementById('report-input-logs-section');
 
             // Reset all to hidden
             if (kpiBlock) kpiBlock.classList.add('hidden');
             if (salesSection) salesSection.classList.add('hidden');
             if (opsSection) opsSection.classList.add('hidden');
             if (recSection) recSection.classList.add('hidden');
-            if (productLogsSection) productLogsSection.classList.add('hidden');
-            if (activityLogsSection) activityLogsSection.classList.add('hidden');
-            if (inputLogsSection) inputLogsSection.classList.add('hidden');
 
-            if (rType === 'sales') {
-                if (kpiBlock) kpiBlock.classList.remove('hidden');
-                if (salesSection) salesSection.classList.remove('hidden');
-            } else if (rType === 'operations') {
+            if (rType === 'operations') {
                 if (opsSection) opsSection.classList.remove('hidden');
             } else if (rType === 'receipts') {
                 if (recSection) recSection.classList.remove('hidden');
-            } else if (rType === 'product_logs') {
-                if (productLogsSection) productLogsSection.classList.remove('hidden');
-            } else if (rType === 'activity_logs') {
-                if (activityLogsSection) activityLogsSection.classList.remove('hidden');
-            } else if (rType === 'input_logs') {
-                if (inputLogsSection) inputLogsSection.classList.remove('hidden');
-            } else if (rType === 'all_logs' || rType === 'logs') {
-                if (productLogsSection) productLogsSection.classList.remove('hidden');
-                if (activityLogsSection) activityLogsSection.classList.remove('hidden');
-                if (inputLogsSection) inputLogsSection.classList.remove('hidden');
             } else {
-                // 'all' Comprehensive Summary
+                // sales
                 if (kpiBlock) kpiBlock.classList.remove('hidden');
                 if (salesSection) salesSection.classList.remove('hidden');
-                if (opsSection) opsSection.classList.remove('hidden');
-                if (productLogsSection) productLogsSection.classList.remove('hidden');
-                if (activityLogsSection) activityLogsSection.classList.remove('hidden');
-                if (inputLogsSection) inputLogsSection.classList.remove('hidden');
             }
 
             // Show Sidebar
