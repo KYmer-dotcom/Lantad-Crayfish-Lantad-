@@ -50,3 +50,49 @@ class HarvestForecastingTest(TestCase):
         self.assertEqual(rec.quantity_harvested, 1850)
         self.assertEqual(rec.total_weight_kg, Decimal('101.75'))
         self.assertEqual(rec.grade_a_quantity + rec.grade_b_quantity, 1850)
+
+    def test_harvest_readiness_indicator(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from django.template.loader import render_to_string
+
+        today = timezone.localdate()
+
+        # Far pond (transferred 10 days ago, target 150)
+        pond_far = Pond.objects.create(
+            farm=self.farm, name='Far Pond', location='Main Pond',
+            size=Decimal('100.00'), depth=Decimal('1.5'),
+            capacity=100, transfer_date=today - timedelta(days=10), status='active'
+        )
+        self.assertEqual(pond_far.harvest_readiness_status, 'far')
+        self.assertEqual(pond_far.harvest_readiness_display, 'Far')
+
+        # Near pond (transferred 130 days ago, target 150, near >= 120)
+        pond_near = Pond.objects.create(
+            farm=self.farm, name='Near Pond', location='Main Pond',
+            size=Decimal('100.00'), depth=Decimal('1.5'),
+            capacity=100, transfer_date=today - timedelta(days=130), status='active'
+        )
+        self.assertEqual(pond_near.harvest_readiness_status, 'near')
+        self.assertEqual(pond_near.harvest_readiness_display, 'Near')
+
+        # Ready pond (transferred 155 days ago, target 150)
+        pond_ready = Pond.objects.create(
+            farm=self.farm, name='Ready Pond', location='Main Pond',
+            size=Decimal('100.00'), depth=Decimal('1.5'),
+            capacity=100, transfer_date=today - timedelta(days=155), status='active'
+        )
+        self.assertEqual(pond_ready.harvest_readiness_status, 'ready')
+        self.assertEqual(pond_ready.harvest_readiness_display, 'Ready')
+
+        # Render table partial and verify no icons in status badges
+        html = render_to_string('harvest_management/partials/schedules_table.html', {
+            'schedules': [pond_far, pond_near, pond_ready]
+        })
+        self.assertIn('Far', html)
+        self.assertIn('Near', html)
+        self.assertIn('Ready', html)
+        self.assertIn('bg-sky-500/15', html)
+        self.assertIn('bg-amber-500/15', html)
+        self.assertIn('bg-emerald-500/15', html)
+

@@ -254,6 +254,64 @@ class Pond(models.Model):
             return False
         return days >= self.harvest_due_target_days
 
+    @property
+    def harvest_readiness_status(self):
+        """
+        Calculates harvest readiness stage:
+        - 'empty': Inactive / empty pond
+        - 'maintenance': In maintenance
+        - 'ready': Reached or passed target harvest date
+        - 'near': Approaching target harvest date (within pre-harvest threshold)
+        - 'far': Early or mid growth stage, far from harvest
+        """
+        if self.status == 'empty':
+            return 'empty'
+        if self.status == 'maintenance':
+            return 'maintenance'
+        if (self.capacity or 0) <= 0 and (self.female_quantity or 0) <= 0 and (self.male_quantity or 0) <= 0:
+            return 'empty'
+        if not self.transfer_date or self.days_since_transfer is None:
+            return 'far'
+
+        target = self.harvest_due_target_days
+        days = self.days_since_transfer
+
+        if days >= target:
+            return 'ready'
+
+        # Pre-harvest near thresholds:
+        # Main Pond (150d target): within 30 days (days >= 120)
+        # Superworm Cabin (90d target): within 30 days (days >= 60)
+        # Breeding Pond Crilings (60d target): within 15 days (days >= 45)
+        # Breeding Pond Reproduction (21d target): within 7 days (days >= 14)
+        # Azula (30d target): within 10 days (days >= 20)
+        if self.location == 'Main Pond':
+            near_threshold = 120
+        elif self.location == 'Superworm Cabin':
+            near_threshold = 60
+        elif self.location == 'Breeding Pond':
+            near_threshold = 45 if self.breeding_type == 'Crilings' else 14
+        elif self.location == 'Azula':
+            near_threshold = 20
+        else:
+            near_threshold = int(target * 0.75)
+
+        if days >= near_threshold:
+            return 'near'
+        return 'far'
+
+    @property
+    def harvest_readiness_display(self):
+        status = self.harvest_readiness_status
+        mapping = {
+            'ready': 'Ready',
+            'near': 'Near',
+            'far': 'Far',
+            'empty': 'Empty',
+            'maintenance': 'Maintenance',
+        }
+        return mapping.get(status, 'Far')
+
     def deduct_stock(self, quantity, product_name=None):
         """
         Deducts quantity from this pond. If transfer batches exist (e.g. in Main Pond),

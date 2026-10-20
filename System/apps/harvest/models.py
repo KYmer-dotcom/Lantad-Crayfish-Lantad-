@@ -39,6 +39,29 @@ class HarvestSchedule(models.Model):
     def __str__(self):
         return f"{self.stock_batch.batch_code} - {self.scheduled_date}"
 
+    @property
+    def harvest_readiness_status(self):
+        from django.utils import timezone
+        if self.status in ['cancelled', 'completed']:
+            return 'empty'
+        today = timezone.localdate()
+        diff = (self.scheduled_date - today).days
+        if diff <= 0:
+            return 'ready'
+        elif diff <= 14:
+            return 'near'
+        return 'far'
+
+    @property
+    def harvest_readiness_display(self):
+        mapping = {
+            'ready': 'Ready',
+            'near': 'Near',
+            'far': 'Far',
+            'empty': self.get_status_display(),
+        }
+        return mapping.get(self.harvest_readiness_status, 'Far')
+
 
 class HarvestRecord(models.Model):
     """Actual harvest records."""
