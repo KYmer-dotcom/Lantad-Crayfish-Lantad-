@@ -92,11 +92,7 @@
                 {% else %}
                 <button type="button" onclick="openOperationsSidebar('Breeding Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Feeding</button>
                 {% endif %}
-                {% if breeding_pond_mortality_recorded_today %}
-                <button type="button" onclick="openMortalitySidebar('Breeding Pond')" class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-colors cursor-pointer">Recorded Today</button>
-                {% else %}
                 <button type="button" onclick="openMortalitySidebar('Breeding Pond')" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
-                {% endif %}
             </div>
         </div>
         <div class="p-6">
@@ -115,11 +111,7 @@
                 {% else %}
                 <button type="button" onclick="openOperationsSidebar('Main Pond')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Feeding</button>
                 {% endif %}
-                {% if main_pond_mortality_recorded_today %}
-                <button type="button" onclick="openMortalitySidebar('Main Pond')" class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-colors cursor-pointer">Recorded Today</button>
-                {% else %}
                 <button type="button" onclick="openMortalitySidebar('Main Pond')" class="rounded-lg bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer">Mortality</button>
-                {% endif %}
             </div>
         </div>
         <div class="p-6">
