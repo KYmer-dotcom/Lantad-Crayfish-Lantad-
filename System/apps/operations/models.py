@@ -157,9 +157,12 @@ class Pond(models.Model):
 
     @property
     def current_azula_quantity(self):
-        if self.status == 'empty':
-            return 0
-        return max(0, self.capacity or 0)
+        if self.location == 'Azula':
+            if self.status == 'empty':
+                return 0
+            days = self.days_since_transfer or 0
+            return max(0, (self.capacity or 0) + (days * 2))
+        return self.capacity or 0
 
 
     @property
@@ -265,6 +268,20 @@ class Pond(models.Model):
             to_deduct = min(current, quantity)
             self.capacity_2 = max(0, current - to_deduct)
             self.save(update_fields=['capacity_2', 'updated_at'])
+            return to_deduct
+
+        if self.location == 'Azula':
+            from django.utils import timezone
+            current = self.current_azula_quantity
+            to_deduct = min(current, quantity)
+            remaining = max(0, current - to_deduct)
+            self.capacity = remaining
+            self.transfer_date = timezone.localdate() if self.capacity > 0 else None
+            if self.capacity <= 0:
+                self.status = Pond.Status.EMPTY
+            else:
+                self.status = Pond.Status.ACTIVE
+            self.save(update_fields=['capacity', 'status', 'transfer_date', 'updated_at'])
             return to_deduct
 
         actual_deducted = 0

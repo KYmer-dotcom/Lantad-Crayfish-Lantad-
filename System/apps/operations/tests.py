@@ -477,9 +477,55 @@ class PondOperationalTest(TestCase):
         pond.refresh_from_db()
         self.assertEqual(pond.capacity, 1000)
         self.assertEqual(PondMortalityLog.objects.filter(pond=pond).count(), 0)
+    def test_azula_growth_and_edit_quantity(self):
+        """Test Azula ponds grow by +2 per day and editing resets baseline to current quantity."""
+        from datetime import timedelta
+        from django.utils import timezone
+        from django.urls import reverse
+        from apps.sales.models import Product
+        today = timezone.localdate()
 
+        Product.objects.create(name='Azula', unit_price=Decimal('10.00'), is_active=True)
 
+        azula_pond = Pond.objects.create(
+            farm=self.farm,
+            name='AZULA-TEST-POND',
+            size=Decimal('10.00'),
+            depth=Decimal('1.00'),
+            location='Azula',
+            capacity=10,
+            transfer_date=today - timedelta(days=5),
+            status=Pond.Status.ACTIVE
+        )
 
+        # 5 days * 2 = 10 growth; 10 + 10 = 20
+        self.assertEqual(azula_pond.current_azula_quantity, 20)
 
+        # Edit form GET request pre-fills with current quantity (20)
+        from apps.operations.template_views import PondForm
+        form = PondForm(instance=azula_pond)
+        self.assertEqual(form['capacity'].value(), 20)
 
+        # Editing quantity to 50 updates baseline to today so current quantity is 50
+        self.client.force_login(self.owner)
+        response = self.client.post(reverse('ponds:pond_edit', args=[azula_pond.id]), {
+            'name': 'AZULA-TEST-POND',
+            'category': 'Azula',
+            'product_name': 'Azula',
+            'capacity': 50,
+            'transfer_date': (today - timedelta(days=5)).strftime('%Y-%m-%d'),
+            'status': 'active'
+        })
+        self.assertEqual(response.status_code, 302)
 
+        azula_pond.refresh_from_db()
+        self.assertEqual(azula_pond.capacity, 50)
+        self.assertEqual(azula_pond.transfer_date, today)
+        self.assertEqual(azula_pond.current_azula_quantity, 50)
+
+        # Test deduct_stock on Azula
+        deducted = azula_pond.deduct_stock(10)
+        self.assertEqual(deducted, 10)
+        azula_pond.refresh_from_db()
+        self.assertEqual(azula_pond.capacity, 40)
+        self.assertEqual(azula_pond.current_azula_quantity, 40)

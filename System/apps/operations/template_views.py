@@ -173,9 +173,14 @@ class PondForm(forms.ModelForm):
         self.fields['product_name_2'].choices = product_choices
         
         current_pond_id = self.instance.pk if self.instance else None
-        if self.instance and self.instance.pk and self.instance.location == 'Breeding Pond':
-            if 'capacity_2' not in self.initial or not self.initial.get('capacity_2'):
-                self.initial['capacity_2'] = self.instance.crilings_count
+        if self.instance and self.instance.pk:
+            if self.instance.location == 'Breeding Pond':
+                if 'capacity_2' not in self.initial or not self.initial.get('capacity_2'):
+                    self.initial['capacity_2'] = self.instance.crilings_count
+            elif self.instance.location == 'Azula':
+                self.initial['capacity'] = self.instance.current_azula_quantity
+                from django.utils import timezone
+                self.initial['transfer_date'] = timezone.localdate()
         self.category_allowed_map = get_category_product_rules(current_pond_id)
         self.category_allowed_map_json = json.dumps(self.category_allowed_map)
 
@@ -512,6 +517,15 @@ def pond_edit(request, pond_id):
             elif pond.location != 'Breeding Pond':
                 pond.capacity_2 = 0
 
+            if pond.location == 'Azula':
+                from django.utils import timezone
+                today = timezone.localdate()
+                form_transfer_date = form.cleaned_data.get('transfer_date')
+                if not form_transfer_date or form_transfer_date <= today:
+                    pond.transfer_date = today
+                else:
+                    pond.transfer_date = form_transfer_date
+
             if (pond.capacity or 0) <= 0 and (pond.capacity_2 or 0) <= 0 and pond.status != Pond.Status.MAINTENANCE:
                 pond.status = Pond.Status.EMPTY
                 pond.transfer_date = None
@@ -530,6 +544,10 @@ def pond_edit(request, pond_id):
                     messages.error(request, f"{field}: {error}")
     else:
         initial_data = {'category': pond.location or 'Main Pond'}
+        if pond.location == 'Azula':
+            initial_data['capacity'] = pond.current_azula_quantity
+            from django.utils import timezone
+            initial_data['transfer_date'] = timezone.localdate()
         form = PondForm(instance=pond, initial=initial_data, user=request.user)
         
     cancel_url = reverse('ponds:list')
