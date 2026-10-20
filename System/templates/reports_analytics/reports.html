@@ -864,14 +864,14 @@
             <h2 class="text-xl font-bold text-stone-100">REPORT</h2>
         </div>
         <div class="flex items-center gap-3">
-            <button type="button" onclick="exportReportToCSV()"
+            <button type="button" id="drawer-export-csv-btn" onclick="exportReportToCSV()"
                 class="inline-flex items-center gap-2 rounded-2xl bg-emerald-600/90 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500 transition-colors cursor-pointer border border-emerald-500/30">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Export CSV
             </button>
-            <button onclick="window.print()"
+            <button type="button" id="drawer-print-report-btn" onclick="window.print()"
                 class="inline-flex items-center gap-2 rounded-2xl bg-[#cca43b] px-4 py-2 text-sm font-bold text-black hover:bg-[#cca43b]/90 transition-colors cursor-pointer">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1375,6 +1375,40 @@
             });
         }
 
+        // Output format synchronization & automatic execution
+        const outputFormatSelect = document.getElementById('output-format-select');
+        window.syncOutputFormatUI = function(format) {
+            const select = document.getElementById('output-format-select');
+            if (select && select.value !== format) {
+                select.value = format;
+            }
+            const genBtn = document.getElementById('generate-report-btn');
+            const drawerCsvBtn = document.getElementById('drawer-export-csv-btn');
+            const drawerPrintBtn = document.getElementById('drawer-print-report-btn');
+
+            if (format === 'csv') {
+                if (genBtn) genBtn.textContent = 'Export CSV Spreadsheet';
+                if (drawerCsvBtn) drawerCsvBtn.classList.remove('hidden');
+                if (drawerPrintBtn) drawerPrintBtn.classList.add('hidden');
+            } else {
+                if (genBtn) genBtn.textContent = 'Generate & Print PDF';
+                if (drawerCsvBtn) drawerCsvBtn.classList.add('hidden');
+                if (drawerPrintBtn) drawerPrintBtn.classList.remove('hidden');
+            }
+            try {
+                localStorage.setItem('lantad_report_output_format', format);
+            } catch (e) {}
+        };
+
+        const initialFormat = urlParams.get('format') || localStorage.getItem('lantad_report_output_format') || (outputFormatSelect ? outputFormatSelect.value : 'pdf');
+        syncOutputFormatUI(initialFormat);
+
+        if (outputFormatSelect) {
+            outputFormatSelect.addEventListener('change', function () {
+                syncOutputFormatUI(this.value);
+            });
+        }
+
         // CSV Export Helper
         window.exportReportToCSV = function () {
             const rType = document.getElementById('report-type-select') ? document.getElementById('report-type-select').value : 'all';
@@ -1451,54 +1485,71 @@
 
         if (generateBtn) {
             generateBtn.addEventListener('click', function () {
-                const originalText = this.innerHTML;
-                const outputFormatSelect = document.getElementById('output-format-select');
-                const outputFormat = outputFormatSelect ? outputFormatSelect.value : 'pdf';
+                const currentFormat = outputFormatSelect ? outputFormatSelect.value : 'pdf';
+                syncOutputFormatUI(currentFormat);
 
-                if (outputFormat === 'csv') {
-                    this.disabled = true;
-                    this.innerHTML = `
-                        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>Exporting CSV...
-                    `;
-                    setTimeout(() => {
-                        exportReportToCSV();
-                        this.disabled = false;
-                        this.innerHTML = originalText;
-                    }, 400);
+                const startDate = document.getElementById('start-date-input').value;
+                const endDate = document.getElementById('end-date-input').value;
+                const reportType = selectEl ? selectEl.value : 'all';
+
+                const currentStartDate = urlParams.get('start_date') || '';
+                const currentEndDate = urlParams.get('end_date') || '';
+                const currentReportType = urlParams.get('report_type') || 'all';
+
+                const datesChanged = (startDate !== currentStartDate) || (endDate !== currentEndDate) || (reportType !== currentReportType);
+
+                if (currentFormat === 'csv') {
+                    if (datesChanged) {
+                        this.disabled = true;
+                        this.innerHTML = `
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>Exporting CSV...
+                        `;
+                        let url = window.location.pathname + '?';
+                        if (startDate) url += `start_date=${startDate}&`;
+                        if (endDate) url += `end_date=${endDate}&`;
+                        if (reportType) url += `report_type=${reportType}&`;
+                        url += 'format=csv&auto_csv=1';
+                        window.location.href = url;
+                        return;
+                    }
+                    exportReportToCSV();
                     return;
                 }
 
-                this.disabled = true;
-                this.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-[#cca43b] inline-block" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>Generating...
-                `;
-
-                setTimeout(() => {
-                    const startDate = document.getElementById('start-date-input').value;
-                    const endDate = document.getElementById('end-date-input').value;
-                    const reportType = selectEl ? selectEl.value : 'all';
-
+                // Printable PDF
+                if (datesChanged) {
+                    this.disabled = true;
+                    this.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#01140e] inline-block" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>Generating PDF...
+                    `;
                     let url = window.location.pathname + '?';
                     if (startDate) url += `start_date=${startDate}&`;
                     if (endDate) url += `end_date=${endDate}&`;
                     if (reportType) url += `report_type=${reportType}&`;
-                    if (outputFormat === 'pdf') {
-                        url += 'show_report=1';
-                    }
-
+                    url += 'format=pdf&show_report=1&auto_print=1';
                     window.location.href = url;
-                }, 500);
+                    return;
+                }
+
+                // Instant PDF open & print without page reload
+                openReportSidebar();
+                setTimeout(() => {
+                    window.print();
+                }, 400);
             });
         }
 
         // Sidebar Actions
         window.openReportSidebar = function () {
+            const currentFormat = outputFormatSelect ? outputFormatSelect.value : 'pdf';
+            syncOutputFormatUI(currentFormat);
+
             // Populate Gen Date
             const today = new Date();
             document.getElementById('report-gen-date').textContent = today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
@@ -2038,14 +2089,27 @@
             if (sidebar) {
                 sidebar.classList.add('translate-x-full');
             }
-            // Remove parameter from URL quietly
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search.replace(/[&?]show_report=1/, '');
+            // Remove parameters from URL quietly
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search.replace(/[&?]show_report=1/, '').replace(/[&?]auto_print=1/, '');
             window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
         };
 
-        // Auto open if flagged in URL
+        // Auto open / execute if flagged in URL
         if (urlParams.get('show_report') === '1') {
-            setTimeout(openReportSidebar, 100);
+            setTimeout(function() {
+                openReportSidebar();
+                if (urlParams.get('auto_print') === '1' || urlParams.get('format') === 'pdf') {
+                    setTimeout(function() {
+                        window.print();
+                    }, 500);
+                }
+            }, 150);
+        } else if (urlParams.get('auto_csv') === '1') {
+            setTimeout(function() {
+                exportReportToCSV();
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search.replace(/[&?]auto_csv=1/, '');
+                window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+            }, 300);
         }
     });
 </script>
