@@ -1434,10 +1434,24 @@ def customer_order_create(request):
             order.order_date = datetime.date.today()
             pricing_unit = request.POST.get('pricing_unit', 'pc')
             if order.product:
-                if pricing_unit == 'kg' and order.product.price_per_kg and order.product.price_per_kg > 0:
-                    order.price_per_kg = order.product.price_per_kg
+                has_unit_price = bool(order.product.unit_price and order.product.unit_price > 0)
+                has_bulk_price = bool(order.product.price_per_kg and order.product.price_per_kg > 0)
+                if pricing_unit == 'kg':
+                    if has_bulk_price:
+                        order.price_per_kg = order.product.price_per_kg
+                    elif has_unit_price:
+                        order.price_per_kg = order.product.unit_price
+                        pricing_unit = 'pc'
+                    else:
+                        order.price_per_kg = 0
                 else:
-                    order.price_per_kg = order.product.unit_price
+                    if has_unit_price:
+                        order.price_per_kg = order.product.unit_price
+                    elif has_bulk_price:
+                        order.price_per_kg = order.product.price_per_kg
+                        pricing_unit = 'kg'
+                    else:
+                        order.price_per_kg = 0
             else:
                 order.price_per_kg = 0
 

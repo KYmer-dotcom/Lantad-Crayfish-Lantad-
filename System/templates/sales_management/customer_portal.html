@@ -202,26 +202,34 @@
                 </div>
 
                 <!-- Pricing Option Selector matching PC -->
-                <div class="space-y-2">
+                <div class="space-y-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Pricing Option:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setPricingUnit('pc')"
-                            class="btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md">Per Piece (pc)</button>
+                            class="btn-unit-pc mobile-btn-unit-pc flex-1 {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
                         <button type="button" onclick="setPricingUnit('kg')"
-                            class="btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            class="btn-unit-kg mobile-btn-unit-kg flex-1 {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                     </div>
                 </div>
 
                 <!-- Price Row matching PC -->
                 <div class="flex items-baseline gap-2 pt-1">
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Price:</p>
-                    <p class="featured-price-text text-3xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
-                    <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">/ pc</span>
+                    <p class="featured-price-text text-3xl font-black text-[#cca43b] leading-none font-mono">
+                        {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                        {% else %}₱0{% endif %}
+                    </p>
+                    <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">
+                        {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{ featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
+                    </span>
                 </div>
 
                 <!-- Quantity Row matching PC -->
                 <div class="flex items-center justify-between gap-3 pt-1">
-                    <p class="featured-quantity-label text-white font-bold text-xs uppercase tracking-wide">Quantity (pcs):</p>
+                    <p class="featured-quantity-label text-white font-bold text-xs uppercase tracking-wide">
+                        {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}Quantity ({{ featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{% endif %}
+                    </p>
                     <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
                         <button type="button" onclick="adjustFeaturedQuantity(-1)"
                             class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
@@ -237,7 +245,11 @@
                 <!-- Total Price Row matching PC -->
                 <div class="flex items-center gap-2 py-0.5">
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Total Price:</p>
-                    <p class="featured-total-price text-xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                    <p class="featured-total-price text-xl font-black text-[#cca43b] leading-none font-mono">
+                        {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                        {% else %}₱0{% endif %}
+                    </p>
                 </div>
 
                 <!-- Order CTA Button matching PC (Large & Bold) -->
@@ -246,7 +258,11 @@
                         class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-14 sm:h-16 font-black text-sm sm:text-base uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-xl shadow-[#cca43b]/25 transition-all cursor-pointer"
                         {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
                         <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
-                        <span class="featured-total-price font-mono font-black text-base sm:text-lg">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                        <span class="featured-total-price font-mono font-black text-base sm:text-lg">
+                            {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% else %}₱0{% endif %}
+                        </span>
                     </button>
                 </div>
             </div>
@@ -277,9 +293,9 @@
                                 </span>
                             </div>
                             <p class="text-xs text-[#a0ac96] font-mono mt-0.5">
-                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
+                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:"-2" }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
                             </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-0.5 transition-all shrink-0">
@@ -333,27 +349,35 @@
                     </div>
 
                     <!-- Pricing Unit Selector: Per Piece vs By Unit -->
-                    <div class="space-y-2 pt-2">
+                    <div class="space-y-2 pt-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" onclick="setPricingUnit('pc')"
-                                class="btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                                class="btn-unit-pc desktop-btn-unit-pc {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
                             <button type="button" onclick="setPricingUnit('kg')"
-                                class="btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                                class="btn-unit-kg desktop-btn-unit-kg {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
                         </div>
                     </div>
 
                     <!-- Price -->
                     <div class="flex items-baseline gap-2 py-2">
                         <p class="text-white font-bold text-sm tracking-wide">Price:</p>
-                        <p class="featured-price-text text-4xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
-                        <span class="featured-unit-label-text text-sm font-bold text-[#a0ac96]">/ pc</span>
+                        <p class="featured-price-text text-4xl font-black text-[#cca43b] leading-none font-mono">
+                            {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% else %}₱0{% endif %}
+                        </p>
+                        <span class="featured-unit-label-text text-sm font-bold text-[#a0ac96]">
+                            {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{ featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
+                        </span>
                     </div>
 
                     <!-- Quantity & Order Row -->
                     <div class="flex items-center gap-4 pt-1 max-w-[380px]">
                         <div class="flex items-center gap-3">
-                            <p class="featured-quantity-label text-white font-bold text-sm tracking-wide">Quantity (pcs):</p>
+                            <p class="featured-quantity-label text-white font-bold text-sm tracking-wide">
+                                {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}Quantity ({{ featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{% endif %}
+                            </p>
                             <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-11 w-28">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
                                     class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
@@ -370,7 +394,11 @@
                     <!-- Dynamic Total Price -->
                     <div class="flex items-center gap-2 py-1">
                         <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
-                        <p class="featured-total-price text-2xl font-black text-[#cca43b] leading-none font-mono">₱{{ featured_product.unit_price|floatformat:0 }}</p>
+                        <p class="featured-total-price text-2xl font-black text-[#cca43b] leading-none font-mono">
+                            {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% else %}₱0{% endif %}
+                        </p>
                     </div>
 
                     <!-- Order Button -->
@@ -379,7 +407,11 @@
                             class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 text-[#01140e] rounded-2xl h-14 font-black text-sm uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
                             {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
                             <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
-                            <span class="featured-total-price font-mono font-bold text-sm">₱{{ featured_product.unit_price|floatformat:0 }}</span>
+                            <span class="featured-total-price font-mono font-bold text-sm">
+                                {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
+                                {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                                {% else %}₱0{% endif %}
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -444,9 +476,9 @@
                                 </span>
                             </div>
                             <p class="text-xs text-[#a0ac96] mt-0.5 font-mono">
-                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:0 }}/pc{% endif %}
+                                {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:"-2" }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:0 }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
                                 {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %}
                             </p>
                         </div>
@@ -2710,7 +2742,7 @@
     }
 
     let currentProductIndex = 0;
-    let currentPricingUnit = 'pc';
+    let currentPricingUnit = {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}'kg'{% else %}'pc'{% endif %};
 
     function updateDots() {
         const dotContainers = document.querySelectorAll('.carousel-dots, #carousel-dots');
@@ -2740,9 +2772,68 @@
         selectProduct(p.id, p.name, p.species, p.notes, p.pricePc, p.priceKg, p.quantity, p.imageUrl, true);
     }
 
-    function setPricingUnit(unit) {
-        currentPricingUnit = unit;
+    function updatePricingOptionsUI(p) {
+        if (!p) return;
+        const pricePc = parseFloat(p.pricePc) || 0;
+        const priceKg = parseFloat(p.priceKg) || 0;
+        const hasPc = pricePc > 0;
+        const hasKg = priceKg > 0;
+
+        // Auto-switch currentPricingUnit if currently chosen unit has 0 price
+        if (currentPricingUnit === 'pc' && !hasPc && hasKg) {
+            currentPricingUnit = 'kg';
+        } else if (currentPricingUnit === 'kg' && !hasKg && hasPc) {
+            currentPricingUnit = 'pc';
+        }
+
+        // Show/hide PC buttons
+        document.querySelectorAll('.btn-unit-pc, .desktop-btn-unit-pc, .mobile-btn-unit-pc').forEach(btn => {
+            if (hasPc) {
+                btn.classList.remove('hidden');
+                btn.style.display = '';
+            } else {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
+        });
+
+        // Show/hide KG / Bulk buttons
+        document.querySelectorAll('.btn-unit-kg, .desktop-btn-unit-kg, .mobile-btn-unit-kg').forEach(btn => {
+            if (hasKg) {
+                btn.classList.remove('hidden');
+                btn.style.display = '';
+            } else {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
+        });
+
+        // If neither pricing option has price > 0, hide container
+        document.querySelectorAll('.pricing-option-container').forEach(container => {
+            if (!hasPc && !hasKg) {
+                container.classList.add('hidden');
+                container.style.display = 'none';
+            } else {
+                container.classList.remove('hidden');
+                container.style.display = '';
+            }
+        });
+
+        setPricingUnit(currentPricingUnit, false);
+    }
+
+    function setPricingUnit(unit, triggerUpdate = true) {
         const currentProd = availableProducts[currentProductIndex];
+        const pricePc = parseFloat(currentProd?.pricePc) || 0;
+        const priceKg = parseFloat(currentProd?.priceKg) || 0;
+
+        if (unit === 'pc' && pricePc <= 0 && priceKg > 0) {
+            unit = 'kg';
+        } else if (unit === 'kg' && priceKg <= 0 && pricePc > 0) {
+            unit = 'pc';
+        }
+
+        currentPricingUnit = unit;
         const bulkUnitName = currentProd?.bulkUnit || 'kg';
 
         // Desktop Unit Buttons
@@ -2750,11 +2841,19 @@
             btn.className = (unit === 'pc')
                 ? "btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
                 : "btn-unit-pc desktop-btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            if (pricePc <= 0) {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
         });
         document.querySelectorAll('.desktop-btn-unit-kg').forEach(btn => {
             btn.className = (unit === 'kg')
                 ? "btn-unit-kg desktop-btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
                 : "btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            if (priceKg <= 0) {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
         });
 
         // Mobile Unit Buttons
@@ -2762,11 +2861,19 @@
             btn.className = (unit === 'pc')
                 ? "btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
                 : "btn-unit-pc mobile-btn-unit-pc flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            if (pricePc <= 0) {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
         });
         document.querySelectorAll('.mobile-btn-unit-kg').forEach(btn => {
             btn.className = (unit === 'kg')
                 ? "btn-unit-kg mobile-btn-unit-kg flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
                 : "btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            if (priceKg <= 0) {
+                btn.classList.add('hidden');
+                btn.style.display = 'none';
+            }
         });
 
         document.querySelectorAll('.featured-unit-label-text, #featured-unit-label').forEach(el => {
@@ -2790,12 +2897,17 @@
         });
 
         if (currentProd) {
-            let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
+            let price = unit === 'kg' ? (parseFloat(currentProd.priceKg) || 0) : (parseFloat(currentProd.pricePc) || 0);
+            if (price <= 0) {
+                price = unit === 'kg' ? (parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.priceKg) || 0);
+            }
             document.querySelectorAll('.featured-price-text, #featured-price').forEach(el => {
                 el.textContent = '₱' + Math.round(price);
             });
         }
-        updateTotalPrice();
+        if (triggerUpdate) {
+            updateTotalPrice();
+        }
     }
 
     function selectProduct(id, name, species, notes, pricePc, priceKg, quantity, imageUrl, skipIndexUpdate = false) {
@@ -2823,14 +2935,7 @@
             el.textContent = bulkUnitName;
         });
 
-        let price = currentPricingUnit === 'kg' ? (parseFloat(p?.priceKg || priceKg) || parseFloat(p?.pricePc || pricePc) || 0) : (parseFloat(p?.pricePc || pricePc) || parseFloat(p?.priceKg || priceKg) || 0);
-        document.querySelectorAll('.featured-price-text, #featured-price').forEach(el => {
-            el.textContent = '₱' + Math.round(price);
-        });
-
-        document.querySelectorAll('.featured-unit-label-text, #featured-unit-label').forEach(el => {
-            el.textContent = currentPricingUnit === 'kg' ? ('/ ' + bulkUnitName) : '/ pc';
-        });
+        updatePricingOptionsUI(p);
 
         const stockQty = parseFloat(quantity) || 0;
         document.querySelectorAll('.featured-stock-badge, #featured-stock-badge').forEach(el => {
@@ -3447,6 +3552,10 @@
         currentProductIndex = availableProducts.findIndex(p => p.id === initialFeaturedId);
         if (currentProductIndex === -1) currentProductIndex = 0;
         updateDots();
+        const p = availableProducts[currentProductIndex];
+        if (p) {
+            updatePricingOptionsUI(p);
+        }
 
         // Restore saved delivery method or default to delivery
         const savedMethod = localStorage.getItem('saved_delivery_method') || 'delivery';
@@ -3504,9 +3613,14 @@
 
         const currentProd = availableProducts[currentProductIndex];
         if (currentProd) {
-            const price = currentPricingUnit === 'kg' ? (parseFloat(currentProd.priceKg) || parseFloat(currentProd.pricePc) || 0) : (parseFloat(currentProd.pricePc) || parseFloat(currentProd.priceKg) || 0);
+            const pricePc = parseFloat(currentProd.pricePc) || 0;
+            const priceKg = parseFloat(currentProd.priceKg) || 0;
+            let price = currentPricingUnit === 'kg' ? priceKg : pricePc;
+            if (price <= 0) {
+                price = currentPricingUnit === 'kg' ? pricePc : priceKg;
+            }
             const total = currentQty * price;
-            const formattedTotal = '₱' + total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            const formattedTotal = '₱' + Math.round(total);
 
             document.querySelectorAll('.featured-total-price, #featured-total-price').forEach(priceEl => {
                 priceEl.textContent = formattedTotal;
