@@ -146,18 +146,18 @@
                         data-approver-role="{% if delivery and delivery.created_by %}{{ delivery.created_by.get_role_display|default:'Owner' }}{% elif order.created_by %}{{ order.created_by.get_role_display|default:'Owner' }}{% else %}Customer{% endif %}"
                         data-rider="{% if delivery and delivery.rider %}{{ delivery.rider.name }}{% else %}Cris Ma-apni{% endif %}"
                         data-rider-vehicle="{% if delivery and delivery.rider %}{{ delivery.rider.vehicle_type }} ({{ delivery.rider.plate_number|default:'ABC1234' }}){% else %}Motorcycle (ABC1234){% endif %}"
-                        data-product="{% if order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
+                        data-product="{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}Breeder Crayfish{% endif %}"
                         data-price="{{ order.price_per_kg|default:0|floatformat:2 }}"
                         data-discount="{{ order.discount|default:0|floatformat:2 }}"
                         data-quantity="{{ order.quantity_kg|default:0|floatformat:2 }}"
-                        data-total="{{ order.total_amount|default:0|floatformat:2 }}"
+                        data-total="{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:2 }}{% else %}{{ order.total_amount|default:0|floatformat:2 }}{% endif %}"
                         data-payment-status="{{ order.get_payment_status_display }}"
                         data-is-paid="{% if order.payment_status == 'paid' %}true{% else %}false{% endif %}"
                         data-receipt-image="{% if delivery and delivery.proof_of_delivery %}{{ delivery.proof_of_delivery.url }}{% elif order.receipt_image %}{% url 'sales:order_receipt_view' order.id %}{% endif %}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{{ order.order_date|date:"M d, Y" }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-stone-300 order-num-col">{{ order.order_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.customer %}{{ order.customer.name }}{% else %}N/A{% endif %}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.products_summary %}{{ order.products_summary }}{% elif order.product %}{{ order.product.name }}{% else %}N/A{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-stone-200">{% if order.delivery_address %}{{ order.delivery_address|truncatechars:25 }}{% elif order.customer and order.customer.address %}{{ order.customer.address|truncatechars:25 }}{% else %}PICKUP{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             {% if order.payment_status == 'paid' %}
@@ -168,7 +168,7 @@
                             <span class="text-rose-400">Unpaid</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{{ order.total_amount|default:0|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-[#cca43b]">₱{% if order.order_total_amount %}{{ order.order_total_amount|floatformat:2 }}{% else %}{{ order.total_amount|default:0|floatformat:2 }}{% endif %}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold no-print receipt-action-col">
                             <button type="button" onclick="openGeneratedReceiptModalFromRow(this.closest('tr'))" class="px-3 py-1 bg-[#cca43b]/20 hover:bg-[#cca43b]/30 text-[#cca43b] border border-[#cca43b]/30 rounded-lg text-xs font-black uppercase tracking-wider transition-colors cursor-pointer">Show</button>
                         </td>
@@ -176,7 +176,7 @@
                     {% endwith %}
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="px-6 py-12 text-center text-[#a0ac96]">
+                        <td colspan="8" class="px-6 py-12 text-center text-[#a0ac96]">
                             <p class="text-sm font-bold uppercase tracking-wider">No sales records found in selected range</p>
                         </td>
                     </tr>

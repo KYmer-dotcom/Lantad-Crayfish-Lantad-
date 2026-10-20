@@ -6,6 +6,7 @@ import json
 import datetime
 import calendar
 from datetime import timedelta, date
+from decimal import Decimal
 from collections import defaultdict, Counter
 
 from django.http import HttpResponse
@@ -642,7 +643,62 @@ def reports(request):
     if end_date:
         sales_qs = sales_qs.filter(order_date__lte=end_date)
 
-    sales_by_date = sales_qs.select_related('customer', 'product', 'created_by').prefetch_related('deliveries__rider', 'deliveries__created_by').order_by('-order_date', '-id')[:250]
+    raw_sales = list(sales_qs.select_related('customer', 'product', 'created_by').prefetch_related('deliveries__rider', 'deliveries__created_by').order_by('-order_date', '-id')[:300])
+
+    deduped_sales = []
+    seen_ids = set()
+
+    for o in raw_sales:
+        if o.id in seen_ids:
+            continue
+
+        siblings = []
+        for other in raw_sales:
+            if other.customer_id != o.customer_id:
+                continue
+
+            has_same_session = False
+            if o.notes and 'Session #' in o.notes and other.notes and 'Session #' in other.notes:
+                try:
+                    s1 = o.notes.split('Session #')[1].split(')')[0].strip()
+                    s2 = other.notes.split('Session #')[1].split(')')[0].strip()
+                    if s1 and s2 and s1 == s2:
+                        has_same_session = True
+                except Exception:
+                    pass
+
+            time_diff = abs((o.created_at - other.created_at).total_seconds()) if (o.created_at and other.created_at) else 9999
+            is_same_time_batch = (
+                time_diff <= 300 and 
+                (o.delivery_address or '').strip().upper() == (other.delivery_address or '').strip().upper() and
+                o.order_date == other.order_date
+            )
+            is_same_order_number = bool(o.order_number and other.order_number and o.order_number == other.order_number)
+
+            if has_same_session or is_same_time_batch or is_same_order_number:
+                siblings.append(other)
+
+        if not siblings:
+            siblings = [o]
+
+        for s in siblings:
+            seen_ids.add(s.id)
+
+        o.ordered_items = siblings
+        p_names = []
+        for item in siblings:
+            if item.product and item.product.name:
+                p_name = item.product.name.strip()
+                if p_name not in p_names:
+                    p_names.append(p_name)
+        if not p_names and o.product and o.product.name:
+            p_names = [o.product.name.strip()]
+
+        o.products_summary = ", ".join(p_names) if p_names else "Aquaculture Stock"
+        o.order_total_amount = sum((s.total_amount for s in siblings if s.total_amount), Decimal('0')) or o.total_amount
+        deduped_sales.append(o)
+
+    sales_by_date = deduped_sales
 
     sales_weekly = sales_qs.annotate(week=TruncWeek('order_date')).values('week').annotate(
         total_sales=Sum('total_amount'),
