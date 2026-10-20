@@ -217,6 +217,7 @@ def sales_list(request):
             deliv_status = Delivery.Status.SCHEDULED
             deliv_date = None
 
+        owner_approver = ord_obj.created_by if (ord_obj.created_by and getattr(ord_obj.created_by, 'role', '') == 'owner') else User.objects.filter(role='owner').first()
         Delivery.objects.create(
             order=ord_obj,
             scheduled_date=ord_obj.order_date,
@@ -224,7 +225,7 @@ def sales_list(request):
             delivery_location=ord_obj.delivery_address or ord_obj.customer.address or "Customer Address",
             quantity_kg=ord_obj.quantity_kg,
             status=deliv_status,
-            created_by=ord_obj.created_by
+            created_by=owner_approver
         )
         
     products = Product.objects.filter(is_active=True).select_related('species', 'pond')
@@ -622,6 +623,7 @@ def order_status_update(request, order_id):
                         delivery_location=order.delivery_address or (order.customer.address if order.customer else ''),
                         scheduled_date=datetime.date.today(),
                         status=Delivery.Status.SCHEDULED,
+                        created_by=request.user if getattr(request.user, 'role', '') == 'owner' else User.objects.filter(role='owner').first()
                     )
                 elif existing_delivery.status == Delivery.Status.SCHEDULED:
                     existing_delivery.scheduled_date = datetime.date.today()
@@ -1751,6 +1753,7 @@ def _sync_order_deliveries():
             deliv_status = Delivery.Status.SCHEDULED
             deliv_date = None
 
+        owner_approver = ord_obj.created_by if (ord_obj.created_by and getattr(ord_obj.created_by, 'role', '') == 'owner') else User.objects.filter(role='owner').first()
         Delivery.objects.create(
             order=ord_obj,
             scheduled_date=ord_obj.order_date,
@@ -1758,7 +1761,7 @@ def _sync_order_deliveries():
             delivery_location=ord_obj.delivery_address or ord_obj.customer.address or "Customer Address",
             quantity_kg=ord_obj.quantity_kg,
             status=deliv_status,
-            created_by=ord_obj.created_by
+            created_by=owner_approver
         )
 
 

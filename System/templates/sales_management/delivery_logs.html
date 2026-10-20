@@ -144,7 +144,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
         <!-- Stat 1: Total Completed/Delivered -->
         <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
@@ -173,27 +173,13 @@
             </div>
         </div>
 
-        <!-- Stat 3: Delivered Volume (kg) -->
-        <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
-            <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Delivered Volume</p>
-            </div>
-            <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-white tracking-tight">{{ total_delivered_kg|floatformat:1 }} <span class="text-sm font-bold text-[#cca43b]">kg</span></p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
-                    <span>Fulfilled stock weight</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stat 4: Delivered Revenue -->
+        <!-- Stat 3: Delivered Revenue -->
         <div class="glass-card rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/20 transition-all">
             <div>
                 <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Fulfilled Revenue</p>
             </div>
             <div class="mt-3">
-                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ total_delivered_revenue|floatformat:2 }}</p>
+                <p class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ total_delivered_revenue|floatformat:"-2" }}</p>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
                     <span>Gross value of delivered orders</span>
@@ -319,13 +305,13 @@
                                     </div>
                                     <div>
                                         <div class="flex items-center gap-2">
-                                            <span class="font-mono font-bold text-white text-sm tracking-tight">{{ d.order.order_number }}</span>
-                                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30 {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
+                                            <span class="font-mono font-bold text-white text-sm tracking-tight whitespace-nowrap">{{ d.order.order_number }}</span>
+                                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border shrink-0 {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30 {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
                                                 {{ d.get_status_display }}
                                             </span>
                                         </div>
-                                        <p class="text-[11px] text-[#a0ac96] mt-0.5">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg }} kg</strong></p>
-                                        <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.order.total_amount|floatformat:2 }}</p>
+                                        <p class="text-[11px] text-[#a0ac96] mt-0.5 whitespace-nowrap">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg|floatformat:"-2" }} kg</strong></p>
+                                        <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.order.total_amount|floatformat:"-2" }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -333,29 +319,46 @@
                             <!-- Customer & Drop-off -->
                             <td class="py-4 px-6 max-w-xs">
                                 <h4 class="font-bold text-white leading-tight">{{ d.order.customer.name }}</h4>
-                                <p class="text-[11px] text-stone-400 mt-0.5 leading-snug line-clamp-2">📍 {{ d.delivery_location|default:d.order.customer.address }}</p>
+                                <p class="text-[11px] text-stone-400 mt-0.5 leading-snug line-clamp-2">{{ d.delivery_location|default:d.order.customer.address }}</p>
                                 {% if d.order.customer.phone %}
-                                <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">📞 {{ d.order.customer.phone }}</p>
+                                <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">{{ d.order.customer.phone }}</p>
                                 {% endif %}
                             </td>
 
                             <!-- Who Approved Delivery Request -->
                             <td class="py-4 px-6 whitespace-nowrap">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b] font-black text-xs shrink-0">
-                                        {{ d.created_by.get_role_display.0|upper|default:d.created_by.username.0|upper|default:"A" }}
+                                    {% if d.created_by and d.created_by.role == 'owner' %}
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b] font-black text-xs shrink-0 font-mono">
+                                        {{ d.created_by.get_full_name.0|default:d.created_by.username.0|upper|default:"O" }}
                                     </div>
                                     <div>
                                         <p class="font-bold text-white leading-tight">
-                                            {{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin" }}
+                                            {{ d.created_by.get_full_name|default:d.created_by.username|default:"Owner" }}
                                         </p>
-                                        <span class="inline-block mt-0.5 text-[9px] uppercase font-black px-1.5 py-0.2 rounded bg-white/10 text-stone-300">
-                                            {{ d.created_by.get_role_display|default:"Admin Approved" }}
+                                        <span class="inline-block mt-0.5 text-[9px] uppercase font-black px-1.5 py-0.2 rounded bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">
+                                            Owner Approved
                                         </span>
                                         <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">
                                             {{ d.created_at|date:"M d, Y • h:i A" }}
                                         </p>
                                     </div>
+                                    {% else %}
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#cca43b]/15 border border-[#cca43b]/30 text-[#cca43b] font-black text-xs shrink-0 font-mono">
+                                        O
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white leading-tight">
+                                            Owner
+                                        </p>
+                                        <span class="inline-block mt-0.5 text-[9px] uppercase font-black px-1.5 py-0.2 rounded bg-[#cca43b]/20 text-[#cca43b] border border-[#cca43b]/30">
+                                            Owner Approved
+                                        </span>
+                                        <p class="text-[10px] text-[#a0ac96] mt-0.5 font-mono">
+                                            {{ d.created_at|date:"M d, Y • h:i A" }}
+                                        </p>
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </td>
 
@@ -451,16 +454,16 @@
                                     customerName: '{{ d.order.customer.name|escapejs }}',
                                     customerPhone: '{{ d.order.customer.phone|escapejs }}',
                                     customerAddress: '{{ d.delivery_location|default:d.order.customer.address|escapejs }}',
-                                    approverName: '{{ d.created_by.get_full_name|default:d.created_by.username|default:d.order.created_by.get_full_name|default:d.order.created_by.username|default:"System Admin"|escapejs }}',
-                                    approverRole: '{{ d.created_by.get_role_display|default:"Admin Dispatched"|escapejs }}',
+                                    approverName: '{% if d.created_by and d.created_by.role == "owner" %}{{ d.created_by.get_full_name|default:d.created_by.username|escapejs }}{% else %}Owner{% endif %}',
+                                    approverRole: 'Owner Approved',
                                     riderName: '{% if d.rider %}{{ d.rider.name|escapejs }}{% else %}Unassigned{% endif %}',
                                     riderPhone: '{% if d.rider %}{{ d.rider.phone|escapejs }}{% else %}N/A{% endif %}',
                                     riderVehicle: '{% if d.rider %}{{ d.rider.vehicle_type|escapejs }} ({{ d.rider.plate_number|escapejs }}){% else %}N/A{% endif %}',
                                     productName: '{{ d.order.product.name|default:"Aquaculture Stock"|escapejs }}',
-                                    quantityKg: '{{ d.quantity_kg }}',
-                                    pricePerKg: '{{ d.order.price_per_kg|floatformat:2 }}',
-                                    totalAmount: '{{ d.order.total_amount|floatformat:2 }}',
-                                    discount: '{{ d.order.discount|floatformat:2|default:"0.00" }}',
+                                    quantityKg: '{{ d.quantity_kg|floatformat:"-2" }}',
+                                    pricePerKg: '{{ d.order.price_per_kg|floatformat:"-2" }}',
+                                    totalAmount: '{{ d.order.total_amount|floatformat:"-2" }}',
+                                    discount: '{{ d.order.discount|floatformat:"-2"|default:"0" }}',
                                     paymentStatus: '{{ d.order.get_payment_status_display|escapejs }}',
                                     isPaid: {% if d.order.payment_status == 'paid' %}true{% else %}false{% endif %},
                                     status: '{{ d.get_status_display|escapejs }}'
@@ -1384,8 +1387,8 @@ function openGeneratedReceiptModal(data) {
     document.getElementById('receipt-modal-or').textContent = 'OR-' + data.orderNumber;
     document.getElementById('receipt-modal-del-id').textContent = 'Tracking: DEL-' + String(data.deliveryId).padStart(5, '0');
     document.getElementById('receipt-modal-customer').textContent = data.customerName;
-    document.getElementById('receipt-modal-phone').textContent = data.customerPhone ? '📞 ' + data.customerPhone : '';
-    document.getElementById('receipt-modal-address').textContent = '📍 ' + data.customerAddress;
+    document.getElementById('receipt-modal-phone').textContent = data.customerPhone || '';
+    document.getElementById('receipt-modal-address').textContent = data.customerAddress || '';
 
     document.getElementById('receipt-modal-approver').textContent = data.approverName;
     document.getElementById('receipt-modal-approver-role').textContent = '(' + data.approverRole + ')';
