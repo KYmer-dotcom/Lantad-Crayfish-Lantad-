@@ -299,14 +299,14 @@ def dashboard(request):
         
         if days_until < 0:
             status_text = f"Overdue by {abs(days_until)} days"
-            badge_class = "bg-rose-500/10 text-rose-400 border-rose-500/20 animate-pulse"
-            dot_class = "bg-rose-500 animate-pulse"
+            badge_class = "bg-rose-500/10 text-rose-400 border-rose-500/20"
+            dot_class = "bg-rose-500"
             box_class = "border-rose-500/20 bg-rose-500/5"
             text_class = "text-rose-400"
         elif days_until == 0:
             status_text = "Due Today"
-            badge_class = "bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse"
-            dot_class = "bg-amber-400 animate-pulse"
+            badge_class = "bg-amber-500/10 text-amber-400 border-amber-500/20"
+            dot_class = "bg-amber-400"
             box_class = "border-amber-500/20 bg-amber-500/5"
             text_class = "text-amber-400"
         else:

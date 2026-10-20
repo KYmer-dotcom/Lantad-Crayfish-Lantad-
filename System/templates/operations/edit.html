@@ -13,12 +13,12 @@
     <div class="rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 backdrop-blur-sm p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="inline-block h-2 w-2 rounded-full {% if pond.is_sanitization_due %}bg-rose-500 animate-pulse{% else %}bg-emerald-400{% endif %}"></span>
+                <span class="inline-block h-2 w-2 rounded-full {% if pond.is_sanitization_due %}bg-rose-500{% else %}bg-emerald-400{% endif %}"></span>
                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Azula Sanitization Protocol (15-Day Cycle)</p>
                 {% if not pond.is_sanitization_due %}
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Up to date</span>
                 {% else %}
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse">Action Required</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20">Action Required</span>
                 {% endif %}
             </div>
             <p class="text-xs text-stone-300">
