@@ -16,8 +16,7 @@
     <!-- Page Header -->
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="inline-block h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+            <div class="mb-1">
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#cca43b]">Silay Superworm & Crayfish</p>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Reports</h1>
@@ -29,8 +28,7 @@
         <!-- Date Range Card -->
         <div id="date-range-card"
             class="glass-card rounded-lg p-5 flex flex-col justify-between">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+            <div class="mb-2">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Date Range</p>
             </div>
             <div class="flex items-center gap-1.5 min-w-0 mt-2">
@@ -44,8 +42,7 @@
 
         <!-- Report Type Card -->
         <div class="glass-card rounded-lg p-5 flex flex-col justify-between">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+            <div class="mb-2">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Report Type</p>
             </div>
             <select id="report-type-select"
@@ -58,8 +55,7 @@
 
         <!-- Output Format Card -->
         <div class="glass-card rounded-lg p-5 flex flex-col justify-between">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
+            <div class="mb-2">
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Output Format</p>
             </div>
             <select id="output-format-select"
@@ -72,8 +68,7 @@
         <!-- Execution Card -->
         <div id="execution-card"
             class="glass-card rounded-lg p-5 flex flex-col justify-between border-[#cca43b]/30">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+            <div class="mb-2">
                 <p class="text-xs font-black uppercase tracking-wider text-[#cca43b]">Execution</p>
             </div>
             <button id="generate-report-btn" class="w-full rounded-lg bg-[#cca43b] py-2 text-xs font-bold text-[#01140e] hover:bg-[#cca43b]/90 transition-colors /20 cursor-pointer uppercase tracking-wider mt-2">
@@ -89,8 +84,7 @@
             <p class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">{{ sales_label|default:"Total Sales (This Month)" }}</p>
             <div class="mt-2">
                 <p id="total-sales-val" class="text-2xl sm:text-3xl font-black text-[#cca43b] tracking-tight">₱{{ monthly_sales_total|floatformat:2 }}</p>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-[#a0ac96] font-mono">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#cca43b] shrink-0"></span>
+                <div class="mt-2 text-[11px] text-[#a0ac96] font-mono">
                     <span>Gross monthly revenue inflow</span>
                 </div>
             </div>
@@ -101,8 +95,7 @@
     <div data-report-group="receipts"
         class="glass-card rounded-xl overflow-hidden flex flex-col">
         <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
+            <div>
                 <h3 class="text-base font-black text-white tracking-wide uppercase">Sales by Date</h3>
             </div>
             <span
@@ -380,12 +373,8 @@
     <div data-report-group="sales" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
             class="glass-card rounded-xl overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                    <h3 class="text-base font-black text-white tracking-wide uppercase">Weekly Sales Summary</h3>
-                </div>
-                <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Periodic Aggregation</span>
+            <div class="px-6 py-4 border-b border-white/10">
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Weekly Sales Summary</h3>
             </div>
             <div class="overflow-x-auto flex-grow">
                 <table class="min-w-full divide-y divide-white/10">
@@ -419,12 +408,8 @@
 
         <div
             class="glass-card rounded-xl overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="h-2 w-2 rounded-full bg-[#cca43b] animate-pulse"></span>
-                    <h3 class="text-base font-black text-white tracking-wide uppercase">Monthly Sales Summary</h3>
-                </div>
-                <span class="text-xs font-bold text-[#a0ac96] uppercase tracking-wider">Macro Aggregation</span>
+            <div class="px-6 py-4 border-b border-white/10">
+                <h3 class="text-base font-black text-white tracking-wide uppercase">Monthly Sales Summary</h3>
             </div>
             <div class="overflow-x-auto flex-grow">
                 <table class="min-w-full divide-y divide-white/10">
