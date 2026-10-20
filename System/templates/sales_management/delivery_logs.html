@@ -259,7 +259,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span class="text-[10px] font-black text-[#a0ac96] uppercase tracking-wider">From:</span>
-                    <input type="date" name="start_date" value="{{ start_date }}"
+                    <input type="date" name="start_date" id="delivery-start-date" value="{{ start_date }}"
                         class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
                 </div>
 
@@ -268,7 +268,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span class="text-[10px] font-black text-[#a0ac96] uppercase tracking-wider">To:</span>
-                    <input type="date" name="end_date" value="{{ end_date }}"
+                    <input type="date" name="end_date" id="delivery-end-date" value="{{ end_date }}"
                         class="bg-transparent text-xs text-stone-100 focus:outline-none focus:text-white cursor-pointer font-mono [color-scheme:dark]">
                 </div>
 
@@ -1548,6 +1548,26 @@ function closeBinPurgeModal() {
 // Close on escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeBinPurgeModal();
+});
+
+// Enforce date filter cannot pass today
+document.addEventListener('DOMContentLoaded', function() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const sInput = document.getElementById('delivery-start-date');
+    const eInput = document.getElementById('delivery-end-date');
+    if (sInput) {
+        sInput.max = todayStr;
+        sInput.addEventListener('change', () => {
+            if (sInput.value > todayStr) sInput.value = todayStr;
+            if (eInput) eInput.min = sInput.value;
+        });
+    }
+    if (eInput) {
+        eInput.max = todayStr;
+        eInput.addEventListener('change', () => {
+            if (eInput.value > todayStr) eInput.value = todayStr;
+        });
+    }
 });
 </script>
 {% endblock %}

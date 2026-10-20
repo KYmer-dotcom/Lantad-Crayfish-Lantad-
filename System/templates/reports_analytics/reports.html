@@ -32,10 +32,10 @@
                 <p class="text-xs font-black uppercase tracking-wider text-[#a0ac96]">Date Range</p>
             </div>
             <div class="flex items-center gap-1.5 min-w-0 mt-2">
-                <input type="date" id="start-date-input" value="{{ start_date }}"
+                <input type="date" id="start-date-input" value="{{ start_date }}" max="{{ today }}"
                     class="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-xs font-mono text-white focus:border-[#cca43b] focus:outline-none transition-colors [color-scheme:dark]" />
                 <span class="text-[#a0ac96] text-[10px] font-bold uppercase tracking-wider shrink-0">to</span>
-                <input type="date" id="end-date-input" value="{{ end_date }}"
+                <input type="date" id="end-date-input" value="{{ end_date }}" max="{{ today }}"
                     class="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-xs font-mono text-white focus:border-[#cca43b] focus:outline-none transition-colors [color-scheme:dark]" />
             </div>
         </div>
@@ -948,6 +948,55 @@
         const selectEl = document.getElementById('report-type-select');
         const generateBtn = document.getElementById('generate-report-btn');
         const items = document.querySelectorAll('[data-report-group]');
+        // Date Range Inputs (strict constraint: cannot pass current date)
+        const startDateInput = document.getElementById('start-date-input');
+        const endDateInput = document.getElementById('end-date-input');
+
+        const now = new Date();
+        const currentYearStr = now.getFullYear();
+        const currentMonthStr = String(now.getMonth() + 1).padStart(2, '0');
+        const currentDayStr = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${currentYearStr}-${currentMonthStr}-${currentDayStr}`;
+
+        if (startDateInput) {
+            startDateInput.max = todayStr;
+        }
+        if (endDateInput) {
+            endDateInput.max = todayStr;
+        }
+
+        function enforceDateLimits() {
+            if (!startDateInput || !endDateInput) return;
+            if (startDateInput.value && startDateInput.value > todayStr) {
+                startDateInput.value = todayStr;
+            }
+            if (endDateInput.value && endDateInput.value > todayStr) {
+                endDateInput.value = todayStr;
+            }
+            if (startDateInput.value) {
+                endDateInput.min = startDateInput.value;
+            } else {
+                endDateInput.removeAttribute('min');
+            }
+            if (endDateInput.value) {
+                startDateInput.max = (endDateInput.value < todayStr) ? endDateInput.value : todayStr;
+            } else {
+                startDateInput.max = todayStr;
+            }
+            if (startDateInput.value && endDateInput.value && startDateInput.value > endDateInput.value) {
+                endDateInput.value = startDateInput.value;
+            }
+        }
+
+        if (startDateInput) {
+            startDateInput.addEventListener('input', enforceDateLimits);
+            startDateInput.addEventListener('change', enforceDateLimits);
+        }
+        if (endDateInput) {
+            endDateInput.addEventListener('input', enforceDateLimits);
+            endDateInput.addEventListener('change', enforceDateLimits);
+        }
+        enforceDateLimits();
 
         // Calendar Components
         const monthYearEl = document.getElementById('calendar-month-year');
@@ -1016,14 +1065,30 @@
 
         // Current Calendar State
         const today = new Date();
-        let selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        let currentYear = today.getFullYear();
-        let currentMonth = today.getMonth(); // 0-indexed
+        const currentYearNum = today.getFullYear();
+        const currentMonthNum = today.getMonth(); // 0-indexed
+        let selectedDate = todayStr;
+        let currentYear = currentYearNum;
+        let currentMonth = currentMonthNum;
 
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
+
+        function updateMonthNavButtons() {
+            if (!nextMonthBtn) return;
+            const isAtOrPastCurrent = (currentYear > currentYearNum) || (currentYear === currentYearNum && currentMonth >= currentMonthNum);
+            if (isAtOrPastCurrent) {
+                nextMonthBtn.disabled = true;
+                nextMonthBtn.classList.add('opacity-30', 'cursor-not-allowed');
+                nextMonthBtn.title = 'Cannot navigate to future months';
+            } else {
+                nextMonthBtn.disabled = false;
+                nextMonthBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+                nextMonthBtn.removeAttribute('title');
+            }
+        }
 
         function renderCalendar() {
             if (!daysGridEl || !monthYearEl) return;
@@ -1048,28 +1113,34 @@
                 const dayString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayBtn = document.createElement('button');
                 dayBtn.type = 'button';
-                dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black transition-all cursor-pointer select-none';
 
                 dayBtn.textContent = day;
 
                 const isSelected = (dayString === selectedDate);
-                const isToday = (dayString === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
+                const isToday = (dayString === todayStr);
+                const isFuture = (dayString > todayStr);
                 const hasLogs = activeDatesSet.has(dayString);
 
-                if (isSelected) {
+                if (isFuture) {
+                    dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black text-stone-600 opacity-25 cursor-not-allowed select-none';
+                    dayBtn.disabled = true;
+                } else if (isSelected) {
+                    dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black transition-all cursor-pointer select-none';
                     dayBtn.className += (currentOpsMode === 'feeding')
                         ? ' bg-[#cca43b] text-black scale-110 shadow-lg'
                         : ' bg-rose-500 text-white scale-110 shadow-lg';
                 } else if (isToday) {
+                    dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black transition-all cursor-pointer select-none';
                     dayBtn.className += (currentOpsMode === 'feeding')
                         ? ' border border-[#cca43b]/50 text-[#cca43b]'
                         : ' border border-rose-500/50 text-rose-400';
                 } else {
+                    dayBtn.className = 'relative w-10 h-10 md:w-12 md:h-12 mx-auto flex items-center justify-center text-xs md:text-sm rounded-full font-black transition-all cursor-pointer select-none';
                     dayBtn.className += ' text-stone-300 hover:bg-white/10';
                 }
 
                 // Add a visual indicator dot if logs exist for this date
-                if (hasLogs) {
+                if (hasLogs && !isFuture) {
                     const dot = document.createElement('span');
                     const dotBg = isSelected
                         ? (currentOpsMode === 'feeding' ? 'bg-black' : 'bg-white')
@@ -1078,14 +1149,18 @@
                     dayBtn.appendChild(dot);
                 }
 
-                dayBtn.addEventListener('click', () => {
-                    selectedDate = dayString;
-                    filterOpsLogsByDate(selectedDate);
-                    renderCalendar();
-                });
+                if (!isFuture) {
+                    dayBtn.addEventListener('click', () => {
+                        selectedDate = dayString;
+                        filterOpsLogsByDate(selectedDate);
+                        renderCalendar();
+                    });
+                }
 
                 daysGridEl.appendChild(dayBtn);
             }
+
+            updateMonthNavButtons();
         }
 
         function filterOpsLogsByDate(selectedDate) {
@@ -1141,6 +1216,8 @@
             });
 
             nextMonthBtn.addEventListener('click', () => {
+                const isAtOrPastCurrent = (currentYear > currentYearNum) || (currentYear === currentYearNum && currentMonth >= currentMonthNum);
+                if (isAtOrPastCurrent) return;
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -1299,9 +1376,26 @@
                 const currentFormat = outputFormatSelect ? outputFormatSelect.value : 'pdf';
                 syncOutputFormatUI(currentFormat);
 
-                const startDate = document.getElementById('start-date-input').value;
-                const endDate = document.getElementById('end-date-input').value;
+                let startDate = document.getElementById('start-date-input') ? document.getElementById('start-date-input').value : '';
+                let endDate = document.getElementById('end-date-input') ? document.getElementById('end-date-input').value : '';
                 const reportType = selectEl ? selectEl.value : 'sales';
+
+                if (startDate && startDate > todayStr) {
+                    startDate = todayStr;
+                    if (document.getElementById('start-date-input')) document.getElementById('start-date-input').value = todayStr;
+                }
+                if (endDate && endDate > todayStr) {
+                    endDate = todayStr;
+                    if (document.getElementById('end-date-input')) document.getElementById('end-date-input').value = todayStr;
+                }
+                if (startDate && endDate && startDate > endDate) {
+                    if (typeof showToast === 'function') {
+                        showToast('Start date cannot be after end date.', 'error');
+                    } else {
+                        alert('Start date cannot be after end date.');
+                    }
+                    return;
+                }
 
                 const currentStartDate = urlParams.get('start_date') || '';
                 const currentEndDate = urlParams.get('end_date') || '';

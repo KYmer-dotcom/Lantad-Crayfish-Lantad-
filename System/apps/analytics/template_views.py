@@ -621,17 +621,26 @@ def reports(request):
     start_date = None
     end_date = None
     
+    current_date = timezone.localdate()
+
     if start_date_str:
         try:
             start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            if start_date > current_date:
+                start_date = current_date
         except ValueError:
             pass
             
     if end_date_str:
         try:
             end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            if end_date > current_date:
+                end_date = current_date
         except ValueError:
             pass
+
+    if start_date and end_date and start_date > end_date:
+        start_date, end_date = end_date, start_date
 
     sales_qs = _get_sales_queryset_for_user(request.user)
     latest_order = sales_qs.order_by('-order_date').first()
@@ -898,8 +907,9 @@ def reports(request):
         'product_logs': product_logs,
         'activity_logs': activity_logs,
         'input_logs': input_logs,
-        'start_date': start_date_str or '',
-        'end_date': end_date_str or '',
+        'today': current_date.strftime('%Y-%m-%d'),
+        'start_date': start_date.strftime('%Y-%m-%d') if start_date else '',
+        'end_date': end_date.strftime('%Y-%m-%d') if end_date else '',
         'sales_label': sales_label,
         'qty_label': qty_label,
     }
