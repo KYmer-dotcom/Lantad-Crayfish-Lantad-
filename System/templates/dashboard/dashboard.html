@@ -347,7 +347,6 @@
                     <tr>
                         <th class="px-5 py-3 text-left">Pond</th>
                         <th class="px-5 py-3 text-left">Product</th>
-                        <th class="px-5 py-3 text-left">Deaths</th>
                         <th class="px-5 py-3 text-left">Weekly</th>
                         <th class="px-5 py-3 text-left">Monthly</th>
                         <th class="px-5 py-3 text-left">Total</th>
@@ -361,26 +360,37 @@
                             <span class="text-xs text-[#a0ac96] ml-1">({{ item.location }})</span>
                         </td>
                         <td class="px-5 py-2.5 whitespace-nowrap text-xs text-[#a0ac96] font-medium">{{ item.product_name }}</td>
-                        <td class="px-5 py-2.5 whitespace-nowrap font-mono font-bold {% if item.dead_total > 0 %}text-white{% else %}text-[#a0ac96]{% endif %}">{{ item.dead_total|default:0 }}</td>
                         <td class="px-5 py-2.5 whitespace-nowrap">
-                            <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_7d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_7d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
-                                {{ item.rate_7d|floatformat:1 }}%
-                            </span>
+                            <div class="inline-flex items-center gap-1.5">
+                                <span class="font-mono font-bold {% if item.dead_7d > 0 %}text-white{% else %}text-[#a0ac96]{% endif %}">{{ item.dead_7d|default:0 }}</span>
+                                <span class="text-[#a0ac96]/50 font-mono">/</span>
+                                <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_7d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_7d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
+                                    {{ item.rate_7d|floatformat:1 }}%
+                                </span>
+                            </div>
                         </td>
                         <td class="px-5 py-2.5 whitespace-nowrap">
-                            <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_30d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_30d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
-                                {{ item.rate_30d|floatformat:1 }}%
-                            </span>
+                            <div class="inline-flex items-center gap-1.5">
+                                <span class="font-mono font-bold {% if item.dead_30d > 0 %}text-white{% else %}text-[#a0ac96]{% endif %}">{{ item.dead_30d|default:0 }}</span>
+                                <span class="text-[#a0ac96]/50 font-mono">/</span>
+                                <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_30d > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_30d > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
+                                    {{ item.rate_30d|floatformat:1 }}%
+                                </span>
+                            </div>
                         </td>
                         <td class="px-5 py-2.5 whitespace-nowrap">
-                            <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_total > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_total > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
-                                {{ item.rate_total|floatformat:1 }}%
-                            </span>
+                            <div class="inline-flex items-center gap-1.5">
+                                <span class="font-mono font-bold {% if item.dead_total > 0 %}text-white{% else %}text-[#a0ac96]{% endif %}">{{ item.dead_total|default:0 }}</span>
+                                <span class="text-[#a0ac96]/50 font-mono">/</span>
+                                <span class="px-2.5 py-0.5 inline-flex text-xs font-bold font-mono rounded-full border {% if item.rate_total > 7 %}bg-rose-500/15 text-rose-400 border-rose-500/30{% elif item.rate_total > 3 %}bg-amber-500/15 text-amber-400 border-amber-500/30{% else %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% endif %}">
+                                    {{ item.rate_total|floatformat:1 }}%
+                                </span>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="px-5 py-8 text-center text-[#a0ac96] font-mono">No pond records available.</td>
+                        <td colspan="5" class="px-5 py-8 text-center text-[#a0ac96] font-mono">No pond records available.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
