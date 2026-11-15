@@ -388,6 +388,7 @@ def dashboard(request):
     for p in mortality_ponds_list:
         stat_7d = p.get_mortality_stats(days=7)
         stat_30d = p.get_mortality_stats(days=30)
+        stat_total = p.get_mortality_stats(days=None)
         prod = 'Breeder Crayfish' if p.location == 'Breeding Pond' else (p.product_name or 'Crayfish')
         mortality_ponds.append({
             'pond': p,
@@ -395,11 +396,13 @@ def dashboard(request):
             'location': p.location,
             'product_name': prod,
             'capacity': p.capacity or 0,
-            'deaths': stat_30d['dead'],
+            'deaths': stat_total['dead'],
             'rate_7d': stat_7d['rate'],
             'dead_7d': stat_7d['dead'],
             'rate_30d': stat_30d['rate'],
             'dead_30d': stat_30d['dead'],
+            'rate_total': stat_total['rate'],
+            'dead_total': stat_total['dead'],
         })
 
     total_dead_30d = sum(item['dead_30d'] for item in mortality_ponds)
