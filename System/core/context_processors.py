@@ -50,7 +50,8 @@ COLOR_PALETTE = {
 
 def theme_context(request):
     color = 'blue'
-    request.session['theme_color'] = 'blue'
+    if request.session.get('theme_color') != color:
+        request.session['theme_color'] = color
 
     palette = COLOR_PALETTE.get(color, COLOR_PALETTE['blue'])
     theme = {
