@@ -3606,17 +3606,29 @@
         if (payDescCod) payDescCod.textContent = method === 'pickup' ? 'Pay with cash upon physical handover at our pickup station.' : 'Pay with cash upon physical handover at your address.';
     }
 
+    function getMaxOrderUnits(prod) {
+        if (!prod || prod.quantity === undefined) return 0;
+        const stock = parseFloat(prod.quantity) || 0;
+        const ppk = (currentPricingUnit === 'kg') ? (parseFloat(prod.piecesPerKg) || 1) : 1;
+        return Math.max(0, Math.floor(stock / (ppk > 0 ? ppk : 1)));
+    }
+
     function updateTotalPrice() {
+        const currentProd = availableProducts[currentProductIndex];
+        const maxUnits = currentProd ? getMaxOrderUnits(currentProd) : null;
         const qtyInputs = document.querySelectorAll('.featured-quantity-input, #featured-quantity-input');
         let currentQty = 1;
         qtyInputs.forEach(input => {
             input.value = input.value.replace(/[^0-9]/g, '');
             let val = parseInt(input.value) || 0;
             if (val < 0) val = 0;
+            if (maxUnits !== null && val > maxUnits) {
+                val = maxUnits;
+                input.value = val;
+            }
             currentQty = val;
         });
 
-        const currentProd = availableProducts[currentProductIndex];
         if (currentProd) {
             const pricePc = parseFloat(currentProd.pricePc) || 0;
             const priceKg = parseFloat(currentProd.priceKg) || 0;
@@ -3658,9 +3670,9 @@
 
         const currentProd = availableProducts[currentProductIndex];
         if (currentProd && currentProd.quantity !== undefined) {
-            const maxQty = parseFloat(currentProd.quantity);
-            if (val > maxQty) {
-                val = Math.floor(maxQty) || 1;
+            const maxUnits = getMaxOrderUnits(currentProd);
+            if (val > maxUnits) {
+                val = maxUnits > 0 ? maxUnits : 1;
             }
         }
 

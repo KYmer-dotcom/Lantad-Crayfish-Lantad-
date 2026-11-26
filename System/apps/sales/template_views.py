@@ -1503,7 +1503,15 @@ def customer_order_create(request):
             unit_prefix = f"[{pricing_unit.upper()}]"
             if not order.notes or unit_prefix not in order.notes:
                 order.notes = f"{unit_prefix} {order.notes or ''}".strip()
-                
+
+            requested_pieces = _get_order_requested_pieces(order)
+            if order.product and requested_pieces > Decimal(str(order.product.quantity_kg or 0)):
+                messages.error(
+                    request,
+                    f'Not enough stock for "{order.product.name}". Requested {requested_pieces:g} pcs, only {Decimal(str(order.product.quantity_kg or 0)):g} pcs available.'
+                )
+                return redirect('sales:customer_portal')
+
             order.total_amount = (order.quantity_kg * order.price_per_kg)
             order.save()
 
@@ -1582,6 +1590,12 @@ def customer_order_update_quantity(request, order_id):
                 return JsonResponse({'success': False, 'error': 'Quantity must be positive'})
             
             order.quantity_kg = qty
+            requested_pieces = _get_order_requested_pieces(order)
+            if order.product and requested_pieces > Decimal(str(order.product.quantity_kg or 0)):
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Only {Decimal(str(order.product.quantity_kg or 0)):g} pcs available for "{order.product.name}".'
+                })
             order.total_amount = qty * Decimal(str(order.price_per_kg or 0))
             order.save()
             return JsonResponse({
@@ -1688,6 +1702,15 @@ def customer_checkout_submit(request):
                 from django.http import JsonResponse
                 return JsonResponse({'success': False, 'error': 'Delivery location and address are required. Please input your delivery address to proceed.'})
 
+        # Validate available stock before confirming any order
+        for order in orders_to_place:
+            requested_pieces = _get_order_requested_pieces(order)
+            if order.product and requested_pieces > Decimal(str(order.product.quantity_kg or 0)):
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Not enough stock for "{order.product.name}". Requested {requested_pieces:g} pcs, available: {Decimal(str(order.product.quantity_kg or 0)):g} pcs.'
+                })
+
         # Update delivery address on all placed orders if provided
         for order in orders_to_place:
             if delivery_address and (order.delivery_address or '').upper() != 'PICKUP':
@@ -1751,16 +1774,20 @@ def customer_checkout_submit(request):
     return JsonResponse({'success': False, 'error': 'POST required'})
 
 
+def _get_order_requested_pieces(order):
+    """Return total piece count for an order, accounting for [KG] bulk unit conversion."""
+    is_kg = '[KG]' in (order.notes or '')
+    qty = Decimal(str(order.quantity_kg or 0))
+    if is_kg and order.product and order.product.pieces_per_kg and order.product.pieces_per_kg > 0:
+        return qty * Decimal(str(order.product.pieces_per_kg))
+    return qty
+
+
 def _deduct_order_stock_once(order):
     """Deduct product stock for an order once, handling [KG] pieces_per_kg conversion."""
     if not order.product or order.stock_deducted:
         return
-    from decimal import Decimal
-    is_kg = '[KG]' in (order.notes or '')
-    deduct_qty = Decimal(str(order.quantity_kg or 0))
-    if is_kg and order.product.pieces_per_kg and order.product.pieces_per_kg > 0:
-        deduct_qty = deduct_qty * Decimal(str(order.product.pieces_per_kg))
-
+    deduct_qty = _get_order_requested_pieces(order)
     current_stock = Decimal(str(order.product.quantity_kg or 0))
     if deduct_qty > 0 and current_stock >= deduct_qty:
         order.product.quantity_kg = max(current_stock - deduct_qty, Decimal('0'))
