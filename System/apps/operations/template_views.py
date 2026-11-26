@@ -811,33 +811,34 @@ def record_operations(request):
         from apps.feed.models import FeedType, FeedStockMovement
         from apps.feed.services import deduct_feed_from_sacks, restore_feed_to_sacks
 
-        for log in logs:
-            pond_id = log.get('pond_id')
-            product_name = (log.get('product_name') or '').strip()
-            fed = log.get('fed', False)
-            feed_type_id = log.get('feed_type_id') or None
-            quantity_grams = log.get('quantity_grams')
+        from django.db import transaction
+        with transaction.atomic():
+            for log in logs:
+                pond_id = log.get('pond_id')
+                product_name = (log.get('product_name') or '').strip()
+                fed = log.get('fed', False)
+                feed_type_id = log.get('feed_type_id') or None
+                quantity_grams = log.get('quantity_grams')
 
-            try:
-                grams_decimal = Decimal(str(quantity_grams)) if quantity_grams is not None else Decimal('0')
-            except Exception:
-                grams_decimal = Decimal('0')
+                try:
+                    grams_decimal = Decimal(str(quantity_grams)) if quantity_grams is not None else Decimal('0')
+                except Exception:
+                    grams_decimal = Decimal('0')
 
-            if not feed_type_id or grams_decimal <= 0:
-                continue
+                if not feed_type_id or grams_decimal <= 0:
+                    continue
 
-            pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
-            
-            # Find existing entry for today if any
-            existing_qs = PondFeedingLog.objects.filter(pond=pond, recorded_at__date=today)
-            if product_name:
-                existing_qs = existing_qs.filter(product_name=product_name)
-            
-            existing_log = existing_qs.first()
-            if existing_log:
-                # If updating, reverse any previous deduction from this log
-                if existing_log.feed_type and existing_log.quantity_grams:
-                    try:
+                pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
+                
+                # Find existing entry for today if any
+                existing_qs = PondFeedingLog.objects.filter(pond=pond, recorded_at__date=today)
+                if product_name:
+                    existing_qs = existing_qs.filter(product_name=product_name)
+                
+                existing_log = existing_qs.first()
+                if existing_log:
+                    # If updating, reverse any previous deduction from this log
+                    if existing_log.feed_type and existing_log.quantity_grams:
                         old_qty_g = Decimal(str(existing_log.quantity_grams))
                         if old_qty_g > 0:
                             old_qty_kg = old_qty_g / Decimal('1000')
@@ -847,35 +848,32 @@ def record_operations(request):
                                 user=request.user,
                                 notes=f"Reversed feed deduction for {product_name} in {pond.name}"
                             )
-                    except Exception:
-                        pass
-                
-                # Delete past movement for this log today
-                FeedStockMovement.objects.filter(
-                    feed_type=existing_log.feed_type,
-                    notes__icontains=f"{product_name} in {pond.name}",
-                    moved_at__date=today
-                ).delete()
+                    
+                    # Delete past movement for this log today
+                    FeedStockMovement.objects.filter(
+                        feed_type=existing_log.feed_type,
+                        notes__icontains=f"{product_name} in {pond.name}",
+                        moved_at__date=today
+                    ).delete()
 
-                existing_log.feed_type_id = feed_type_id
-                existing_log.quantity_grams = quantity_grams if quantity_grams is not None else None
-                existing_log.fed = fed
-                existing_log.recorded_by = request.user
-                existing_log.save()
-                feeding_log = existing_log
-            else:
-                feeding_log = PondFeedingLog.objects.create(
-                    pond=pond,
-                    product_name=product_name,
-                    feed_type_id=feed_type_id,
-                    quantity_grams=quantity_grams if quantity_grams is not None else None,
-                    fed=fed,
-                    recorded_by=request.user
-                )
+                    existing_log.feed_type_id = feed_type_id
+                    existing_log.quantity_grams = quantity_grams if quantity_grams is not None else None
+                    existing_log.fed = fed
+                    existing_log.recorded_by = request.user
+                    existing_log.save()
+                    feeding_log = existing_log
+                else:
+                    feeding_log = PondFeedingLog.objects.create(
+                        pond=pond,
+                        product_name=product_name,
+                        feed_type_id=feed_type_id,
+                        quantity_grams=quantity_grams if quantity_grams is not None else None,
+                        fed=fed,
+                        recorded_by=request.user
+                    )
 
-            # Deduct feed inventory if feed_type was selected and quantity_grams is specified
-            if feed_type_id and quantity_grams:
-                try:
+                # Deduct feed inventory if feed_type was selected and quantity_grams is specified
+                if feed_type_id and quantity_grams:
                     qty_g = Decimal(str(quantity_grams))
                     if qty_g > 0:
                         qty_kg = qty_g / Decimal('1000')
@@ -887,10 +885,8 @@ def record_operations(request):
                                 user=request.user,
                                 notes=f"Feed used for {product_name} in {pond.name} ({quantity_grams}g)"
                             )
-                except Exception:
-                    pass
 
-            recorded_count += 1
+                recorded_count += 1
         return JsonResponse({'status': 'success', 'recorded_count': recorded_count})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -1220,6 +1216,7 @@ def record_mortality(request):
                     recorded_by=request.user,
                     date=today
                 )
+            recorded_count += 1
 
         try:
             messages.success(request, f"Successfully recorded mortality for {recorded_count} pond(s).")

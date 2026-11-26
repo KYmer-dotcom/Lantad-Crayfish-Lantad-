@@ -277,6 +277,9 @@ def batch_create(request):
             pond = form.cleaned_data['pond']
             species = form.cleaned_data['species']
             quantity_to_add = form.cleaned_data['initial_quantity']
+            if not quantity_to_add or quantity_to_add <= 0:
+                messages.error(request, 'Initial quantity must be greater than 0.')
+                return redirect('stock:list')
             stock_row = SpeciesStock.objects.filter(species=species).first()
             available_stock = stock_row.available_quantity if stock_row else 0
             if quantity_to_add > available_stock:
@@ -318,8 +321,9 @@ def batch_create(request):
                     batch.pond.save(update_fields=['status'])
                 messages.success(request, f'Batch "{batch.batch_code}" created successfully!')
 
-            stock_row.available_quantity = max(stock_row.available_quantity - quantity_to_add, 0)
-            stock_row.save(update_fields=['available_quantity', 'updated_at'])
+            if stock_row:
+                stock_row.available_quantity = max(stock_row.available_quantity - quantity_to_add, 0)
+                stock_row.save(update_fields=['available_quantity', 'updated_at'])
             
             if request.htmx:
                 species_stock = SpeciesStock.objects.select_related('species').order_by('species__name')
