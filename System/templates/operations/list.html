@@ -670,8 +670,7 @@
     <div class="w-full max-w-lg rounded-xl bg-[#021f15] border border-white/10 p-6 shadow-2xl">
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
-                <h3 class="text-lg font-bold text-stone-100">Transfer to Main Pond</h3>
-                <p class="text-xs text-[#a0ac96] mt-0.5">Select a destination Main Pond to receive this stock</p>
+                <h3 class="text-xl sm:text-2xl font-black text-stone-100 tracking-tight">Transfer to Main Pond</h3>
             </div>
             <button type="button" onclick="closePondTransferModal()" class="text-[#a0ac96] hover:text-stone-100 transition-colors text-xl font-bold cursor-pointer">&times;</button>
         </div>
@@ -1121,13 +1120,11 @@
 
         if (sourceLocation === 'Main Pond') {
             if (modalTitleEl) modalTitleEl.textContent = 'Transfer to Breeding Pond';
-            if (modalSubtitleEl) modalSubtitleEl.textContent = 'Select a destination Breeding Pond to receive this stock (as Breeder stock)';
             if (destLabelEl) destLabelEl.innerHTML = 'Destination Breeding Pond <span class="text-rose-500">*</span>';
             if (mainGroup) mainGroup.classList.add('hidden');
             if (breedingGroup) breedingGroup.classList.remove('hidden');
         } else {
             if (modalTitleEl) modalTitleEl.textContent = 'Transfer to Main Pond';
-            if (modalSubtitleEl) modalSubtitleEl.textContent = 'Select a destination Main Pond to receive this stock';
             if (destLabelEl) destLabelEl.innerHTML = 'Destination Main Pond <span class="text-rose-500">*</span>';
             if (mainGroup) mainGroup.classList.remove('hidden');
             if (breedingGroup) breedingGroup.classList.add('hidden');
