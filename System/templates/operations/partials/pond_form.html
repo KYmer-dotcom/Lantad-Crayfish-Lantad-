@@ -7,27 +7,35 @@
         <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Name *</label>
         {{ form.name }}
     </div>
-    <div id="field-product" {% if form.instance.pk %}class="hidden"{% endif %}>
+    <div id="field-product">
         <label id="label-product" class="block text-xs font-semibold text-[#a0ac96] mb-1">Product *</label>
         {{ form.product_name }}
     </div>
 
     <!-- Standard / Product 1 Quantity Field -->
+    {% if not form.instance.pk %}
     <div id="field-quantity">
         <label id="label-quantity" class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity *</label>
         {{ form.capacity }}
     </div>
+    {% else %}
+    <input type="hidden" name="capacity" value="{{ form.capacity.value|default:0 }}">
+    {% endif %}
 
     <!-- Product 2 (Only for Breeding Pond) -->
     <div id="field-product-2" class="hidden space-y-4">
-        <div {% if form.instance.pk %}class="hidden"{% endif %}>
+        <div>
             <label class="block text-xs font-semibold text-[#a0ac96] mb-1">Product 2 (Crilings / Dual Tracking)</label>
             {{ form.product_name_2 }}
         </div>
+        {% if not form.instance.pk %}
         <div id="field-quantity-2">
             <label id="label-quantity-2" class="block text-xs font-semibold text-[#a0ac96] mb-1">Quantity 2 (Crilings)</label>
             {{ form.capacity_2 }}
         </div>
+        {% else %}
+        <input type="hidden" name="capacity_2" value="{{ form.capacity_2.value|default:0 }}">
+        {% endif %}
     </div>
 
     <!-- Date Transferred Field -->

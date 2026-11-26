@@ -570,13 +570,9 @@ def pond_edit(request, pond_id):
             target_type = 'pond'
 
     if request.method == 'POST':
-        orig_product_name = pond.product_name
-        orig_product_name_2 = pond.product_name_2
         form = PondForm(request.POST, instance=pond, user=request.user)
         if form.is_valid():
             pond = form.save(commit=False)
-            pond.product_name = orig_product_name
-            pond.product_name_2 = orig_product_name_2
             pond.location = form.cleaned_data.get('category', 'Main Pond')
             if pond.location == 'Main Pond' and (pond.capacity or 0) > 2000:
                 messages.error(request, "Main Pond capacity cannot exceed 2,000.")
