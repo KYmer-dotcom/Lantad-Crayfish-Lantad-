@@ -1984,10 +1984,10 @@ def delivery_logs_page(request):
     if access_response:
         return access_response
 
-    # Base queryset with relations
+    # Base queryset with relations (exclude soft-deleted orders)
     logs_qs = Delivery.objects.select_related(
         'order', 'order__customer', 'order__product', 'order__created_by', 'rider', 'created_by'
-    ).all()
+    ).filter(order__is_deleted=False)
 
     # Search query
     query = request.GET.get('q', '').strip()
