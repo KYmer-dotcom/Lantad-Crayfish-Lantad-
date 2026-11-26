@@ -344,10 +344,14 @@ def sales_orders_page(request):
         'orders',
         queryset=SalesOrder.objects.filter(status__in=active_statuses).select_related('product').order_by('-created_at', '-id', '-order_date')
     )
-    customers = Customer.objects.filter(orders__status__in=active_statuses).annotate(
-        active_total=Sum('orders__total_amount', filter=Q(orders__status__in=active_statuses)),
-        latest_order_time=Max('orders__created_at', filter=Q(orders__status__in=active_statuses)),
-        latest_order_id=Max('orders__id', filter=Q(orders__status__in=active_statuses)),
+    active_order_filter = Q(orders__status__in=active_statuses, orders__is_deleted=False)
+    customers = Customer.objects.filter(
+        orders__status__in=active_statuses,
+        orders__is_deleted=False,
+    ).annotate(
+        active_total=Sum('orders__total_amount', filter=active_order_filter),
+        latest_order_time=Max('orders__created_at', filter=active_order_filter),
+        latest_order_id=Max('orders__id', filter=active_order_filter),
     ).prefetch_related(active_orders_prefetch).distinct().order_by(
         F('latest_order_time').desc(nulls_last=True),
         F('latest_order_id').desc(nulls_last=True),
