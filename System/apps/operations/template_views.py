@@ -121,7 +121,7 @@ class PondForm(forms.ModelForm):
             ('Main Pond', 'Main Pond'),
             ('Breeding Pond', 'Breeding Pond'),
             ('Superworm Cabin', 'Superworm Cabin'),
-            ('Azula', 'Azula')
+            ('Azula', 'Azolla')
         ],
         widget=forms.Select(attrs={
             'class': 'mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-cyan-300 focus:outline-none'
@@ -236,7 +236,7 @@ def get_harvest_yield_data():
 
     for product in products:
         pond_aggregates = {}
-        is_azula_product = product.name and product.name.strip().lower() == 'azula'
+        is_azula_product = product.name and product.name.strip().lower() in ('azula', 'azolla')
         for p in all_ponds:
             is_azula = (p.location == 'Azula') or is_azula_product
             if p.product_name == product.name or (is_azula_product and p.location == 'Azula'):

@@ -64,11 +64,11 @@
         <!-- Azula -->
         <div class="glass-card rounded-xl p-5 sm:p-6 flex items-center justify-between">
             <div>
-                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Azula</p>
+                <p class="text-xs sm:text-sm font-black uppercase tracking-wider text-[#a0ac96]">Azolla</p>
                 <p class="mt-2 text-2xl sm:text-3xl font-black text-white tracking-tight">{{ azula_ponds_count }}</p>
                 <div class="mt-4 flex items-center gap-2 text-xs text-[#a0ac96] font-mono">
                     <span class="inline-block h-1.5 w-1.5 rounded-full bg-[#cca43b]"></span>
-                    <span>Azula indoor tanks</span>
+                    <span>Azolla indoor tanks</span>
                 </div>
             </div>
             <div class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl bg-[#cca43b]/10 border border-[#cca43b]/25 text-[#cca43b]">
@@ -142,7 +142,7 @@
     {% if request.GET.type == 'azula' %}
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="border-b border-white/10 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-            <h2 class="text-lg font-black tracking-tight text-white">Azula</h2>
+            <h2 class="text-lg font-black tracking-tight text-white">Azolla</h2>
             <div class="flex items-center gap-2">
                 <button type="button" onclick="openHarvestSidebar('Azula')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Harvest</button>
                 <button type="button" onclick="openOperationsSidebar('Azula')" class="rounded-lg bg-[#cca43b]/10 border border-[#cca43b]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#cca43b] hover:bg-[#cca43b]/20 transition-colors">Maintenance</button>
@@ -427,7 +427,7 @@
         <div class="op-table-wrapper hidden" data-category="Azula">
             <div class="flex items-center justify-between mb-3">
                 <div>
-                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Azula Tanks</h3>
+                    <h3 class="text-sm font-bold text-[#cca43b] uppercase tracking-wider">Azolla Tanks</h3>
                     <p class="text-xs text-[#a0ac96] mt-0.5">15-day sanitization protocol for active tanks</p>
                 </div>
                 <button type="button" onclick="submitAzulaOperations(this)" class="rounded-lg border border-[#cca43b]/30 bg-[#cca43b]/10 px-4 py-2 text-xs font-black text-[#cca43b] hover:bg-[#cca43b]/20 hover:scale-105 transition-all duration-200 cursor-pointer active:scale-95">
@@ -1507,7 +1507,7 @@
         const titleEl = document.getElementById('operations-sidebar-title');
         const subtitleEl = document.getElementById('operations-sidebar-subtitle');
         if (category === 'Azula') {
-            title = "Azula Sanitization Protocol";
+            title = "Azolla Sanitization Protocol";
         } else if (category) {
             title = category + " Operations";
         }
