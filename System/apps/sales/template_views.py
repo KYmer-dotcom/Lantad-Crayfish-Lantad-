@@ -1290,10 +1290,21 @@ def customer_orders_page(request):
         if current_group:
             prev_order = current_group['orders'][-1]
             time_diff = abs((prev_order.created_at - order_created).total_seconds()) if (prev_order.created_at and order_created) else 9999
+            updated_diff = abs((prev_order.updated_at - order.updated_at).total_seconds()) if (prev_order.updated_at and order.updated_at) else 9999
+
+            has_same_session = False
+            if order.notes and 'Session #' in order.notes and prev_order.notes and 'Session #' in prev_order.notes:
+                try:
+                    s1 = order.notes.split('Session #')[1].split(')')[0].strip()
+                    s2 = prev_order.notes.split('Session #')[1].split(')')[0].strip()
+                    if s1 and s2 and s1 == s2:
+                        has_same_session = True
+                except Exception:
+                    pass
 
             is_same_order_number = bool(order.order_number and prev_order.order_number and order.order_number == prev_order.order_number)
-            # Group if matching order number, or within 300 seconds (5 min) with matching status/payment/address
-            if is_same_order_number or (time_diff <= 300 and 
+            # Group if matching order number, same PayMongo session, or checked out/created together with matching status/payment/address
+            if is_same_order_number or has_same_session or ((time_diff <= 300 or updated_diff <= 60) and 
                 order.status == prev_order.status and 
                 order.payment_status == prev_order.payment_status and 
                 (order.delivery_address or '').strip().upper() == (prev_order.delivery_address or '').strip().upper()):
