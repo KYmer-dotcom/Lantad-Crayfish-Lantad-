@@ -2441,6 +2441,14 @@ def delivery_track_page(request):
 @csrf_exempt
 def rider_location_update(request):
     """API beacon endpoint for rider mobile device to stream live GPS coordinates."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
+    rider = get_rider_profile(request.user)
+    is_admin = request.user.is_superuser or is_owner(request.user) or request.user.is_staff
+    if not rider and not is_admin:
+        return JsonResponse({'success': False, 'error': 'Rider or admin access required'}, status=403)
+
     lat = request.GET.get('latitude') or request.GET.get('lat')
     lng = request.GET.get('longitude') or request.GET.get('lng')
     delivery_id = request.GET.get('delivery_id')
@@ -2468,10 +2476,6 @@ def rider_location_update(request):
         return JsonResponse({'success': False, 'error': 'Invalid coordinates'}, status=400)
 
     now = timezone.now()
-    rider = None
-
-    if request.user.is_authenticated:
-        rider = get_rider_profile(request.user)
 
     if delivery_id:
         delivery = None
@@ -2484,11 +2488,11 @@ def rider_location_update(request):
             delivery = None
 
         if delivery:
+            if not is_admin and delivery.rider_id != rider.id:
+                return JsonResponse({'success': False, 'error': 'Forbidden'}, status=403)
             delivery.current_latitude = lat
             delivery.current_longitude = lng
             delivery.save(update_fields=['current_latitude', 'current_longitude'])
-            if not rider and delivery.rider:
-                rider = delivery.rider
             if delivery.rider:
                 delivery.rider.current_latitude = lat
                 delivery.rider.current_longitude = lng
@@ -2501,23 +2505,6 @@ def rider_location_update(request):
         rider.last_location_update = now
         rider.save(update_fields=['current_latitude', 'current_longitude', 'last_location_update'])
         Delivery.objects.filter(rider=rider, status=Delivery.Status.IN_TRANSIT).update(
-            current_latitude=lat,
-            current_longitude=lng
-        )
-    elif delivery_id:
-        if str(delivery_id).isdigit():
-            Delivery.objects.filter(pk=int(delivery_id)).update(
-                current_latitude=lat,
-                current_longitude=lng
-            )
-        else:
-            Delivery.objects.filter(order__order_number=str(delivery_id)).update(
-                current_latitude=lat,
-                current_longitude=lng
-            )
-    else:
-        # Fallback to updating in-transit dispatches
-        Delivery.objects.filter(status=Delivery.Status.IN_TRANSIT).update(
             current_latitude=lat,
             current_longitude=lng
         )
