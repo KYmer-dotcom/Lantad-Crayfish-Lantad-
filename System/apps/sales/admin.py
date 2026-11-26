@@ -4,7 +4,7 @@ from .models import Customer, Product, SalesOrder, Delivery, Rider, PaymentSetti
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'customer_type', 'phone', 'email', 'is_active', 'created_at')
+    list_display = ('name', 'customer_type', 'phone', 'is_active', 'created_at')
     search_fields = ('name', 'phone', 'email', 'address')
     list_filter = ('customer_type', 'is_active')
 
