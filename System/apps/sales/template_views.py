@@ -1718,9 +1718,10 @@ def customer_checkout_submit(request):
             # Confirm GCash payment with verified reference or uploaded receipt
             ref_label = payment_reference if payment_reference else "Verified Online"
             for order in orders_to_place:
+                unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
                 order.status = SalesOrder.Status.CONFIRMED
                 order.payment_status = SalesOrder.PaymentStatus.PAID if receipt_bytes else SalesOrder.PaymentStatus.UNPAID
-                order.notes = f"Payment: GCash ({ref_label})".strip()
+                order.notes = f"{unit_info}Payment: GCash ({ref_label})".strip()
                 if receipt_bytes:
                     order.receipt_image = receipt_bytes
                 order.save()
@@ -1731,13 +1732,14 @@ def customer_checkout_submit(request):
 
         # Cash / Cash on Delivery flow
         for order in orders_to_place:
+            unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
             order.status = SalesOrder.Status.CONFIRMED
             order.payment_status = SalesOrder.PaymentStatus.UNPAID
             
             is_pickup = (order.delivery_address and order.delivery_address.upper() == 'PICKUP')
             method_label = "Cash (Pickup)" if is_pickup else "Cash on Delivery"
                 
-            order.notes = f"Payment: {method_label}".strip()
+            order.notes = f"{unit_info}Payment: {method_label}".strip()
             order.save()
             _deduct_order_stock_once(order)
             
