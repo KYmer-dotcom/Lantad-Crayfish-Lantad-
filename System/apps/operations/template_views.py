@@ -669,11 +669,31 @@ def farm_remove(request, farm_id):
 @login_required
 @require_POST
 def pond_remove(request, pond_id):
-    """Remove a pond (owner or assigned manager)."""
+    """Remove a pond (only when all product stock inside is 0)."""
     ensure_not_customer(request.user)
     pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
     pond_name = pond.name
     pond_location = pond.location
+
+    def _redirect_for_location():
+        if pond_location == 'Azula':
+            return redirect(reverse('ponds:list') + '?type=azula')
+        if pond_location == 'Superworm Cabin':
+            return redirect(reverse('ponds:list') + '?type=cabin')
+        return redirect(reverse('ponds:list') + '?type=pond')
+
+    prod1_qty = (pond.current_azula_quantity if pond_location == 'Azula' else (pond.capacity or 0)) or 0
+    if pond_location == 'Breeding Pond':
+        prod2_qty = pond.crilings_count or 0
+    elif pond_location == 'Superworm Cabin':
+        prod2_qty = pond.superworm_count or 0
+    else:
+        prod2_qty = pond.capacity_2 or 0
+
+    if prod1_qty > 0 or prod2_qty > 0:
+        messages.error(request, f'Cannot delete "{pond_name}" while it still has stock inside. Harvest or transfer all stock to 0 first.')
+        return _redirect_for_location()
+
     pond.delete()
     messages.success(request, f'Pond "{pond_name}" removed successfully.')
 
@@ -685,11 +705,7 @@ def pond_remove(request, pond_id):
             'farms': farms,
         })
 
-    if pond_location == 'Azula':
-        return redirect(reverse('ponds:list') + '?type=azula')
-    if pond_location == 'Superworm Cabin':
-        return redirect(reverse('ponds:list') + '?type=cabin')
-    return redirect(reverse('ponds:list') + '?type=pond')
+    return _redirect_for_location()
 
 
 @login_required
