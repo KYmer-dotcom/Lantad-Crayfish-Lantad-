@@ -3645,6 +3645,21 @@
         });
 
         if (currentProd) {
+            const stockQty = parseFloat(currentProd.quantity) || 0;
+            const isUnavailable = (maxUnits !== null && maxUnits <= 0);
+            document.querySelectorAll('.featured-order-btn, #featured-order-btn').forEach(btn => {
+                btn.disabled = isUnavailable || currentQty <= 0;
+            });
+            document.querySelectorAll('.featured-order-text, #featured-order-text').forEach(el => {
+                if (stockQty <= 0) {
+                    el.textContent = 'Out of Stock';
+                } else if (isUnavailable) {
+                    el.textContent = 'Unavailable';
+                } else {
+                    el.textContent = 'Add to Cart';
+                }
+            });
+
             const pricePc = parseFloat(currentProd.pricePc) || 0;
             const priceKg = parseFloat(currentProd.priceKg) || 0;
             let price = currentPricingUnit === 'kg' ? priceKg : pricePc;
