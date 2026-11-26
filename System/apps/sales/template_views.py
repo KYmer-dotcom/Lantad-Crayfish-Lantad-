@@ -2043,18 +2043,22 @@ def delivery_logs_page(request):
         '-created_at'
     )
 
+    # Group deliveries by checkout batch
+    grouped_all_logs = _group_deliveries(list(logs_qs))
+    grouped_filtered_logs = _group_deliveries(list(filtered_logs))
+
     # Aggregates / Stats
-    total_logs = logs_qs.count()
-    delivered_count = logs_qs.filter(status=Delivery.Status.DELIVERED).count()
-    in_transit_count = logs_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
-    scheduled_count = logs_qs.filter(status=Delivery.Status.SCHEDULED).count()
+    total_logs = len(grouped_all_logs)
+    delivered_count = sum(1 for d in grouped_all_logs if d.status == Delivery.Status.DELIVERED)
+    in_transit_count = sum(1 for d in grouped_all_logs if d.status == Delivery.Status.IN_TRANSIT)
+    scheduled_count = sum(1 for d in grouped_all_logs if d.status == Delivery.Status.SCHEDULED)
 
     delivered_qs = logs_qs.filter(status=Delivery.Status.DELIVERED)
     total_delivered_kg = delivered_qs.aggregate(total=Sum('quantity_kg'))['total'] or Decimal('0')
     total_delivered_revenue = delivered_qs.aggregate(total=Sum('order__total_amount'))['total'] or Decimal('0')
 
     # Pagination: 15 per page
-    paginator = Paginator(filtered_logs, 15)
+    paginator = Paginator(grouped_filtered_logs, 15)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
@@ -2091,11 +2095,11 @@ def delivery_logs_page(request):
 
     # Compile structured Activity Logs
     activity_logs = []
-    for d in logs_qs:
+    for d in grouped_all_logs:
         approver = d.created_by.get_full_name() if d.created_by else (d.created_by.username if d.created_by else 'Admin')
-        prod_name = d.order.product.name if d.order and d.order.product else 'Stock'
+        prod_summary = getattr(d, 'grouped_items_summary', None) or (f"{d.order.product.name if d.order and d.order.product else 'Stock'} ({d.quantity_kg} pcs)")
         cust_name = d.order.customer.name if d.order and d.order.customer else 'Direct Customer'
-        ord_num = d.order.order_number if d.order else f"DEL-{d.id}"
+        ord_num = getattr(d, 'grouped_order_numbers', None) or (d.order.order_number if d.order else f"DEL-{d.id}")
         
         # 1. Approval / Dispatch Event
         activity_logs.append({
@@ -2105,7 +2109,7 @@ def delivery_logs_page(request):
             'role_badge': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
             'action': 'Dispatch Approved',
             'entity': f"Order #{ord_num}",
-            'product': f"{prod_name} ({d.quantity_kg} kg)",
+            'product': prod_summary,
             'customer': cust_name,
             'details': f"Approved dispatch to {d.delivery_location or 'Customer Address'}",
             'status': 'Approved',
@@ -2122,7 +2126,7 @@ def delivery_logs_page(request):
                 'role_badge': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                 'action': 'Courier Assigned',
                 'entity': f"Order #{ord_num}",
-                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'product': prod_summary,
                 'customer': cust_name,
                 'details': f"Assigned to {d.rider.vehicle_type} • Plate: {d.rider.plate_number or 'Unregistered'}",
                 'status': 'Assigned',
@@ -2139,7 +2143,7 @@ def delivery_logs_page(request):
                 'role_badge': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                 'action': 'Out for Delivery',
                 'entity': f"Order #{ord_num}",
-                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'product': prod_summary,
                 'customer': cust_name,
                 'details': f"Live GPS tracking active. En route to {d.delivery_location or cust_name}",
                 'status': 'In Transit',
@@ -2160,7 +2164,7 @@ def delivery_logs_page(request):
                 'role_badge': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
                 'action': 'Drop-off Completed',
                 'entity': f"Order #{ord_num}",
-                'product': f"{prod_name} ({d.quantity_kg} kg)",
+                'product': prod_summary,
                 'customer': cust_name,
                 'details': f"Order successfully fulfilled. Proof of delivery and official receipt generated.",
                 'status': 'Delivered',

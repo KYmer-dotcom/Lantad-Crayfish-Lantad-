@@ -299,13 +299,17 @@
                             <!-- Order & Product -->
                             <td class="py-4 px-6">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono font-bold text-white text-sm tracking-tight whitespace-nowrap">{{ d.order.order_number }}</span>
+                                    <span class="font-mono font-bold text-white text-sm tracking-tight whitespace-nowrap">{{ d.grouped_order_numbers|default:d.order.order_number }}</span>
                                     <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border shrink-0 {% if d.status == 'delivered' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30 {% elif d.status == 'in_transit' %}bg-cyan-500/15 text-cyan-400 border-cyan-500/30 {% elif d.status == 'scheduled' %}bg-amber-500/15 text-amber-400 border-amber-500/30 {% else %}bg-rose-500/15 text-rose-400 border-rose-500/30{% endif %}">
                                         {{ d.get_status_display }}
                                     </span>
                                 </div>
-                                <p class="text-[11px] text-[#a0ac96] mt-0.5 whitespace-nowrap">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg|floatformat:"-2" }} kg</strong></p>
-                                <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.order.total_amount|floatformat:"-2" }}</p>
+                                {% for item in d.grouped_items %}
+                                <p class="text-[11px] text-[#a0ac96] mt-0.5 whitespace-nowrap">{{ item.product_name }} • <strong class="text-white">{{ item.quantity|floatformat:"-2" }} {{ item.unit }}</strong></p>
+                                {% empty %}
+                                <p class="text-[11px] text-[#a0ac96] mt-0.5 whitespace-nowrap">{{ d.order.product.name|default:"Aquaculture Stock" }} • <strong class="text-white">{{ d.quantity_kg|floatformat:"-2" }} pcs</strong></p>
+                                {% endfor %}
+                                <p class="text-[11px] font-mono font-bold text-[#cca43b] mt-0.5">₱{{ d.grouped_total_amount|default:d.order.total_amount|floatformat:"-2" }}</p>
                             </td>
 
                             <!-- Customer & Drop-off -->
