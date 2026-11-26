@@ -556,7 +556,7 @@ def pond_create(request):
 @login_required
 def pond_edit(request, pond_id):
     """Edit a pond"""
-    
+    ensure_not_customer(request.user)
     pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
     
     # Determine the category type (azula, cabin, or pond)
@@ -667,9 +667,10 @@ def farm_remove(request, farm_id):
 
 
 @login_required
+@require_POST
 def pond_remove(request, pond_id):
     """Remove a pond (owner or assigned manager)."""
-
+    ensure_not_customer(request.user)
     pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
     pond_name = pond.name
     pond_location = pond.location
@@ -798,6 +799,7 @@ def operations_data(request):
 @require_POST
 def record_operations(request):
     """Save pond operations logs (supports per-product or per-pond logs)"""
+    ensure_not_customer(request.user)
     try:
         from django.utils import timezone
         today = timezone.now().date()
@@ -1151,6 +1153,7 @@ def pond_transfer(request):
 @require_POST
 def record_mortality(request):
     """Save pond mortality logs and deduct dead stock from pond capacity"""
+    ensure_not_customer(request.user)
     try:
         from django.utils import timezone
         from django.db.models import Q
@@ -1233,6 +1236,7 @@ def record_mortality(request):
 @require_POST
 def reset_mortality(request):
     """Reset today's mortality logs and restore deducted pond stock back to pond/batches"""
+    ensure_not_customer(request.user)
     try:
         from django.utils import timezone
         from django.db.models import Q
