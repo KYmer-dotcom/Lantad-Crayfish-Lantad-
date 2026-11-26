@@ -1102,6 +1102,7 @@ def product_edit(request, product_id):
             spec_changes = []
             update_fields = []
 
+            old_name = product.name
             # Compare Name
             if name != product.name:
                 spec_changes.append(f'Name: "{product.name}" → "{name}"')
@@ -1180,6 +1181,12 @@ def product_edit(request, product_id):
                 product.updated_at = timezone.now()
                 update_fields.append('updated_at')
                 product.save(update_fields=update_fields)
+                if old_name != product.name:
+                    from apps.operations.models import Pond, PondFeedingLog, PondMortalityLog
+                    Pond.objects.filter(product_name__iexact=old_name).update(product_name=product.name)
+                    Pond.objects.filter(product_name_2__iexact=old_name).update(product_name_2=product.name)
+                    PondFeedingLog.objects.filter(product_name__iexact=old_name).update(product_name=product.name)
+                    PondMortalityLog.objects.filter(product_name__iexact=old_name).update(product_name=product.name)
                 InputLog.log(
                     user=request.user,
                     action=InputLog.Action.UPDATED,
