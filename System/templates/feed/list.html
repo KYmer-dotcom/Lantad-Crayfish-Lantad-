@@ -146,9 +146,18 @@ function openModal(id) {
     m.classList.add('flex');
 }
 function closeModal(id) {
+    if (!id) {
+        document.querySelectorAll('#feeding-modal, [id$="-modal"]').forEach(m => {
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        });
+        return;
+    }
     const m = document.getElementById(id);
-    m.classList.add('hidden');
-    m.classList.remove('flex');
+    if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
 }
 function openFeedingModal(batchId, feedTypeId) {
     openModal('feeding-modal');
