@@ -695,7 +695,7 @@ def order_receipt_view(request, order_id):
             user.is_staff or 
             getattr(user, 'role', '') in ['owner', 'admin', 'staff'] or
             (hasattr(order, 'customer') and order.customer and order.customer.user == user) or
-            (hasattr(order, 'delivery') and order.delivery and order.delivery.rider and order.delivery.rider.user == user)
+            order.deliveries.filter(rider__user=user).exists()
         )) or
         (customer and order.customer == customer)
     )
