@@ -2784,11 +2784,19 @@
         if (!p) return;
         const pricePc = parseFloat(p.pricePc) || 0;
         const priceKg = parseFloat(p.priceKg) || 0;
+        const stock = parseFloat(p.quantity) || 0;
+        const ppk = parseFloat(p.piecesPerKg) || 1;
         const hasPc = pricePc > 0;
         const hasKg = priceKg > 0;
+        const pcAvailable = hasPc && stock >= 1;
+        const kgAvailable = hasKg && stock >= ppk;
 
-        // Auto-switch currentPricingUnit if currently chosen unit has 0 price
-        if (currentPricingUnit === 'pc' && !hasPc && hasKg) {
+        // Auto-switch currentPricingUnit if chosen unit has 0 price or insufficient stock
+        if (currentPricingUnit === 'pc' && (!pcAvailable) && kgAvailable) {
+            currentPricingUnit = 'kg';
+        } else if (currentPricingUnit === 'kg' && (!kgAvailable) && pcAvailable) {
+            currentPricingUnit = 'pc';
+        } else if (currentPricingUnit === 'pc' && !hasPc && hasKg) {
             currentPricingUnit = 'kg';
         } else if (currentPricingUnit === 'kg' && !hasKg && hasPc) {
             currentPricingUnit = 'pc';
@@ -2834,8 +2842,16 @@
         const currentProd = availableProducts[currentProductIndex];
         const pricePc = parseFloat(currentProd?.pricePc) || 0;
         const priceKg = parseFloat(currentProd?.priceKg) || 0;
+        const stock = parseFloat(currentProd?.quantity) || 0;
+        const ppk = parseFloat(currentProd?.piecesPerKg) || 1;
+        const pcAvailable = pricePc > 0 && stock >= 1;
+        const kgAvailable = priceKg > 0 && stock >= ppk;
 
-        if (unit === 'pc' && pricePc <= 0 && priceKg > 0) {
+        if (unit === 'pc' && !pcAvailable && kgAvailable) {
+            unit = 'kg';
+        } else if (unit === 'kg' && !kgAvailable && pcAvailable) {
+            unit = 'pc';
+        } else if (unit === 'pc' && pricePc <= 0 && priceKg > 0) {
             unit = 'kg';
         } else if (unit === 'kg' && priceKg <= 0 && pricePc > 0) {
             unit = 'pc';
@@ -2846,18 +2862,28 @@
 
         // Desktop Unit Buttons
         document.querySelectorAll('.desktop-btn-unit-pc').forEach(btn => {
-            btn.className = (unit === 'pc')
-                ? "btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
-                : "btn-unit-pc desktop-btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            const disabled = pricePc > 0 && !pcAvailable;
+            btn.disabled = disabled;
+            btn.textContent = disabled ? 'Per Piece (Unavailable)' : 'Per Piece (PC)';
+            btn.className = disabled
+                ? "btn-unit-pc desktop-btn-unit-pc border border-white/10 text-stone-500 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider opacity-40 cursor-not-allowed"
+                : ((unit === 'pc')
+                    ? "btn-unit-pc desktop-btn-unit-pc bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                    : "btn-unit-pc desktop-btn-unit-pc border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer");
             if (pricePc <= 0) {
                 btn.classList.add('hidden');
                 btn.style.display = 'none';
             }
         });
         document.querySelectorAll('.desktop-btn-unit-kg').forEach(btn => {
-            btn.className = (unit === 'kg')
-                ? "btn-unit-kg desktop-btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
-                : "btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            const disabled = priceKg > 0 && !kgAvailable;
+            btn.disabled = disabled;
+            btn.textContent = disabled ? `By ${bulkUnitName} (Unavailable)` : `By ${bulkUnitName}`;
+            btn.className = disabled
+                ? "btn-unit-kg desktop-btn-unit-kg border border-white/10 text-stone-500 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider opacity-40 cursor-not-allowed"
+                : ((unit === 'kg')
+                    ? "btn-unit-kg desktop-btn-unit-kg bg-[#cca43b] text-[#01140e] px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                    : "btn-unit-kg desktop-btn-unit-kg border border-[#cca43b]/30 text-[#a0ac96] hover:text-white px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer");
             if (priceKg <= 0) {
                 btn.classList.add('hidden');
                 btn.style.display = 'none';
@@ -2866,18 +2892,28 @@
 
         // Mobile Unit Buttons
         document.querySelectorAll('.mobile-btn-unit-pc').forEach(btn => {
-            btn.className = (unit === 'pc')
-                ? "btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
-                : "btn-unit-pc mobile-btn-unit-pc flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            const disabled = pricePc > 0 && !pcAvailable;
+            btn.disabled = disabled;
+            btn.textContent = disabled ? 'Per Piece (Unavailable)' : 'Per Piece (PC)';
+            btn.className = disabled
+                ? "btn-unit-pc mobile-btn-unit-pc flex-1 border border-white/10 text-stone-500 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider opacity-40 cursor-not-allowed"
+                : ((unit === 'pc')
+                    ? "btn-unit-pc mobile-btn-unit-pc flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                    : "btn-unit-pc mobile-btn-unit-pc flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer");
             if (pricePc <= 0) {
                 btn.classList.add('hidden');
                 btn.style.display = 'none';
             }
         });
         document.querySelectorAll('.mobile-btn-unit-kg').forEach(btn => {
-            btn.className = (unit === 'kg')
-                ? "btn-unit-kg mobile-btn-unit-kg flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
-                : "btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer";
+            const disabled = priceKg > 0 && !kgAvailable;
+            btn.disabled = disabled;
+            btn.textContent = disabled ? `By ${bulkUnitName} (Unavailable)` : `By ${bulkUnitName}`;
+            btn.className = disabled
+                ? "btn-unit-kg mobile-btn-unit-kg flex-1 border border-white/10 text-stone-500 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider opacity-40 cursor-not-allowed"
+                : ((unit === 'kg')
+                    ? "btn-unit-kg mobile-btn-unit-kg flex-1 bg-[#cca43b] text-[#01140e] py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                    : "btn-unit-kg mobile-btn-unit-kg flex-1 border border-[#cca43b]/30 text-[#a0ac96] hover:text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer");
             if (priceKg <= 0) {
                 btn.classList.add('hidden');
                 btn.style.display = 'none';
@@ -3645,21 +3681,6 @@
         });
 
         if (currentProd) {
-            const stockQty = parseFloat(currentProd.quantity) || 0;
-            const isUnavailable = (maxUnits !== null && maxUnits <= 0);
-            document.querySelectorAll('.featured-order-btn, #featured-order-btn').forEach(btn => {
-                btn.disabled = isUnavailable || currentQty <= 0;
-            });
-            document.querySelectorAll('.featured-order-text, #featured-order-text').forEach(el => {
-                if (stockQty <= 0) {
-                    el.textContent = 'Out of Stock';
-                } else if (isUnavailable) {
-                    el.textContent = 'Unavailable';
-                } else {
-                    el.textContent = 'Add to Cart';
-                }
-            });
-
             const pricePc = parseFloat(currentProd.pricePc) || 0;
             const priceKg = parseFloat(currentProd.priceKg) || 0;
             let price = currentPricingUnit === 'kg' ? priceKg : pricePc;
@@ -3686,6 +3707,20 @@
                 } else {
                     qtyLabel.textContent = 'Quantity (pcs):';
                 }
+            });
+
+            const stockQty = parseFloat(currentProd.quantity) || 0;
+            const isUnavailable = maxUnits <= 0;
+            document.querySelectorAll('.featured-order-btn, #featured-order-btn').forEach(btn => {
+                btn.disabled = isUnavailable;
+                if (isUnavailable) {
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+            document.querySelectorAll('.featured-order-text, #featured-order-text').forEach(el => {
+                el.textContent = stockQty <= 0 ? 'Out of Stock' : (isUnavailable ? 'Unavailable' : 'Add to Cart');
             });
         }
     }
