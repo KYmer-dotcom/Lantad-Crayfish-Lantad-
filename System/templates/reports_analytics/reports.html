@@ -1625,6 +1625,7 @@
                         const orderDate = row.getAttribute('data-order-date') || date;
                         const deliveredDate = row.getAttribute('data-delivered-date') || date;
                         const phone = row.getAttribute('data-phone') || '';
+                        const address = (row.getAttribute('data-address') || cells[4].textContent.trim() || '');
                         const isPickup = (row.getAttribute('data-is-pickup') === 'true') || address.toUpperCase() === 'PICKUP';
                         const approver = row.getAttribute('data-approver') || 'Farm Owner';
                         let approverRole = row.getAttribute('data-approver-role') || 'Authorized Management';
