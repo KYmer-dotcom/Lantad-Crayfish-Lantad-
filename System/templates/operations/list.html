@@ -1850,6 +1850,7 @@
         
         const rows = tableWrapper.querySelectorAll('.operation-row');
         const logs = [];
+        let missingAllocation = false;
         
         rows.forEach(row => {
             const pondId = row.getAttribute('data-pond-id');
@@ -1866,17 +1867,27 @@
             const hasFeed = feedSelect && feedSelect.value;
             const hasGrams = gramsVal && gramsVal > 0;
 
-            if (pondId && (hasFeed || hasGrams)) {
+            if (hasFeed && !hasGrams) {
+                missingAllocation = true;
+                return;
+            }
+
+            if (pondId && hasFeed && hasGrams) {
                 logs.push({
                     pond_id: parseInt(pondId),
                     product_name: productName,
                     fed: true,
-                    feed_type_id: hasFeed ? parseInt(feedSelect.value) : null,
+                    feed_type_id: parseInt(feedSelect.value),
                     quantity_grams: gramsVal
                 });
             }
         });
         
+        if (missingAllocation) {
+            showToast('Please enter Quantity and Specific Grams in Feed & Product Allocation above before recording.', 'error');
+            return;
+        }
+
         if (logs.length === 0) {
             showToast('No operational rows to submit.', 'error');
             return;

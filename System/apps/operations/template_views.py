@@ -815,7 +815,15 @@ def record_operations(request):
             fed = log.get('fed', False)
             feed_type_id = log.get('feed_type_id') or None
             quantity_grams = log.get('quantity_grams')
-            
+
+            try:
+                grams_decimal = Decimal(str(quantity_grams)) if quantity_grams is not None else Decimal('0')
+            except Exception:
+                grams_decimal = Decimal('0')
+
+            if not feed_type_id or grams_decimal <= 0:
+                continue
+
             pond = get_object_or_404(get_accessible_ponds(request.user), pk=pond_id)
             
             # Find existing entry for today if any
