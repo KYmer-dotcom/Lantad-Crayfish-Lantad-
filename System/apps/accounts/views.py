@@ -9,16 +9,17 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 
 from .serializers import UserSerializer, UserCreateSerializer, ChangePasswordSerializer
+from .permissions import IsOwnerPermission
 
 User = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
-    """User registration endpoint."""
+    """User registration endpoint (owner only)."""
     
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerPermission]
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
@@ -36,7 +37,7 @@ class UserListView(generics.ListAPIView):
     
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     
     def get_queryset(self):
         if self.request.user.is_owner:
@@ -49,7 +50,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     
     def get_queryset(self):
         if self.request.user.is_owner:

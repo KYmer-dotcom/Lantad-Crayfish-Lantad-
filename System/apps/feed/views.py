@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 
 from apps.accounts.access import is_owner
+from apps.accounts.permissions import IsOwnerPermission
 from .models import FeedType, FeedInventory, FeedingLog, FeedStockMovement
 from .services import record_stock_in, consume_feed
 from .serializers import (
@@ -27,7 +28,7 @@ class FeedTypeViewSet(viewsets.ModelViewSet):
     
     queryset = FeedType.objects.all()
     serializer_class = FeedTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'brand']
     ordering_fields = ['name', 'price_per_kg', 'created_at']
@@ -40,7 +41,7 @@ class FeedInventoryViewSet(viewsets.ModelViewSet):
     
     queryset = FeedInventory.objects.select_related('feed_type', 'added_by').all()
     serializer_class = FeedInventorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['purchase_date', 'quantity_kg', 'created_at']
     
@@ -56,7 +57,7 @@ class FeedingLogViewSet(viewsets.ModelViewSet):
     
     queryset = FeedingLog.objects.select_related('stock_batch', 'feed_type', 'fed_by').all()
     serializer_class = FeedingLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['feeding_time', 'quantity_kg', 'created_at']
     
@@ -85,7 +86,7 @@ class FeedStockMovementViewSet(viewsets.ModelViewSet):
 
     queryset = FeedStockMovement.objects.select_related('feed_type', 'moved_by').all()
     serializer_class = FeedStockMovementSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['moved_at', 'delta_kg']
 

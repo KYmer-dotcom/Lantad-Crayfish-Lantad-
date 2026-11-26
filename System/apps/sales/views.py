@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from apps.accounts.access import is_owner, is_customer, get_customer_profile
+from apps.accounts.permissions import IsOwnerPermission, IsOwnerOrReadOnlyPermission
 from .models import Customer, Product, SalesOrder, InventoryTransaction, Delivery, PaymentSetting
 from .serializers import (
     CustomerSerializer,
@@ -22,7 +23,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnlyPermission]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'contact_person', 'phone', 'email']
     ordering_fields = ['name', 'created_at']
@@ -66,6 +67,8 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='update-payment')
     def update_payment(self, request, pk=None):
         """Update payment status for an order via REST API."""
+        if not is_owner(request.user):
+            return Response({'success': False, 'error': 'Owner access required'}, status=status.HTTP_403_FORBIDDEN)
         order = self.get_object()
         new_status = request.data.get('payment_status')
         if new_status in [c[0] for c in SalesOrder.PaymentStatus.choices]:
@@ -82,7 +85,7 @@ class PaymentSettingViewSet(viewsets.ModelViewSet):
     
     queryset = PaymentSetting.objects.all()
     serializer_class = PaymentSettingSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
 
     def get_queryset(self):
         return PaymentSetting.objects.all()
@@ -95,7 +98,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     queryset = Product.objects.select_related('species', 'pond').all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnlyPermission]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'species__name']
     ordering_fields = ['name', 'quantity_kg', 'updated_at']
@@ -114,7 +117,7 @@ class InventoryTransactionViewSet(viewsets.ModelViewSet):
 
     queryset = InventoryTransaction.objects.select_related('product', 'created_by').all()
     serializer_class = InventoryTransactionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['created_at', 'quantity_kg']
 
@@ -135,7 +138,7 @@ class DeliveryViewSet(viewsets.ModelViewSet):
 
     queryset = Delivery.objects.select_related('order', 'created_by').all()
     serializer_class = DeliverySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnlyPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['scheduled_date', 'delivered_date', 'created_at']
 
