@@ -834,7 +834,8 @@
         availableSaleProducts.forEach(p => {
             const isSel = String(p.id) === String(selectedProductId) ? 'selected' : '';
             if (lockProduct && !isSel) return; // Only allow the intended product when locked
-            selectOptions += `<option value="${p.id}" data-name="${p.name}" ${isSel}>${p.name} (Stock: ${p.current_qty} ${p.unit})</option>`;
+            const cleanQty = String(p.current_qty ?? 0).replace(/\.00$/, '');
+            selectOptions += `<option value="${p.id}" data-name="${p.name}" ${isSel}>${p.name} (Stock: ${cleanQty} ${p.unit})</option>`;
         });
 
         row.innerHTML = `
