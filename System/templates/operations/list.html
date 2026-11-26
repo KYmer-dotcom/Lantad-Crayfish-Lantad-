@@ -1406,13 +1406,14 @@
             }
         }
 
-        // Synchronize all pond rows below matching this product
+        // Synchronize all pond rows below matching this product (skip 0-stock rows)
         document.querySelectorAll('.operation-row').forEach(opRow => {
             const rowProd = opRow.getAttribute('data-product-name') || '';
+            const rowQty = parseFloat(opRow.getAttribute('data-quantity')) || 0;
             if (isFeedProductMatch(rowProd, productName)) {
                 const feedSelect = opRow.querySelector('.op-feed-select');
                 if (feedSelect) {
-                    feedSelect.value = feedId;
+                    feedSelect.value = rowQty > 0 ? feedId : '';
                 }
             }
         });
@@ -1853,6 +1854,9 @@
         rows.forEach(row => {
             const pondId = row.getAttribute('data-pond-id');
             const productName = row.getAttribute('data-product-name') || '';
+            const rowQty = parseFloat(row.getAttribute('data-quantity')) || 0;
+            if (rowQty <= 0) return;
+
             const feedSelect = row.querySelector('.op-feed-select');
             
             const computedGrams = row.getAttribute('data-computed-grams');
