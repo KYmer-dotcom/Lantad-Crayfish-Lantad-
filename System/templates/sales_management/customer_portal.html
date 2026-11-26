@@ -585,6 +585,8 @@
                         <div class="space-y-4">
                             {% for order in orders %}
                             <div id="order-card-{{ order.id }}" data-delivery-address="{{ order.delivery_address }}"
+                                data-stock="{{ order.product.quantity_kg|default:0 }}"
+                                data-ppk="{% if order.notes and '[KG]' in order.notes %}{{ order.product.pieces_per_kg|default:1 }}{% else %}1{% endif %}"
                                 class="order-item-card rounded-3xl border border-white/10 bg-[#01140e]/85 backdrop-blur-md p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative group hover:border-[#cca43b]/40 transition-all">
 
                                 <div class="flex items-center gap-4 flex-1 min-w-0 pr-8 sm:pr-0">
@@ -1161,22 +1163,35 @@
                 }
             }
 
+            function getCardMaxUnits(card) {
+                if (!card) return null;
+                const stock = parseFloat(card.getAttribute('data-stock'));
+                if (isNaN(stock)) return null;
+                const ppk = parseFloat(card.getAttribute('data-ppk')) || 1;
+                return Math.max(1, Math.floor(stock / (ppk > 0 ? ppk : 1)));
+            }
+
             function changeCardQuantity(orderId, delta) {
                 const input = document.getElementById(`qty-input-${orderId}`);
                 if (!input) return;
+                const card = document.getElementById(`order-card-${orderId}`);
+                const maxUnits = getCardMaxUnits(card);
                 let val = parseInt(input.value) || 1;
                 val = Math.max(1, val + delta);
+                if (maxUnits !== null && val > maxUnits) val = maxUnits;
                 input.value = val;
                 updateCardQuantity(orderId, val);
             }
 
             function updateCardQuantity(orderId, quantity) {
-                let qty = parseInt(quantity) || 1;
-                if (qty < 1) qty = 1;
-                const input = document.getElementById(`qty-input-${orderId}`);
-                if (input) input.value = qty;
                 const card = document.getElementById(`order-card-${orderId}`);
                 if (!card) return;
+                const maxUnits = getCardMaxUnits(card);
+                let qty = parseInt(quantity) || 1;
+                if (qty < 1) qty = 1;
+                if (maxUnits !== null && qty > maxUnits) qty = maxUnits;
+                const input = document.getElementById(`qty-input-${orderId}`);
+                if (input) input.value = qty;
 
                 const unitPrice = parseFloat((card.querySelector('.item-unit-price').textContent || '').replace(/,/g, '')) || 0;
                 const subtotalText = card.querySelector(`[id^="item-subtotal-${orderId}"]`);
