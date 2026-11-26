@@ -279,8 +279,9 @@ def sales_list(request):
                     pass
 
             time_diff = abs((o.created_at - other.created_at).total_seconds()) if (o.created_at and other.created_at) else 9999
+            updated_diff = abs((o.updated_at - other.updated_at).total_seconds()) if (o.updated_at and other.updated_at) else 9999
             is_same_time_batch = (
-                time_diff <= 300 and 
+                (time_diff <= 300 or updated_diff <= 60) and 
                 (o.delivery_address or '').strip().upper() == (other.delivery_address or '').strip().upper() and
                 o.order_date == other.order_date
             )
@@ -669,15 +670,35 @@ def order_payment_update(request, order_id):
     if request.method == 'POST':
         payment_status = request.POST.get('payment_status')
         valid_statuses = [choice[0] for choice in SalesOrder.PaymentStatus.choices]
-        if payment_status in valid_statuses:
-            order.payment_status = payment_status
-            if payment_status == 'paid':
-                order.status = SalesOrder.Status.COMPLETED
+        receipt_bytes = request.FILES['receipt_image'].read() if 'receipt_image' in request.FILES else None
 
-        if 'receipt_image' in request.FILES:
-            order.receipt_image = request.FILES['receipt_image'].read()
+        active_statuses = [
+            SalesOrder.Status.PENDING,
+            SalesOrder.Status.CONFIRMED,
+            SalesOrder.Status.PROCESSING,
+            SalesOrder.Status.SHIPPED,
+        ]
+        if order.customer_id and order.status in active_statuses:
+            target_orders = list(
+                SalesOrder.objects.filter(
+                    customer_id=order.customer_id,
+                    status__in=active_statuses,
+                )
+            )
+            if order not in target_orders:
+                target_orders.append(order)
+        else:
+            target_orders = [order]
 
-        order.save()
+        for target_order in target_orders:
+            if payment_status in valid_statuses:
+                target_order.payment_status = payment_status
+                if payment_status == 'paid':
+                    target_order.status = SalesOrder.Status.COMPLETED
+            if receipt_bytes is not None:
+                target_order.receipt_image = receipt_bytes
+            target_order.save()
+
         messages.success(request, f'Payment status for order "{order.order_number}" updated successfully!')
 
     referer = request.META.get('HTTP_REFERER')
