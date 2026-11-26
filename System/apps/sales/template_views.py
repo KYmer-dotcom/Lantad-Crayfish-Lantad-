@@ -1507,20 +1507,27 @@ def customer_order_create(request):
     return redirect('sales:customer_portal')
 
 
-def customer_order_toggle_delivery_method(request, order_id):
+def _get_editable_customer_order(request, order_id):
+    """Validate that the requester owns the order and that it is still pending/unpaid."""
     if not request.user.is_authenticated:
-        from django.http import JsonResponse
-        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
-    
+        return None, JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
     order = get_object_or_404(SalesOrder, id=order_id)
     customer = get_customer_profile(request.user)
     if not customer or order.customer != customer:
-        from django.http import JsonResponse
-        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
-        
+        return None, JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    if order.status != SalesOrder.Status.PENDING or order.payment_status == SalesOrder.PaymentStatus.PAID:
+        return None, JsonResponse({'success': False, 'error': 'Only pending unpaid orders can be modified.'}, status=400)
+    return order, None
+
+
+def customer_order_toggle_delivery_method(request, order_id):
+    order, err = _get_editable_customer_order(request, order_id)
+    if err:
+        return err
+    customer = order.customer
+
     if request.method == 'POST':
         try:
-            import json
             data = json.loads(request.body) if request.body else {}
             target_method = data.get('delivery_method')
             
@@ -1535,54 +1542,40 @@ def customer_order_toggle_delivery_method(request, order_id):
                 raw_addr = customer.address if (customer and customer.address and customer.address.upper() != 'PICKUP') else ''
                 order.delivery_address = raw_addr or 'Customer Address Pending'
             order.save(update_fields=['delivery_address'])
-            from django.http import JsonResponse
             return JsonResponse({
                 'success': True,
                 'delivery_address': order.delivery_address,
                 'is_pickup': order.delivery_address.upper() == 'PICKUP'
             })
         except Exception as e:
-            from django.http import JsonResponse
             return JsonResponse({'success': False, 'error': str(e)})
             
-    from django.http import JsonResponse
     return JsonResponse({'success': False, 'error': 'POST request required'}, status=400)
 
 
 def customer_order_update_quantity(request, order_id):
-    if not request.user.is_authenticated:
-        from django.http import JsonResponse
-        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=401)
-    
-    order = get_object_or_404(SalesOrder, id=order_id)
-    customer = get_customer_profile(request.user)
-    if not customer or order.customer != customer:
-        from django.http import JsonResponse
-        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
-        
+    order, err = _get_editable_customer_order(request, order_id)
+    if err:
+        return err
+
     if request.method == 'POST':
         try:
-            import json
             data = json.loads(request.body)
-            qty = float(data.get('quantity', 1))
+            qty = Decimal(str(data.get('quantity', 1)))
             if qty <= 0:
-                from django.http import JsonResponse
                 return JsonResponse({'success': False, 'error': 'Quantity must be positive'})
             
             order.quantity_kg = qty
-            order.total_amount = qty * order.price_per_kg
+            order.total_amount = qty * Decimal(str(order.price_per_kg or 0))
             order.save()
-            from django.http import JsonResponse
             return JsonResponse({
                 'success': True,
                 'total_amount': float(order.total_amount),
                 'quantity_kg': float(order.quantity_kg)
             })
         except Exception as e:
-            from django.http import JsonResponse
             return JsonResponse({'success': False, 'error': str(e)})
             
-    from django.http import JsonResponse
     return JsonResponse({'success': False, 'error': 'POST request required'}, status=400)
 
 
