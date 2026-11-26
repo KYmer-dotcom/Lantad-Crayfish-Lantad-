@@ -1003,6 +1003,8 @@ class CustomerLocationForm(forms.ModelForm):
 def product_create(request):
     if is_customer(request.user):
         return redirect('sales:customer_portal')
+    if is_rider(request.user):
+        return redirect('sales:rider_portal')
     next_url = request.POST.get('next') or request.GET.get('next')
     if request.method == 'POST':
         data = request.POST.copy()
@@ -1053,6 +1055,8 @@ def product_create(request):
 def product_delete(request, product_id):
     if is_customer(request.user):
         return redirect('sales:customer_portal')
+    if is_rider(request.user):
+        return redirect('sales:rider_portal')
     if request.method != 'POST':
         return redirect('sales:list')
 
@@ -1076,6 +1080,8 @@ def product_delete(request, product_id):
 def product_edit(request, product_id):
     if is_customer(request.user):
         return redirect('sales:customer_portal')
+    if is_rider(request.user):
+        return redirect('sales:rider_portal')
         
     product = get_object_or_404(Product, pk=product_id)
 
