@@ -1106,6 +1106,9 @@ def pond_transfer(request):
         dest_prod_name = 'Breeder Crayfish'
         dest_pond.product_name = dest_prod_name
         dest_pond.capacity = (dest_pond.capacity or 0) + actual_transfer_qty
+        dest_pond.capacity_2 = (dest_pond.capacity_2 or 0) + (actual_transfer_qty * 250)
+        if not dest_pond.product_name_2:
+            dest_pond.product_name_2 = 'Crilings'
         dest_pond.status = Pond.Status.ACTIVE
         dest_pond.transfer_date = transfer_date_today
         dest_pond.save()
