@@ -1245,6 +1245,11 @@ def customer_portal(request):
     orders = SalesOrder.objects.select_related('product').filter(customer=customer, status=SalesOrder.Status.PENDING) if customer else []
     deliveries = Delivery.objects.select_related('order').filter(order__customer=customer) if customer else []
     cart_orders_count = len(orders)
+    locked_delivery_method = ''
+    if orders:
+        first_cart_order = orders.order_by('created_at', 'id').first()
+        if first_cart_order:
+            locked_delivery_method = 'pickup' if (first_cart_order.delivery_address or '').strip().upper() == 'PICKUP' else 'delivery'
 
     context = {
         'products': products,
@@ -1256,6 +1261,7 @@ def customer_portal(request):
         'active_page': 'market',
         'guest_mode': guest_mode,
         'cart_orders_count': cart_orders_count,
+        'locked_delivery_method': locked_delivery_method,
         'payment_settings': PaymentSetting.get_settings(),
     }
     return render(request, 'sales_management/customer_portal.html', context)
@@ -1478,6 +1484,9 @@ def customer_order_create(request):
             )
             delivery_method = request.POST.get('delivery_method', '').strip().lower()
             submitted_address = request.POST.get('delivery_address', '').strip()
+            existing_cart_order = SalesOrder.objects.filter(customer=customer, status=SalesOrder.Status.PENDING).order_by('created_at', 'id').first()
+            if existing_cart_order:
+                delivery_method = 'pickup' if (existing_cart_order.delivery_address or '').strip().upper() == 'PICKUP' else 'delivery'
             
             if delivery_method == 'pickup' or (submitted_address.upper() == 'PICKUP' and delivery_method != 'delivery'):
                 order.delivery_address = 'PICKUP'
