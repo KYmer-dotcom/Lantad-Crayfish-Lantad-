@@ -67,7 +67,7 @@
                                 class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-black uppercase">Completed</span>
                             {% else %}
                             <button type="button"
-                                onclick="openPaymentModal('{{ latest_order.id }}', '{{ latest_order.payment_status }}', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();"
+                                onclick="openPaymentModal('{{ latest_order.id }}', 'paid', '{% if latest_order.receipt_image %}{% url 'sales:order_receipt_view' latest_order.id %}{% endif %}'); event.stopPropagation();"
                                 class="text-xs px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500 hover:text-[#01140e] transition-colors cursor-pointer font-black uppercase">Pending Settle</button>
                             {% endif %}
                         {% else %}
