@@ -713,7 +713,7 @@
                     <optgroup id="dest-group-breeding" label="Breeding Ponds">
                         {% for bp in breeding_ponds %}
                         <option value="{{ bp.id }}" data-category="Breeding Pond">
-                            {{ bp.name }} (PROD 1: {{ bp.product_name|default:"Breeder Crayfish" }} - {{ bp.capacity|default:"0" }} | PROD 2: {{ bp.product_name_2|default:"Crilings" }} - {{ bp.crilings_count|default:"0" }})
+                            {{ bp.name }} (Current PROD 1: {{ bp.product_name|default:"Breeder Crayfish" }} - {{ bp.capacity|default:"0" }})
                         </option>
                         {% endfor %}
                     </optgroup>
