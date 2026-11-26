@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name',
-                  'role', 'phone', 'assigned_farm', 'profile_image']
+                  'role', 'phone', 'profile_image']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password_confirm',
-                  'first_name', 'last_name', 'role', 'phone', 'assigned_farm']
+                  'first_name', 'last_name', 'role', 'phone']
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:

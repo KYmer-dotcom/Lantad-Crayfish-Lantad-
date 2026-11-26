@@ -7,6 +7,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import ValidationError
 
 from apps.accounts.access import is_owner
+from apps.accounts.permissions import IsOwnerPermission
 from .models import HarvestSchedule, HarvestRecord
 from .serializers import HarvestScheduleSerializer, HarvestRecordSerializer
 
@@ -18,7 +19,7 @@ class HarvestScheduleViewSet(viewsets.ModelViewSet):
     
     queryset = HarvestSchedule.objects.select_related('stock_batch', 'created_by').all()
     serializer_class = HarvestScheduleSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['scheduled_date', 'created_at']
     
@@ -28,6 +29,7 @@ class HarvestScheduleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return HarvestSchedule.objects.select_related('stock_batch', 'created_by').all()
+        return HarvestSchedule.objects.none()
 
 
 class HarvestRecordViewSet(viewsets.ModelViewSet):
@@ -37,7 +39,7 @@ class HarvestRecordViewSet(viewsets.ModelViewSet):
     
     queryset = HarvestRecord.objects.select_related('stock_batch', 'harvested_by', 'harvest_schedule').all()
     serializer_class = HarvestRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [OrderingFilter]
     ordering_fields = ['harvest_date', 'total_weight_kg', 'created_at']
     
@@ -62,3 +64,4 @@ class HarvestRecordViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return HarvestRecord.objects.select_related('stock_batch', 'harvested_by', 'harvest_schedule').all()
+        return HarvestRecord.objects.none()

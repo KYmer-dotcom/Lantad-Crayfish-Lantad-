@@ -25,7 +25,6 @@ class PondSerializer(serializers.ModelSerializer):
     """Serializer for Pond model."""
     
     farm_name = serializers.CharField(source='farm.name', read_only=True)
-    manager_name = serializers.CharField(source='manager.username', read_only=True)
     species_names = serializers.SerializerMethodField()
     current_stock_count = serializers.ReadOnlyField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
@@ -35,7 +34,7 @@ class PondSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Pond
-        fields = ['id', 'farm', 'farm_name', 'manager', 'manager_name', 'name',
+        fields = ['id', 'farm', 'farm_name', 'name',
                   'caretaker_name', 'location', 'size', 'depth', 'capacity', 'species', 'species_names',
                   'status', 'status_display', 'current_stock_count', 'description',
                   'created_at', 'updated_at']

@@ -6,6 +6,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 from apps.accounts.access import is_owner
+from apps.accounts.permissions import IsOwnerPermission
 from .models import Farm, Pond
 from .serializers import FarmSerializer, PondSerializer
 
@@ -17,7 +18,7 @@ class FarmViewSet(viewsets.ModelViewSet):
     
     queryset = Farm.objects.all()
     serializer_class = FarmSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'location']
     ordering_fields = ['name', 'created_at', 'total_area']
@@ -28,6 +29,7 @@ class FarmViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return Farm.objects.all()
+        return Farm.objects.none()
 
 
 class PondViewSet(viewsets.ModelViewSet):
@@ -37,11 +39,12 @@ class PondViewSet(viewsets.ModelViewSet):
     
     queryset = Pond.objects.select_related('farm').prefetch_related('species').all()
     serializer_class = PondSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerPermission]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['name', 'farm__name']
     ordering_fields = ['name', 'created_at', 'size', 'capacity']
 
     def get_queryset(self):
         if is_owner(self.request.user):
-            return Pond.objects.select_related('farm', 'manager').prefetch_related('species').all()
+            return Pond.objects.select_related('farm').prefetch_related('species').all()
+        return Pond.objects.none()

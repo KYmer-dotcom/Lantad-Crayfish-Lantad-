@@ -38,6 +38,7 @@ class StockBatchViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return StockBatch.objects.select_related('pond', 'species', 'stocked_by').all()
+        return StockBatch.objects.none()
     
     def get_serializer_class(self):
         if self.action == 'create':

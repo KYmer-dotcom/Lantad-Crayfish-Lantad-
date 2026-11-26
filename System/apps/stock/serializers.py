@@ -11,7 +11,7 @@ class SpeciesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Species
-        fields = ['id', 'name', 'category', 'scientific_name', 'description', 'average_growth_rate',
+        fields = ['id', 'name', 'category', 'scientific_name', 'description',
                   'market_weight_g', 'optimal_temperature_min', 'optimal_temperature_max',
                   'optimal_ph_min', 'optimal_ph_max', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']

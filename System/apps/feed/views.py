@@ -77,6 +77,7 @@ class FeedingLogViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return FeedingLog.objects.select_related('stock_batch', 'feed_type', 'fed_by').all()
+        return FeedingLog.objects.none()
 
 
 class FeedStockMovementViewSet(viewsets.ModelViewSet):
@@ -102,3 +103,4 @@ class FeedStockMovementViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if is_owner(self.request.user):
             return FeedStockMovement.objects.select_related('feed_type', 'moved_by').all()
+        return FeedStockMovement.objects.none()
