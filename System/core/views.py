@@ -63,26 +63,38 @@ def customer_login(request):
                 auth_login(request, user)
                 return redirect('sales:customer_portal')
             else:
-                # Existing account found. Validate name matching!
-                existing_customer = customer or Customer.objects.filter(user=user).first()
-                if existing_customer and existing_customer.name.strip().lower() != name.strip().lower():
-                    messages.error(request, 'This phone number is already registered under a different name.')
+                # Block non-customer accounts (e.g. riders or staff whose username is a phone number)
+                if user and not is_customer(user):
+                    messages.error(request, 'This phone number belongs to a staff or rider account. Please use the main login page.')
                 else:
-                    # If user is None (but customer profile existed), link it now!
-                    if not user:
-                        user = User(
-                            username=phone,
-                            first_name=name,
-                            role=User.Role.CUSTOMER,
-                            is_active=True,
-                        )
-                        user.set_unusable_password()
-                        user.save()
-                        existing_customer.user = user
-                        existing_customer.save()
-                    
-                    auth_login(request, user)
-                    return redirect('sales:customer_portal')
+                    # Existing account found. Validate name matching!
+                    existing_customer = customer or Customer.objects.filter(user=user).first()
+                    if existing_customer and existing_customer.name.strip().lower() != name.strip().lower():
+                        messages.error(request, 'This phone number is already registered under a different name.')
+                    else:
+                        # If user is None (but customer profile existed), link it now!
+                        if not user:
+                            user = User(
+                                username=phone,
+                                first_name=name,
+                                role=User.Role.CUSTOMER,
+                                is_active=True,
+                            )
+                            user.set_unusable_password()
+                            user.save()
+                            existing_customer.user = user
+                            existing_customer.save()
+                        elif not existing_customer:
+                            Customer.objects.create(
+                                user=user,
+                                name=name,
+                                phone=phone,
+                                address="",
+                                customer_type=Customer.Type.INDIVIDUAL,
+                            )
+
+                        auth_login(request, user)
+                        return redirect('sales:customer_portal')
 
     return render(request, 'auth/customer_login.html')
 
