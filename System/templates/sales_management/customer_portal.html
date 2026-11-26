@@ -1084,7 +1084,8 @@
                     if (chk && chk.checked) {
                         selectedCount++;
                         hasSelected = true;
-                        const subtotalVal = parseFloat(card.querySelector('[id^="item-subtotal-"]').textContent);
+                        const rawSubtotalText = (card.querySelector('[id^="item-subtotal-"]').textContent || '').replace(/,/g, '');
+                        const subtotalVal = parseFloat(rawSubtotalText) || 0;
                         subtotal += subtotalVal;
 
                         // Check if order is pickup
@@ -1186,12 +1187,12 @@
                 const card = document.getElementById(`order-card-${orderId}`);
                 if (!card) return;
 
-                const unitPrice = parseFloat(card.querySelector('.item-unit-price').textContent) || 0;
+                const unitPrice = parseFloat((card.querySelector('.item-unit-price').textContent || '').replace(/,/g, '')) || 0;
                 const subtotalText = card.querySelector(`[id^="item-subtotal-${orderId}"]`);
 
                 // Update local UI subtotal instantly
                 const newSubtotal = qty * unitPrice;
-                if (subtotalText) subtotalText.textContent = newSubtotal.toFixed(0);
+                if (subtotalText) subtotalText.textContent = Math.round(newSubtotal).toLocaleString();
 
                 recalculateCart();
 
