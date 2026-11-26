@@ -1709,9 +1709,7 @@ def customer_checkout_submit(request):
                 if receipt_bytes:
                     order.receipt_image = receipt_bytes
                 order.save()
-                if order.product and order.product.quantity_kg >= order.quantity_kg:
-                    order.product.quantity_kg -= order.quantity_kg
-                    order.product.save(update_fields=['quantity_kg'])
+                _deduct_order_stock_once(order)
             _sync_order_deliveries()
             from django.http import JsonResponse
             return JsonResponse({'success': True, 'redirect_url': reverse('sales:customer_orders_page'), 'is_gateway': False})
@@ -1726,10 +1724,7 @@ def customer_checkout_submit(request):
                 
             order.notes = f"Payment: {method_label}".strip()
             order.save()
-            
-            if order.product and order.product.quantity_kg >= order.quantity_kg:
-                order.product.quantity_kg -= order.quantity_kg
-                order.product.save(update_fields=['quantity_kg'])
+            _deduct_order_stock_once(order)
             
         _sync_order_deliveries()
         from django.http import JsonResponse
@@ -1737,6 +1732,24 @@ def customer_checkout_submit(request):
 
     from django.http import JsonResponse
     return JsonResponse({'success': False, 'error': 'POST required'})
+
+
+def _deduct_order_stock_once(order):
+    """Deduct product stock for an order once, handling [KG] pieces_per_kg conversion."""
+    if not order.product or order.stock_deducted:
+        return
+    from decimal import Decimal
+    is_kg = '[KG]' in (order.notes or '')
+    deduct_qty = Decimal(str(order.quantity_kg or 0))
+    if is_kg and order.product.pieces_per_kg and order.product.pieces_per_kg > 0:
+        deduct_qty = deduct_qty * Decimal(str(order.product.pieces_per_kg))
+
+    current_stock = Decimal(str(order.product.quantity_kg or 0))
+    if deduct_qty > 0 and current_stock >= deduct_qty:
+        order.product.quantity_kg = max(current_stock - deduct_qty, Decimal('0'))
+        order.product.save(update_fields=['quantity_kg'])
+        order.stock_deducted = True
+        order.save(update_fields=['stock_deducted'])
 
 
 def _sync_order_deliveries():
@@ -1788,14 +1801,13 @@ def paymongo_payment_success(request):
         from apps.sales.models import SalesOrder
         orders = SalesOrder.objects.filter(id__in=order_ids)
         for order in orders:
-            order.status = SalesOrder.Status.CONFIRMED
-            order.payment_status = SalesOrder.PaymentStatus.PAID
-            unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
-            order.notes = f"{unit_info}Payment: Automated GCash (Paid Online)".strip()
-            order.save()
-            if order.product and order.product.quantity_kg >= order.quantity_kg:
-                order.product.quantity_kg -= order.quantity_kg
-                order.product.save(update_fields=['quantity_kg'])
+            if order.payment_status != SalesOrder.PaymentStatus.PAID:
+                order.status = SalesOrder.Status.CONFIRMED
+                order.payment_status = SalesOrder.PaymentStatus.PAID
+                unit_info = "[KG] " if (order.notes and '[KG]' in order.notes) else ("[PC] " if (order.notes and '[PC]' in order.notes) else "")
+                order.notes = f"{unit_info}Payment: Automated GCash (Paid Online)".strip()
+                order.save()
+            _deduct_order_stock_once(order)
         _sync_order_deliveries()
                 
     messages.success(request, '🎉 Payment successful! Your order has been placed.')
