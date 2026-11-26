@@ -1149,9 +1149,9 @@ def pond_transfer(request):
         InputLog.log(
             user=request.user,
             module='Operations',
-            action='transferred',
-            target_entity=f"{source_pond.name} -> {dest_pond.name}",
-            change_details=f"Transferred {qty_desc} {prod_name} from {source_pond.name} to {dest_pond.name}."
+            action='updated',
+            target_entity=f"{source_pond.name} ({source_pond.location}) -> {dest_pond.name} ({dest_pond.location})",
+            details=f"Transferred {qty_desc} {prod_name} from {source_pond.name} ({source_pond.location}) to {dest_pond.name} ({dest_pond.location})."
         )
     except Exception:
         pass
