@@ -2266,6 +2266,91 @@ def delivery_logs_page(request):
     return render(request, 'sales_management/delivery_logs.html', context)
 
 
+def _extract_session_tag(notes):
+    if notes and 'Session #' in notes:
+        try:
+            return notes.split('Session #')[1].split(')')[0].strip()
+        except Exception:
+            return ''
+    return ''
+
+
+def _are_deliveries_same_batch(d1, d2):
+    o1 = getattr(d1, 'order', None)
+    o2 = getattr(d2, 'order', None)
+    if not o1 or not o2 or o1.customer_id != o2.customer_id:
+        return False
+    if d1.status != d2.status or d1.rider_id != d2.rider_id:
+        return False
+    if o1.order_number and o2.order_number and o1.order_number == o2.order_number:
+        return True
+    s1 = _extract_session_tag(o1.notes)
+    s2 = _extract_session_tag(o2.notes)
+    if s1 and s2 and s1 == s2:
+        return True
+    loc1 = (d1.delivery_location or o1.delivery_address or '').strip().upper()
+    loc2 = (d2.delivery_location or o2.delivery_address or '').strip().upper()
+    if loc1 != loc2 or d1.scheduled_date != d2.scheduled_date:
+        return False
+    created_diff = abs((o1.created_at - o2.created_at).total_seconds()) if (o1.created_at and o2.created_at) else 9999
+    updated_diff = abs((o1.updated_at - o2.updated_at).total_seconds()) if (o1.updated_at and o2.updated_at) else 9999
+    return created_diff <= 300 or updated_diff <= 60
+
+
+def _delivery_unit_label(order):
+    if not order:
+        return 'pcs'
+    if order.notes and '[KG]' in order.notes:
+        return order.product.bulk_unit_display if order.product else 'kg'
+    return 'pcs'
+
+
+def _group_deliveries(deliveries):
+    groups = []
+    for d in deliveries:
+        matched_group = None
+        for g in groups:
+            if _are_deliveries_same_batch(g[0], d):
+                matched_group = g
+                break
+        if matched_group is not None:
+            matched_group.append(d)
+        else:
+            groups.append([d])
+
+    grouped = []
+    for batch in groups:
+        primary = batch[0]
+        items = []
+        total_amount = Decimal('0')
+        order_numbers = []
+        for item_d in batch:
+            ord_obj = item_d.order
+            prod_name = ord_obj.product.name if (ord_obj and ord_obj.product) else 'Aquaculture Order'
+            qty = item_d.quantity_kg or (ord_obj.quantity_kg if ord_obj else Decimal('0'))
+            unit = _delivery_unit_label(ord_obj)
+            items.append({
+                'delivery_id': item_d.id,
+                'order_number': ord_obj.order_number if ord_obj else f'DEL-{item_d.id}',
+                'product_name': prod_name,
+                'quantity': qty,
+                'unit': unit,
+            })
+            if ord_obj and ord_obj.total_amount:
+                total_amount += Decimal(str(ord_obj.total_amount))
+            if ord_obj and ord_obj.order_number and ord_obj.order_number not in order_numbers:
+                order_numbers.append(ord_obj.order_number)
+        primary.grouped_deliveries = batch
+        primary.grouped_items = items
+        primary.grouped_items_summary = ', '.join(
+            f"{it['product_name']} ({Decimal(str(it['quantity'])):g} {it['unit']})" for it in items
+        )
+        primary.grouped_total_amount = total_amount
+        primary.grouped_order_numbers = ', '.join(order_numbers) if order_numbers else f'DEL-{primary.id}'
+        grouped.append(primary)
+    return grouped
+
+
 @login_required
 def delivery_track_page(request):
     """Live GPS Delivery Tracking page for staff and owners."""
@@ -2397,27 +2482,28 @@ def delivery_track_page(request):
         'order', 'order__customer', 'order__product', 'rider', 'created_by'
     ).order_by('-scheduled_date', '-created_at')
 
-    # Status counts for registry tabs and live tracking
-    total_deliveries = base_deliveries_qs.count()
-    in_transit_count = base_deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
-    scheduled_count = base_deliveries_qs.filter(status=Delivery.Status.SCHEDULED).count()
-    delivered_count = base_deliveries_qs.filter(status=Delivery.Status.DELIVERED).count()
+    base_deliveries_list = list(base_deliveries_qs)
+    grouped_all_base = _group_deliveries(base_deliveries_list)
+
+    # Status counts for registry tabs and live tracking (grouped by checkout batch)
+    total_deliveries = len(grouped_all_base)
+    in_transit_count = sum(1 for d in grouped_all_base if d.status == Delivery.Status.IN_TRANSIT)
+    scheduled_count = sum(1 for d in grouped_all_base if d.status == Delivery.Status.SCHEDULED)
+    delivered_count = sum(1 for d in grouped_all_base if d.status == Delivery.Status.DELIVERED)
     active_count = scheduled_count + in_transit_count
 
     # Table status filter: Default to active deliveries (scheduled + in transit)
     status_filter = request.GET.get('status', '').strip().lower()
     if status_filter == 'all':
-        table_deliveries = base_deliveries_qs
+        table_deliveries_qs = base_deliveries_qs
     elif status_filter in [Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT, Delivery.Status.DELIVERED, Delivery.Status.CANCELLED]:
-        table_deliveries = base_deliveries_qs.filter(status=status_filter)
-    elif status_filter == 'active':
-        table_deliveries = base_deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+        table_deliveries_qs = base_deliveries_qs.filter(status=status_filter)
     else:
-        table_deliveries = base_deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
+        table_deliveries_qs = base_deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
 
     query = request.GET.get('q', '').strip()
     if query:
-        table_deliveries = table_deliveries.filter(
+        table_deliveries_qs = table_deliveries_qs.filter(
             Q(order__order_number__icontains=query) |
             Q(order__customer__name__icontains=query) |
             Q(order__customer__phone__icontains=query) |
@@ -2425,26 +2511,33 @@ def delivery_track_page(request):
             Q(rider__name__icontains=query) |
             Q(notes__icontains=query)
         )
+    table_deliveries = _group_deliveries(list(table_deliveries_qs))
 
-    all_deliveries = base_deliveries_qs
+    all_deliveries_qs = base_deliveries_qs
     if query and request.GET.get('view') != 'registry':
-        all_deliveries = all_deliveries.filter(
+        all_deliveries_qs = all_deliveries_qs.filter(
             Q(order__order_number__icontains=query) |
             Q(order__customer__name__icontains=query) |
             Q(delivery_location__icontains=query) |
             Q(rider__name__icontains=query)
         )
+    all_deliveries = _group_deliveries(list(all_deliveries_qs))
 
     # Initial selection: prioritizes in_transit, then scheduled, then first item
     selected_delivery = None
     target_id = request.GET.get('id')
     if target_id:
-        selected_delivery = all_deliveries.filter(pk=target_id).first()
+        for d in all_deliveries:
+            if any(str(sub.id) == str(target_id) for sub in getattr(d, 'grouped_deliveries', [d])):
+                selected_delivery = d
+                break
 
     if not selected_delivery:
-        selected_delivery = all_deliveries.filter(status=Delivery.Status.IN_TRANSIT).first() or \
-                            all_deliveries.filter(status=Delivery.Status.SCHEDULED).first() or \
-                            all_deliveries.first()
+        selected_delivery = (
+            next((d for d in all_deliveries if d.status == Delivery.Status.IN_TRANSIT), None)
+            or next((d for d in all_deliveries if d.status == Delivery.Status.SCHEDULED), None)
+            or (all_deliveries[0] if all_deliveries else None)
+        )
 
     # Pre-calculate coordinates & metadata payload for dynamic map switches
     import json
@@ -2474,16 +2567,16 @@ def delivery_track_page(request):
 
         deliveries_data.append({
             'id': d.id,
-            'order_number': d.order.order_number if d.order else f'DEL-{d.id}',
+            'order_number': getattr(d, 'grouped_order_numbers', None) or (d.order.order_number if d.order else f'DEL-{d.id}'),
             'status': d.status,
             'status_display': d.get_status_display(),
             'payment_status': d.order.payment_status if d.order else 'unpaid',
             'customer_name': cust.name if cust else 'Customer',
             'customer_phone': cust.phone if cust else '',
             'delivery_location': d.delivery_location or (cust.address if cust else 'Silay City, Negros Occidental'),
-            'product_name': prod_name,
+            'product_name': getattr(d, 'grouped_items_summary', prod_name),
             'quantity_kg': str(d.quantity_kg),
-            'total_amount': float(d.order.total_amount) if d.order else 0.0,
+            'total_amount': float(getattr(d, 'grouped_total_amount', d.order.total_amount if d.order else 0.0)),
             'order_date': d.order.order_date.strftime('%b %d') if (d.order and d.order.order_date) else '',
             'created_by': approver,
             'created_at': d.created_at.strftime('%b %d, %Y • %I:%M %p') if d.created_at else '',
@@ -2834,10 +2927,10 @@ def rider_portal(request):
     deliveries_qs = Delivery.objects.filter(rider=rider).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
 
     active_deliveries_qs = deliveries_qs.filter(status__in=[Delivery.Status.SCHEDULED, Delivery.Status.IN_TRANSIT])
-    active_count = active_deliveries_qs.count()
-    in_transit_count = active_deliveries_qs.filter(status=Delivery.Status.IN_TRANSIT).count()
 
-    active_deliveries = list(active_deliveries_qs)
+    active_deliveries = _group_deliveries(list(active_deliveries_qs))
+    active_count = len(active_deliveries)
+    in_transit_count = sum(1 for d in active_deliveries if d.status == Delivery.Status.IN_TRANSIT)
     for d in active_deliveries:
         cust = d.order.customer if d.order else None
         cust_addr = d.delivery_location or (cust.address if cust else '')
@@ -2847,18 +2940,19 @@ def rider_portal(request):
         d.resolved_dest_lat = res_lat
         d.resolved_dest_lng = res_lng
 
-    completed_deliveries = deliveries_qs.filter(status=Delivery.Status.DELIVERED)
+    completed_deliveries = _group_deliveries(list(deliveries_qs.filter(status=Delivery.Status.DELIVERED)))
 
     # Available / Unassigned delivery dispatches that riders can claim
-    available_deliveries = Delivery.objects.filter(
+    available_deliveries_qs = Delivery.objects.filter(
         rider__isnull=True,
         status=Delivery.Status.SCHEDULED
     ).exclude(
         delivery_location__iexact='pickup'
     ).select_related('order', 'order__customer', 'order__product').order_by('-scheduled_date', '-id')
+    available_deliveries = _group_deliveries(list(available_deliveries_qs))
 
-    available_count = available_deliveries.count()
-    completed_count = completed_deliveries.count()
+    available_count = len(available_deliveries)
+    completed_count = len(completed_deliveries)
     total_volume_today = deliveries_qs.filter(delivered_date=datetime.date.today()).aggregate(total=Sum('quantity_kg'))['total'] or 0
 
     context = {
@@ -2887,43 +2981,66 @@ def rider_delivery_action(request, delivery_id):
         action = request.POST.get('action')
         if action == 'claim_order':
             delivery = get_object_or_404(Delivery, pk=delivery_id, rider__isnull=True)
-            delivery.rider = rider
-            delivery.save(update_fields=['rider'])
-            messages.success(request, f'Order #{delivery.order.order_number} accepted! It is now in your active deliveries.')
+            siblings = [
+                cand for cand in Delivery.objects.filter(
+                    rider__isnull=True,
+                    status=delivery.status,
+                ).select_related('order', 'order__customer', 'order__product')
+                if cand.id == delivery.id or _are_deliveries_same_batch(delivery, cand)
+            ]
+            for d_item in siblings:
+                d_item.rider = rider
+                d_item.save(update_fields=['rider'])
+            order_label = ', '.join(
+                d_item.order.order_number for d_item in siblings if d_item.order and d_item.order.order_number
+            ) or (delivery.order.order_number if delivery.order else f'DEL-{delivery.id}')
+            messages.success(request, f'Order #{order_label} accepted! It is now in your active deliveries.')
             return redirect('sales:rider_portal')
 
         delivery = get_object_or_404(Delivery, pk=delivery_id, rider=rider)
+        siblings = [
+            cand for cand in Delivery.objects.filter(
+                rider=rider,
+                status=delivery.status,
+            ).select_related('order', 'order__customer', 'order__product')
+            if cand.id == delivery.id or _are_deliveries_same_batch(delivery, cand)
+        ]
         if action == 'start_transit':
-            delivery.status = Delivery.Status.IN_TRANSIT
-            delivery.save(update_fields=['status'])
+            for d_item in siblings:
+                d_item.status = Delivery.Status.IN_TRANSIT
+                d_item.save(update_fields=['status'])
             rider.status = Rider.Status.ON_DELIVERY
             rider.save(update_fields=['status', 'updated_at'])
             messages.success(request, f'Delivery #{delivery.order.order_number} is now IN TRANSIT! Drive safely.')
         elif action == 'mark_delivered':
-            delivery.status = Delivery.Status.DELIVERED
-            delivery.delivered_date = datetime.date.today()
-            
             photo = request.FILES.get('proof_of_delivery')
-            if photo:
-                delivery.proof_of_delivery = photo
-                if not delivery.order.receipt_image:
-                    try:
+            photo_bytes = photo.read() if photo else None
+            for idx, d_item in enumerate(siblings):
+                d_item.status = Delivery.Status.DELIVERED
+                d_item.delivered_date = datetime.date.today()
+                if photo:
+                    if idx > 0:
+                        from django.core.files.base import ContentFile
+                        d_item.proof_of_delivery.save(photo.name, ContentFile(photo_bytes), save=False)
+                    else:
                         photo.seek(0)
-                        delivery.order.receipt_image = photo.read()
-                        photo.seek(0)
-                        delivery.order.save(update_fields=['receipt_image'])
-                    except Exception:
-                        pass
-            
-            update_fields = ['status', 'delivered_date', 'proof_of_delivery'] if photo else ['status', 'delivered_date']
-            delivery.save(update_fields=update_fields)
+                        d_item.proof_of_delivery = photo
+                    if d_item.order and not d_item.order.receipt_image and photo_bytes:
+                        try:
+                            d_item.order.receipt_image = photo_bytes
+                            d_item.order.save(update_fields=['receipt_image'])
+                        except Exception:
+                            pass
+                update_fields = ['status', 'delivered_date', 'proof_of_delivery'] if photo else ['status', 'delivered_date']
+                d_item.save(update_fields=update_fields)
 
-            # Sync order status & payment
-            if delivery.order.status != SalesOrder.Status.COMPLETED:
-                delivery.order.status = SalesOrder.Status.DELIVERED
-            if delivery.order.payment_status == SalesOrder.PaymentStatus.UNPAID:
-                delivery.order.payment_status = SalesOrder.PaymentStatus.PAID
-            delivery.order.save(update_fields=['status', 'payment_status', 'updated_at'])
+                # Sync order status & payment
+                if d_item.order:
+                    if d_item.order.status != SalesOrder.Status.COMPLETED:
+                        d_item.order.status = SalesOrder.Status.DELIVERED
+                    if d_item.order.payment_status == SalesOrder.PaymentStatus.UNPAID:
+                        d_item.order.payment_status = SalesOrder.PaymentStatus.PAID
+                    d_item.order.save(update_fields=['status', 'payment_status', 'updated_at'])
 
             if not rider.deliveries.filter(status=Delivery.Status.IN_TRANSIT).exists():
                 rider.status = Rider.Status.AVAILABLE

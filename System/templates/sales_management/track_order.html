@@ -150,8 +150,8 @@
                         </div>
                         <p class="text-xs text-[#a0ac96] mt-0.5">
                             Customer: <strong id="disp-customer-name" class="text-white">{{ selected_delivery.order.customer.name }}</strong> • 
-                            Item: <strong id="disp-product-summary" class="text-[#cca43b]">{{ selected_delivery.order.product.name|default:"Stock" }} ({{ selected_delivery.quantity_kg }} kg)</strong> •
-                            Total: <strong id="disp-total-amount" class="text-white font-mono">₱{{ selected_delivery.order.total_amount|floatformat:2 }}</strong>
+                            Item: <strong id="disp-product-summary" class="text-[#cca43b]">{{ selected_delivery.grouped_items_summary|default:selected_delivery.order.product.name|default:"Stock" }}</strong> •
+                            Total: <strong id="disp-total-amount" class="text-white font-mono">₱{{ selected_delivery.grouped_total_amount|default:selected_delivery.order.total_amount|floatformat:2 }}</strong>
                         </p>
                     </div>
                 </div>
@@ -420,7 +420,7 @@
                                 data-date="{{ delivery.scheduled_date|default:delivery.order.order_date|date:'Y-m-d' }}">
                                 <!-- Order # -->
                                 <td class="px-5 py-4 whitespace-nowrap">
-                                    <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.order.order_number }}</span>
+                                    <span class="font-mono text-sm font-bold text-stone-100">{{ delivery.grouped_order_numbers|default:delivery.order.order_number }}</span>
                                     <p class="text-[11px] text-[#a0ac96]">{{ delivery.order.order_date|date:"M d, Y" }}</p>
                                 </td>
 
@@ -438,8 +438,12 @@
 
                                 <!-- Product & Quantity -->
                                 <td class="px-5 py-4 whitespace-nowrap">
+                                    {% for item in delivery.grouped_items %}
+                                    <div class="text-sm font-bold text-stone-200">{{ item.product_name }} <span class="text-xs font-black text-[#cca43b]">({{ item.quantity|floatformat:"-2" }} {{ item.unit }})</span></div>
+                                    {% empty %}
                                     <div class="text-sm font-bold text-stone-200">{{ delivery.order.product.name|default:"Standard Order" }}</div>
                                     <div class="text-xs font-black text-[#cca43b] mt-0.5">{{ delivery.quantity_kg|floatformat:0 }} {% if '[KG]' in delivery.order.notes %}{{ delivery.order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}</div>
+                                    {% endfor %}
                                 </td>
 
                                 <!-- Destination / Map Pin -->
