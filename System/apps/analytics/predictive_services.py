@@ -586,5 +586,4 @@ def get_product_recommendations(user_sales_qs, all_sales_qs):
 
 # Dynamic Database Function Aliases
 calculate_seasonal_indices = calculate_seasonal_indices_from_db
-get_customer_purchase_recommendations = get_customer_purchase_recommendations_from_db
 calculate_demand_vs_stock = calculate_demand_vs_stock_from_db

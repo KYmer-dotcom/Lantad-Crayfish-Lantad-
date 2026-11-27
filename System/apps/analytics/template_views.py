@@ -30,8 +30,6 @@ from .predictive_services import (
     calculate_trend_statistics,
     calculate_seasonal_indices,
     calculate_seasonal_indices_from_db,
-    get_customer_purchase_recommendations,
-    get_customer_purchase_recommendations_from_db,
     calculate_demand_vs_stock,
     calculate_demand_vs_stock_from_db,
     get_product_recommendations
