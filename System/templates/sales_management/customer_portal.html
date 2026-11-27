@@ -28,10 +28,10 @@
     </svg>
 
     <!-- Header (Mobile-optimized & Desktop polished) -->
-    <header
-        class="w-full flex items-center justify-between px-4 sm:px-8 py-3.5 sm:py-5 relative z-30 gap-3">
+    <header class="w-full flex items-center justify-between px-4 sm:px-8 py-3.5 sm:py-5 relative z-30 gap-3">
         <!-- Logo -->
-        <a href="{% url 'sales:customer_portal' %}" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer group" title="Return to Market">
+        <a href="{% url 'sales:customer_portal' %}" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer group"
+            title="Return to Market">
             <div
                 class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#cca43b] flex items-center justify-center p-0.5 border-2 border-[#01140e] shrink-0 group-hover:scale-105 transition-transform">
                 <img src="{% static 'images/brand-logo.jpg' %}" alt="Logo"
@@ -77,9 +77,12 @@
                     class="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-[#cca43b]/30 bg-[#cca43b]/10 px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-bold text-white hover:border-[#cca43b] hover:bg-[#cca43b]/20 transition-all cursor-pointer">
                     <span
                         class="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-[#cca43b] text-[#01140e] font-black text-[11px] sm:text-xs">
-                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{ user.username.0|upper }}{% else %}C{% endif %}
+                        {% if customer and customer.name %}{{ customer.name.0|upper }}{% elif user.username %}{{
+                        user.username.0|upper }}{% else %}C{% endif %}
                     </span>
-                    <span class="text-xs font-bold text-white max-w-[80px] sm:max-w-none truncate">{% if customer and customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else %}Customer{% endif %}</span>
+                    <span class="text-xs font-bold text-white max-w-[80px] sm:max-w-none truncate">{% if customer and
+                        customer.name %}{{ customer.name }}{% elif user.username %}{{ user.username }}{% else
+                        %}Customer{% endif %}</span>
                     <svg class="h-3 w-3 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -120,29 +123,40 @@
         <!-- 1. MOBILE DEDICATED MARKET UI (Visible only on mobile: block lg:hidden) -->
         <!-- ============================================================== -->
         <div class="block lg:hidden w-full pb-10 space-y-4">
-            
+
             <!-- Breadcrumb Navigation -->
-            <div class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2 px-1 pt-1">
-                <span>Home</span> &gt; <span>Market</span> &gt; <span class="featured-species-text text-[#cca43b] truncate">{{ featured_product.species.name|default:"Table"|upper }}</span>
+            <div
+                class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2 px-1 pt-1">
+                <span>Home</span> &gt; <span>Market</span> &gt; <span
+                    class="featured-species-text text-[#cca43b] truncate">{{
+                    featured_product.species.name|default:"Table"|upper }}</span>
             </div>
 
             <!-- Mobile Hero Product Card -->
-            <div class="rounded-3xl border border-[#cca43b]/30 bg-[#01140e]/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4">
-                
+            <div
+                class="rounded-3xl border border-[#cca43b]/30 bg-[#01140e]/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4">
+
                 <!-- Showcase Image Card with interactive navigation overlay -->
-                <div class="relative w-full h-60 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
+                <div
+                    class="relative w-full h-60 sm:h-72 rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/40">
                     <img src="{% if 'superworm' in featured_product.name|lower or featured_product.icon == 'worm' or featured_product.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in featured_product.name|lower or featured_product.icon == 'leaf' %}/static/images/products/azula.jpg{% elif featured_product.icon == 'fish' %}/static/images/products/fish.jpg{% elif featured_product.icon == 'insect' %}/static/images/products/insect.jpg{% elif featured_product.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                         class="featured-image-el w-full h-full object-cover transition-all duration-500"
                         alt="Featured Product">
-                    
+
                     <!-- Subtle vignette gradient overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"></div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none">
+                    </div>
 
                     <!-- Top-Right Floating Stock Badge on Picture -->
                     <div class="absolute top-3 right-3 z-10 pointer-events-none">
-                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/20 border-[#cca43b]/50 text-[#cca43b]{% else %}bg-rose-500/20 border-rose-500/50 text-rose-400{% endif %} shadow-lg">
-                            <span class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        <span
+                            class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md transition-all pointer-events-auto {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/20 border-[#cca43b]/50 text-[#cca43b]{% else %}bg-rose-500/20 border-rose-500/50 text-rose-400{% endif %} shadow-lg">
+                            <span
+                                class="featured-stock-dot w-1.5 h-1.5 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg >
+                                0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of
+                                Stock{% endif %}</span>
                         </span>
                     </div>
 
@@ -154,7 +168,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
-                    
+
                     <button type="button" onclick="nextProduct()"
                         class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 active:bg-black/90 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all active:scale-90 z-20 shadow-lg cursor-pointer"
                         title="Next Dish">
@@ -164,20 +178,24 @@
                     </button>
 
                     <!-- Carousel Indicators floating at bottom center -->
-                    <div class="carousel-dots absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                    <div
+                        class="carousel-dots absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
                         <!-- Dots populated by JS -->
                     </div>
                 </div>
 
                 <!-- Product Identity -->
                 <div class="space-y-1">
-                    <h2 class="featured-name-text text-3xl sm:text-4xl font-black text-white uppercase tracking-tight font-serif" style="font-family: 'Georgia', serif;">
+                    <h2 class="featured-name-text text-3xl sm:text-4xl font-black text-white uppercase tracking-tight font-serif"
+                        style="font-family: 'Georgia', serif;">
                         {{ featured_product.name|default:"SILAY"|upper }}
                     </h2>
 
                     <!-- Category / Notes matching PC layout -->
-                    <p class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium border-l-2 border-[#cca43b]/40 pl-3 mt-1.5">
-                        {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
+                    <p
+                        class="featured-notes-text text-xs text-[#a0ac96] leading-relaxed font-medium border-l-2 border-[#cca43b]/40 pl-3 mt-1.5">
+                        {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds
+                        with organic feeds to ensure maximum flavor and quality." }}
                     </p>
                 </div>
 
@@ -193,13 +211,17 @@
                 </div>
 
                 <!-- Pricing Option Selector matching PC -->
-                <div class="space-y-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
+                <div
+                    class="space-y-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Pricing Option:</p>
                     <div class="flex gap-2.5">
                         <button type="button" onclick="setPricingUnit('pc')"
-                            class="btn-unit-pc mobile-btn-unit-pc flex-1 {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                            class="btn-unit-pc mobile-btn-unit-pc flex-1 {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">Per
+                            Piece (pc)</button>
                         <button type="button" onclick="setPricingUnit('kg')"
-                            class="btn-unit-kg mobile-btn-unit-kg flex-1 {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                            class="btn-unit-kg mobile-btn-unit-kg flex-1 {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black shadow-md{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} py-2.5 rounded-xl text-xs uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By
+                            <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg'
+                                }}</span></button>
                     </div>
                 </div>
 
@@ -208,25 +230,28 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Price:</p>
                     <p class="featured-price-text text-3xl font-black text-[#cca43b] leading-none font-mono">
                         {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2"
+                        }}
                         {% else %}₱0{% endif %}
                     </p>
                     <span class="featured-unit-label-text text-xs font-bold text-[#a0ac96]">
-                        {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{ featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
+                        {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{
+                        featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
                     </span>
                 </div>
 
                 <!-- Quantity Row matching PC -->
                 <div class="flex items-center justify-between gap-3 pt-1">
                     <p class="featured-quantity-label text-white font-bold text-xs uppercase tracking-wide">
-                        {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}Quantity ({{ featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{% endif %}
+                        {% if featured_product.unit_price <= 0 and featured_product.price_per_kg> 0 %}Quantity ({{
+                            featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{% endif %}
                     </p>
-                    <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
+                    <div
+                        class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-10 w-28">
                         <button type="button" onclick="adjustFeaturedQuantity(-1)"
                             class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
                         <input type="number" value="1" oninput="updateTotalPrice()"
-                            onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();"
-                            min="1"
+                            onkeydown="if(['e','E','+','-','.'].includes(event.key)) event.preventDefault();" min="1"
                             class="featured-quantity-input w-12 h-full text-center text-white font-mono font-black outline-none border-none p-0 text-sm bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <button type="button" onclick="adjustFeaturedQuantity(1)"
                             class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">+</button>
@@ -238,7 +263,8 @@
                     <p class="text-white font-bold text-xs uppercase tracking-wide">Total Price:</p>
                     <p class="featured-total-price text-xl font-black text-[#cca43b] leading-none font-mono">
                         {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                        {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2"
+                        }}
                         {% else %}₱0{% endif %}
                     </p>
                 </div>
@@ -247,11 +273,13 @@
                 <div class="pt-2">
                     <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
                         class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none text-[#01140e] rounded-2xl h-14 sm:h-16 font-black text-sm sm:text-base uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-xl shadow-[#cca43b]/25 transition-all cursor-pointer"
-                        {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
-                        <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                        {% if not featured_product or featured_product.quantity_kg <=0 %}disabled{% endif %}>
+                        <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0
+                            %}Add to Cart{% else %}Out of Stock{% endif %}</span>
                         <span class="featured-total-price font-mono font-black text-base sm:text-lg">
                             {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{
+                            featured_product.price_per_kg|floatformat:"-2" }}
                             {% else %}₱0{% endif %}
                         </span>
                     </button>
@@ -266,10 +294,12 @@
                     <button type="button"
                         onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-3.5 rounded-2xl flex items-center gap-3.5 text-left transition-all group cursor-pointer">
-                        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-inner">
                             {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
                             {% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}🌿
-                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon == 'shrimp' %}🦐
+                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon ==
+                            'shrimp' %}🦐
                             {% elif prod.icon == 'box' or prod.icon == 'package' %}📦
                             {% elif prod.icon == 'water' %}💧
                             {% elif prod.icon == 'lab' %}🧪
@@ -278,18 +308,24 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-1">
-                                <p class="font-bold text-white text-sm truncate group-hover:text-[#cca43b] transition-colors">{{ prod.name }}</p>
-                                <span class="text-xs font-mono font-bold shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
-                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
+                                <p
+                                    class="font-bold text-white text-sm truncate group-hover:text-[#cca43b] transition-colors">
+                                    {{ prod.name }}</p>
+                                <span
+                                    class="text-xs font-mono font-bold shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out
+                                    of stock{% endif %}
                                 </span>
                             </div>
                             <p class="text-xs text-[#a0ac96] font-mono mt-0.5">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:"-2" }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{
+                                prod.bulk_unit_display|default:'kg' }}{% endif %}
                             </p>
                         </div>
-                        <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-0.5 transition-all shrink-0">
+                        <div
+                            class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-0.5 transition-all shrink-0">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>
@@ -307,24 +343,32 @@
 
             <!-- LEFT SIDE: Info -->
             <div class="col-span-12 lg:col-span-4 space-y-5 self-center py-12">
-                <div class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
+                <div
+                    class="text-[#a0ac96] text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2">
                     <span>Home</span> > <span>Market</span> > <span class="text-[#cca43b] truncate">Table</span>
                 </div>
 
                 <div>
-                    <h2 class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] flex items-center gap-4 flex-wrap" style="font-family: 'Georgia', serif;">
+                    <h2 class="text-6xl xl:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9] flex items-center gap-4 flex-wrap"
+                        style="font-family: 'Georgia', serif;">
                         <span class="featured-name-text">{{ featured_product.name|default:"SILAY"|upper }}</span>
                     </h2>
                     <div class="mt-3 flex items-center gap-2">
-                        <span class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
-                            <span class="featured-stock-dot w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
-                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg > 0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of Stock{% endif %}</span>
+                        <span
+                            class="featured-stock-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]/15 border-[#cca43b]/40 text-[#cca43b]{% else %}bg-rose-500/15 border-rose-500/40 text-rose-400{% endif %}">
+                            <span
+                                class="featured-stock-dot w-2 h-2 rounded-full {% if featured_product and featured_product.quantity_kg > 0 %}bg-[#cca43b]{% else %}bg-rose-400{% endif %}"></span>
+                            <span class="featured-stock-text">{% if featured_product and featured_product.quantity_kg >
+                                0 %}{{ featured_product.quantity_kg|floatformat:0 }} stock available{% else %}Out of
+                                Stock{% endif %}</span>
                         </span>
                     </div>
                 </div>
 
-                <p class="featured-notes-text text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
-                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with organic feeds to ensure maximum flavor and quality." }}
+                <p
+                    class="featured-notes-text text-[#a0ac96] text-sm leading-relaxed max-w-[320px] font-medium border-l-2 border-[#cca43b]/40 pl-4 mt-4">
+                    {{ featured_product.notes|default:"One of our premium signatures, bred in our controlled ponds with
+                    organic feeds to ensure maximum flavor and quality." }}
                 </p>
 
                 <div class="pt-4 space-y-5">
@@ -340,13 +384,17 @@
                     </div>
 
                     <!-- Pricing Unit Selector: Per Piece vs By Unit -->
-                    <div class="space-y-2 pt-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
+                    <div
+                        class="space-y-2 pt-2 pricing-option-container {% if featured_product.unit_price <= 0 and featured_product.price_per_kg <= 0 %}hidden{% endif %}">
                         <p class="text-white font-bold text-sm tracking-wide">Pricing Option:</p>
                         <div class="flex gap-2">
                             <button type="button" onclick="setPricingUnit('pc')"
-                                class="btn-unit-pc desktop-btn-unit-pc {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all cursor-pointer">Per Piece (pc)</button>
+                                class="btn-unit-pc desktop-btn-unit-pc {% if featured_product.unit_price <= 0 %}hidden{% endif %} {% if featured_product.unit_price > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider transition-all cursor-pointer">Per
+                                Piece (pc)</button>
                             <button type="button" onclick="setPricingUnit('kg')"
-                                class="btn-unit-kg desktop-btn-unit-kg {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg' }}</span></button>
+                                class="btn-unit-kg desktop-btn-unit-kg {% if featured_product.price_per_kg <= 0 %}hidden{% endif %} {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}bg-[#cca43b] text-[#01140e] font-black{% else %}border border-[#cca43b]/30 text-[#a0ac96] font-bold{% endif %} px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-white/5 transition-all cursor-pointer">By
+                                <span class="btn-bulk-unit-text">{{ featured_product.bulk_unit_display|default:'kg'
+                                    }}</span></button>
                         </div>
                     </div>
 
@@ -355,11 +403,13 @@
                         <p class="text-white font-bold text-sm tracking-wide">Price:</p>
                         <p class="featured-price-text text-4xl font-black text-[#cca43b] leading-none font-mono">
                             {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{
+                            featured_product.price_per_kg|floatformat:"-2" }}
                             {% else %}₱0{% endif %}
                         </p>
                         <span class="featured-unit-label-text text-sm font-bold text-[#a0ac96]">
-                            {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{ featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
+                            {% if featured_product.unit_price > 0 %}/ pc{% elif featured_product.price_per_kg > 0 %}/ {{
+                            featured_product.bulk_unit_display|default:'kg' }}{% else %}/ pc{% endif %}
                         </span>
                     </div>
 
@@ -367,9 +417,12 @@
                     <div class="flex items-center gap-4 pt-1 max-w-[380px]">
                         <div class="flex items-center gap-3">
                             <p class="featured-quantity-label text-white font-bold text-sm tracking-wide">
-                                {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}Quantity ({{ featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{% endif %}
+                                {% if featured_product.unit_price <= 0 and featured_product.price_per_kg> 0 %}Quantity
+                                    ({{ featured_product.bulk_unit_display|default:'kg' }}):{% else %}Quantity (pcs):{%
+                                    endif %}
                             </p>
-                            <div class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-11 w-28">
+                            <div
+                                class="flex items-center bg-black/60 border border-white/20 rounded-xl overflow-hidden h-11 w-28">
                                 <button type="button" onclick="adjustFeaturedQuantity(-1)"
                                     class="w-8 h-full text-white font-black flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer">-</button>
                                 <input type="number" value="1" oninput="updateTotalPrice()"
@@ -387,7 +440,8 @@
                         <p class="text-white font-bold text-sm tracking-wide">Total Price:</p>
                         <p class="featured-total-price text-2xl font-black text-[#cca43b] leading-none font-mono">
                             {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                            {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                            {% elif featured_product.price_per_kg > 0 %}₱{{
+                            featured_product.price_per_kg|floatformat:"-2" }}
                             {% else %}₱0{% endif %}
                         </p>
                     </div>
@@ -396,11 +450,14 @@
                     <div class="pt-2 max-w-[340px]">
                         <button onclick="openCustomerOrderWithProduct('{{ featured_product.id }}')"
                             class="featured-order-btn w-full bg-[#cca43b] hover:bg-white active:scale-[0.99] disabled:opacity-40 text-[#01140e] rounded-2xl h-14 font-black text-sm uppercase tracking-[0.15em] flex items-center justify-between px-6 shadow-lg shadow-[#cca43b]/20 transition-all cursor-pointer"
-                            {% if not featured_product or featured_product.quantity_kg <= 0 %}disabled{% endif %}>
-                            <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg > 0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
+                            {% if not featured_product or featured_product.quantity_kg <=0 %}disabled{% endif %}>
+                            <span class="featured-order-text">{% if featured_product and featured_product.quantity_kg >
+                                0 %}Add to Cart{% else %}Out of Stock{% endif %}</span>
                             <span class="featured-total-price font-mono font-bold text-sm">
-                                {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2" }}
-                                {% elif featured_product.price_per_kg > 0 %}₱{{ featured_product.price_per_kg|floatformat:"-2" }}
+                                {% if featured_product.unit_price > 0 %}₱{{ featured_product.unit_price|floatformat:"-2"
+                                }}
+                                {% elif featured_product.price_per_kg > 0 %}₱{{
+                                featured_product.price_per_kg|floatformat:"-2" }}
                                 {% else %}₱0{% endif %}
                             </span>
                         </button>
@@ -409,26 +466,34 @@
             </div>
 
             <!-- CENTER: Huge Bowl -->
-            <div class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[500px] pointer-events-none">
-                <div class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto">
+            <div
+                class="col-span-12 lg:col-span-5 flex justify-center items-center h-full min-h-[500px] pointer-events-none">
+                <div
+                    class="relative lg:absolute lg:top-[48%] lg:left-1/2 translate-x-0 translate-y-0 lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-auto">
                     <!-- Brush stroke background effect behind bowl -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
+                    <div
+                        class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 mix-blend-screen">
                         <svg viewBox="0 0 200 200" class="w-[120%] h-[120%] text-[#cca43b]" fill="currentColor">
-                            <path d="M45.7,-76.4C58.3,-69.3,67,-53.4,75.1,-37.6C83.2,-21.8,90.6,-6.1,89.1,9.1C87.6,24.3,77.1,38.9,65.3,51.3C53.5,63.7,40.4,73.8,25.4,79.5C10.4,85.2,-6.5,86.4,-22.1,82.3C-37.7,78.2,-52.1,68.8,-63.3,56C-74.5,43.2,-82.6,27.1,-86.1,10.2C-89.6,-6.8,-88.5,-24.5,-80.1,-39.1C-71.7,-53.6,-56,-65,-41,-72.7C-26,-80.3,-13,-84.1,2.5,-88.1C18,-92.1,33.1,-83.4,45.7,-76.4Z"
+                            <path
+                                d="M45.7,-76.4C58.3,-69.3,67,-53.4,75.1,-37.6C83.2,-21.8,90.6,-6.1,89.1,9.1C87.6,24.3,77.1,38.9,65.3,51.3C53.5,63.7,40.4,73.8,25.4,79.5C10.4,85.2,-6.5,86.4,-22.1,82.3C-37.7,78.2,-52.1,68.8,-63.3,56C-74.5,43.2,-82.6,27.1,-86.1,10.2C-89.6,-6.8,-88.5,-24.5,-80.1,-39.1C-71.7,-53.6,-56,-65,-41,-72.7C-26,-80.3,-13,-84.1,2.5,-88.1C18,-92.1,33.1,-83.4,45.7,-76.4Z"
                                 transform="translate(100 100) scale(0.9)" />
                         </svg>
                     </div>
 
-                    <div class="relative w-[580px] h-[580px] xl:w-[620px] xl:h-[620px] rounded-full border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
+                    <div
+                        class="relative w-[580px] h-[580px] xl:w-[620px] xl:h-[620px] rounded-full border-[16px] border-[#01140e] overflow-hidden z-20 group shadow-2xl">
                         <img src="{% if 'superworm' in featured_product.name|lower or featured_product.icon == 'worm' or featured_product.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in featured_product.name|lower or featured_product.icon == 'leaf' %}/static/images/products/azula.jpg{% elif featured_product.icon == 'fish' %}/static/images/products/fish.jpg{% elif featured_product.icon == 'insect' %}/static/images/products/insect.jpg{% elif featured_product.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}"
                             class="featured-image-el w-full h-full object-cover opacity-90 transition-all duration-1000 group-hover:scale-105"
                             alt="Featured Dish">
-                        <div class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 ring-inset ring-4 ring-[#cca43b]/40 rounded-full pointer-events-none">
+                        </div>
                     </div>
 
                     <!-- Circle arrow navigation overlapping bottom of bowl -->
                     <button onclick="nextProduct()"
-                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-4 border-[#01140e] text-[#01140e] shadow-lg cursor-pointer" title="Next Product">
+                        class="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#cca43b] hover:bg-white rounded-full flex items-center justify-center z-30 transition-colors border-4 border-[#01140e] text-[#01140e] shadow-lg cursor-pointer"
+                        title="Next Product">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
@@ -445,14 +510,18 @@
             <div class="col-span-12 lg:col-span-3 lg:pl-12 flex flex-col h-full pt-10 pb-6 max-h-[700px]">
                 <h3 class="text-xl font-bold text-[#cca43b] tracking-wide mb-6 shrink-0">Available Products</h3>
 
-                <div class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
+                <div
+                    class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-[#cca43b]/30 scrollbar-track-transparent hover:scrollbar-thumb-[#cca43b]/60">
                     {% for prod in other_products %}
-                    <button onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
+                    <button
+                        onclick="selectProduct('{{ prod.id }}', '{{ prod.name|escapejs }}', '{{ prod.species.name|default:'Premium'|escapejs }}', '{{ prod.notes|escapejs }}', '{{ prod.unit_price|floatformat:0 }}', '{{ prod.price_per_kg|floatformat:0 }}', {{ prod.quantity_kg|default:0 }}, '{% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}/static/images/products/superworm.jpg{% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}/static/images/products/azula.jpg{% elif prod.icon == 'fish' %}/static/images/products/fish.jpg{% elif prod.icon == 'insect' %}/static/images/products/insect.jpg{% elif prod.icon == 'lab' %}/static/images/products/lab.jpg{% else %}/static/images/products/crayfish.jpg{% endif %}')"
                         class="w-full bg-[#01140e]/80 hover:bg-[#cca43b]/10 border border-white/5 hover:border-[#cca43b]/40 p-4 rounded-xl flex items-center gap-4 transition-all group text-left shrink-0 cursor-pointer">
-                        <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
+                        <div
+                            class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl overflow-hidden shrink-0">
                             {% if 'superworm' in prod.name|lower or prod.icon == 'worm' or prod.icon == 'bug' %}🪱
                             {% elif 'azula' in prod.name|lower or prod.icon == 'leaf' %}🌿
-                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon == 'shrimp' %}🦐
+                            {% elif 'crayfish' in prod.name|lower or 'crilings' in prod.name|lower or prod.icon ==
+                            'shrimp' %}🦐
                             {% elif prod.icon == 'box' or prod.icon == 'package' %}📦
                             {% elif prod.icon == 'water' %}💧
                             {% elif prod.icon == 'lab' %}🧪
@@ -461,17 +530,21 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between gap-2">
-                                <p class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">{{ prod.name }}</p>
-                                <span class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
-                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out of stock{% endif %}
+                                <p
+                                    class="font-bold text-white text-base truncate group-hover:text-[#cca43b] transition-colors">
+                                    {{ prod.name }}</p>
+                                <span
+                                    class="text-xs font-black font-mono shrink-0 {% if prod.quantity_kg > 0 %}text-[#cca43b]{% else %}text-rose-400{% endif %}">
+                                    {% if prod.quantity_kg > 0 %}{{ prod.quantity_kg|floatformat:0 }} stock{% else %}Out
+                                    of stock{% endif %}
                                 </span>
                             </div>
                             <p class="text-xs text-[#a0ac96] mt-0.5 font-mono">
                                 {% if prod.unit_price > 0 %}₱{{ prod.unit_price|floatformat:"-2" }}/pc{% endif %}
                                 {% if prod.unit_price > 0 and prod.price_per_kg > 0 %} • {% endif %}
-                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{ prod.bulk_unit_display|default:'kg' }}{% endif %}
-                                {% if prod.unit_price <= 0 and prod.price_per_kg <= 0 %}₱0{% endif %}
-                            </p>
+                                {% if prod.price_per_kg > 0 %}₱{{ prod.price_per_kg|floatformat:"-2" }}/{{
+                                prod.bulk_unit_display|default:'kg' }}{% endif %}
+                                {% if prod.unit_price <= 0 and prod.price_per_kg <=0 %}₱0{% endif %} </p>
                         </div>
                         <div class="text-white/20 group-hover:text-[#cca43b] group-hover:translate-x-1 transition-all">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -488,7 +561,8 @@
 
                 <div class="pt-6 shrink-0">
                     <p class="text-[10px] text-[#a0ac96]/50 leading-relaxed font-medium">
-                        * Free delivery for orders within a 5km radius. All products are harvested fresh from our controlled aquaculture ponds in Silay City, ensuring top quality and hygiene.
+                        * Free delivery for orders within a 5km radius. All products are harvested fresh from our
+                        controlled aquaculture ponds in Silay City, ensuring top quality and hygiene.
                     </p>
                 </div>
             </div>
@@ -616,18 +690,22 @@
 
                                     <!-- Product Details -->
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="font-black text-base sm:text-xl text-white truncate tracking-tight">{{ order.product.name }}</h4>
+                                        <h4 class="font-black text-base sm:text-xl text-white truncate tracking-tight">
+                                            {{ order.product.name }}</h4>
                                         <div class="flex items-center gap-1.5 sm:gap-2 mt-1.5 flex-wrap">
                                             <span
-                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 sm:px-2.5 py-0.5 rounded-full">{{ order.get_status_display }}</span>
+                                                class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-[#cca43b] bg-[#cca43b]/15 border border-[#cca43b]/30 px-2 sm:px-2.5 py-0.5 rounded-full">{{
+                                                order.get_status_display }}</span>
                                             {% if order.delivery_address|upper == "PICKUP" %}
-                                            <button type="button" onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
+                                            <button type="button"
+                                                onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
                                                 class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                                                 title="Click to switch to Delivery">
                                                 🏪 Pickup <span class="text-[8px] opacity-60">⇄</span>
                                             </button>
                                             {% else %}
-                                            <button type="button" onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
+                                            <button type="button"
+                                                onclick="toggleCartItemDeliveryMethod('{{ order.id }}')"
                                                 class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 px-2 sm:px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                                                 title="Click to switch to Pickup">
                                                 🚚 Delivery <span class="text-[8px] opacity-60">⇄</span>
@@ -664,12 +742,17 @@
                                             </div>
                                             <span
                                                 class="text-[10px] font-black text-[#cca43b] uppercase tracking-wider bg-[#cca43b]/10 border border-[#cca43b]/20 px-2.5 py-1.5 rounded-xl h-[38px] flex items-center justify-center">
-                                                {% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}
+                                                {% if '[KG]' in order.notes %}{{
+                                                order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}
                                             </span>
                                         </div>
                                         <span class="hidden item-unit-price">{{ order.price_per_kg }}</span>
                                         {% else %}
-                                        <p class="font-black text-base text-white mt-1">{{ order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{% if '[KG]' in order.notes %}{{ order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif %}</span></p>
+                                        <p class="font-black text-base text-white mt-1">{{
+                                            order.quantity_kg|floatformat:0 }} <span class="text-xs text-[#cca43b]">{%
+                                                if '[KG]' in order.notes %}{{
+                                                order.product.bulk_unit_display|default:'kg' }}{% else %}pcs{% endif
+                                                %}</span></p>
                                         {% endif %}
                                     </div>
 
@@ -682,7 +765,8 @@
                                             <p
                                                 class="font-black text-xl sm:text-2xl text-white font-mono tracking-tight flex items-baseline justify-end gap-1">
                                                 <span class="text-sm font-bold text-[#cca43b]">₱</span><span
-                                                    id="item-subtotal-{{ order.id }}">{{ order.total_amount|floatformat:0 }}</span>
+                                                    id="item-subtotal-{{ order.id }}">{{
+                                                    order.total_amount|floatformat:0 }}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -868,7 +952,8 @@
                                 </div>
                                 <div id="checkout-delivery-map"
                                     class="w-full h-[320px] rounded-2xl border border-white/10 z-0"></div>
-                                <div id="map-delivery-tip" class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
+                                <div id="map-delivery-tip"
+                                    class="flex items-center justify-between text-[11px] text-[#a0ac96] px-1">
                                     <span>Tip: Click anywhere on the map or drag the pin to set your exact
                                         location.</span>
                                     <span id="pin-coords-display" class="text-white/60 font-mono"></span>
@@ -1880,7 +1965,8 @@
                         <div>
                             <p class="text-[9px] uppercase font-black tracking-widest text-[#cca43b]">Delivery Address
                             </p>
-                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address provided" }}</p>
+                            <p class="font-bold text-white text-base mt-1">{{ customer.address|default:"No address
+                                provided" }}</p>
                         </div>
                     </div>
                     {% if customer.map_latitude and customer.map_longitude %}
@@ -1893,17 +1979,23 @@
 
                 <div class="space-y-4">
                     {% for group in grouped_orders %}
-                    <div class="rounded-2xl border border-white/10 bg-black/40 p-5 sm:p-6 flex flex-col gap-4 group hover:border-[#cca43b]/40 transition-all">
+                    <div
+                        class="rounded-2xl border border-white/10 bg-black/40 p-5 sm:p-6 flex flex-col gap-4 group hover:border-[#cca43b]/40 transition-all">
                         <!-- Group Header: Order #, Badges & Date -->
                         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-3">
                             <div class="flex items-center gap-2.5">
-                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ group.order_number }}</span>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{ group.status_display }}</span>
-                                <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if group.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                                <span class="text-xs font-mono font-bold text-[#cca43b]">#{{ group.order_number
+                                    }}</span>
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider text-[#01140e] bg-[#cca43b] px-2.5 py-0.5 rounded-full">{{
+                                    group.status_display }}</span>
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full {% if group.payment_status == 'paid' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
                                     {{ group.payment_status_display }}
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a0ac96]">Ordered on {{ group.created_at|date:"M d, Y • h:i A" }}</p>
+                            <p class="text-xs text-[#a0ac96]">Ordered on {{ group.created_at|date:"M d, Y • h:i A" }}
+                            </p>
                         </div>
 
                         <!-- Items List -->
@@ -1912,7 +2004,8 @@
                             <div class="flex items-center justify-between text-sm pt-2 first:pt-0">
                                 <div class="flex items-center gap-2">
                                     <span class="font-bold text-white">{{ item.product_name }}</span>
-                                    <span class="text-xs text-[#a0ac96]">({{ item.quantity|floatformat:0 }} {{ item.unit }} @ ₱{{ item.price_per_unit|floatformat:0 }}/{{ item.unit }})</span>
+                                    <span class="text-xs text-[#a0ac96]">({{ item.quantity|floatformat:0 }} {{ item.unit
+                                        }} @ ₱{{ item.price_per_unit|floatformat:0 }}/{{ item.unit }})</span>
                                 </div>
                                 <span class="font-bold text-stone-200">₱{{ item.subtotal|floatformat:2 }}</span>
                             </div>
@@ -1920,10 +2013,13 @@
                         </div>
 
                         <!-- Footer: Total Amount & Action Buttons -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-t border-white/10 pt-3 mt-1 gap-3">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between border-t border-white/10 pt-3 mt-1 gap-3">
                             <div>
-                                <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider block">Total Amount</span>
-                                <span class="font-black text-2xl text-[#cca43b]">₱{{ group.total_amount|floatformat:2 }}</span>
+                                <span class="text-[10px] font-bold text-[#a0ac96] uppercase tracking-wider block">Total
+                                    Amount</span>
+                                <span class="font-black text-2xl text-[#cca43b]">₱{{ group.total_amount|floatformat:2
+                                    }}</span>
                             </div>
                             <!-- Clean receipt data block: no inline attribute syntax errors -->
                             <script id="receipt-data-{{ group.order_number }}" type="application/json">
@@ -1959,7 +2055,8 @@
                                 {% if 'gcash' in group.payment_method|lower or group.has_receipt_image %}
                                 <button type="button" onclick="openPaymentEvidenceModal('{{ group.order_number }}')"
                                     class="inline-flex items-center gap-2 rounded-xl bg-[#007DFE]/20 hover:bg-[#007DFE] text-[#38bdf8] hover:text-white px-3.5 sm:px-4 py-2 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border border-[#007DFE]/40 shadow-sm active:scale-95">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -1968,7 +2065,8 @@
                                 {% endif %}
                                 <button type="button" onclick="openReceiptByOrderNumber('{{ group.order_number }}')"
                                     class="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-[#cca43b] hover:text-[#01140e] px-3.5 sm:px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all cursor-pointer border border-white/10 active:scale-95">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
@@ -1999,7 +2097,8 @@
                 class="relative w-full max-w-2xl rounded-3xl sm:rounded-[2rem] border border-[#cca43b]/40 bg-[#01140e] p-4 sm:p-8 text-stone-100 transform transition-all space-y-4 sm:space-y-6 my-auto">
                 <!-- Close Top-Right Button -->
                 <button type="button" onclick="closeCustomerReceiptModal()"
-                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print" title="Close">
+                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print"
+                    title="Close">
                     ✕
                 </button>
 
@@ -2011,17 +2110,21 @@
                         class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 sm:pb-6 gap-3 sm:gap-4 pr-6 sm:pr-0">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">SILAY SUPERWORM &
+                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">SILAY
+                                    SUPERWORM &
                                     CRAYFISH</h2>
                             </div>
-                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice & Delivery Receipt</p>
-                            <p class="text-[10px] sm:text-[11px] text-stone-400">Silay City, Negros Occidental, Philippines</p>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Official Aquaculture Sales Invoice &
+                                Delivery Receipt</p>
+                            <p class="text-[10px] sm:text-[11px] text-stone-400">Silay City, Negros Occidental,
+                                Philippines</p>
                         </div>
                         <div class="sm:text-right space-y-1">
                             <span
                                 class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#cca43b] bg-[#cca43b]/10 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#cca43b]/30 inline-block">Official
                                 Receipt</span>
-                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="rec-order-number">#SO-0000</p>
+                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="rec-order-number">
+                                #SO-0000</p>
                             <p class="text-[11px] sm:text-xs text-[#a0ac96]" id="rec-order-date">Date</p>
                         </div>
                     </div>
@@ -2056,13 +2159,18 @@
                                     <th class="px-2.5 sm:px-4 py-2 sm:py-3 text-right">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody id="rec-items-tbody" class="divide-y divide-white/5 text-white font-medium text-[11px] sm:text-xs">
+                            <tbody id="rec-items-tbody"
+                                class="divide-y divide-white/5 text-white font-medium text-[11px] sm:text-xs">
                                 <tr>
                                     <td class="px-2.5 sm:px-4 py-2 sm:py-3 font-bold" id="rec-prod-name">-</td>
-                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center uppercase text-stone-300" id="rec-unit-type">-</td>
-                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center font-bold" id="rec-quantity">-</td>
-                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-stone-300" id="rec-unit-price">₱0.00</td>
-                                    <td class="px-2.5 sm:px-4 py-2 sm:py-3 text-right font-black text-[#cca43b]" id="rec-subtotal">₱0.00</td>
+                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center uppercase text-stone-300"
+                                        id="rec-unit-type">-</td>
+                                    <td class="px-1.5 sm:px-3 py-2 sm:py-3 text-center font-bold" id="rec-quantity">-
+                                    </td>
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-right text-stone-300" id="rec-unit-price">
+                                        ₱0.00</td>
+                                    <td class="px-2.5 sm:px-4 py-2 sm:py-3 text-right font-black text-[#cca43b]"
+                                        id="rec-subtotal">₱0.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2087,7 +2195,8 @@
                             </div>
                             <p class="text-[10px] sm:text-[11px] text-stone-400 italic" id="rec-notes"></p>
                         </div>
-                        <div class="space-y-1.5 text-xs sm:text-right bg-black/40 p-3.5 sm:p-4 rounded-xl border border-white/5">
+                        <div
+                            class="space-y-1.5 text-xs sm:text-right bg-black/40 p-3.5 sm:p-4 rounded-xl border border-white/5">
                             <div class="flex justify-between sm:justify-end gap-6 text-[#a0ac96]">
                                 <span>Delivery Fee:</span>
                                 <span class="text-emerald-400 font-bold">FREE</span>
@@ -2095,12 +2204,14 @@
                             <div
                                 class="flex justify-between sm:justify-end gap-6 text-sm font-black border-t border-white/10 pt-2">
                                 <span class="text-white uppercase">Total Paid / Due:</span>
-                                <span class="text-lg sm:text-xl font-black text-[#cca43b]" id="rec-grand-total">₱0.00</span>
+                                <span class="text-lg sm:text-xl font-black text-[#cca43b]"
+                                    id="rec-grand-total">₱0.00</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
+                    <div
+                        class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
                         Thank you for your business! For questions or assistance, contact Silay Superworm & Crayfish
                         Farm.
                     </div>
@@ -2127,7 +2238,9 @@
 
         <style>
             @media print {
-                html, body {
+
+                html,
+                body {
                     background: #ffffff !important;
                     color: #000000 !important;
                     margin: 0 !important;
@@ -2137,7 +2250,16 @@
                     overflow: visible !important;
                 }
 
-                header, nav, footer, #customer-portal-header, #cart-drawer, #chat-widget-root, .no-print, [id*="chat"], .floating-action, .max-w-4xl {
+                header,
+                nav,
+                footer,
+                #customer-portal-header,
+                #cart-drawer,
+                #chat-widget-root,
+                .no-print,
+                [id*="chat"],
+                .floating-action,
+                .max-w-4xl {
                     display: none !important;
                 }
 
@@ -2158,7 +2280,7 @@
                     box-shadow: none !important;
                 }
 
-                #customer-order-receipt-modal > div {
+                #customer-order-receipt-modal>div {
                     border: none !important;
                     background: transparent !important;
                     box-shadow: none !important;
@@ -2267,7 +2389,7 @@
                             return;
                         }
                     }
-                } catch(e) {
+                } catch (e) {
                     console.warn('Popup print blocked, falling back to window.print()', e);
                 }
 
@@ -2306,8 +2428,8 @@
                             <td class="px-2.5 sm:px-4 py-2.5 font-bold text-white whitespace-nowrap">${item.product_name}</td>
                             <td class="px-1.5 sm:px-3 py-2.5 text-center uppercase text-stone-300 text-[10px] sm:text-xs">${item.unit}</td>
                             <td class="px-1.5 sm:px-3 py-2.5 text-center font-bold text-white">${item.quantity}</td>
-                            <td class="px-2 sm:px-4 py-2.5 text-right text-stone-300 whitespace-nowrap">₱${Number(item.price_per_unit).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
-                            <td class="px-2.5 sm:px-4 py-2.5 text-right font-black text-[#cca43b] whitespace-nowrap">₱${Number(item.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                            <td class="px-2 sm:px-4 py-2.5 text-right text-stone-300 whitespace-nowrap">₱${Number(item.price_per_unit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
+                            <td class="px-2.5 sm:px-4 py-2.5 text-right font-black text-[#cca43b] whitespace-nowrap">₱${Number(item.subtotal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -2343,25 +2465,31 @@
                 class="relative w-full max-w-2xl rounded-3xl sm:rounded-[2rem] border border-[#007DFE]/40 bg-[#01140e] p-4 sm:p-8 text-stone-100 transform transition-all space-y-4 sm:space-y-6 my-auto shadow-2xl shadow-[#007DFE]/10">
                 <!-- Close Top-Right Button -->
                 <button type="button" onclick="closePaymentEvidenceModal()"
-                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print" title="Close">
+                    class="absolute top-3 right-3 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-all z-20 cursor-pointer no-print"
+                    title="Close">
                     ✕
                 </button>
 
                 <!-- Printable Evidence Slip Area -->
                 <div id="printable-evidence-area"
                     class="space-y-4 sm:space-y-6 bg-[#021f15] p-4 sm:p-8 rounded-2xl border border-[#007DFE]/30">
-                    
+
                     <!-- Evidence Header with Verified Badge -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 sm:pb-6 gap-3 sm:gap-4 pr-6 sm:pr-0">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 sm:pb-6 gap-3 sm:gap-4 pr-6 sm:pr-0">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-[#007DFE] flex items-center justify-center text-white font-black text-sm shadow-md">
+                                <div
+                                    class="w-8 h-8 rounded-xl bg-[#007DFE] flex items-center justify-center text-white font-black text-sm shadow-md">
                                     G
                                 </div>
-                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">Payment Evidence</h2>
+                                <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider">Payment
+                                    Evidence</h2>
                             </div>
-                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Verified Electronic Payment & Transaction Record</p>
-                            <p class="text-[10px] sm:text-[11px] text-stone-400">Merchant: Silay Superworm & Crayfish Farm</p>
+                            <p class="text-[11px] sm:text-xs text-[#a0ac96]">Verified Electronic Payment & Transaction
+                                Record</p>
+                            <p class="text-[10px] sm:text-[11px] text-stone-400">Merchant: Silay Superworm & Crayfish
+                                Farm</p>
                         </div>
                         <div class="sm:text-right space-y-1">
                             <span id="evi-status-badge"
@@ -2369,21 +2497,28 @@
                                 <span class="w-1.5 h-1.5 rounded-full bg-[#007DFE] animate-pulse"></span>
                                 <span id="evi-status-text">PAID & VERIFIED</span>
                             </span>
-                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="evi-order-number">#SO-0000</p>
+                            <p class="text-sm sm:text-base font-mono font-bold text-white mt-1" id="evi-order-number">
+                                #SO-0000</p>
                             <p class="text-[11px] sm:text-xs text-[#a0ac96]" id="evi-order-date">Date</p>
                         </div>
                     </div>
 
                     <!-- Payment Overview Card -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs bg-black/40 p-4 rounded-xl border border-white/5">
                         <div class="space-y-2">
                             <div>
-                                <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Paid Amount</span>
-                                <p class="font-black text-2xl text-emerald-400 font-mono mt-0.5" id="evi-amount">₱0.00</p>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-[#cca43b] block">Paid
+                                    Amount</span>
+                                <p class="font-black text-2xl text-emerald-400 font-mono mt-0.5" id="evi-amount">₱0.00
+                                </p>
                             </div>
                             <div>
-                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Payment Method</span>
-                                <p class="font-bold text-white text-xs mt-0.5 flex items-center gap-1.5" id="evi-payment-method">
+                                <span
+                                    class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Payment
+                                    Method</span>
+                                <p class="font-bold text-white text-xs mt-0.5 flex items-center gap-1.5"
+                                    id="evi-payment-method">
                                     <span class="inline-block w-2 h-2 rounded-full bg-[#007DFE]"></span>
                                     GCash Instant Transfer
                                 </p>
@@ -2391,13 +2526,17 @@
                         </div>
                         <div class="space-y-2 sm:text-right">
                             <div>
-                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Customer</span>
+                                <span
+                                    class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Customer</span>
                                 <p class="font-bold text-white text-xs mt-0.5" id="evi-cust-name">-</p>
                                 <p class="text-[11px] text-stone-400" id="evi-cust-phone">-</p>
                             </div>
                             <div>
-                                <span class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Delivery Destination</span>
-                                <p class="font-medium text-white text-[11px] truncate mt-0.5" id="evi-cust-address">-</p>
+                                <span
+                                    class="text-[9px] font-black uppercase tracking-widest text-[#a0ac96] block">Delivery
+                                    Destination</span>
+                                <p class="font-medium text-white text-[11px] truncate mt-0.5" id="evi-cust-address">-
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2405,9 +2544,12 @@
                     <!-- Payment Evidence / Screenshot Proof Section -->
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] flex items-center gap-1.5">
-                                <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <span
+                                class="text-[10px] font-black uppercase tracking-wider text-[#cca43b] flex items-center gap-1.5">
+                                <svg class="h-3.5 w-3.5 text-[#cca43b]" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 Attached Transaction Proof / Slip
                             </span>
@@ -2415,39 +2557,53 @@
                         </div>
 
                         <!-- Image Display Container -->
-                        <div id="evi-receipt-img-container" class="hidden rounded-xl overflow-hidden border border-white/10 bg-black/60 p-2 text-center max-h-72">
-                            <img id="evi-receipt-img" src="" alt="Payment Receipt Proof" class="mx-auto max-h-64 object-contain rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open(this.src, '_blank')">
-                            <p class="text-[10px] text-[#a0ac96] mt-2 no-print">Click image to open full resolution in new tab</p>
+                        <div id="evi-receipt-img-container"
+                            class="hidden rounded-xl overflow-hidden border border-white/10 bg-black/60 p-2 text-center max-h-72">
+                            <img id="evi-receipt-img" src="" alt="Payment Receipt Proof"
+                                class="mx-auto max-h-64 object-contain rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                onclick="window.open(this.src, '_blank')">
+                            <p class="text-[10px] text-[#a0ac96] mt-2 no-print">Click image to open full resolution in
+                                new tab</p>
                         </div>
 
                         <!-- Digital Certificate Fallback when no image uploaded -->
-                        <div id="evi-no-image-placeholder" class="rounded-xl border border-dashed border-[#007DFE]/40 bg-[#007DFE]/5 p-5 text-center space-y-2">
-                            <div class="w-10 h-10 mx-auto rounded-full bg-[#007DFE]/20 text-[#007DFE] flex items-center justify-center text-xl">
+                        <div id="evi-no-image-placeholder"
+                            class="rounded-xl border border-dashed border-[#007DFE]/40 bg-[#007DFE]/5 p-5 text-center space-y-2">
+                            <div
+                                class="w-10 h-10 mx-auto rounded-full bg-[#007DFE]/20 text-[#007DFE] flex items-center justify-center text-xl">
                                 📱
                             </div>
-                            <p class="text-xs font-bold text-white uppercase tracking-wider">Digital GCash Payment Confirmed</p>
+                            <p class="text-xs font-bold text-white uppercase tracking-wider">Digital GCash Payment
+                                Confirmed</p>
                             <p class="text-[11px] text-[#a0ac96] max-w-md mx-auto">
-                                Transaction verified via customer portal checkout. You may also upload an optional GCash screenshot slip below.
+                                Transaction verified via customer portal checkout. You may also upload an optional GCash
+                                screenshot slip below.
                             </p>
                         </div>
                     </div>
 
                     <!-- Interactive Upload Proof Box (Customer can attach/change slip anytime) -->
-                    <div class="no-print bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div
+                        class="no-print bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div class="text-left space-y-0.5">
                             <span class="text-xs font-bold text-white block">Upload / Change Receipt Screenshot</span>
-                            <span class="text-[10px] text-[#a0ac96] block">Supports JPG, PNG, WEBP transaction screenshots</span>
+                            <span class="text-[10px] text-[#a0ac96] block">Supports JPG, PNG, WEBP transaction
+                                screenshots</span>
                         </div>
-                        <label class="inline-flex items-center gap-2 rounded-xl bg-[#007DFE]/20 hover:bg-[#007DFE] text-[#38bdf8] hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-[#007DFE]/30 shrink-0">
+                        <label
+                            class="inline-flex items-center gap-2 rounded-xl bg-[#007DFE]/20 hover:bg-[#007DFE] text-[#38bdf8] hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border border-[#007DFE]/30 shrink-0">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                             </svg>
                             <span id="evi-upload-btn-text">Select Screenshot</span>
-                            <input type="file" id="evi-file-input" accept="image/*" class="hidden" onchange="handleEvidenceUpload(event)">
+                            <input type="file" id="evi-file-input" accept="image/*" class="hidden"
+                                onchange="handleEvidenceUpload(event)">
                         </label>
                     </div>
 
-                    <div class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
+                    <div
+                        class="border-t border-dashed border-white/10 pt-3 sm:pt-4 text-center text-[9px] sm:text-[10px] text-[#a0ac96]">
                         Official Electronic Payment Record • Silay Superworm & Crayfish Farm • Negros Occidental
                     </div>
                 </div>
@@ -2471,7 +2627,7 @@
                 try {
                     const data = JSON.parse(el.textContent);
                     currentEvidenceData = data;
-                    
+
                     const modal = document.getElementById('customer-payment-evidence-modal');
                     if (!modal) return;
 
@@ -2481,7 +2637,7 @@
                     document.getElementById('evi-cust-phone').textContent = data.customerPhone || 'N/A';
                     document.getElementById('evi-cust-address').textContent = data.deliveryAddress || 'Pick-up / Local';
                     document.getElementById('evi-amount').textContent = '₱' + (parseFloat(data.totalAmount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    
+
                     const statusText = document.getElementById('evi-status-text');
                     if (statusText) {
                         statusText.textContent = (data.paymentStatus || 'PAID').toUpperCase();
@@ -2564,51 +2720,51 @@
                     },
                     body: formData
                 })
-                .then(async res => {
-                    let data;
-                    try {
-                        data = await res.json();
-                    } catch(err) {
-                        throw new Error(`Server returned ${res.status}: ${res.statusText}`);
-                    }
-                    if (!res.ok || !data.success) {
-                        throw new Error(data.error || `Upload failed (${res.status})`);
-                    }
-                    return data;
-                })
-                .then(data => {
-                    if (data.success && data.receipt_url) {
-                        currentEvidenceData.hasReceiptImage = true;
-                        currentEvidenceData.receiptImageUrl = data.receipt_url;
-                        
-                        // Update JSON script tag as well
-                        const scriptTag = document.getElementById('receipt-data-' + currentEvidenceData.orderNumber);
-                        if (scriptTag) {
-                            try {
-                                const parsed = JSON.parse(scriptTag.textContent);
-                                parsed.hasReceiptImage = true;
-                                parsed.receiptImageUrl = data.receipt_url;
-                                scriptTag.textContent = JSON.stringify(parsed);
-                            } catch(e) {}
+                    .then(async res => {
+                        let data;
+                        try {
+                            data = await res.json();
+                        } catch (err) {
+                            throw new Error(`Server returned ${res.status}: ${res.statusText}`);
                         }
+                        if (!res.ok || !data.success) {
+                            throw new Error(data.error || `Upload failed (${res.status})`);
+                        }
+                        return data;
+                    })
+                    .then(data => {
+                        if (data.success && data.receipt_url) {
+                            currentEvidenceData.hasReceiptImage = true;
+                            currentEvidenceData.receiptImageUrl = data.receipt_url;
 
-                        const imgContainer = document.getElementById('evi-receipt-img-container');
-                        const imgEl = document.getElementById('evi-receipt-img');
-                        const placeholder = document.getElementById('evi-no-image-placeholder');
-                        const proofStatus = document.getElementById('evi-proof-status');
+                            // Update JSON script tag as well
+                            const scriptTag = document.getElementById('receipt-data-' + currentEvidenceData.orderNumber);
+                            if (scriptTag) {
+                                try {
+                                    const parsed = JSON.parse(scriptTag.textContent);
+                                    parsed.hasReceiptImage = true;
+                                    parsed.receiptImageUrl = data.receipt_url;
+                                    scriptTag.textContent = JSON.stringify(parsed);
+                                } catch (e) { }
+                            }
 
-                        imgEl.src = data.receipt_url + '?t=' + new Date().getTime();
-                        imgContainer.classList.remove('hidden');
-                        placeholder.classList.add('hidden');
-                        if (proofStatus) proofStatus.textContent = 'Attached Slip Available';
-                        if (btnText) btnText.textContent = 'Replace Screenshot';
-                    }
-                })
-                .catch(err => {
-                    console.error('Evidence upload error:', err);
-                    alert(err.message || 'An error occurred during upload.');
-                    if (btnText) btnText.textContent = 'Select Screenshot';
-                });
+                            const imgContainer = document.getElementById('evi-receipt-img-container');
+                            const imgEl = document.getElementById('evi-receipt-img');
+                            const placeholder = document.getElementById('evi-no-image-placeholder');
+                            const proofStatus = document.getElementById('evi-proof-status');
+
+                            imgEl.src = data.receipt_url + '?t=' + new Date().getTime();
+                            imgContainer.classList.remove('hidden');
+                            placeholder.classList.add('hidden');
+                            if (proofStatus) proofStatus.textContent = 'Attached Slip Available';
+                            if (btnText) btnText.textContent = 'Replace Screenshot';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Evidence upload error:', err);
+                        alert(err.message || 'An error occurred during upload.');
+                        if (btnText) btnText.textContent = 'Select Screenshot';
+                    });
             }
         </script>
         {% endif %}
@@ -2750,7 +2906,7 @@
     }
 
     let currentProductIndex = 0;
-    let currentPricingUnit = {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}'kg'{% else %}'pc'{% endif %};
+    let currentPricingUnit = {% if featured_product.unit_price <= 0 and featured_product.price_per_kg > 0 %}'kg'{% else %} 'pc'{% endif %};
 
     function updateDots() {
         const dotContainers = document.querySelectorAll('.carousel-dots, #carousel-dots');
@@ -3786,15 +3942,15 @@
             },
             body: JSON.stringify({})
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                console.error(data.error);
-            }
-        })
-        .catch(err => console.error(err));
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(err => console.error(err));
     }
 
     (function initCustomerAccountMap() {
@@ -3865,11 +4021,13 @@
         <div class="rounded-2xl border border-[#007DFE]/30 from-[#005bb7]/20 p-4 space-y-2">
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Merchant:</span>
-                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</span>
+                <span class="text-white font-bold">{{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH'
+                    }}</span>
             </div>
             <div class="flex items-center justify-between text-xs">
                 <span class="text-[#a0ac96] uppercase tracking-wider text-[10px] font-bold">Recipient No:</span>
-                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567' }}</span>
+                <span class="font-mono text-[#007DFE] font-bold">{{ payment_settings.gcash_number|default:'09171234567'
+                    }}</span>
             </div>
             <div class="border-t border-white/10 pt-2 flex items-center justify-between">
                 <span class="text-xs uppercase tracking-wider font-black text-white">Amount to Pay:</span>
@@ -3977,7 +4135,8 @@
             </div>
             <div class="space-y-1">
                 <h4 class="text-lg font-black text-white uppercase tracking-wider">Payment Successful!</h4>
-                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM & CRAYFISH' }}</p>
+                <p class="text-xs text-[#a0ac96]">Paid to {{ payment_settings.gcash_name|default:'SILAY SUPERWORM &
+                    CRAYFISH' }}</p>
                 <p class="text-[11px] font-mono text-emerald-400 font-bold mt-2" id="gcash-success-ref">Ref:
                     GCASH-00000000</p>
             </div>
@@ -4025,11 +4184,11 @@
                         doubleClickZoom: false,
                         boxZoom: false
                     }).setView([lat, lng], 15);
-                    
+
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19
                     }).addTo(rMap);
-                    
+
                     const goldPin = L.icon({
                         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -4038,7 +4197,7 @@
                         popupAnchor: [1, -34],
                         shadowSize: [41, 41]
                     });
-                    
+
                     L.marker([lat, lng], { icon: goldPin }).addTo(rMap);
                     setTimeout(() => { rMap.invalidateSize(); }, 300);
                 } catch (err) {
